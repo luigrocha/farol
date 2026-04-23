@@ -6,6 +6,7 @@ import '../../main.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/farol_colors.dart';
 import '../../core/i18n/app_localizations.dart';
 import '../auth/presentation/auth_providers.dart';
 import '../budget/presentation/budget_settings_sheet.dart';
@@ -17,12 +18,12 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final colors = context.colors;
     return Scaffold(
-      backgroundColor: AppTheme.surfaceLow,
+      backgroundColor: colors.surfaceLow,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            backgroundColor: AppTheme.surfaceLow,
             floating: true,
             title: Text('Farol', style: GoogleFonts.manrope(fontSize: 22, fontWeight: FontWeight.w700, letterSpacing: -0.3)),
             actions: [const Icon(Icons.settings_outlined, size: 22), const SizedBox(width: 24)],
@@ -65,18 +66,19 @@ class _ProfileCard extends ConsumerWidget {
   const _ProfileCard();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
     final profileAsync = ref.watch(currentProfileProvider);
     final displayName = profileAsync.whenOrNull(data: (p) => p?.displayName) ?? '';
 
     return Container(
       padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(color: AppTheme.surfaceLowest, borderRadius: BorderRadius.circular(24)),
+      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(24)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('PROFILE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 1.6, color: AppTheme.onSurfaceFaint)),
+        Text('PROFILE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 1.6, color: colors.onSurfaceFaint)),
         const SizedBox(height: 6),
         Text(
           displayName.isNotEmpty ? displayName : '—',
-          style: GoogleFonts.manrope(fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -0.6, color: AppTheme.onSurface),
+          style: GoogleFonts.manrope(fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -0.6, color: colors.onSurface),
         ),
         const SizedBox(height: 18),
         ElevatedButton(
@@ -99,8 +101,9 @@ class _Section extends StatelessWidget {
   const _Section({required this.title, required this.icon, required this.children});
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [Icon(icon, size: 16, color: AppTheme.onSurfaceMuted), const SizedBox(width: 8), Text(title, style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.onSurface))]),
+      Row(children: [Icon(icon, size: 16, color: colors.onSurfaceMuted), const SizedBox(width: 8), Text(title, style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface))]),
       const SizedBox(height: 12),
       ...children,
     ]);
@@ -112,19 +115,20 @@ class _LangRow extends ConsumerWidget {
   const _LangRow({required this.flag, required this.name, required this.sub, required this.locale});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
     final current = ref.watch(localeProvider);
     final selected = current == locale;
     return GestureDetector(
       onTap: () => ref.read(localeProvider.notifier).state = locale,
       child: Container(
         margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: AppTheme.surfaceLowest, borderRadius: BorderRadius.circular(16), border: Border.all(color: selected ? AppTheme.secondaryColor : Colors.transparent, width: 2)),
+        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16), border: Border.all(color: selected ? AppTheme.secondaryColor : Colors.transparent, width: 2)),
         child: Row(children: [
-          Container(width: 34, height: 34, decoration: BoxDecoration(color: AppTheme.surfaceLow, shape: BoxShape.circle), child: Center(child: Text(flag, style: const TextStyle(fontSize: 18)))),
+          Container(width: 34, height: 34, decoration: BoxDecoration(color: colors.surfaceLow, shape: BoxShape.circle), child: Center(child: Text(flag, style: const TextStyle(fontSize: 18)))),
           const SizedBox(width: 14),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(name, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.onSurface)),
-            Text(sub, style: const TextStyle(fontSize: 12, color: AppTheme.onSurfaceSoft)),
+            Text(name, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: colors.onSurface)),
+            Text(sub, style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
           ])),
           if (selected) Container(width: 18, height: 18, decoration: const BoxDecoration(color: AppTheme.secondaryColor, shape: BoxShape.circle), child: const Icon(Icons.check, size: 12, color: Colors.white)),
         ]),
@@ -183,17 +187,18 @@ class _DataRow extends StatelessWidget {
   const _DataRow({required this.icon, required this.name, required this.sub, required this.color});
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Container(
       margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: AppTheme.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
       child: Row(children: [
-        Container(width: 34, height: 34, decoration: BoxDecoration(color: AppTheme.surfaceLow, borderRadius: BorderRadius.circular(10)), child: Icon(icon, size: 18, color: color)),
+        Container(width: 34, height: 34, decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: BorderRadius.circular(10)), child: Icon(icon, size: 18, color: color)),
         const SizedBox(width: 14),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-          Text(sub, style: const TextStyle(fontSize: 11, color: AppTheme.onSurfaceSoft)),
+          Text(name, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
+          Text(sub, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
         ])),
-        const Icon(Icons.download_outlined, size: 18, color: AppTheme.onSurfaceSoft),
+        Icon(Icons.download_outlined, size: 18, color: colors.onSurfaceSoft),
       ]),
     );
   }
@@ -220,12 +225,13 @@ class _SupportCard extends StatelessWidget {
   const _SupportCard({required this.icon, required this.label});
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Container(
-      padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: AppTheme.surfaceLowest, borderRadius: BorderRadius.circular(18)),
+      padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(18)),
       child: Column(children: [
-        Container(width: 44, height: 44, decoration: BoxDecoration(color: AppTheme.secondaryContainer, borderRadius: BorderRadius.circular(12)), child: Icon(icon, size: 22, color: AppTheme.secondaryColor)),
+        Container(width: 44, height: 44, decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: BorderRadius.circular(12)), child: Icon(icon, size: 22, color: AppTheme.secondaryColor)),
         const SizedBox(height: 10),
-        Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600), textAlign: TextAlign.center),
+        Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurface), textAlign: TextAlign.center),
       ]),
     );
   }
@@ -236,13 +242,14 @@ class _BudgetSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
     final budgetAsync = ref.watch(budgetSettingsProvider);
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
-        const Icon(Icons.account_balance_wallet_outlined, size: 16, color: AppTheme.onSurfaceMuted),
+        Icon(Icons.account_balance_wallet_outlined, size: 16, color: colors.onSurfaceMuted),
         const SizedBox(width: 8),
-        Text('Budget', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.onSurface)),
+        Text('Budget', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
       ]),
       const SizedBox(height: 12),
       GestureDetector(
@@ -254,7 +261,7 @@ class _BudgetSection extends ConsumerWidget {
         ),
         child: Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: AppTheme.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
           child: budgetAsync.when(
             loading: () => const Center(child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))),
             error: (_, __) => const Text('Could not load budget'),
@@ -264,7 +271,7 @@ class _BudgetSection extends ConsumerWidget {
                 Container(
                   width: 34, height: 34,
                   decoration: BoxDecoration(
-                    color: hasData ? AppTheme.secondaryContainer : const Color(0xFFE3ECFA),
+                    color: hasData ? colors.secondaryContainer : colors.iconTintBlue,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
@@ -277,13 +284,13 @@ class _BudgetSection extends ConsumerWidget {
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(
                     hasData ? 'Monthly Budget' : 'Set Monthly Budget',
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface),
                   ),
                   Text(
                     hasData
                         ? '${FinancialCalculatorService.formatBRL(budget.totalBudget)} / month'
                         : 'Tap to configure your income budgets',
-                    style: const TextStyle(fontSize: 11, color: AppTheme.onSurfaceSoft),
+                    style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
                   ),
                   if (hasData) ...[
                     const SizedBox(height: 6),
@@ -294,7 +301,7 @@ class _BudgetSection extends ConsumerWidget {
                     ]),
                   ],
                 ])),
-                const Icon(Icons.chevron_right, size: 18, color: AppTheme.onSurfaceSoft),
+                Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
               ]);
             },
           ),
@@ -311,22 +318,23 @@ class _BudgetChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(color: AppTheme.surfaceLow, borderRadius: BorderRadius.circular(6)),
+      decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: BorderRadius.circular(6)),
       child: Text(
         '$label: ${FinancialCalculatorService.formatBRL(value)}',
-        style: const TextStyle(fontSize: 10, color: AppTheme.onSurfaceSoft, fontWeight: FontWeight.w500),
+        style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, fontWeight: FontWeight.w500),
       ),
     );
   }
 }
 
 class _BRLSmall extends StatelessWidget {
-  final double value; final double size; final Color color; final FontWeight weight;
-  const _BRLSmall({required this.value, required this.size, this.color = AppTheme.onSurface, this.weight = FontWeight.w600});
+  final double value; final double size; final Color? color; final FontWeight weight;
+  const _BRLSmall({required this.value, required this.size, this.color, this.weight = FontWeight.w600});
   @override
   Widget build(BuildContext context) {
-    return Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: size, fontWeight: weight, color: color, fontFeatures: [FontFeature.tabularFigures()]));
+    return Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: size, fontWeight: weight, color: color ?? context.colors.onSurface, fontFeatures: [FontFeature.tabularFigures()]));
   }
 }

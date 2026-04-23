@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import '../theme/app_theme.dart';
+import '../theme/farol_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HealthGauge extends StatelessWidget {
-  final double score; // 0 to 100
+  final double score;
   final double size;
   final String? statusLabel;
 
-  const HealthGauge({
-    super.key,
-    required this.score,
-    this.size = 140,
-    this.statusLabel,
-  });
+  const HealthGauge({super.key, required this.score, this.size = 140, this.statusLabel});
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     Color scoreColor;
     if (score >= 80) {
       scoreColor = AppTheme.healthGreen;
@@ -34,7 +31,7 @@ class HealthGauge extends StatelessWidget {
         children: [
           CustomPaint(
             size: Size(size, size),
-            painter: _GaugePainter(score: score, color: scoreColor),
+            painter: _GaugePainter(score: score, color: scoreColor, trackColor: colors.surfaceLow),
           ),
           Column(
             mainAxisSize: MainAxisSize.min,
@@ -44,7 +41,7 @@ class HealthGauge extends StatelessWidget {
                 style: GoogleFonts.manrope(
                   fontSize: size * 0.28,
                   fontWeight: FontWeight.w800,
-                  color: AppTheme.onSurface,
+                  color: colors.onSurface,
                   height: 1.1,
                 ),
               ),
@@ -68,55 +65,32 @@ class HealthGauge extends StatelessWidget {
 class _GaugePainter extends CustomPainter {
   final double score;
   final Color color;
+  final Color trackColor;
 
-  _GaugePainter({required this.score, required this.color});
+  _GaugePainter({required this.score, required this.color, required this.trackColor});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final double strokeWidth = size.width * 0.12;
-    final Offset center = Offset(size.width / 2, size.height / 2);
-    final double radius = (size.width - strokeWidth) / 2;
+    final strokeWidth = size.width * 0.12;
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.width - strokeWidth) / 2;
+    const startAngle = 3 * math.pi / 4;
+    const totalAngle = 3 * math.pi / 2;
+    final sweepAngle = (score / 100) * totalAngle;
 
-    const double startAngle = 3 * math.pi / 4;
-    const double totalAngle = 3 * math.pi / 2;
-    final double sweepAngle = (score / 100) * totalAngle;
-
-    final bgPaint = Paint()
-      ..color = AppTheme.surfaceLow
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
-
-    final progressPaint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
-
-    // Background track
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
-      startAngle,
-      totalAngle,
-      false,
-      bgPaint,
+      startAngle, totalAngle, false,
+      Paint()..color = trackColor..style = PaintingStyle.stroke..strokeWidth = strokeWidth..strokeCap = StrokeCap.round,
     );
-
-    // Progress arc
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
-      startAngle,
-      sweepAngle,
-      false,
-      progressPaint,
+      startAngle, sweepAngle, false,
+      Paint()..color = color..style = PaintingStyle.stroke..strokeWidth = strokeWidth..strokeCap = StrokeCap.round,
     );
-    
-    // Subtle glow
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
-      startAngle,
-      sweepAngle,
-      false,
+      startAngle, sweepAngle, false,
       Paint()
         ..color = color.withOpacity(0.15)
         ..style = PaintingStyle.stroke
@@ -126,5 +100,6 @@ class _GaugePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _GaugePainter old) =>
+      old.score != score || old.color != color || old.trackColor != trackColor;
 }
