@@ -15,6 +15,7 @@ import '../repositories/installment_repository.dart';
 import '../repositories/investment_repository.dart';
 import '../repositories/net_worth_repository.dart';
 import '../repositories/budget_goals_repository.dart';
+import '../repositories/user_preferences_repository.dart';
 import '../../features/budget/data/budget_settings_repository.dart';
 import '../../features/budget/domain/budget_settings.dart';
 
@@ -46,8 +47,40 @@ final userSettingsProvider = FutureProvider<Map<String, String>>((ref) {
 
 final selectedMonthProvider = StateProvider<int>((ref) => DateTime.now().month);
 final selectedYearProvider = StateProvider<int>((ref) => DateTime.now().year);
-final localeProvider = StateProvider<Locale>((ref) => const Locale('es'));
 final searchQueryProvider = StateProvider<String>((ref) => '');
+
+final userPreferencesRepositoryProvider =
+    Provider<UserPreferencesRepository>((ref) {
+  return UserPreferencesRepository(Supabase.instance.client);
+});
+
+final localeProvider = NotifierProvider<LocaleNotifier, Locale>(LocaleNotifier.new);
+
+class LocaleNotifier extends Notifier<Locale> {
+  @override
+  Locale build() {
+    Future.microtask(() async {
+      final db = ref.read(databaseProvider);
+      final remote = await ref.read(userPreferencesRepositoryProvider).fetch();
+      if (remote.locale != null) {
+        state = Locale(remote.locale!);
+        await db.setSetting('locale', remote.locale!);
+        return;
+      }
+      final local = await db.getSetting('locale');
+      if (local != null) state = Locale(local);
+    });
+    return const Locale('es');
+  }
+
+  Future<void> setLocale(Locale locale) async {
+    state = locale;
+    await Future.wait([
+      ref.read(databaseProvider).setSetting('locale', locale.languageCode),
+      ref.read(userPreferencesRepositoryProvider).setLocale(locale.languageCode),
+    ]);
+  }
+}
 
 // ═══════════════════════════════════════════
 // REPOSITORY PROVIDERS

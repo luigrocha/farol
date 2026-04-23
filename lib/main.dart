@@ -23,7 +23,48 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'features/auth/presentation/auth_providers.dart';
 import 'features/auth/domain/auth_state.dart';
 
-final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
+final themeModeProvider =
+    NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
+
+class ThemeModeNotifier extends Notifier<ThemeMode> {
+  @override
+  ThemeMode build() {
+    Future.microtask(() async {
+      final db = ref.read(databaseProvider);
+      final remote =
+          await ref.read(userPreferencesRepositoryProvider).fetch();
+      if (remote.themeMode != null) {
+        state = _fromString(remote.themeMode!);
+        await db.setSetting('theme_mode', remote.themeMode!);
+        return;
+      }
+      final local = await db.getSetting('theme_mode');
+      if (local != null) state = _fromString(local);
+    });
+    return ThemeMode.system;
+  }
+
+  Future<void> setThemeMode(ThemeMode mode) async {
+    state = mode;
+    final val = _toString(mode);
+    await Future.wait([
+      ref.read(databaseProvider).setSetting('theme_mode', val),
+      ref.read(userPreferencesRepositoryProvider).setThemeMode(val),
+    ]);
+  }
+
+  ThemeMode _fromString(String s) => switch (s) {
+        'light' => ThemeMode.light,
+        'dark' => ThemeMode.dark,
+        _ => ThemeMode.system,
+      };
+
+  String _toString(ThemeMode m) => switch (m) {
+        ThemeMode.light => 'light',
+        ThemeMode.dark => 'dark',
+        ThemeMode.system => 'system',
+      };
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
