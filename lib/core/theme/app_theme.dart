@@ -70,7 +70,7 @@ class AppTheme {
         ),
         margin: EdgeInsets.zero,
       ),
-      textTheme: GoogleFonts.interTextTheme().copyWith(
+      textTheme: GoogleFonts.interTextTheme(ThemeData(brightness: brightness).textTheme).copyWith(
         displayLarge: GoogleFonts.manrope(fontWeight: FontWeight.w800, color: c.onSurface),
         displayMedium: GoogleFonts.manrope(fontWeight: FontWeight.w800, color: c.onSurface),
         displaySmall: GoogleFonts.manrope(fontWeight: FontWeight.w700, color: c.onSurface),
@@ -80,8 +80,12 @@ class AppTheme {
         titleLarge: GoogleFonts.manrope(fontWeight: FontWeight.w700, color: c.onSurface),
         titleMedium: GoogleFonts.manrope(fontWeight: FontWeight.w600, color: c.onSurface),
         titleSmall: GoogleFonts.manrope(fontWeight: FontWeight.w600, color: c.onSurface),
+        bodyLarge: GoogleFonts.inter(color: c.onSurface),
         bodyMedium: GoogleFonts.inter(color: c.onSurface),
         bodySmall: GoogleFonts.inter(color: c.onSurfaceSoft),
+        labelLarge: GoogleFonts.inter(color: c.onSurface, fontWeight: FontWeight.w500),
+        labelMedium: GoogleFonts.inter(color: c.onSurfaceSoft),
+        labelSmall: GoogleFonts.inter(color: c.onSurfaceSoft),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: c.surface,
@@ -133,7 +137,7 @@ class AppTheme {
         ),
         labelStyle: TextStyle(color: c.onSurfaceSoft),
         floatingLabelStyle: TextStyle(color: isDark ? secondaryColor : primaryColor),
-        hintStyle: TextStyle(color: c.onSurfaceFaint),
+        hintStyle: TextStyle(color: c.onSurfaceSoft),
         prefixStyle: TextStyle(color: c.onSurface),
       ),
       bottomSheetTheme: BottomSheetThemeData(
