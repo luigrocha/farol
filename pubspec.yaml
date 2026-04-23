@@ -1,0 +1,50 @@
+name: farol
+description: Farol - Your personal financial guide (CLT)
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^2.4.9
+
+  # Database
+  drift: ^2.14.1
+  sqlite3_flutter_libs: ^0.5.18
+  path_provider: ^2.1.2
+  path: ^1.8.3
+
+  # Charts
+  fl_chart: ^0.66.2
+
+  # UI
+  cupertino_icons: ^1.0.8
+  google_fonts: ^5.1.0
+
+  # Utilities
+  intl: ^0.18.1
+  csv: ^5.1.1
+  share_plus: ^7.2.2
+
+  # Supabase & Auth
+  supabase_flutter: ^2.4.3
+  google_sign_in: ^6.1.6
+  sign_in_with_apple: ^5.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  drift_dev: ^2.14.1
+  build_runner: ^2.4.8
+  shared_preferences: ^2.2.3
+
+flutter:
+  uses-material-design: true

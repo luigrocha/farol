@@ -1,0 +1,289 @@
+import 'package:flutter/material.dart';
+import 'dart:ui';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/providers/providers.dart';
+import '../../core/services/financial_calculator_service.dart';
+import '../../core/theme/app_theme.dart';
+import 'dart:math' as math;
+import '../../core/models/enums.dart';
+import '../transactions/quick_add_bottom_sheet.dart';
+import '../../core/i18n/app_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../core/widgets/health_gauge.dart';
+
+class DashboardScreen extends ConsumerWidget {
+  const DashboardScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final month = ref.watch(selectedMonthProvider);
+    final year = ref.watch(selectedYearProvider);
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            floating: true,
+            title: Row(children: [
+              IconButton(icon: const Icon(Icons.chevron_left, size: 20), onPressed: () => _changeMonth(ref, month, year, -1)),
+              Text('${AppLocalizations.of(context).months[month-1]} $year', style: GoogleFonts.manrope(fontWeight: FontWeight.w700, fontSize: 16)),
+              IconButton(icon: const Icon(Icons.chevron_right, size: 20), onPressed: () => _changeMonth(ref, month, year, 1)),
+            ]),
+            actions: [
+              IconButton(icon: const Icon(Icons.notifications_outlined, size: 20), onPressed: () => Navigator.pushNamed(context, '/notifications')),
+              const SizedBox(width: 16),
+            ],
+          ),
+          SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: SliverList(delegate: SliverChildListDelegate([
+              const _NetWorthHero(),
+              const SizedBox(height: 12),
+              const _HealthGaugeCard(),
+              const SizedBox(height: 12),
+              const _KpiGrid(),
+              const SizedBox(height: 16),
+              const _ExpenseBreakdown(),
+              const SizedBox(height: 16),
+              const _MonthlyGoalCard(),
+              const SizedBox(height: 80),
+            ]))),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => showModalBottomSheet(context: context, isScrollControlled: true, builder: (_) => const QuickAddBottomSheet()),
+        backgroundColor: AppTheme.secondaryColor,
+        child: const Icon(Icons.add, color: AppTheme.primaryColor),
+      ),
+    );
+  }
+
+  void _changeMonth(WidgetRef ref, int m, int y, int delta) {
+    int nm = m + delta; int ny = y;
+    if (nm < 1) { nm = 12; ny--; } else if (nm > 12) { nm = 1; ny++; }
+    ref.read(selectedMonthProvider.notifier).state = nm;
+    ref.read(selectedYearProvider.notifier).state = ny;
+  }
+}
+
+class _NetWorthHero extends ConsumerWidget {
+  const _NetWorthHero();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final snap = ref.watch(netWorthSnapshotProvider).value;
+    final nw = snap == null ? 0.0 : FinancialCalculatorService.calculateNetWorth(
+      fgtsBalance: snap.fgtsBalance, investmentsTotal: snap.investmentsTotal,
+      emergencyFund: snap.emergencyFund, pendingInstallments: snap.pendingInstallments);
+    
+    return Container(
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft, end: Alignment.bottomRight,
+          colors: [AppTheme.primaryContainer, AppTheme.primaryColor]),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(l10n.netWorth.toUpperCase(), style: const TextStyle(fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: Colors.white60)),
+        const SizedBox(height: 6),
+        _BRLBig(value: nw, size: 36, color: Colors.white),
+        const SizedBox(height: 16),
+        Row(children: [
+          _MiniStat(label: 'Invertido', value: snap?.investmentsTotal ?? 0, color: Colors.white),
+          const SizedBox(width: 10),
+          _MiniStat(label: 'Líquido FGTS', value: (snap?.fgtsBalance ?? 0) + (snap?.emergencyFund ?? 0), color: AppTheme.secondaryColor),
+        ]),
+      ]),
+    );
+  }
+}
+
+class _MiniStat extends StatelessWidget {
+  final String label; final double value; final Color color;
+  const _MiniStat({required this.label, required this.value, required this.color});
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(child: Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(color: Colors.white.withOpacity(0.08), borderRadius: BorderRadius.circular(14), border: Border.all(color: Colors.white.withOpacity(0.08))),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(label.toUpperCase(), style: const TextStyle(fontSize: 9, letterSpacing: 1, fontWeight: FontWeight.w600, color: Colors.white60)),
+        const SizedBox(height: 4),
+        _BRLBig(value: value, size: 16, color: color, weight: FontWeight.w700),
+      ]),
+    ));
+  }
+}
+
+class _BRLBig extends StatelessWidget {
+  final double value; final double size; final Color color; final FontWeight weight;
+  const _BRLBig({required this.value, required this.size, this.color = Colors.black, this.weight = FontWeight.w800});
+  @override
+  Widget build(BuildContext context) {
+    final f = FinancialCalculatorService.formatBRL(value).split(',')[0];
+    final cents = FinancialCalculatorService.formatBRL(value).split(',')[1];
+    return Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
+      Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.48, fontWeight: FontWeight.w500, color: color)),
+      Text(f.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: weight, color: color, letterSpacing: -size * 0.028)),
+      Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: weight, color: color.withOpacity(0.85))),
+    ]);
+  }
+}
+
+class _HealthGaugeCard extends ConsumerWidget {
+  const _HealthGaugeCard();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final net=ref.watch(effectiveNetSalaryProvider); final cash=ref.watch(cashExpensesProvider);
+    final byCategory=ref.watch(cashExpensesByCategoryProvider); final bal=ref.watch(cashRemainingProvider);
+    final snap=ref.watch(netWorthSnapshotProvider).value; final inst=ref.watch(installmentsProvider).value??[];
+    final housing=byCategory['HOUSING']??0; final instTotal=inst.fold(0.0,(s,i)=>s+i.monthlyAmount);
+    final ef=snap?.emergencyFund??0;
+    final score=FinancialCalculatorService.calculateHealthScore(netSalary:net,cashExpenses:cash,housingExpenses:housing,monthlyBalance:bal,emergencyFund:ef,avgMonthlyExpenses:cash,activeInstallmentsTotal:instTotal);
+    
+    String statusLabel = l10n.healthHealthy;
+    String description = l10n.healthExcellentDesc;
+    
+    if (score < 4) {
+      statusLabel = l10n.healthCritical;
+      description = l10n.healthCriticalDesc;
+    } else if (score < 7) {
+      statusLabel = l10n.healthWarning;
+      description = score < 5 ? l10n.healthFairDesc : l10n.healthGoodDesc;
+    }
+
+    return Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(children: [
+      Align(alignment: Alignment.centerLeft, child: Text(l10n.healthScore, style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700))),
+      const SizedBox(height: 16),
+      HealthGauge(score: score.toDouble() * 10, size: 140, statusLabel: statusLabel),
+      const SizedBox(height: 16),
+      Text(description, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, fontStyle: FontStyle.italic, color: AppTheme.onSurfaceSoft)),
+    ])));
+  }
+}
+
+
+class _KpiGrid extends ConsumerWidget {
+  const _KpiGrid();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final net = ref.watch(effectiveNetSalaryProvider);
+    final swile = ref.watch(effectiveSwileProvider);
+    final cash = ref.watch(cashExpensesProvider);
+    final cashRemaining = ref.watch(cashRemainingProvider);
+    final swileRemaining = ref.watch(swileRemainingProvider);
+    final sr = ref.watch(effectiveSavingsRateProvider);
+    return GridView.count(
+      crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+      crossAxisSpacing: 8, mainAxisSpacing: 8, childAspectRatio: 1.5,
+      children: [
+        _KpiCard(icon: Icons.account_balance_wallet, bg: const Color(0xFFE3ECFA), label: l10n.translate('net_salary'), value: net),
+        _KpiCard(icon: Icons.fastfood, bg: AppTheme.secondaryContainer, label: l10n.translate('swile'), value: swile, color: AppTheme.secondaryColor),
+        _KpiCard(icon: Icons.account_balance, bg: cashRemaining >= 0 ? AppTheme.secondaryContainer : const Color(0xFFFDE7E5), label: l10n.translate('available_total'), value: cashRemaining, color: cashRemaining >= 0 ? AppTheme.secondaryColor : AppTheme.errorColor),
+        _KpiCard(icon: Icons.trending_down, bg: const Color(0xFFFDE7E5), label: l10n.translate('cash_expenses'), value: cash, color: AppTheme.errorColor),
+        _KpiCard(icon: Icons.restaurant, bg: swileRemaining >= 0 ? AppTheme.secondaryContainer : const Color(0xFFFDE7E5), label: l10n.translate('swile_remaining'), value: swileRemaining, color: swileRemaining >= 0 ? AppTheme.secondaryColor : AppTheme.errorColor),
+        _KpiCard(icon: Icons.savings, bg: const Color(0xFFE3ECFA), label: l10n.translate('savings_rate'), raw: '${sr.toStringAsFixed(1)}%'),
+      ],
+    );
+  }
+}
+
+class _KpiCard extends StatelessWidget {
+  final IconData icon; final Color bg; final String label; final double? value; final String? raw; final Color color; final bool positive;
+  const _KpiCard({required this.icon, required this.bg, required this.label, this.value, this.raw, this.color = AppTheme.primaryColor, this.positive = false});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(color: AppTheme.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+      child: InkWell(
+        onTap: () {
+          if (label.toLowerCase().contains('swile')) {
+            Navigator.pushNamed(context, '/swile');
+          }
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(width: 28, height: 28, decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8)), child: Icon(icon, size: 16, color: color)),
+          const Spacer(),
+          Text(label, style: const TextStyle(fontSize: 11, color: AppTheme.onSurfaceSoft, fontWeight: FontWeight.w500)),
+          const SizedBox(height: 2),
+          raw != null ? Text(raw!, style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w800, color: positive ? AppTheme.secondaryColor : AppTheme.onSurface))
+          : _BRLSmall(value: value ?? 0, size: 15, weight: FontWeight.w700, color: positive ? AppTheme.secondaryColor : AppTheme.onSurface),
+        ]),
+      ),
+    );
+  }
+}
+
+class _BRLSmall extends StatelessWidget {
+  final double value; final double size; final Color color; final FontWeight weight;
+  const _BRLSmall({required this.value, required this.size, this.color = Colors.black, this.weight = FontWeight.w600});
+  @override
+  Widget build(BuildContext context) {
+    final f = FinancialCalculatorService.formatBRL(value);
+    return Text(f, style: GoogleFonts.inter(fontSize: size, fontWeight: weight, color: color, fontFeatures: [FontFeature.tabularFigures()]));
+  }
+}
+
+class _ExpenseBreakdown extends ConsumerWidget {
+  const _ExpenseBreakdown();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final byCategory = ref.watch(cashExpensesByCategoryProvider);
+    final goals = ref.watch(budgetGoalsMapProvider);
+    final net = ref.watch(effectiveNetSalaryProvider);
+    final l10n = AppLocalizations.of(context);
+    if (byCategory.isEmpty) return Card(child: Padding(padding: const EdgeInsets.all(24),
+      child: Column(children: [Icon(Icons.bar_chart, size: 48, color: Theme.of(context).colorScheme.outline), const SizedBox(height: 8), Text(l10n.translate('no_expenses'))])));
+    final sorted = byCategory.entries.toList()..sort((a,b) => b.value.compareTo(a.value));
+    return Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(children: [Text(l10n.translate('expense_by_cat'), style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700)), const Spacer(),
+        const Text('ACTUAL VS PRESUPUESTO', style: TextStyle(fontSize: 10, letterSpacing: 1, color: AppTheme.onSurfaceSoft))]),
+      const SizedBox(height: 14),
+      ...sorted.map((e) {
+        final cat=e.key; final actual=e.value; final goal=goals[cat]; final target=goal?.targetAmount??(net*0.1);
+        final pct=math.min(actual/target, 1.0); final over=actual>target;
+        String label; try { label = ExpenseCategory.fromDb(cat).localizedLabel(context); } catch (_) { label = cat; }
+        return Padding(padding: const EdgeInsets.only(bottom: 14), child: Column(children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+            Text('R\$ ${actual.toInt()} / R\$ ${target.toInt()}', style: TextStyle(fontSize: 11, color: over?AppTheme.errorColor:AppTheme.onSurfaceSoft, fontFeatures: [FontFeature.tabularFigures()])),
+          ]),
+          const SizedBox(height: 6),
+          ClipRRect(borderRadius: BorderRadius.circular(3), child: LinearProgressIndicator(value: pct, minHeight: 6, backgroundColor: AppTheme.surfaceLow, valueColor: AlwaysStoppedAnimation(over?AppTheme.errorColor:AppTheme.secondaryColor))),
+        ]));
+      }),
+    ])));
+  }
+}
+
+class _MonthlyGoalCard extends ConsumerWidget {
+  const _MonthlyGoalCard();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final net = ref.watch(effectiveNetSalaryProvider);
+    final cash = ref.watch(cashExpensesProvider);
+    final target = net * 0.2; // 20% savings goal
+    final saved = net - cash;
+    final pct = (saved / target).clamp(0.0, 1.0);
+    final remaining = math.max(target - saved, 0.0);
+    
+    return Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(AppLocalizations.of(context).translate('monthly_goal'), style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w700)),
+      const SizedBox(height: 4),
+      RichText(text: TextSpan(style: const TextStyle(fontSize: 12, color: AppTheme.onSurfaceSoft, height: 1.5), children: [
+        TextSpan(text: AppLocalizations.of(context).translate('missing') + ' '),
+        TextSpan(text: FinancialCalculatorService.formatBRL(remaining), style: const TextStyle(color: AppTheme.onSurface, fontWeight: FontWeight.w700)),
+        TextSpan(text: ' ' + AppLocalizations.of(context).translate('to_reach_goal')),
+      ])),
+      const SizedBox(height: 12),
+      Row(children: [
+        Expanded(child: ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: pct, minHeight: 8, backgroundColor: AppTheme.secondaryContainer, valueColor: const AlwaysStoppedAnimation(AppTheme.secondaryColor)))),
+        const SizedBox(width: 10),
+        Text('${(pct*100).toInt()}%', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.secondaryColor)),
+      ]),
+    ])));
+  }
+}

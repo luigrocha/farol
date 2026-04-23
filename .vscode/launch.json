@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Farol (Chrome)",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define-from-file=env.json",
+        "--web-renderer=html"
+      ],
+      "deviceId": "chrome"
+    },
+    {
+      "name": "Farol (iOS)",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define-from-file=env.json"
+      ],
+      "deviceId": "ios"
+    },
+    {
+      "name": "Farol (Android)",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define-from-file=env.json"
+      ],
+      "deviceId": "android"
+    }
+  ]
+}
