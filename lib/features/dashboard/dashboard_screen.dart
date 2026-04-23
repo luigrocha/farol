@@ -30,6 +30,13 @@ class DashboardScreen extends ConsumerWidget {
               IconButton(icon: const Icon(Icons.chevron_right, size: 20), onPressed: () => _changeMonth(ref, month, year, 1)),
             ]),
             actions: [
+              Consumer(builder: (_, ref, __) {
+                final isPrivate = ref.watch(privacyModeProvider);
+                return IconButton(
+                  icon: Icon(isPrivate ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 20),
+                  onPressed: () => ref.read(privacyModeProvider.notifier).toggle(),
+                );
+              }),
               IconButton(icon: const Icon(Icons.notifications_outlined, size: 20), onPressed: () => Navigator.pushNamed(context, '/notifications')),
               const SizedBox(width: 16),
             ],
@@ -72,6 +79,7 @@ class _NetWorthHero extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final snap = ref.watch(netWorthSnapshotProvider).value;
     final nw = snap == null ? 0.0 : FinancialCalculatorService.calculateNetWorth(
+      patrimonyTotal: snap.patrimonyTotal,
       fgtsBalance: snap.fgtsBalance, investmentsTotal: snap.investmentsTotal,
       emergencyFund: snap.emergencyFund, pendingInstallments: snap.pendingInstallments);
     return Container(
@@ -112,12 +120,16 @@ class _MiniStat extends StatelessWidget {
   }
 }
 
-class _BRLBig extends StatelessWidget {
+class _BRLBig extends ConsumerWidget {
   final double value; final double size; final Color? color; final FontWeight weight;
   const _BRLBig({required this.value, required this.size, this.color, this.weight = FontWeight.w800});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final c = color ?? context.colors.onSurface;
+    final isPrivate = ref.watch(privacyModeProvider);
+    if (isPrivate) {
+      return Text('••••••', style: GoogleFonts.manrope(fontSize: size, fontWeight: weight, color: c));
+    }
     final f = FinancialCalculatorService.formatBRL(value).split(',')[0];
     final cents = FinancialCalculatorService.formatBRL(value).split(',')[1];
     return Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [

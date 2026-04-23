@@ -82,6 +82,33 @@ class LocaleNotifier extends Notifier<Locale> {
   }
 }
 
+final privacyModeProvider = NotifierProvider<PrivacyModeNotifier, bool>(PrivacyModeNotifier.new);
+
+class PrivacyModeNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    Future.microtask(() async {
+      final db = ref.read(databaseProvider);
+      final local = await db.getSetting('privacy_mode');
+      if (local != null) state = local == 'true';
+      final remote = await ref.read(userPreferencesRepositoryProvider).fetch();
+      if (remote.privacyMode != null) {
+        state = remote.privacyMode!;
+        await db.setSetting('privacy_mode', state.toString());
+      }
+    });
+    return false;
+  }
+
+  Future<void> toggle() async {
+    state = !state;
+    await Future.wait([
+      ref.read(databaseProvider).setSetting('privacy_mode', state.toString()),
+      ref.read(userPreferencesRepositoryProvider).setPrivacyMode(state),
+    ]);
+  }
+}
+
 // ═══════════════════════════════════════════
 // REPOSITORY PROVIDERS
 // ═══════════════════════════════════════════
@@ -360,6 +387,33 @@ final effectiveSavingsRateProvider = Provider.autoDispose<double>((ref) {
   if (net <= 0) return 0.0;
   return ((net - cash) / net) * 100;
 });
+
+final netWorthNotifierProvider =
+    AsyncNotifierProvider<NetWorthNotifier, void>(NetWorthNotifier.new);
+
+class NetWorthNotifier extends AsyncNotifier<void> {
+  @override
+  Future<void> build() async {}
+
+  Future<void> save({
+    required int month,
+    required int year,
+    double patrimonyTotal = 0,
+    double fgtsBalance = 0,
+    double investmentsTotal = 0,
+    double emergencyFund = 0,
+  }) async {
+    await ref.read(netWorthRepositoryProvider).upsert(
+      month: month,
+      year: year,
+      patrimonyTotal: patrimonyTotal,
+      fgtsBalance: fgtsBalance,
+      investmentsTotal: investmentsTotal,
+      emergencyFund: emergencyFund,
+    );
+    ref.invalidate(netWorthSnapshotProvider);
+  }
+}
 
 // ═══════════════════════════════════════════
 // ANALYTICS RANGE PROVIDERS

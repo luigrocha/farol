@@ -126,12 +126,13 @@ class FinancialCalculatorService {
   // NET WORTH CALCULATION
   // ═══════════════════════════════════════════
   static double calculateNetWorth({
+    double patrimonyTotal = 0,
     required double fgtsBalance,
     required double investmentsTotal,
     required double emergencyFund,
     required double pendingInstallments,
   }) {
-    return fgtsBalance + investmentsTotal + emergencyFund - pendingInstallments;
+    return patrimonyTotal + fgtsBalance + investmentsTotal + emergencyFund - pendingInstallments;
   }
 
   // ═══════════════════════════════════════════
