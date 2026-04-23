@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/farol_colors.dart' show FarolColorsContext;
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/transactions/transactions_screen.dart';
 import 'features/analytics/analytics_screen.dart';
@@ -177,10 +178,10 @@ class VerificationScreen extends ConsumerWidget {
                   style: TextStyle(
                       fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'We sent a verification link to your email. Please check it to continue.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppTheme.onSurfaceSoft),
+                style: TextStyle(color: context.colors.onSurfaceSoft),
               ),
               const SizedBox(height: 32),
               ElevatedButton.icon(
