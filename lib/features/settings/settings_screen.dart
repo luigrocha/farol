@@ -115,7 +115,7 @@ class _LangRow extends ConsumerWidget {
     final current = ref.watch(localeProvider);
     final selected = current == locale;
     return GestureDetector(
-      onTap: () => ref.read(localeProvider.notifier).state = locale,
+      onTap: () => ref.read(localeProvider.notifier).setLocale(locale),
       child: Container(
         margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(color: AppTheme.surfaceLowest, borderRadius: BorderRadius.circular(16), border: Border.all(color: selected ? AppTheme.secondaryColor : Colors.transparent, width: 2)),
@@ -149,8 +149,8 @@ class _AppearanceCard extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.all(4), decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(99)),
           child: Row(children: [
-            _ThemeBtn(label: 'Light', icon: Icons.light_mode, active: theme == ThemeMode.light, onTap: () => ref.read(themeModeProvider.notifier).state = ThemeMode.light),
-            _ThemeBtn(label: 'Dark', icon: Icons.dark_mode, active: theme == ThemeMode.dark, onTap: () => ref.read(themeModeProvider.notifier).state = ThemeMode.dark),
+            _ThemeBtn(label: 'Light', icon: Icons.light_mode, active: theme == ThemeMode.light, onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.light)),
+            _ThemeBtn(label: 'Dark', icon: Icons.dark_mode, active: theme == ThemeMode.dark, onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark)),
           ]),
         ),
       ]),
