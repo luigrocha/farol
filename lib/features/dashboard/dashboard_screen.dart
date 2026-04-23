@@ -113,16 +113,17 @@ class _MiniStat extends StatelessWidget {
 }
 
 class _BRLBig extends StatelessWidget {
-  final double value; final double size; final Color color; final FontWeight weight;
-  const _BRLBig({required this.value, required this.size, this.color = Colors.black, this.weight = FontWeight.w800});
+  final double value; final double size; final Color? color; final FontWeight weight;
+  const _BRLBig({required this.value, required this.size, this.color, this.weight = FontWeight.w800});
   @override
   Widget build(BuildContext context) {
+    final c = color ?? context.colors.onSurface;
     final f = FinancialCalculatorService.formatBRL(value).split(',')[0];
     final cents = FinancialCalculatorService.formatBRL(value).split(',')[1];
     return Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
-      Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.48, fontWeight: FontWeight.w500, color: color)),
-      Text(f.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: weight, color: color, letterSpacing: -size * 0.028)),
-      Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: weight, color: color.withOpacity(0.85))),
+      Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.48, fontWeight: FontWeight.w500, color: c)),
+      Text(f.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: weight, color: c, letterSpacing: -size * 0.028)),
+      Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: weight, color: c.withOpacity(0.85))),
     ]);
   }
 }
@@ -181,8 +182,8 @@ class _KpiGrid extends ConsumerWidget {
 }
 
 class _KpiCard extends StatelessWidget {
-  final IconData icon; final Color bg; final String label; final double? value; final String? raw; final Color color; final bool positive;
-  const _KpiCard({required this.icon, required this.bg, required this.label, this.value, this.raw, this.color = AppTheme.primaryColor, this.positive = false});
+  final IconData icon; final Color bg; final String label; final double? value; final String? raw; final Color? color; final bool positive;
+  const _KpiCard({required this.icon, required this.bg, required this.label, this.value, this.raw, this.color, this.positive = false});
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -193,7 +194,7 @@ class _KpiCard extends StatelessWidget {
         onTap: () { if (label.toLowerCase().contains('swile')) Navigator.pushNamed(context, '/swile'); },
         borderRadius: BorderRadius.circular(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Container(width: 28, height: 28, decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8)), child: Icon(icon, size: 16, color: color)),
+          Container(width: 28, height: 28, decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8)), child: Icon(icon, size: 16, color: color ?? colors.onSurface)),
           const Spacer(),
           Text(label, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft, fontWeight: FontWeight.w500)),
           const SizedBox(height: 2),
@@ -207,12 +208,12 @@ class _KpiCard extends StatelessWidget {
 }
 
 class _BRLSmall extends StatelessWidget {
-  final double value; final double size; final Color color; final FontWeight weight;
-  const _BRLSmall({required this.value, required this.size, this.color = Colors.black, this.weight = FontWeight.w600});
+  final double value; final double size; final Color? color; final FontWeight weight;
+  const _BRLSmall({required this.value, required this.size, this.color, this.weight = FontWeight.w600});
   @override
   Widget build(BuildContext context) {
     final f = FinancialCalculatorService.formatBRL(value);
-    return Text(f, style: GoogleFonts.inter(fontSize: size, fontWeight: weight, color: color, fontFeatures: [FontFeature.tabularFigures()]));
+    return Text(f, style: GoogleFonts.inter(fontSize: size, fontWeight: weight, color: color ?? context.colors.onSurface, fontFeatures: [FontFeature.tabularFigures()]));
   }
 }
 

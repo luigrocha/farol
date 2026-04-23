@@ -215,16 +215,17 @@ class _TxRow extends StatelessWidget {
 }
 
 class _BRLBig extends StatelessWidget {
-  final double value; final double size; final Color color; final FontWeight weight;
-  const _BRLBig({required this.value, required this.size, this.color = Colors.black, this.weight = FontWeight.w800});
+  final double value; final double size; final Color? color; final FontWeight weight;
+  const _BRLBig({required this.value, required this.size, this.color, this.weight = FontWeight.w800});
   @override
   Widget build(BuildContext context) {
+    final c = color ?? context.colors.onSurface;
     final f = FinancialCalculatorService.formatBRL(value).split(',')[0];
     final cents = FinancialCalculatorService.formatBRL(value).split(',')[1];
     return Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
-      Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.48, fontWeight: FontWeight.w500, color: color)),
-      Text(f.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: weight, color: color, letterSpacing: -size * 0.028)),
-      Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: weight, color: color.withOpacity(0.85))),
+      Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.48, fontWeight: FontWeight.w500, color: c)),
+      Text(f.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: weight, color: c, letterSpacing: -size * 0.028)),
+      Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: weight, color: c.withOpacity(0.85))),
     ]);
   }
 }

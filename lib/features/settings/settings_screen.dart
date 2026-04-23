@@ -277,7 +277,7 @@ class _BudgetSection extends ConsumerWidget {
                   child: Icon(
                     hasData ? Icons.check_circle_outline : Icons.add,
                     size: 18,
-                    color: hasData ? AppTheme.secondaryColor : AppTheme.primaryColor,
+                    color: hasData ? AppTheme.secondaryColor : colors.onSurface,
                   ),
                 ),
                 const SizedBox(width: 14),
