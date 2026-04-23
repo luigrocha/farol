@@ -314,6 +314,21 @@ class BudgetSettingsNotifier extends AsyncNotifier<BudgetSettings?> {
   }
 }
 
+final budgetGoalsNotifierProvider =
+    AsyncNotifierProvider<BudgetGoalsNotifier, void>(() {
+  return BudgetGoalsNotifier();
+});
+
+class BudgetGoalsNotifier extends AsyncNotifier<void> {
+  @override
+  Future<void> build() async {}
+
+  Future<void> save(BudgetGoal goal) async {
+    await ref.read(budgetGoalsRepositoryProvider).upsert(goal);
+    ref.invalidate(budgetGoalsProvider);
+  }
+}
+
 /// Net salary: uses budget if configured, falls back to actual income records.
 final effectiveNetSalaryProvider = Provider.autoDispose<double>((ref) {
   final budget = ref.watch(budgetSettingsProvider).value;

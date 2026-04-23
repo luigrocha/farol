@@ -10,6 +10,7 @@ import '../../core/theme/farol_colors.dart';
 import '../../core/i18n/app_localizations.dart';
 import '../auth/presentation/auth_providers.dart';
 import '../budget/presentation/budget_settings_sheet.dart';
+import '../budget/presentation/budget_goals_sheet.dart';
 import '../profile/presentation/profile_providers.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -305,6 +306,47 @@ class _BudgetSection extends ConsumerWidget {
               ]);
             },
           ),
+        ),
+      ),
+      const SizedBox(height: 8),
+      GestureDetector(
+        onTap: () => showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (_) => const BudgetGoalsSheet(),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+          child: Row(children: [
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: colors.iconTintBlue,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.category_outlined, size: 18, color: AppTheme.primaryColor),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Category Budgets',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface),
+                  ),
+                  Text(
+                    'Set spending limits per category',
+                    style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
+          ]),
         ),
       ),
     ]);
