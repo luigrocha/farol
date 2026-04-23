@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/farol_colors.dart';
 import 'profile_providers.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
@@ -49,6 +50,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final profileAsync = ref.watch(currentProfileProvider);
     final controllerState = ref.watch(profileControllerProvider);
 
@@ -66,9 +68,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       data: (profile) {
         _initControllers(profile?.displayName, profile?.photoUrl);
         return Scaffold(
-          backgroundColor: AppTheme.surfaceLow,
           appBar: AppBar(
-            backgroundColor: AppTheme.surfaceLow,
             elevation: 0,
             title: const Text('Edit Profile', style: TextStyle(fontWeight: FontWeight.w700)),
             leading: const BackButton(),
@@ -84,6 +84,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   controller: _nameCtrl,
                   label: 'Name',
                   icon: Icons.person_outline,
+                  fillColor: colors.surfaceLowest,
                   validator: (v) => (v == null || v.trim().isEmpty) ? 'Name is required' : null,
                   onChanged: (_) => setState(() {}),
                 ),
@@ -92,6 +93,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   controller: _avatarCtrl,
                   label: 'Avatar URL (optional)',
                   icon: Icons.image_outlined,
+                  fillColor: colors.surfaceLowest,
                   onChanged: (_) => setState(() {}),
                 ),
                 const SizedBox(height: 32),
@@ -136,6 +138,7 @@ class _Field extends StatelessWidget {
   final TextEditingController controller;
   final String label;
   final IconData icon;
+  final Color fillColor;
   final String? Function(String?)? validator;
   final ValueChanged<String>? onChanged;
 
@@ -143,6 +146,7 @@ class _Field extends StatelessWidget {
     required this.controller,
     required this.label,
     required this.icon,
+    required this.fillColor,
     this.validator,
     this.onChanged,
   });
@@ -157,7 +161,7 @@ class _Field extends StatelessWidget {
         labelText: label,
         prefixIcon: Icon(icon, size: 20),
         filled: true,
-        fillColor: AppTheme.surfaceLowest,
+        fillColor: fillColor,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
         focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppTheme.primaryColor, width: 1.5)),
       ),

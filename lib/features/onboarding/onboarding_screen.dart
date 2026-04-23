@@ -3,7 +3,6 @@ import 'dart:ui';
 import '../../core/theme/app_theme.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/providers/providers.dart';
 import '../../core/i18n/app_localizations.dart';
 
 class OnboardingScreen extends ConsumerWidget {
