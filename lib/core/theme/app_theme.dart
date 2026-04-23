@@ -123,10 +123,18 @@ class AppTheme {
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide.none,
         ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide.none,
+        ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: primaryColor, width: 1.5),
+          borderSide: BorderSide(color: isDark ? secondaryColor : primaryColor, width: 1.5),
         ),
+        labelStyle: TextStyle(color: c.onSurfaceSoft),
+        floatingLabelStyle: TextStyle(color: isDark ? secondaryColor : primaryColor),
+        hintStyle: TextStyle(color: c.onSurfaceFaint),
+        prefixStyle: TextStyle(color: c.onSurface),
       ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: c.surfaceLow,

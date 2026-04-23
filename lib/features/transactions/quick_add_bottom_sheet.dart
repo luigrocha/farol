@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/providers.dart';
 import '../../core/models/enums.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/farol_colors.dart';
 import '../../core/i18n/app_localizations.dart';
 
 class QuickAddBottomSheet extends ConsumerStatefulWidget {
@@ -57,7 +58,7 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
         TextField(controller: _amountCtrl, autofocus: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700),
-          decoration: const InputDecoration(prefixText: 'R\$ ', hintText: '0,00', border: OutlineInputBorder()),
+          decoration: const InputDecoration(prefixText: 'R\$ ', hintText: '0,00'),
           inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.,]'))]),
         const SizedBox(height: 16),
 
@@ -121,6 +122,7 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
         SizedBox(width: double.infinity, height: 52,
           child: ElevatedButton(
             onPressed: _save,
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.secondaryColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), elevation: 0),
             child: Text(l10n.save.toUpperCase(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)))),
       ])),
     );
@@ -137,7 +139,7 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: sel ? color : Theme.of(context).colorScheme.outline.withOpacity(0.3), width: sel ? 2 : 1)),
         child: Center(child: Text('${c.emoji} ${c.localizedLabel(context)}',
-          style: TextStyle(fontSize: 11, fontWeight: sel ? FontWeight.w600 : FontWeight.w400, color: sel ? color : null),
+          style: TextStyle(fontSize: 11, fontWeight: sel ? FontWeight.w600 : FontWeight.w400, color: sel ? color : context.colors.onSurface),
           textAlign: TextAlign.center, overflow: TextOverflow.ellipsis))),
     );
   }
