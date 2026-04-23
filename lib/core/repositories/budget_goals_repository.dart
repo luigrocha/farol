@@ -37,4 +37,13 @@ class BudgetGoalsRepository {
   Future<void> delete(int id) async {
     await _supabase.from('budget_goals').delete().eq('id', id);
   }
+
+  Future<void> upsert(BudgetGoal goal) async {
+    final userId = _userId;
+    if (userId == null) throw Exception('Not authenticated');
+    await _supabase.from('budget_goals').upsert(
+      goal.toJson()..['user_id'] = userId,
+      onConflict: 'user_id,category',
+    );
+  }
 }
