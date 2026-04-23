@@ -211,7 +211,7 @@ class _InvRow extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: Padding(padding: const EdgeInsets.all(16), child: Column(children: [
           Row(children: [
-            Container(width: 40, height: 40, decoration: BoxDecoration(color: AppTheme.getCategoryColor(inv.type).withOpacity(0.1), borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.trending_up, size: 16, color: AppTheme.primaryColor)),
+            Container(width: 40, height: 40, decoration: BoxDecoration(color: AppTheme.getCategoryColor(inv.type).withOpacity(0.1), borderRadius: BorderRadius.circular(12)), child: Icon(Icons.trending_up, size: 16, color: colors.onSurface)),
             const SizedBox(width: 14),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(inv.productName, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: colors.onSurface)),
@@ -224,9 +224,9 @@ class _InvRow extends StatelessWidget {
               Text(AppLocalizations.of(context).translate('current_balance'), style: TextStyle(fontSize: 9, color: colors.onSurfaceFaint, letterSpacing: 0.5, fontWeight: FontWeight.w600)),
               _BRLSmall(value: inv.currentBalance, size: 13, weight: FontWeight.w700),
             ]),
-            const Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-              Text('MES (NOV)', style: TextStyle(fontSize: 9, color: AppTheme.onSurfaceFaint, letterSpacing: 0.5, fontWeight: FontWeight.w600)),
-              Text('+0.88%', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.secondaryColor)),
+            Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+              Text('MES (NOV)', style: TextStyle(fontSize: 9, color: colors.onSurfaceFaint, letterSpacing: 0.5, fontWeight: FontWeight.w600)),
+              const Text('+0.88%', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.secondaryColor)),
             ]),
           ]),
         ])),
