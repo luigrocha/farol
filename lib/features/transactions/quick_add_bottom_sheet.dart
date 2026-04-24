@@ -145,10 +145,11 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
     final amountStr = _amountCtrl.text.replaceAll('.', '').replaceAll(',', '.');
     final amount = double.tryParse(amountStr);
     if (amount == null || amount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter a valid amount')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.invalidAmount)));
       return;
     }
 
@@ -184,11 +185,16 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
       }
 
       HapticFeedback.mediumImpact();
-      if (mounted) Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.expenseSaved), backgroundColor: Colors.green),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving: $e'), backgroundColor: Colors.red.shade700),
+          SnackBar(content: Text('${l10n.errorSaving}: $e'), backgroundColor: Colors.red.shade700),
         );
       }
     }

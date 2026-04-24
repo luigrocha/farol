@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../core/i18n/app_localizations.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';
 import '../../../core/theme/app_theme.dart';
@@ -45,6 +46,7 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
       double.tryParse(ctrl.text.trim().replaceAll(',', '.')) ?? 0;
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
     setState(() => _saving = true);
     try {
       final month = ref.read(selectedMonthProvider);
@@ -60,13 +62,13 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Patrimônio guardado!'), backgroundColor: Colors.green),
+          SnackBar(content: Text(l10n.netWorthSaved), backgroundColor: Colors.green),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${l10n.errorSaving}: $e'), backgroundColor: Colors.red),
         );
       }
     } finally {
