@@ -151,11 +151,21 @@ class AppTheme {
 
   static Color getCategoryColor(String category) {
     switch (category) {
+      // Expense categories
       case 'HOUSING': return const Color(0xFF1B3A5C);
       case 'TRANSPORT': return const Color(0xFFF5A623);
       case 'FOOD_GROCERY': return const Color(0xFF1A7A4A);
       case 'HEALTH': return const Color(0xFFE84855);
       case 'LEISURE': return const Color(0xFF8FA3B8);
+      // Investment types
+      case 'TESOURO_SELIC': return const Color(0xFF1B3A5C);
+      case 'CDB': return const Color(0xFF6B4EAF);
+      case 'LCI_LCA': return const Color(0xFF1A7A4A);
+      case 'FII': return const Color(0xFFF5A623);
+      case 'STOCKS_BR': return const Color(0xFF0D6E6E);
+      case 'STOCKS_INTL': return const Color(0xFF1A6BAA);
+      case 'PENSION': return const Color(0xFF9E6B3A);
+      case 'SAVINGS': return const Color(0xFFB94F82);
       default: return onSurfaceSoft;
     }
   }
