@@ -23,6 +23,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     final month = ref.watch(selectedMonthProvider);
     final year = ref.watch(selectedYearProvider);
     final expensesAsync = ref.watch(expensesProvider);
+    ref.watch(fixedExpensePropagationProvider);
 
     return Scaffold(
       body: CustomScrollView(
@@ -261,6 +262,10 @@ class _TxRow extends ConsumerWidget {
                   Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: AppTheme.tertiaryColor.withOpacity(0.15), borderRadius: BorderRadius.circular(6)), child: const Text('SWILE', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: AppTheme.tertiaryColor, letterSpacing: 0.5)))
                 else
                   Text(expense.payType ?? 'Cash', style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, letterSpacing: 0.5, fontWeight: FontWeight.w600)),
+                if (expense.isFixed) ...[
+                  const SizedBox(width: 6),
+                  Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2), decoration: BoxDecoration(color: Colors.blue.withOpacity(0.12), borderRadius: BorderRadius.circular(6)), child: const Text('FIXO', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: Colors.blue, letterSpacing: 0.5))),
+                ],
               ]),
             ])),
             Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
