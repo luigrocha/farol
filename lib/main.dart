@@ -166,6 +166,7 @@ class AppEntryPoint extends ConsumerWidget {
           const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (err, stack) {
         // Stream errors should be rare; surface them instead of silently hiding.
+        final l10n = AppLocalizations.of(context);
         return Scaffold(
           body: Center(
             child: Column(
@@ -173,12 +174,12 @@ class AppEntryPoint extends ConsumerWidget {
               children: [
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SizedBox(height: 16),
-                const Text('Something went wrong. Please restart the app.'),
+                Text(l10n.somethingWentWrong),
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: () =>
                       ref.invalidate(authStateProvider),
-                  child: const Text('Retry'),
+                  child: Text(l10n.retry),
                 ),
               ],
             ),
@@ -220,8 +221,8 @@ class VerificationScreen extends ConsumerWidget {
               const Icon(Icons.email_outlined,
                   size: 80, color: AppTheme.primaryColor),
               const SizedBox(height: 24),
-              const Text('Verify your email',
-                  style: TextStyle(
+              Text(l10n.verifyEmail,
+                  style: const TextStyle(
                       fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
               Text(
@@ -243,13 +244,13 @@ class VerificationScreen extends ConsumerWidget {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.send),
-                label: const Text('Resend email'),
+                label: Text(l10n.resendEmail),
               ),
               const SizedBox(height: 12),
               TextButton(
                 onPressed: () =>
                     ref.read(authControllerProvider.notifier).signOut(),
-                child: const Text('Sign Out'),
+                child: Text(l10n.signOut),
               ),
             ],
           ),

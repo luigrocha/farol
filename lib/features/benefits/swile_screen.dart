@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import '../../core/i18n/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../core/services/financial_calculator_service.dart';
@@ -10,11 +11,12 @@ class SwileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final colors = context.colors;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
-        title: Text('Corporate Benefits', style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700)),
+        title: Text(l10n.corporateBenefits, style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700)),
         actions: [IconButton(icon: const Icon(Icons.settings_outlined), onPressed: () {})],
       ),
       body: SingleChildScrollView(
@@ -90,8 +92,8 @@ class SwileScreen extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Monthly Spending', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w800)),
-                          Text('Last 7 days', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+                          Text(l10n.monthlySpending, style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w800)),
+                          Text(l10n.last7Days, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
                         ],
                       ),
                       Column(

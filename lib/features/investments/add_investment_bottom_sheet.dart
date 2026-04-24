@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/i18n/app_localizations.dart';
 import '../../core/providers/providers.dart';
 import '../../core/models/enums.dart';
 import '../../core/theme/app_theme.dart';
@@ -38,6 +39,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final bottom = MediaQuery.of(context).viewInsets.bottom;
     final colors = context.colors;
     final typeColor = AppTheme.getCategoryColor(_type.dbValue);
@@ -55,7 +57,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
         const SizedBox(height: 16),
 
         // Header
-        Center(child: Text('Add Investment', style: Theme.of(context).textTheme.titleLarge)),
+        Center(child: Text(l10n.addInvestment, style: Theme.of(context).textTheme.titleLarge)),
         const SizedBox(height: 24),
 
         // Type selector — horizontal scroll
@@ -92,7 +94,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
         const SizedBox(height: 20),
 
         // Amount — big
-        Text('Amount invested', style: Theme.of(context).textTheme.labelLarge),
+        Text(l10n.amountInvested, style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 8),
         TextField(
           controller: _amountCtrl,
@@ -117,7 +119,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
             visualDensity: VisualDensity.compact,
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
-          Text('Current balance differs from invested', style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
+          Text(l10n.currentBalanceDiffers, style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
         ]),
         if (_balanceDiffers) ...[
           const SizedBox(height: 8),
@@ -196,6 +198,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
     final productName = _productCtrl.text.trim();
     final institution = _institutionCtrl.text.trim();
     final totalInvested = _parseBRL(_amountCtrl.text);
@@ -237,7 +240,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Investment added'), backgroundColor: Colors.green),
+          SnackBar(content: Text(l10n.investmentAdded), backgroundColor: Colors.green),
         );
       }
     } catch (e) {

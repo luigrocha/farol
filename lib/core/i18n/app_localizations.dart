@@ -109,6 +109,42 @@ class AppLocalizations {
       'cannot_undo': 'This action cannot be undone.',
       'transaction_deleted': 'Expense deleted',
       'transaction_updated': 'Expense updated!',
+      // Authentication
+      'sign_in': 'Sign In',
+      'sign_up': 'Sign Up',
+      'sign_out': 'Sign Out',
+      'forgot_password': 'Forgot password?',
+      'verify_email': 'Verify your email',
+      'resend_email': 'Resend email',
+      'set_new_password': 'Set New Password',
+      'update_password': 'Update Password',
+      'or_sign_in_with': 'Or sign in with',
+      'something_went_wrong': 'Something went wrong. Please restart the app.',
+      'retry': 'Retry',
+      // Investments
+      'add_investment': 'Add Investment',
+      'amount_invested': 'Amount invested',
+      'investment_added': 'Investment added',
+      'delete_investment': 'Delete investment?',
+      'no_investments_yet': 'No investments yet.\nTap + to add one.',
+      'current_balance_differs': 'Current balance differs from invested',
+      'remove': 'Remove',
+      // Budget
+      'monthly_budget': 'Monthly Budget',
+      'save_budget': 'Save Budget',
+      'could_not_load_budget': 'Could not load budget',
+      'could_not_load_net_worth': 'Could not load net worth',
+      // Profile & Settings
+      'edit_profile': 'Edit Profile',
+      'appearance': 'Appearance',
+      'customize_interface': 'Customize your interface for maximum visual comfort.',
+      'concierge_support': 'Concierge Support',
+      'corporate_benefits': 'Corporate Benefits',
+      // Transactions & Benefits
+      'recent_transactions': 'Recent Transactions',
+      'monthly_spending': 'Monthly Spending',
+      'last_7_days': 'Last 7 days',
+      'see_all': 'See all',
     },
     'es': {
       'app_name': 'Farol',
@@ -209,6 +245,42 @@ class AppLocalizations {
       'cannot_undo': 'Esta acción no se puede deshacer.',
       'transaction_deleted': 'Gasto eliminado',
       'transaction_updated': '¡Gasto actualizado!',
+      // Authentication
+      'sign_in': 'Iniciar Sesión',
+      'sign_up': 'Registrarse',
+      'sign_out': 'Cerrar Sesión',
+      'forgot_password': '¿Olvidaste la contraseña?',
+      'verify_email': 'Verifica tu correo',
+      'resend_email': 'Reenviar correo',
+      'set_new_password': 'Establecer Nueva Contraseña',
+      'update_password': 'Actualizar Contraseña',
+      'or_sign_in_with': 'O inicia sesión con',
+      'something_went_wrong': 'Algo salió mal. Reinicia la app.',
+      'retry': 'Reintentar',
+      // Investments
+      'add_investment': 'Agregar Inversión',
+      'amount_invested': 'Monto invertido',
+      'investment_added': '¡Inversión agregada!',
+      'delete_investment': '¿Eliminar inversión?',
+      'no_investments_yet': 'Sin inversiones aún.\nToca + para agregar una.',
+      'current_balance_differs': 'El saldo actual difiere del invertido',
+      'remove': 'Eliminar',
+      // Budget
+      'monthly_budget': 'Presupuesto Mensual',
+      'save_budget': 'Guardar Presupuesto',
+      'could_not_load_budget': 'No se pudo cargar el presupuesto',
+      'could_not_load_net_worth': 'No se pudo cargar el patrimonio',
+      // Profile & Settings
+      'edit_profile': 'Editar Perfil',
+      'appearance': 'Apariencia',
+      'customize_interface': 'Personaliza tu interfaz para máximo confort visual.',
+      'concierge_support': 'Soporte Concierge',
+      'corporate_benefits': 'Beneficios Corporativos',
+      // Transactions & Benefits
+      'recent_transactions': 'Transacciones Recientes',
+      'monthly_spending': 'Gastos Mensuales',
+      'last_7_days': 'Últimos 7 días',
+      'see_all': 'Ver Todo',
     },
     'pt': {
       'app_name': 'Farol',
@@ -309,6 +381,42 @@ class AppLocalizations {
       'cannot_undo': 'Esta ação não pode ser desfeita.',
       'transaction_deleted': 'Despesa excluída',
       'transaction_updated': 'Despesa atualizada!',
+      // Authentication
+      'sign_in': 'Fazer Login',
+      'sign_up': 'Criar Conta',
+      'sign_out': 'Sair',
+      'forgot_password': 'Esqueceu a senha?',
+      'verify_email': 'Verifique seu e-mail',
+      'resend_email': 'Reenviar e-mail',
+      'set_new_password': 'Definir Nova Senha',
+      'update_password': 'Atualizar Senha',
+      'or_sign_in_with': 'Ou faça login com',
+      'something_went_wrong': 'Algo deu errado. Reinicie o app.',
+      'retry': 'Tentar Novamente',
+      // Investments
+      'add_investment': 'Adicionar Investimento',
+      'amount_invested': 'Valor investido',
+      'investment_added': 'Investimento adicionado!',
+      'delete_investment': 'Excluir investimento?',
+      'no_investments_yet': 'Nenhum investimento ainda.\nToque + para adicionar um.',
+      'current_balance_differs': 'Saldo atual diferente do investido',
+      'remove': 'Remover',
+      // Budget
+      'monthly_budget': 'Orçamento Mensal',
+      'save_budget': 'Salvar Orçamento',
+      'could_not_load_budget': 'Não foi possível carregar o orçamento',
+      'could_not_load_net_worth': 'Não foi possível carregar o patrimônio',
+      // Profile & Settings
+      'edit_profile': 'Editar Perfil',
+      'appearance': 'Aparência',
+      'customize_interface': 'Personalize sua interface para o máximo conforto visual.',
+      'concierge_support': 'Suporte Concierge',
+      'corporate_benefits': 'Benefícios Corporativos',
+      // Transactions & Benefits
+      'recent_transactions': 'Transações Recentes',
+      'monthly_spending': 'Gastos Mensais',
+      'last_7_days': 'Últimos 7 dias',
+      'see_all': 'Ver Tudo',
     },
   };
 
@@ -373,6 +481,47 @@ class AppLocalizations {
   String get cannotUndo => translate('cannot_undo');
   String get transactionDeleted => translate('transaction_deleted');
   String get transactionUpdated => translate('transaction_updated');
+
+  // Authentication
+  String get signIn => translate('sign_in');
+  String get signUp => translate('sign_up');
+  String get signOut => translate('sign_out');
+  String get forgotPassword => translate('forgot_password');
+  String get verifyEmail => translate('verify_email');
+  String get resendEmail => translate('resend_email');
+  String get setNewPassword => translate('set_new_password');
+  String get updatePassword => translate('update_password');
+  String get orSignInWith => translate('or_sign_in_with');
+  String get somethingWentWrong => translate('something_went_wrong');
+  String get retry => translate('retry');
+
+  // Investments
+  String get addInvestment => translate('add_investment');
+  String get amountInvested => translate('amount_invested');
+  String get investmentAdded => translate('investment_added');
+  String get deleteInvestment => translate('delete_investment');
+  String get noInvestmentsYet => translate('no_investments_yet');
+  String get currentBalanceDiffers => translate('current_balance_differs');
+  String get remove => translate('remove');
+
+  // Budget
+  String get monthlyBudget => translate('monthly_budget');
+  String get saveBudget => translate('save_budget');
+  String get couldNotLoadBudget => translate('could_not_load_budget');
+  String get couldNotLoadNetWorth => translate('could_not_load_net_worth');
+
+  // Profile & Settings
+  String get editProfile => translate('edit_profile');
+  String get appearance => translate('appearance');
+  String get customizeInterface => translate('customize_interface');
+  String get conciergeSupport => translate('concierge_support');
+  String get corporateBenefits => translate('corporate_benefits');
+
+  // Transactions & Benefits
+  String get recentTransactions => translate('recent_transactions');
+  String get monthlySpending => translate('monthly_spending');
+  String get last7Days => translate('last_7_days');
+  String get seeAll => translate('see_all');
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

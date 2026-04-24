@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/i18n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/farol_colors.dart';
 import 'profile_providers.dart';
@@ -67,10 +68,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       error: (e, _) => Scaffold(body: Center(child: Text(e.toString()))),
       data: (profile) {
         _initControllers(profile?.displayName, profile?.photoUrl);
+        final l10n = AppLocalizations.of(context);
         return Scaffold(
           appBar: AppBar(
             elevation: 0,
-            title: const Text('Edit Profile', style: TextStyle(fontWeight: FontWeight.w700)),
+            title: Text(l10n.editProfile, style: const TextStyle(fontWeight: FontWeight.w700)),
             leading: const BackButton(),
           ),
           body: Form(

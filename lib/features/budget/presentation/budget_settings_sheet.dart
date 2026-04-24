@@ -68,6 +68,7 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final colors = context.colors;
     final budget = ref.watch(budgetSettingsProvider).value;
     final total = budget?.totalBudget ?? 0;
@@ -86,7 +87,7 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
               Container(width: 38, height: 38, decoration: BoxDecoration(color: colors.iconTintBlue, borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.account_balance_wallet_outlined, size: 20, color: AppTheme.primaryColor)),
               const SizedBox(width: 12),
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Monthly Budget', style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700)),
+                Text(l10n.monthlyBudget, style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700)),
                 if (total > 0) Text('Total: ${FinancialCalculatorService.formatBRL(total)}', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
               ]),
             ]),
@@ -104,7 +105,7 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
               style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation: 0),
               child: _saving
                 ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('Save Budget', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                : Text(l10n.saveBudget, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
             )),
           ]),
         ),

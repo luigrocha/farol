@@ -67,6 +67,7 @@ class _ProfileCard extends ConsumerWidget {
   const _ProfileCard();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final colors = context.colors;
     final profileAsync = ref.watch(currentProfileProvider);
     final displayName = profileAsync.whenOrNull(data: (p) => p?.displayName) ?? '';
@@ -90,7 +91,7 @@ class _ProfileCard extends ConsumerWidget {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             elevation: 0,
           ),
-          child: const Text('Edit Profile', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+          child: Text(l10n.editProfile, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
         ),
       ]),
     );
@@ -142,14 +143,15 @@ class _AppearanceCard extends ConsumerWidget {
   const _AppearanceCard();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final theme = ref.watch(themeModeProvider);
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppTheme.primaryContainer, AppTheme.primaryColor])),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('Appearance', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
+        Text(l10n.appearance, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
         const SizedBox(height: 4),
-        const Text('Customize your interface for maximum visual comfort.', style: TextStyle(fontSize: 12, color: Colors.white70, height: 1.5)),
+        Text(l10n.customizeInterface, style: const TextStyle(fontSize: 12, color: Colors.white70, height: 1.5)),
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(4), decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(99)),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/i18n/app_localizations.dart';
 import 'auth_providers.dart';
 import 'widgets/auth_buttons.dart';
 
@@ -33,6 +34,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     ref.listen<AsyncValue<void>>(authControllerProvider, (_, state) {
       if (state.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -44,7 +46,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Set New Password')),
+      appBar: AppBar(title: Text(l10n.setNewPassword)),
       body: AuthActionHandler(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -84,7 +86,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _submit,
-                  child: const Text('Update Password'),
+                  child: Text(l10n.updatePassword),
                 ),
               ],
             ),

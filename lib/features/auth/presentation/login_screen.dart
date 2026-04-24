@@ -51,8 +51,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign In')),
+      appBar: AppBar(title: Text(l10n.signIn)),
       body: AuthActionHandler(
         successMessage: 'Welcome back!',
         child: SingleChildScrollView(
@@ -86,21 +87,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: ref.watch(authControllerProvider).isLoading ? null : _submit,
-                  child: const Text('Sign In'),
+                  child: Text(l10n.signIn),
                 ),
                 const SizedBox(height: 16),
                 TextButton(
                   onPressed: ref.watch(authControllerProvider).isLoading ? null : _forgotPassword,
-                  child: const Text('Forgot password?'),
+                  child: Text(l10n.forgotPassword),
                 ),
                 const SizedBox(height: 32),
-                const Row(children: [
-                  Expanded(child: Divider()),
+                Row(children: [
+                  const Expanded(child: Divider()),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Text('Or sign in with'),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(l10n.orSignInWith),
                   ),
-                  Expanded(child: Divider()),
+                  const Expanded(child: Divider()),
                 ]),
                 const SizedBox(height: 32),
                 SocialAuthButton(

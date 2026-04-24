@@ -198,11 +198,12 @@ class _InvestmentsList extends ConsumerWidget {
   const _InvestmentsList();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final investments = ref.watch(investmentsProvider).value ?? [];
     if (investments.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 40),
-        child: Center(child: Text('No investments yet.\nTap + to add one.',
+        child: Center(child: Text(l10n.noInvestmentsYet,
           textAlign: TextAlign.center,
           style: TextStyle(color: context.colors.onSurfaceSoft, height: 1.6))),
       );
@@ -240,18 +241,21 @@ class _InvRow extends ConsumerWidget {
       ),
       confirmDismiss: (_) async => await showDialog<bool>(
         context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text('Delete investment?'),
-          content: Text('Remove "${inv.productName}"? This cannot be undone.'),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Delete'),
-            ),
-          ],
-        ),
+        builder: (ctx) {
+          final contextL10n = AppLocalizations.of(ctx);
+          return AlertDialog(
+            title: Text(contextL10n.deleteInvestment),
+            content: Text('Remove "${inv.productName}"? This cannot be undone.'),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text('Delete'),
+              ),
+            ],
+          );
+        },
       ) ?? false,
       onDismissed: (_) async {
         try {

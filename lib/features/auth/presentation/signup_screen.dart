@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/i18n/app_localizations.dart';
 import 'auth_providers.dart';
 import 'widgets/auth_buttons.dart';
 
@@ -38,8 +39,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign Up')),
+      appBar: AppBar(title: Text(l10n.signUp)),
       body: AuthActionHandler(
         successMessage: 'Account created! Please check your email to verify.',
         child: SingleChildScrollView(
@@ -83,7 +85,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: ref.watch(authControllerProvider).isLoading ? null : _submit,
-                  child: const Text('Sign Up'),
+                  child: Text(l10n.signUp),
                 ),
                 const SizedBox(height: 16),
                 TextButton(
