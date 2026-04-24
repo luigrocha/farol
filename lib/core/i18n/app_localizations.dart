@@ -101,6 +101,14 @@ class AppLocalizations {
       'recovery_email_sent': 'Recovery email sent',
       'verification_email_resent': 'Verification email resent',
       'error_saving': 'Error saving',
+      // Edit / Delete
+      'edit': 'Edit',
+      'delete': 'Delete',
+      'edit_expense': 'Edit Expense',
+      'confirm_delete': 'Delete this expense?',
+      'cannot_undo': 'This action cannot be undone.',
+      'transaction_deleted': 'Expense deleted',
+      'transaction_updated': 'Expense updated!',
     },
     'es': {
       'app_name': 'Farol',
@@ -193,6 +201,14 @@ class AppLocalizations {
       'recovery_email_sent': 'Correo de recuperación enviado',
       'verification_email_resent': 'Correo de verificación reenviado',
       'error_saving': 'Error al guardar',
+      // Edit / Delete
+      'edit': 'Editar',
+      'delete': 'Eliminar',
+      'edit_expense': 'Editar Gasto',
+      'confirm_delete': '¿Eliminar este gasto?',
+      'cannot_undo': 'Esta acción no se puede deshacer.',
+      'transaction_deleted': 'Gasto eliminado',
+      'transaction_updated': '¡Gasto actualizado!',
     },
     'pt': {
       'app_name': 'Farol',
@@ -285,6 +301,14 @@ class AppLocalizations {
       'recovery_email_sent': 'E-mail de recuperação enviado',
       'verification_email_resent': 'E-mail de verificação reenviado',
       'error_saving': 'Erro ao salvar',
+      // Edit / Delete
+      'edit': 'Editar',
+      'delete': 'Excluir',
+      'edit_expense': 'Editar Despesa',
+      'confirm_delete': 'Excluir esta despesa?',
+      'cannot_undo': 'Esta ação não pode ser desfeita.',
+      'transaction_deleted': 'Despesa excluída',
+      'transaction_updated': 'Despesa atualizada!',
     },
   };
 
@@ -342,6 +366,13 @@ class AppLocalizations {
   String get recoveryEmailSent => translate('recovery_email_sent');
   String get verificationEmailResent => translate('verification_email_resent');
   String get errorSaving => translate('error_saving');
+  String get edit => translate('edit');
+  String get delete => translate('delete');
+  String get editExpense => translate('edit_expense');
+  String get confirmDelete => translate('confirm_delete');
+  String get cannotUndo => translate('cannot_undo');
+  String get transactionDeleted => translate('transaction_deleted');
+  String get transactionUpdated => translate('transaction_updated');
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

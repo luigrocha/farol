@@ -70,6 +70,35 @@ class ExpenseRepository {
     });
   }
 
+  Future<void> update({
+    required int id,
+    required DateTime transactionDate,
+    required int month,
+    required int year,
+    required String payType,
+    required String category,
+    String? subcategory,
+    required double amount,
+    required String paymentMethod,
+    int installments = 1,
+    bool isFixed = false,
+    String? storeDescription,
+  }) async {
+    await _supabase.from('expenses').update({
+      'transaction_date': transactionDate.toIso8601String().substring(0, 10),
+      'month': month,
+      'year': year,
+      'pay_type': payType,
+      'category': category,
+      'subcategory': subcategory,
+      'amount': amount,
+      'payment_method': paymentMethod,
+      'installments': installments,
+      'is_fixed': isFixed,
+      'store_description': storeDescription,
+    }).eq('id', id);
+  }
+
   Future<void> delete(int id) async {
     await _supabase.from('expenses').delete().eq('id', id);
   }
