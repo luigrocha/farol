@@ -9,6 +9,7 @@ import 'features/transactions/transactions_screen.dart';
 import 'features/analytics/analytics_screen.dart';
 import 'features/investments/investments_screen.dart';
 import 'features/investments/investment_detail_screen.dart';
+import 'core/models/investment.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/benefits/swile_screen.dart';
 import 'features/notifications/notifications_screen.dart';
@@ -134,10 +135,9 @@ class FarolApp extends ConsumerWidget {
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/investment_detail') {
-          final args = settings.arguments as String;
+          final inv = settings.arguments as Investment;
           return MaterialPageRoute(
-              builder: (context) =>
-                  InvestmentDetailScreen(productName: args));
+              builder: (context) => InvestmentDetailScreen(investment: inv));
         }
         return null;
       },

@@ -268,7 +268,7 @@ class _InvRow extends ConsumerWidget {
         margin: const EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
         child: InkWell(
-          onTap: () => Navigator.pushNamed(context, '/investment_detail', arguments: inv.productName),
+          onTap: () => Navigator.pushNamed(context, '/investment_detail', arguments: inv),
           borderRadius: BorderRadius.circular(16),
           child: Padding(padding: const EdgeInsets.all(16), child: Column(children: [
             Row(children: [
