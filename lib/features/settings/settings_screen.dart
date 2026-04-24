@@ -277,7 +277,7 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
         onTap: () => _run(_ExportTask.backup, svc.exportBackup),
       ),
       _DataRow(
-        icon: Icons.picture_as_pdf_outlined,
+        icon: Icons.picture_as_pdf,
         name: 'Resumen Mensual PDF',
         sub: 'Informe completo — $month/$year',
         color: AppTheme.errorColor,
