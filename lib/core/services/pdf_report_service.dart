@@ -411,7 +411,7 @@ class PdfReportService {
                 style: pw.TextStyle(
                     font: pw.Font.helvetica(),
                     fontSize: 10,
-                    color: PdfColor(1, 1, 1, 0.65))),
+                    color: const PdfColor(1, 1, 1, 0.65))),
             pw.Text(FinancialCalculatorService.formatBRL(nw),
                 style: pw.TextStyle(
                     font: pw.Font.helveticaBold(), fontSize: 16, color: _amber)),

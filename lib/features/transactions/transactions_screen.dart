@@ -280,17 +280,18 @@ class _TxRow extends ConsumerWidget {
 }
 
 class _BRLBig extends StatelessWidget {
-  final double value; final double size; final Color? color; final FontWeight weight;
-  const _BRLBig({required this.value, required this.size, this.color, this.weight = FontWeight.w800});
+  final double value; final double size; final Color? color;
+  const _BRLBig({required this.value, required this.size, this.color});
   @override
   Widget build(BuildContext context) {
+    const w = FontWeight.w800;
     final c = color ?? context.colors.onSurface;
     final f = FinancialCalculatorService.formatBRL(value).split(',')[0];
     final cents = FinancialCalculatorService.formatBRL(value).split(',')[1];
     return Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
       Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.48, fontWeight: FontWeight.w500, color: c)),
-      Text(f.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: weight, color: c, letterSpacing: -size * 0.028)),
-      Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: weight, color: c.withOpacity(0.85))),
+      Text(f.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: w, color: c, letterSpacing: -size * 0.028)),
+      Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: w, color: c.withOpacity(0.85))),
     ]);
   }
 }
@@ -300,6 +301,6 @@ class _BRLSmall extends StatelessWidget {
   const _BRLSmall({required this.value, required this.size, this.color, this.weight = FontWeight.w600});
   @override
   Widget build(BuildContext context) {
-    return Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: size, fontWeight: weight, color: color ?? context.colors.onSurface, fontFeatures: [FontFeature.tabularFigures()]));
+    return Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: size, fontWeight: weight, color: color ?? context.colors.onSurface, fontFeatures: const [FontFeature.tabularFigures()]));
   }
 }

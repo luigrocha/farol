@@ -112,7 +112,7 @@ class InvestmentDetailScreen extends ConsumerWidget {
                       ),
                     ]),
                     const SizedBox(height: 22),
-                    Text('SALDO ATUAL', style: const TextStyle(fontSize: 9, letterSpacing: 1.4, fontWeight: FontWeight.w700, color: Colors.white60)),
+                    const Text('SALDO ATUAL', style: TextStyle(fontSize: 9, letterSpacing: 1.4, fontWeight: FontWeight.w700, color: Colors.white60)),
                     const SizedBox(height: 4),
                     _BRLBig(value: inv.currentBalance, size: 38),
                     const SizedBox(height: 10),

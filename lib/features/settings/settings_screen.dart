@@ -36,7 +36,7 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 24),
               const _NetWorthSection(),
               const SizedBox(height: 24),
-              _Section(title: 'Language / Idioma', icon: Icons.public, children: const [
+              const _Section(title: 'Language / Idioma', icon: Icons.public, children: [
                 _LangRow(flag: '🇪🇸', name: 'Español', sub: 'España', locale: Locale('es')),
                 _LangRow(flag: '🇧🇷', name: 'Português', sub: 'Brasil', locale: Locale('pt')),
                 _LangRow(flag: '🇺🇸', name: 'English', sub: 'United States', locale: Locale('en')),
@@ -301,7 +301,7 @@ class _SupportSection extends StatelessWidget {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text('Concierge Support', style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700)),
       const SizedBox(height: 12),
-      Row(children: const [
+      const Row(children: [
         Expanded(child: _SupportCard(icon: Icons.chat_bubble_outline, label: 'Chat 24/7')),
         SizedBox(width: 10),
         Expanded(child: _SupportCard(icon: Icons.headset_mic_outlined, label: 'VIP Call')),
