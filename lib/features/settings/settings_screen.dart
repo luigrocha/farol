@@ -11,6 +11,7 @@ import '../../core/i18n/app_localizations.dart';
 import '../auth/presentation/auth_providers.dart';
 import '../budget/presentation/budget_settings_sheet.dart';
 import '../budget/presentation/budget_goals_sheet.dart';
+import '../net_worth/presentation/net_worth_settings_sheet.dart';
 import '../profile/presentation/profile_providers.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -35,6 +36,8 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 16),
               const _BudgetSection(),
               const SizedBox(height: 24),
+              const _NetWorthSection(),
+              const SizedBox(height: 24),
               _Section(title: 'Language / Idioma', icon: Icons.public, children: [
                 _LangRow(flag: '🇪🇸', name: 'Español', sub: 'España', locale: const Locale('es')),
                 _LangRow(flag: '🇧🇷', name: 'Português', sub: 'Brasil', locale: const Locale('pt')),
@@ -46,6 +49,7 @@ class SettingsScreen extends ConsumerWidget {
               _Section(title: 'Data & Privacy', icon: Icons.shield_outlined, children: [
                 _DataRow(icon: Icons.description_outlined, name: 'Export Transactions', sub: 'Monthly report in PDF/CSV', color: AppTheme.secondaryColor),
                 _DataRow(icon: Icons.description_outlined, name: 'Income Statement', sub: 'Base year 2023', color: AppTheme.primaryContainer),
+                const _PrivacyToggleRow(),
               ]),
               const SizedBox(height: 24),
               const _SupportSection(),
@@ -368,6 +372,113 @@ class _BudgetChip extends StatelessWidget {
         '$label: ${FinancialCalculatorService.formatBRL(value)}',
         style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, fontWeight: FontWeight.w500),
       ),
+    );
+  }
+}
+
+class _NetWorthSection extends ConsumerWidget {
+  const _NetWorthSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final snapAsync = ref.watch(netWorthSnapshotProvider);
+
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(children: [
+        Icon(Icons.account_balance_outlined, size: 16, color: colors.onSurfaceMuted),
+        const SizedBox(width: 8),
+        Text('Patrimônio Neto', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
+      ]),
+      const SizedBox(height: 12),
+      GestureDetector(
+        onTap: () => showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (_) => const NetWorthSettingsSheet(),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+          child: snapAsync.when(
+            loading: () => const Center(child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))),
+            error: (_, __) => const Text('Could not load net worth'),
+            data: (snap) {
+              final hasData = snap != null && (snap.fgtsBalance + snap.investmentsTotal + snap.emergencyFund + snap.patrimonyTotal) > 0;
+              final total = hasData
+                  ? FinancialCalculatorService.calculateNetWorth(
+                      patrimonyTotal: snap.patrimonyTotal,
+                      fgtsBalance: snap.fgtsBalance,
+                      investmentsTotal: snap.investmentsTotal,
+                      emergencyFund: snap.emergencyFund,
+                      pendingInstallments: snap.pendingInstallments,
+                    )
+                  : 0.0;
+              return Row(children: [
+                Container(
+                  width: 34, height: 34,
+                  decoration: BoxDecoration(
+                    color: hasData ? colors.secondaryContainer : colors.iconTintBlue,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    hasData ? Icons.check_circle_outline : Icons.add,
+                    size: 18,
+                    color: hasData ? AppTheme.secondaryColor : colors.onSurface,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(
+                    hasData ? 'Patrimônio configurado' : 'Configurar Patrimônio',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface),
+                  ),
+                  Text(
+                    hasData
+                        ? 'Total: ${FinancialCalculatorService.formatBRL(total)}'
+                        : 'FGTS, Imóveis, Inversiones...',
+                    style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
+                  ),
+                ])),
+                Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
+              ]);
+            },
+          ),
+        ),
+      ),
+    ]);
+  }
+}
+
+class _PrivacyToggleRow extends ConsumerWidget {
+  const _PrivacyToggleRow();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final isPrivate = ref.watch(privacyModeProvider);
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+      child: Row(children: [
+        Container(
+          width: 34, height: 34,
+          decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: BorderRadius.circular(10)),
+          child: Icon(isPrivate ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 18, color: colors.onSurface),
+        ),
+        const SizedBox(width: 14),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text('Ocultar valores', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
+          Text('Enmascara montos en toda la app', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+        ])),
+        Switch(
+          value: isPrivate,
+          onChanged: (_) => ref.read(privacyModeProvider.notifier).toggle(),
+          activeColor: AppTheme.primaryColor,
+        ),
+      ]),
     );
   }
 }

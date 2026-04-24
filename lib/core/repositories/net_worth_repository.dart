@@ -24,6 +24,7 @@ class NetWorthRepository {
   Future<void> upsert({
     required int month,
     required int year,
+    double patrimonyTotal = 0,
     double fgtsBalance = 0,
     double investmentsTotal = 0,
     double emergencyFund = 0,
@@ -36,6 +37,7 @@ class NetWorthRepository {
       'user_id': userId,
       'month': month,
       'year': year,
+      'patrimony_total': patrimonyTotal,
       'fgts_balance': fgtsBalance,
       'investments_total': investmentsTotal,
       'emergency_fund': emergencyFund,

@@ -16,6 +16,9 @@ import '../repositories/investment_repository.dart';
 import '../repositories/net_worth_repository.dart';
 import '../repositories/budget_goals_repository.dart';
 import '../repositories/user_preferences_repository.dart';
+import '../repositories/health_repository.dart';
+import '../models/health_snapshot.dart';
+import '../services/financial_calculator_service.dart';
 import '../../features/budget/data/budget_settings_repository.dart';
 import '../../features/budget/domain/budget_settings.dart';
 
@@ -78,6 +81,33 @@ class LocaleNotifier extends Notifier<Locale> {
     await Future.wait([
       ref.read(databaseProvider).setSetting('locale', locale.languageCode),
       ref.read(userPreferencesRepositoryProvider).setLocale(locale.languageCode),
+    ]);
+  }
+}
+
+final privacyModeProvider = NotifierProvider<PrivacyModeNotifier, bool>(PrivacyModeNotifier.new);
+
+class PrivacyModeNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    Future.microtask(() async {
+      final db = ref.read(databaseProvider);
+      final local = await db.getSetting('privacy_mode');
+      if (local != null) state = local == 'true';
+      final remote = await ref.read(userPreferencesRepositoryProvider).fetch();
+      if (remote.privacyMode != null) {
+        state = remote.privacyMode!;
+        await db.setSetting('privacy_mode', state.toString());
+      }
+    });
+    return false;
+  }
+
+  Future<void> toggle() async {
+    state = !state;
+    await Future.wait([
+      ref.read(databaseProvider).setSetting('privacy_mode', state.toString()),
+      ref.read(userPreferencesRepositoryProvider).setPrivacyMode(state),
     ]);
   }
 }
@@ -360,6 +390,87 @@ final effectiveSavingsRateProvider = Provider.autoDispose<double>((ref) {
   if (net <= 0) return 0.0;
   return ((net - cash) / net) * 100;
 });
+
+final netWorthNotifierProvider =
+    AsyncNotifierProvider<NetWorthNotifier, void>(NetWorthNotifier.new);
+
+class NetWorthNotifier extends AsyncNotifier<void> {
+  @override
+  Future<void> build() async {}
+
+  Future<void> save({
+    required int month,
+    required int year,
+    double patrimonyTotal = 0,
+    double fgtsBalance = 0,
+    double investmentsTotal = 0,
+    double emergencyFund = 0,
+  }) async {
+    await ref.read(netWorthRepositoryProvider).upsert(
+      month: month,
+      year: year,
+      patrimonyTotal: patrimonyTotal,
+      fgtsBalance: fgtsBalance,
+      investmentsTotal: investmentsTotal,
+      emergencyFund: emergencyFund,
+    );
+    ref.invalidate(netWorthSnapshotProvider);
+  }
+}
+
+// ═══════════════════════════════════════════
+// HEALTH PROVIDERS
+// ═══════════════════════════════════════════
+
+final healthRepositoryProvider = Provider<HealthRepository>((ref) =>
+    HealthRepository(Supabase.instance.client));
+
+final healthHistoryProvider =
+    FutureProvider.autoDispose<List<HealthSnapshot>>((ref) =>
+        ref.watch(healthRepositoryProvider).fetchHistory());
+
+final healthAutoSaveProvider =
+    AsyncNotifierProvider.autoDispose<HealthAutoSaveNotifier, void>(
+        HealthAutoSaveNotifier.new);
+
+class HealthAutoSaveNotifier extends AutoDisposeAsyncNotifier<void> {
+  @override
+  Future<void> build() async {
+    final month = ref.watch(selectedMonthProvider);
+    final year = ref.watch(selectedYearProvider);
+    final net = ref.watch(effectiveNetSalaryProvider);
+    if (net <= 0) return;
+    final cash = ref.watch(cashExpensesProvider);
+    final byCategory = ref.watch(cashExpensesByCategoryProvider);
+    final balance = ref.watch(cashRemainingProvider);
+    final snap = ref.watch(netWorthSnapshotProvider).value;
+    final inst = ref.watch(installmentsProvider).value ?? [];
+    final housing = byCategory['HOUSING'] ?? 0;
+    final instTotal = inst.fold(0.0, (s, i) => s + i.monthlyAmount);
+    final ef = snap?.emergencyFund ?? 0;
+    final efMonths = cash > 0 ? ef / cash : 0.0;
+    final score = FinancialCalculatorService.calculateHealthScore(
+      netSalary: net,
+      cashExpenses: cash,
+      housingExpenses: housing,
+      monthlyBalance: balance,
+      emergencyFund: ef,
+      avgMonthlyExpenses: cash,
+      activeInstallmentsTotal: instTotal,
+    );
+    await ref.read(healthRepositoryProvider).upsert(
+      month: month,
+      year: year,
+      score: score,
+      savingsRate: (net - cash) / net * 100,
+      housingRate: housing / net * 100,
+      monthlyBalance: balance,
+      emergencyFundMonths: efMonths,
+      installmentsRate: instTotal / net * 100,
+      netSalary: net,
+    );
+  }
+}
 
 // ═══════════════════════════════════════════
 // ANALYTICS RANGE PROVIDERS

@@ -30,6 +30,13 @@ class DashboardScreen extends ConsumerWidget {
               IconButton(icon: const Icon(Icons.chevron_right, size: 20), onPressed: () => _changeMonth(ref, month, year, 1)),
             ]),
             actions: [
+              Consumer(builder: (_, ref, __) {
+                final isPrivate = ref.watch(privacyModeProvider);
+                return IconButton(
+                  icon: Icon(isPrivate ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 20),
+                  onPressed: () => ref.read(privacyModeProvider.notifier).toggle(),
+                );
+              }),
               IconButton(icon: const Icon(Icons.notifications_outlined, size: 20), onPressed: () => Navigator.pushNamed(context, '/notifications')),
               const SizedBox(width: 16),
             ],
@@ -72,6 +79,7 @@ class _NetWorthHero extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final snap = ref.watch(netWorthSnapshotProvider).value;
     final nw = snap == null ? 0.0 : FinancialCalculatorService.calculateNetWorth(
+      patrimonyTotal: snap.patrimonyTotal,
       fgtsBalance: snap.fgtsBalance, investmentsTotal: snap.investmentsTotal,
       emergencyFund: snap.emergencyFund, pendingInstallments: snap.pendingInstallments);
     return Container(
@@ -112,12 +120,16 @@ class _MiniStat extends StatelessWidget {
   }
 }
 
-class _BRLBig extends StatelessWidget {
+class _BRLBig extends ConsumerWidget {
   final double value; final double size; final Color? color; final FontWeight weight;
   const _BRLBig({required this.value, required this.size, this.color, this.weight = FontWeight.w800});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final c = color ?? context.colors.onSurface;
+    final isPrivate = ref.watch(privacyModeProvider);
+    if (isPrivate) {
+      return Text('••••••', style: GoogleFonts.manrope(fontSize: size, fontWeight: weight, color: c));
+    }
     final f = FinancialCalculatorService.formatBRL(value).split(',')[0];
     final cents = FinancialCalculatorService.formatBRL(value).split(',')[1];
     return Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
@@ -140,17 +152,25 @@ class _HealthGaugeCard extends ConsumerWidget {
     final housing=byCategory['HOUSING']??0; final instTotal=inst.fold(0.0,(s,i)=>s+i.monthlyAmount);
     final ef=snap?.emergencyFund??0;
     final score=FinancialCalculatorService.calculateHealthScore(netSalary:net,cashExpenses:cash,housingExpenses:housing,monthlyBalance:bal,emergencyFund:ef,avgMonthlyExpenses:cash,activeInstallmentsTotal:instTotal);
+    // Auto-save silencioso — el notifier persiste el snapshot en Supabase
+    ref.watch(healthAutoSaveProvider);
     String statusLabel = l10n.healthHealthy;
     String description = l10n.healthExcellentDesc;
     if (score < 4) { statusLabel = l10n.healthCritical; description = l10n.healthCriticalDesc; }
     else if (score < 7) { statusLabel = l10n.healthWarning; description = score < 5 ? l10n.healthFairDesc : l10n.healthGoodDesc; }
-    return Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(children: [
-      Align(alignment: Alignment.centerLeft, child: Text(l10n.healthScore, style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700))),
-      const SizedBox(height: 16),
-      HealthGauge(score: score.toDouble() * 10, size: 140, statusLabel: statusLabel),
-      const SizedBox(height: 16),
-      Text(description, textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontStyle: FontStyle.italic, color: colors.onSurfaceSoft)),
-    ])));
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, '/health'),
+      child: Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(children: [
+        Row(children: [
+          Expanded(child: Text(l10n.healthScore, style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700))),
+          Icon(Icons.chevron_right_rounded, size: 18, color: colors.onSurfaceFaint),
+        ]),
+        const SizedBox(height: 16),
+        HealthGauge(score: score.toDouble() * 10, size: 140, statusLabel: statusLabel),
+        const SizedBox(height: 16),
+        Text(description, textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontStyle: FontStyle.italic, color: colors.onSurfaceSoft)),
+      ]))),
+    );
   }
 }
 
