@@ -268,7 +268,7 @@ class _MiniStat extends StatelessWidget {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(label, style: TextStyle(fontSize: 9, letterSpacing: 1.2, fontWeight: FontWeight.w700, color: color.withOpacity(0.7))),
       const SizedBox(height: 2),
-      Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: color, fontFeatures: [FontFeature.tabularFigures()])),
+      Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: color, fontFeatures: const [FontFeature.tabularFigures()])),
     ]);
   }
 }
@@ -335,9 +335,9 @@ class _InstallmentRow extends StatelessWidget {
           Text(sublabel, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
         ])),
         Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-          Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: colors.onSurface, fontFeatures: [FontFeature.tabularFigures()])),
+          Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: colors.onSurface, fontFeatures: const [FontFeature.tabularFigures()])),
           if (isGross)
-            Text('sem IR/INSS', style: TextStyle(fontSize: 10, color: AppTheme.tertiaryColor, fontWeight: FontWeight.w600))
+            const Text('sem IR/INSS', style: TextStyle(fontSize: 10, color: AppTheme.tertiaryColor, fontWeight: FontWeight.w600))
           else
             Text('líquido', style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, fontWeight: FontWeight.w600)),
         ]),
@@ -390,7 +390,7 @@ class _DeductionsCard extends StatelessWidget {
               Icon(Icons.family_restroom_outlined, size: 18, color: colors.onSurfaceSoft),
               const SizedBox(width: 10),
               Expanded(child: Text('Dedução dependentes', style: TextStyle(fontSize: 13, color: colors.onSurface))),
-              Text('−${FinancialCalculatorService.formatBRL(calc.dependentDeduction)}', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurfaceSoft, fontFeatures: [FontFeature.tabularFigures()])),
+              Text('−${FinancialCalculatorService.formatBRL(calc.dependentDeduction)}', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurfaceSoft, fontFeatures: const [FontFeature.tabularFigures()])),
             ]),
           ),
         ],
@@ -400,7 +400,7 @@ class _DeductionsCard extends StatelessWidget {
         const SizedBox(height: 12),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text('Total descontado', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: colors.onSurface)),
-          Text('−${FinancialCalculatorService.formatBRL(calc.totalDeductions)}', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.errorColor, fontFeatures: [FontFeature.tabularFigures()])),
+          Text('−${FinancialCalculatorService.formatBRL(calc.totalDeductions)}', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.errorColor, fontFeatures: const [FontFeature.tabularFigures()])),
         ]),
         const SizedBox(height: 4),
         Align(alignment: Alignment.centerRight, child: Text('${calc.effectiveRate.toStringAsFixed(1)}% alíquota efetiva', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft))),
@@ -433,7 +433,7 @@ class _DeductionGroup extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             Expanded(child: Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: colors.onSurface))),
-            Text(FinancialCalculatorService.formatBRL(total), style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: color, fontFeatures: [FontFeature.tabularFigures()])),
+            Text(FinancialCalculatorService.formatBRL(total), style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: color, fontFeatures: const [FontFeature.tabularFigures()])),
           ]),
         ),
         if (rows.isNotEmpty) ...[
@@ -447,7 +447,7 @@ class _DeductionGroup extends StatelessWidget {
                 decoration: BoxDecoration(color: color.withOpacity(0.4), shape: BoxShape.circle),
               ),
               Expanded(child: Text(r.label, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft))),
-              Text(r.value, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.onSurfaceMuted, fontFeatures: [FontFeature.tabularFigures()])),
+              Text(r.value, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.onSurfaceMuted, fontFeatures: const [FontFeature.tabularFigures()])),
             ]),
           )),
           const SizedBox(height: 4),
