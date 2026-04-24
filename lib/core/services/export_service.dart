@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:csv/csv.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../repositories/expense_repository.dart';
@@ -9,6 +10,9 @@ import '../repositories/installment_repository.dart';
 import '../repositories/investment_repository.dart';
 import '../repositories/net_worth_repository.dart';
 import '../repositories/budget_goals_repository.dart';
+import '../../features/budget/domain/budget_settings.dart';
+import 'export_web_stub.dart' if (dart.library.html) 'export_web.dart';
+import 'pdf_report_service.dart';
 
 class ExportService {
   final ExpenseRepository expenseRepo;
@@ -51,10 +55,8 @@ class ExportService {
     ];
 
     final csv = const ListToCsvConverter().convert(rows);
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/expenses_${month}_$year.csv');
-    await file.writeAsString(csv);
-    await Share.shareXFiles([XFile(file.path)], subject: 'Expenses $month/$year');
+    final filename = 'expenses_${month}_$year.csv';
+    await _share(utf8.encode(csv), filename, 'text/csv', 'Expenses $month/$year');
   }
 
   Future<void> exportIncomesToCsv(int month, int year) async {
@@ -74,10 +76,38 @@ class ExportService {
     ];
 
     final csv = const ListToCsvConverter().convert(rows);
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/income_${month}_$year.csv');
-    await file.writeAsString(csv);
-    await Share.shareXFiles([XFile(file.path)], subject: 'Income $month/$year');
+    final filename = 'income_${month}_$year.csv';
+    await _share(utf8.encode(csv), filename, 'text/csv', 'Income $month/$year');
+  }
+
+  // ═══════════════════════════════════════════
+  // PDF MONTHLY REPORT
+  // ═══════════════════════════════════════════
+
+  Future<void> exportMonthlyReport(int month, int year, BudgetSettings? budget) async {
+    final expenses = await expenseRepo.getByRange(month, year, month, year);
+    final incomes = await incomeRepo.getByRange(month, year, month, year);
+    final installments = await installmentRepo.getActive();
+    final netWorth = await netWorthRepo.getByMonth(month, year);
+    final goals = await budgetGoalsRepo.getAll();
+
+    final bytes = await PdfReportService.generate(
+      month: month,
+      year: year,
+      expenses: expenses,
+      incomes: incomes,
+      installments: installments,
+      budget: budget,
+      netWorth: netWorth,
+      goals: goals,
+    );
+
+    const monthNames = [
+      'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+      'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic',
+    ];
+    final filename = 'farol_${monthNames[month - 1]}_$year.pdf';
+    await _share(bytes, filename, 'application/pdf', 'Resumen Farol $month/$year');
   }
 
   // ═══════════════════════════════════════════
@@ -117,9 +147,25 @@ class ExportService {
     };
 
     final jsonStr = const JsonEncoder.withIndent('  ').convert(backup);
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/farol_backup_${DateTime.now().millisecondsSinceEpoch}.json');
-    await file.writeAsString(jsonStr);
-    await Share.shareXFiles([XFile(file.path)], subject: 'Farol Backup');
+    final filename = 'farol_backup_${DateTime.now().millisecondsSinceEpoch}.json';
+    await _share(utf8.encode(jsonStr), filename, 'application/json', 'Farol Backup');
+  }
+
+  // ═══════════════════════════════════════════
+  // INTERNAL: platform-aware share/download
+  // ═══════════════════════════════════════════
+
+  Future<void> _share(List<int> bytes, String filename, String mimeType, String subject) async {
+    if (kIsWeb) {
+      downloadOnWeb(bytes, filename, mimeType);
+      return;
+    }
+    final dir = await getTemporaryDirectory();
+    final file = File('${dir.path}/$filename');
+    await file.writeAsBytes(bytes);
+    await Share.shareXFiles(
+      [XFile(file.path, mimeType: mimeType, name: filename)],
+      subject: subject,
+    );
   }
 }

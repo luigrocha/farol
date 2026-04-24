@@ -17,7 +17,9 @@ import '../repositories/net_worth_repository.dart';
 import '../repositories/budget_goals_repository.dart';
 import '../repositories/user_preferences_repository.dart';
 import '../repositories/health_repository.dart';
+import '../services/export_service.dart';
 import '../models/health_snapshot.dart';
+import '../models/budget_alert.dart';
 import '../services/financial_calculator_service.dart';
 import '../../features/budget/data/budget_settings_repository.dart';
 import '../../features/budget/domain/budget_settings.dart';
@@ -419,6 +421,19 @@ class NetWorthNotifier extends AsyncNotifier<void> {
 }
 
 // ═══════════════════════════════════════════
+// EXPORT SERVICE PROVIDER
+// ═══════════════════════════════════════════
+
+final exportServiceProvider = Provider<ExportService>((ref) => ExportService(
+  expenseRepo: ref.watch(expenseRepositoryProvider),
+  incomeRepo: ref.watch(incomeRepositoryProvider),
+  installmentRepo: ref.watch(installmentRepositoryProvider),
+  investmentRepo: ref.watch(investmentRepositoryProvider),
+  netWorthRepo: ref.watch(netWorthRepositoryProvider),
+  budgetGoalsRepo: ref.watch(budgetGoalsRepositoryProvider),
+));
+
+// ═══════════════════════════════════════════
 // HEALTH PROVIDERS
 // ═══════════════════════════════════════════
 
@@ -526,4 +541,36 @@ final analyticsIncomesProvider =
   };
   final start = DateTime(now.year, now.month - months + 1, 1);
   return repo.getByRange(start.month, start.year, now.month, now.year);
+});
+
+// ═══════════════════════════════════════════
+// BUDGET ALERTS PROVIDER
+// ═══════════════════════════════════════════
+
+/// Derives active budget alerts from goals vs current month cash spending.
+/// Thresholds: warning ≥75%, critical ≥90%, exceeded ≥100%.
+final budgetAlertsProvider = Provider.autoDispose<List<BudgetAlert>>((ref) {
+  final goalsMap = ref.watch(budgetGoalsMapProvider);
+  final byCategory = ref.watch(cashExpensesByCategoryProvider);
+
+  final alerts = <BudgetAlert>[];
+  for (final goal in goalsMap.values) {
+    if (goal.targetAmount <= 0) continue;
+    final spent = byCategory[goal.category] ?? 0;
+    final pct = spent / goal.targetAmount;
+    if (pct < 0.75) continue;
+    alerts.add(BudgetAlert(
+      category: goal.category,
+      spent: spent,
+      limit: goal.targetAmount,
+      percentage: pct,
+      level: pct >= 1.0
+          ? AlertLevel.exceeded
+          : pct >= 0.90
+              ? AlertLevel.critical
+              : AlertLevel.warning,
+    ));
+  }
+  alerts.sort((a, b) => b.percentage.compareTo(a.percentage));
+  return alerts;
 });

@@ -43,6 +43,17 @@ class InstallmentRepository {
     });
   }
 
+  Future<List<CardInstallment>> getActive() async {
+    final userId = _userId;
+    if (userId == null) return [];
+    final data = await _supabase
+        .from('card_installments')
+        .select()
+        .eq('user_id', userId)
+        .eq('status', 'Active');
+    return data.map(CardInstallment.fromJson).toList();
+  }
+
   Future<void> delete(int id) async {
     await _supabase.from('card_installments').delete().eq('id', id);
   }

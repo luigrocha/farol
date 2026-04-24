@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../core/models/budget_alert.dart';
+import '../../core/providers/providers.dart';
+import '../../core/services/financial_calculator_service.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/farol_colors.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-class NotificationsScreen extends StatelessWidget {
+class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
+    final alerts = ref.watch(budgetAlertsProvider);
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
@@ -20,67 +26,98 @@ class NotificationsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Notifications', style: GoogleFonts.manrope(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -0.7)),
+            Text('Notificaciones', style: GoogleFonts.manrope(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -0.7)),
             const SizedBox(height: 6),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Manage your financial alerts', style: TextStyle(fontSize: 13, color: colors.onSurfaceSoft)),
-                const Text('Mark all as read', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.secondaryColor)),
-              ],
-            ),
+            Text('Alertas de presupuesto en tiempo real', style: TextStyle(fontSize: 13, color: colors.onSurfaceSoft)),
 
-            const _CategoryLabel(label: 'Critical Alerts', color: AppTheme.errorColor),
-            _NotifCard(
-              accent: AppTheme.errorColor,
-              icon: Icons.error_outline,
-              iconBg: AppTheme.errorColor.withOpacity(0.12),
-              time: '2h ago',
-              title: 'Budget Alert: 90% of Housing budget used',
-              body: 'You have reached the critical limit of your monthly housing budget. Avoid additional spending in this category.',
-            ),
+            if (alerts.isEmpty) ...[
+              const SizedBox(height: 40),
+              _EmptyState(),
+            ] else ...[
+              _buildAlertGroup(context, alerts, AlertLevel.exceeded, 'Límite superado', AppTheme.errorColor),
+              _buildAlertGroup(context, alerts, AlertLevel.critical, 'Alerta crítica', const Color(0xFFFF6B35)),
+              _buildAlertGroup(context, alerts, AlertLevel.warning, 'Aviso', AppTheme.secondaryColor),
+            ],
 
-            const _CategoryLabel(label: 'AI Tips', color: AppTheme.secondaryColor),
+            const _CategoryLabel(label: 'Tips', color: AppTheme.tertiaryColor),
             _NotifCard(
-              accent: AppTheme.secondaryColor,
               icon: Icons.lightbulb_outline,
-              iconBg: colors.secondaryContainer,
-              time: '5h ago',
-              title: 'Investment Tip: Rebalance recommended',
-              body: 'Your liquidity is high, consider rebalancing. Our AI detected a diversification opportunity in ESG funds.',
-              cta: 'View strategy',
+              iconBg: const Color(0xFFE8F5E9),
+              time: '',
+              title: 'Consejo del mes',
+              body: 'Revisar tus presupuestos por categoría te ayuda a identificar patrones y tomar mejores decisiones financieras.',
+              accent: AppTheme.tertiaryColor,
             ),
 
-            const _CategoryLabel(label: 'Updates', color: AppTheme.tertiaryColor),
-            _NotifCard(
-              icon: Icons.description_outlined,
-              iconBg: colors.surfaceLow,
-              time: 'Yesterday',
-              title: 'Monthly Report ready for download',
-              body: 'Your October performance summary is now available. Review your financial milestones for the month.',
-            ),
-            _NotifCard(
-              icon: Icons.shield_outlined,
-              iconBg: colors.surfaceLow,
-              time: '2 days ago',
-              title: 'New Privacy Policy',
-              body: 'We have updated our terms to improve the security of your digital assets.',
-            ),
-
-            const SizedBox(height: 32),
-            Center(
-              child: Column(
-                children: [
-                  Icon(Icons.check_circle_outline, size: 24, color: colors.onSurfaceFaint),
-                  const SizedBox(height: 8),
-                  Text('You are up to date with your finances', style: TextStyle(fontSize: 12, color: colors.onSurfaceFaint)),
-                ],
-              ),
-            ),
             const SizedBox(height: 40),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAlertGroup(BuildContext context, List<BudgetAlert> alerts, AlertLevel level, String label, Color color) {
+    final group = alerts.where((a) => a.level == level).toList();
+    if (group.isEmpty) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _CategoryLabel(label: label, color: color),
+        ...group.map((a) => _AlertCard(alert: a)),
+      ],
+    );
+  }
+}
+
+class _AlertCard extends StatelessWidget {
+  final BudgetAlert alert;
+  const _AlertCard({required this.alert});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = switch (alert.level) {
+      AlertLevel.exceeded => AppTheme.errorColor,
+      AlertLevel.critical => const Color(0xFFFF6B35),
+      AlertLevel.warning  => AppTheme.secondaryColor,
+    };
+    final icon = switch (alert.level) {
+      AlertLevel.exceeded => Icons.error_outline,
+      AlertLevel.critical => Icons.warning_amber_outlined,
+      AlertLevel.warning  => Icons.info_outline,
+    };
+    final bodyText = switch (alert.level) {
+      AlertLevel.exceeded => 'Superaste el límite de ${FinancialCalculatorService.formatBRL(alert.limit)} en ${alert.categoryLabel}. Gastado: ${FinancialCalculatorService.formatBRL(alert.spent)}.',
+      AlertLevel.critical => 'Llevas el ${alert.percentageLabel} del presupuesto de ${alert.categoryLabel} (${FinancialCalculatorService.formatBRL(alert.spent)} de ${FinancialCalculatorService.formatBRL(alert.limit)}).',
+      AlertLevel.warning  => 'Ya usaste el ${alert.percentageLabel} del presupuesto de ${alert.categoryLabel}. Quedan ${FinancialCalculatorService.formatBRL(alert.limit - alert.spent)}.',
+    };
+
+    return Column(children: [
+      _NotifCard(
+        accent: color,
+        icon: icon,
+        iconBg: color.withOpacity(0.1),
+        time: alert.emoji,
+        title: '${alert.categoryLabel} — ${alert.percentageLabel}',
+        body: bodyText,
+        progressValue: alert.percentage.clamp(0.0, 1.0),
+        progressColor: color,
+      ),
+    ]);
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return Center(
+      child: Column(children: [
+        Icon(Icons.check_circle_outline, size: 48, color: AppTheme.tertiaryColor.withOpacity(0.5)),
+        const SizedBox(height: 16),
+        Text('Todo bajo control', style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700, color: colors.onSurface)),
+        const SizedBox(height: 6),
+        Text('Ninguna categoría supera el 75% del presupuesto', style: TextStyle(fontSize: 13, color: colors.onSurfaceSoft), textAlign: TextAlign.center),
+      ]),
     );
   }
 }
@@ -107,8 +144,20 @@ class _NotifCard extends StatelessWidget {
   final Color iconBg;
   final String title, body, time;
   final Color? accent;
-  final String? cta;
-  const _NotifCard({required this.icon, required this.iconBg, required this.title, required this.body, required this.time, this.accent, this.cta});
+  final double? progressValue;
+  final Color? progressColor;
+
+  const _NotifCard({
+    required this.icon,
+    required this.iconBg,
+    required this.title,
+    required this.body,
+    required this.time,
+    this.accent,
+    this.progressValue,
+    this.progressColor,
+  });
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -120,48 +169,48 @@ class _NotifCard extends StatelessWidget {
         children: [
           if (accent != null)
             Positioned(
-              left: -18,
-              top: 0,
-              bottom: 0,
+              left: -18, top: 0, bottom: 0,
               child: Container(width: 3, decoration: BoxDecoration(color: accent, borderRadius: const BorderRadius.horizontal(right: Radius.circular(2)))),
             ),
-          Row(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(color: iconBg, borderRadius: BorderRadius.circular(12)),
-                child: Center(child: Icon(icon, size: 20, color: accent ?? colors.onSurfaceMuted)),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 40, height: 40,
+                    decoration: BoxDecoration(color: iconBg, borderRadius: BorderRadius.circular(12)),
+                    child: Center(child: Icon(icon, size: 20, color: accent ?? colors.onSurfaceMuted)),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                         Expanded(child: Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, height: 1.3, color: colors.onSurface))),
-                        const SizedBox(width: 8),
-                        Text(time, style: TextStyle(fontSize: 10, color: colors.onSurfaceFaint)),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(body, style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft, height: 1.5)),
-                    if (cta != null) ...[
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Text(cta!, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.secondaryColor)),
-                          const SizedBox(width: 4),
-                          const Icon(Icons.chevron_right, size: 13, color: AppTheme.secondaryColor),
+                        if (time.isNotEmpty) ...[
+                          const SizedBox(width: 8),
+                          Text(time, style: const TextStyle(fontSize: 16)),
                         ],
-                      ),
-                    ],
-                  ],
-                ),
+                      ]),
+                      const SizedBox(height: 6),
+                      Text(body, style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft, height: 1.5)),
+                    ]),
+                  ),
+                ],
               ),
+              if (progressValue != null) ...[
+                const SizedBox(height: 12),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: progressValue,
+                    minHeight: 5,
+                    backgroundColor: (progressColor ?? AppTheme.secondaryColor).withOpacity(0.12),
+                    valueColor: AlwaysStoppedAnimation(progressColor ?? AppTheme.secondaryColor),
+                  ),
+                ),
+              ],
             ],
           ),
         ],

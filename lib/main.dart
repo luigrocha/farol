@@ -9,6 +9,7 @@ import 'features/transactions/transactions_screen.dart';
 import 'features/analytics/analytics_screen.dart';
 import 'features/investments/investments_screen.dart';
 import 'features/investments/investment_detail_screen.dart';
+import 'core/models/investment.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/benefits/swile_screen.dart';
 import 'features/notifications/notifications_screen.dart';
@@ -23,6 +24,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'features/auth/presentation/auth_providers.dart';
 import 'features/auth/domain/auth_state.dart';
 import 'features/health/health_screen.dart';
+import 'features/simulators/thirteenth_salary_screen.dart';
 
 final themeModeProvider =
     NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
@@ -131,13 +133,13 @@ class FarolApp extends ConsumerWidget {
         '/swile': (context) => const SwileScreen(),
         '/notifications': (context) => const NotificationsScreen(),
         '/health': (context) => const HealthScreen(),
+        '/thirteenth_salary': (context) => const ThirteenthSalaryScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/investment_detail') {
-          final args = settings.arguments as String;
+          final inv = settings.arguments as Investment;
           return MaterialPageRoute(
-              builder: (context) =>
-                  InvestmentDetailScreen(productName: args));
+              builder: (context) => InvestmentDetailScreen(investment: inv));
         }
         return null;
       },
