@@ -19,6 +19,18 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final month = ref.watch(selectedMonthProvider);
     final year = ref.watch(selectedYearProvider);
+
+    ref.listen<AsyncValue<int>>(fixedExpensePropagationProvider, (_, next) {
+      next.whenData((count) {
+        if (count > 0) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('$count gasto${count == 1 ? '' : 's'} fijo${count == 1 ? '' : 's'} copiado${count == 1 ? '' : 's'} del mes anterior'),
+            duration: const Duration(seconds: 3),
+          ));
+        }
+      });
+    });
+
     return Scaffold(
       body: CustomScrollView(
         slivers: [
