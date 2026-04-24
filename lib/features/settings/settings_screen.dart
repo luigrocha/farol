@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../main.dart';
@@ -13,7 +12,6 @@ import '../budget/presentation/budget_settings_sheet.dart';
 import '../budget/presentation/budget_goals_sheet.dart';
 import '../net_worth/presentation/net_worth_settings_sheet.dart';
 import '../profile/presentation/profile_providers.dart';
-
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -46,11 +44,7 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 24),
               const _AppearanceCard(),
               const SizedBox(height: 24),
-              _Section(title: 'Data & Privacy', icon: Icons.shield_outlined, children: [
-                _DataRow(icon: Icons.description_outlined, name: 'Export Transactions', sub: 'Monthly report in PDF/CSV', color: AppTheme.secondaryColor),
-                _DataRow(icon: Icons.description_outlined, name: 'Income Statement', sub: 'Base year 2023', color: AppTheme.primaryContainer),
-                const _PrivacyToggleRow(),
-              ]),
+              const _ExportSection(),
               const SizedBox(height: 24),
               const _SupportSection(),
               const SizedBox(height: 28),
@@ -188,24 +182,102 @@ class _ThemeBtn extends StatelessWidget {
 }
 
 class _DataRow extends StatelessWidget {
-  final IconData icon; final String name, sub; final Color color;
-  const _DataRow({required this.icon, required this.name, required this.sub, required this.color});
+  final IconData icon;
+  final String name, sub;
+  final Color color;
+  final VoidCallback? onTap;
+  final bool isLoading;
+  const _DataRow({required this.icon, required this.name, required this.sub, required this.color, this.onTap, this.isLoading = false});
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
-      child: Row(children: [
-        Container(width: 34, height: 34, decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: BorderRadius.circular(10)), child: Icon(icon, size: 18, color: color)),
-        const SizedBox(width: 14),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(name, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-          Text(sub, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
-        ])),
-        Icon(Icons.download_outlined, size: 18, color: colors.onSurfaceSoft),
-      ]),
+    return GestureDetector(
+      onTap: isLoading ? null : onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+        child: Row(children: [
+          Container(width: 34, height: 34, decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: BorderRadius.circular(10)), child: Icon(icon, size: 18, color: color)),
+          const SizedBox(width: 14),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(name, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
+            Text(sub, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+          ])),
+          isLoading
+              ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: colors.onSurfaceSoft))
+              : Icon(Icons.download_outlined, size: 18, color: colors.onSurfaceSoft),
+        ]),
+      ),
     );
+  }
+}
+
+enum _ExportTask { none, transactions, income, backup }
+
+class _ExportSection extends ConsumerStatefulWidget {
+  const _ExportSection();
+  @override
+  ConsumerState<_ExportSection> createState() => _ExportSectionState();
+}
+
+class _ExportSectionState extends ConsumerState<_ExportSection> {
+  _ExportTask _loading = _ExportTask.none;
+
+  Future<void> _run(_ExportTask task, Future<void> Function() fn) async {
+    if (_loading != _ExportTask.none) return;
+    setState(() => _loading = task);
+    try {
+      await fn();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red.shade700),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _loading = _ExportTask.none);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final month = ref.watch(selectedMonthProvider);
+    final year = ref.watch(selectedYearProvider);
+    final svc = ref.read(exportServiceProvider);
+    final colors = context.colors;
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(children: [
+        Icon(Icons.shield_outlined, size: 16, color: colors.onSurfaceMuted),
+        const SizedBox(width: 8),
+        Text('Data & Privacy', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
+      ]),
+      const SizedBox(height: 12),
+      _DataRow(
+        icon: Icons.receipt_long_outlined,
+        name: 'Export Transactions',
+        sub: 'CSV — $month/$year',
+        color: AppTheme.secondaryColor,
+        isLoading: _loading == _ExportTask.transactions,
+        onTap: () => _run(_ExportTask.transactions, () => svc.exportExpensesToCsv(month, year)),
+      ),
+      _DataRow(
+        icon: Icons.description_outlined,
+        name: 'Income Statement',
+        sub: 'CSV — $month/$year',
+        color: AppTheme.primaryColor,
+        isLoading: _loading == _ExportTask.income,
+        onTap: () => _run(_ExportTask.income, () => svc.exportIncomesToCsv(month, year)),
+      ),
+      _DataRow(
+        icon: Icons.cloud_download_outlined,
+        name: 'Full Backup',
+        sub: 'All data as JSON',
+        color: AppTheme.tertiaryColor,
+        isLoading: _loading == _ExportTask.backup,
+        onTap: () => _run(_ExportTask.backup, svc.exportBackup),
+      ),
+      const _PrivacyToggleRow(),
+    ]);
   }
 }
 
@@ -480,14 +552,5 @@ class _PrivacyToggleRow extends ConsumerWidget {
         ),
       ]),
     );
-  }
-}
-
-class _BRLSmall extends StatelessWidget {
-  final double value; final double size; final Color? color; final FontWeight weight;
-  const _BRLSmall({required this.value, required this.size, this.color, this.weight = FontWeight.w600});
-  @override
-  Widget build(BuildContext context) {
-    return Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: size, fontWeight: weight, color: color ?? context.colors.onSurface, fontFeatures: [FontFeature.tabularFigures()]));
   }
 }

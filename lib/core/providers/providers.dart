@@ -17,6 +17,7 @@ import '../repositories/net_worth_repository.dart';
 import '../repositories/budget_goals_repository.dart';
 import '../repositories/user_preferences_repository.dart';
 import '../repositories/health_repository.dart';
+import '../services/export_service.dart';
 import '../models/health_snapshot.dart';
 import '../services/financial_calculator_service.dart';
 import '../../features/budget/data/budget_settings_repository.dart';
@@ -417,6 +418,19 @@ class NetWorthNotifier extends AsyncNotifier<void> {
     ref.invalidate(netWorthSnapshotProvider);
   }
 }
+
+// ═══════════════════════════════════════════
+// EXPORT SERVICE PROVIDER
+// ═══════════════════════════════════════════
+
+final exportServiceProvider = Provider<ExportService>((ref) => ExportService(
+  expenseRepo: ref.watch(expenseRepositoryProvider),
+  incomeRepo: ref.watch(incomeRepositoryProvider),
+  installmentRepo: ref.watch(installmentRepositoryProvider),
+  investmentRepo: ref.watch(investmentRepositoryProvider),
+  netWorthRepo: ref.watch(netWorthRepositoryProvider),
+  budgetGoalsRepo: ref.watch(budgetGoalsRepositoryProvider),
+));
 
 // ═══════════════════════════════════════════
 // HEALTH PROVIDERS

@@ -9,6 +9,7 @@ import '../../core/models/enums.dart';
 import '../../core/widgets/farol_charts.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/i18n/app_localizations.dart';
+import 'add_investment_bottom_sheet.dart';
 
 class InvestmentsScreen extends ConsumerWidget {
   const InvestmentsScreen({super.key});
@@ -44,7 +45,11 @@ class InvestmentsScreen extends ConsumerWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          builder: (_) => const AddInvestmentBottomSheet(),
+        ),
         backgroundColor: AppTheme.secondaryColor,
         child: const Icon(Icons.add, color: AppTheme.primaryColor),
       ),
