@@ -212,7 +212,7 @@ class _DataRow extends StatelessWidget {
   }
 }
 
-enum _ExportTask { none, transactions, income, backup }
+enum _ExportTask { none, transactions, income, backup, pdf }
 
 class _ExportSection extends ConsumerStatefulWidget {
   const _ExportSection();
@@ -275,6 +275,15 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
         color: AppTheme.tertiaryColor,
         isLoading: _loading == _ExportTask.backup,
         onTap: () => _run(_ExportTask.backup, svc.exportBackup),
+      ),
+      _DataRow(
+        icon: Icons.picture_as_pdf_outlined,
+        name: 'Resumen Mensual PDF',
+        sub: 'Informe completo — $month/$year',
+        color: AppTheme.errorColor,
+        isLoading: _loading == _ExportTask.pdf,
+        onTap: () => _run(_ExportTask.pdf,
+            () => svc.exportMonthlyReport(month, year, ref.read(budgetSettingsProvider).value)),
       ),
       const _PrivacyToggleRow(),
     ]);

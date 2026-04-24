@@ -10,7 +10,9 @@ import '../repositories/installment_repository.dart';
 import '../repositories/investment_repository.dart';
 import '../repositories/net_worth_repository.dart';
 import '../repositories/budget_goals_repository.dart';
+import '../../features/budget/domain/budget_settings.dart';
 import 'export_web_stub.dart' if (dart.library.html) 'export_web.dart';
+import 'pdf_report_service.dart';
 
 class ExportService {
   final ExpenseRepository expenseRepo;
@@ -76,6 +78,36 @@ class ExportService {
     final csv = const ListToCsvConverter().convert(rows);
     final filename = 'income_${month}_$year.csv';
     await _share(utf8.encode(csv), filename, 'text/csv', 'Income $month/$year');
+  }
+
+  // ═══════════════════════════════════════════
+  // PDF MONTHLY REPORT
+  // ═══════════════════════════════════════════
+
+  Future<void> exportMonthlyReport(int month, int year, BudgetSettings? budget) async {
+    final expenses = await expenseRepo.getByRange(month, year, month, year);
+    final incomes = await incomeRepo.getByRange(month, year, month, year);
+    final installments = await installmentRepo.getActive();
+    final netWorth = await netWorthRepo.getByMonth(month, year);
+    final goals = await budgetGoalsRepo.getAll();
+
+    final bytes = await PdfReportService.generate(
+      month: month,
+      year: year,
+      expenses: expenses,
+      incomes: incomes,
+      installments: installments,
+      budget: budget,
+      netWorth: netWorth,
+      goals: goals,
+    );
+
+    const monthNames = [
+      'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+      'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic',
+    ];
+    final filename = 'farol_${monthNames[month - 1]}_$year.pdf';
+    await _share(bytes, filename, 'application/pdf', 'Resumen Farol $month/$year');
   }
 
   // ═══════════════════════════════════════════

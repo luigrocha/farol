@@ -17,6 +17,16 @@ class BudgetGoalsRepository {
         .map((rows) => rows.map(BudgetGoal.fromJson).toList());
   }
 
+  Future<List<BudgetGoal>> getAll() async {
+    final userId = _userId;
+    if (userId == null) return [];
+    final data = await _supabase
+        .from('budget_goals')
+        .select()
+        .eq('user_id', userId);
+    return data.map((r) => BudgetGoal.fromJson(r)).toList();
+  }
+
   Future<void> insert({
     required String category,
     required double targetPercentage,
