@@ -11,6 +11,7 @@ import '../transactions/quick_add_bottom_sheet.dart';
 import '../../core/i18n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/widgets/health_gauge.dart';
+import '../../core/models/budget_alert.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -49,12 +50,25 @@ class DashboardScreen extends ConsumerWidget {
                   onPressed: () => ref.read(privacyModeProvider.notifier).toggle(),
                 );
               }),
-              IconButton(icon: const Icon(Icons.notifications_outlined, size: 20), onPressed: () => Navigator.pushNamed(context, '/notifications')),
+              Consumer(builder: (_, ref, __) {
+                final alerts = ref.watch(budgetAlertsProvider);
+                final critical = alerts.where((a) => a.level != AlertLevel.warning).length;
+                return Badge(
+                  isLabelVisible: critical > 0,
+                  label: Text('$critical'),
+                  backgroundColor: AppTheme.errorColor,
+                  child: IconButton(
+                    icon: const Icon(Icons.notifications_outlined, size: 20),
+                    onPressed: () => Navigator.pushNamed(context, '/notifications'),
+                  ),
+                );
+              }),
               const SizedBox(width: 16),
             ],
           ),
           SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverList(delegate: SliverChildListDelegate([
+              const _AlertBanner(),
               const _NetWorthHero(),
               const SizedBox(height: 12),
               const _HealthGaugeCard(),
@@ -270,15 +284,27 @@ class _ExpenseBreakdown extends ConsumerWidget {
       const SizedBox(height: 14),
       ...sorted.map((e) {
         final cat=e.key; final actual=e.value; final goal=goals[cat]; final target=goal?.targetAmount??(net*0.1);
-        final pct=math.min(actual/target, 1.0); final over=actual>target;
+        final ratio = actual / target;
+        final pct = math.min(ratio, 1.0);
+        final barColor = ratio >= 1.0 ? AppTheme.errorColor
+            : ratio >= 0.90 ? const Color(0xFFFF6B35)
+            : ratio >= 0.75 ? AppTheme.secondaryColor
+            : AppTheme.tertiaryColor;
+        final labelColor = ratio >= 0.75 ? barColor : colors.onSurfaceSoft;
         String label; try { label = ExpenseCategory.fromDb(cat).localizedLabel(context); } catch (_) { label = cat; }
         return Padding(padding: const EdgeInsets.only(bottom: 14), child: Column(children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: colors.onSurface)),
-            Text('R\$ ${actual.toInt()} / R\$ ${target.toInt()}', style: TextStyle(fontSize: 11, color: over ? AppTheme.errorColor : colors.onSurfaceSoft, fontFeatures: [FontFeature.tabularFigures()])),
+            Row(children: [
+              if (ratio >= 0.75) ...[
+                Icon(ratio >= 1.0 ? Icons.error_outline : Icons.warning_amber_outlined, size: 13, color: barColor),
+                const SizedBox(width: 4),
+              ],
+              Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: colors.onSurface)),
+            ]),
+            Text('R\$ ${actual.toInt()} / R\$ ${target.toInt()}', style: TextStyle(fontSize: 11, color: labelColor, fontFeatures: [FontFeature.tabularFigures()])),
           ]),
           const SizedBox(height: 6),
-          ClipRRect(borderRadius: BorderRadius.circular(3), child: LinearProgressIndicator(value: pct, minHeight: 6, backgroundColor: colors.surfaceLow, valueColor: AlwaysStoppedAnimation(over ? AppTheme.errorColor : AppTheme.secondaryColor))),
+          ClipRRect(borderRadius: BorderRadius.circular(3), child: LinearProgressIndicator(value: pct, minHeight: 6, backgroundColor: colors.surfaceLow, valueColor: AlwaysStoppedAnimation(barColor))),
         ]));
       }),
     ])));
@@ -312,5 +338,56 @@ class _MonthlyGoalCard extends ConsumerWidget {
         Text('${(pct*100).toInt()}%', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.secondaryColor)),
       ]),
     ])));
+  }
+}
+
+class _AlertBanner extends ConsumerWidget {
+  const _AlertBanner();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final alerts = ref.watch(budgetAlertsProvider);
+    if (alerts.isEmpty) return const SizedBox.shrink();
+    final top = alerts.first;
+
+    final color = switch (top.level) {
+      AlertLevel.exceeded => AppTheme.errorColor,
+      AlertLevel.critical => const Color(0xFFFF6B35),
+      AlertLevel.warning  => AppTheme.secondaryColor,
+    };
+    final icon = switch (top.level) {
+      AlertLevel.exceeded => Icons.error_outline,
+      AlertLevel.critical => Icons.warning_amber_outlined,
+      AlertLevel.warning  => Icons.info_outline,
+    };
+
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, '/notifications'),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: color.withOpacity(0.25)),
+        ),
+        child: Row(children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 10),
+          Expanded(child: Text(
+            '${top.emoji} ${top.categoryLabel}: ${top.percentageLabel} del presupuesto',
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: color),
+          )),
+          if (alerts.length > 1)
+            Container(
+              margin: const EdgeInsets.only(right: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+              decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(99)),
+              child: Text('+${alerts.length - 1}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color)),
+            ),
+          Icon(Icons.chevron_right, size: 16, color: color),
+        ]),
+      ),
+    );
   }
 }
