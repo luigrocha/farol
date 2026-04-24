@@ -473,6 +473,23 @@ class HealthAutoSaveNotifier extends AutoDisposeAsyncNotifier<void> {
 }
 
 // ═══════════════════════════════════════════
+// FIXED EXPENSE AUTO-PROPAGATION
+// ═══════════════════════════════════════════
+
+final fixedExpensePropagationProvider =
+    AsyncNotifierProvider.autoDispose<FixedExpensePropagationNotifier, int>(
+        FixedExpensePropagationNotifier.new);
+
+class FixedExpensePropagationNotifier extends AutoDisposeAsyncNotifier<int> {
+  @override
+  Future<int> build() async {
+    final month = ref.watch(selectedMonthProvider);
+    final year = ref.watch(selectedYearProvider);
+    return ref.read(expenseRepositoryProvider).propagateFixedExpenses(month, year);
+  }
+}
+
+// ═══════════════════════════════════════════
 // ANALYTICS RANGE PROVIDERS
 // ═══════════════════════════════════════════
 
