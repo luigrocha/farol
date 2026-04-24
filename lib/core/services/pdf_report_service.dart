@@ -155,7 +155,7 @@ class PdfReportService {
                 style: pw.TextStyle(
                     font: pw.Font.helvetica(),
                     fontSize: 9,
-                    color: PdfColor(1, 1, 1, 0.65))),
+                    color: const PdfColor(1, 1, 1, 0.65))),
           ]),
           pw.Text('$monthName $year',
               style: pw.TextStyle(
@@ -402,7 +402,7 @@ class PdfReportService {
           _nwStat('Patrimônio', snap.patrimonyTotal),
         ]),
         pw.SizedBox(height: 12),
-        pw.Container(height: 0.5, color: PdfColor(1, 1, 1, 0.25)),
+        pw.Container(height: 0.5, color: const PdfColor(1, 1, 1, 0.25)),
         pw.SizedBox(height: 10),
         pw.Row(
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -428,7 +428,7 @@ class PdfReportService {
             style: pw.TextStyle(
                 font: pw.Font.helvetica(),
                 fontSize: 7,
-                color: PdfColor(1, 1, 1, 0.55),
+                color: const PdfColor(1, 1, 1, 0.55),
                 letterSpacing: 0.5)),
         pw.SizedBox(height: 3),
         pw.Text(FinancialCalculatorService.formatBRL(value),

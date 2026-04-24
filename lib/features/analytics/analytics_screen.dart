@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
@@ -253,8 +252,8 @@ class _MonthlyTrendCard extends StatelessWidget {
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Text('Tendencia Mensual', style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
         Row(children: [
-          _Legend(color: AppTheme.secondaryColor, label: 'Gasto'),
-          if (hasIncome) ...[const SizedBox(width: 12), _Legend(color: AppTheme.primaryColor, label: 'Ingreso')],
+          const _Legend(color: AppTheme.secondaryColor, label: 'Gasto'),
+          if (hasIncome) ...[const SizedBox(width: 12), const _Legend(color: AppTheme.primaryColor, label: 'Ingreso')],
         ]),
       ]),
       const SizedBox(height: 12),

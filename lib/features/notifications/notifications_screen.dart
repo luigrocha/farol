@@ -40,9 +40,9 @@ class NotificationsScreen extends ConsumerWidget {
             ],
 
             const _CategoryLabel(label: 'Tips', color: AppTheme.tertiaryColor),
-            _NotifCard(
+            const _NotifCard(
               icon: Icons.lightbulb_outline,
-              iconBg: const Color(0xFFE8F5E9),
+              iconBg: Color(0xFFE8F5E9),
               time: '',
               title: 'Consejo del mes',
               body: 'Revisar tus presupuestos por categoría te ayuda a identificar patrones y tomar mejores decisiones financieras.',

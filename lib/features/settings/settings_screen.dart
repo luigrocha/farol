@@ -26,7 +26,7 @@ class SettingsScreen extends ConsumerWidget {
           SliverAppBar(
             floating: true,
             title: Text('Farol', style: GoogleFonts.manrope(fontSize: 22, fontWeight: FontWeight.w700, letterSpacing: -0.3)),
-            actions: [const Icon(Icons.settings_outlined, size: 22), const SizedBox(width: 24)],
+            actions: const [Icon(Icons.settings_outlined, size: 22), SizedBox(width: 24)],
           ),
           SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             sliver: SliverList(delegate: SliverChildListDelegate([
@@ -36,10 +36,10 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 24),
               const _NetWorthSection(),
               const SizedBox(height: 24),
-              _Section(title: 'Language / Idioma', icon: Icons.public, children: [
-                _LangRow(flag: '🇪🇸', name: 'Español', sub: 'España', locale: const Locale('es')),
-                _LangRow(flag: '🇧🇷', name: 'Português', sub: 'Brasil', locale: const Locale('pt')),
-                _LangRow(flag: '🇺🇸', name: 'English', sub: 'United States', locale: const Locale('en')),
+              _Section(title: 'Language / Idioma', icon: Icons.public, children: const [
+                _LangRow(flag: '🇪🇸', name: 'Español', sub: 'España', locale: Locale('es')),
+                _LangRow(flag: '🇧🇷', name: 'Português', sub: 'Brasil', locale: Locale('pt')),
+                _LangRow(flag: '🇺🇸', name: 'English', sub: 'United States', locale: Locale('en')),
               ]),
               const SizedBox(height: 24),
               const _AppearanceCard(),

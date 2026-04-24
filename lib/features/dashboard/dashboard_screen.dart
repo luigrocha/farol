@@ -228,8 +228,8 @@ class _KpiGrid extends ConsumerWidget {
 }
 
 class _KpiCard extends StatelessWidget {
-  final IconData icon; final Color bg; final String label; final double? value; final String? raw; final Color? color; final bool positive;
-  const _KpiCard({required this.icon, required this.bg, required this.label, this.value, this.raw, this.color, this.positive = false});
+  final IconData icon; final Color bg; final String label; final double? value; final String? raw; final Color? color;
+  const _KpiCard({required this.icon, required this.bg, required this.label, this.value, this.raw, this.color});
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -245,8 +245,8 @@ class _KpiCard extends StatelessWidget {
           Text(label, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft, fontWeight: FontWeight.w500)),
           const SizedBox(height: 2),
           raw != null
-            ? Text(raw!, style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w800, color: positive ? AppTheme.secondaryColor : colors.onSurface))
-            : _BRLSmall(value: value ?? 0, size: 15, weight: FontWeight.w700, color: positive ? AppTheme.secondaryColor : colors.onSurface),
+            ? Text(raw!, style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w800, color: color ?? colors.onSurface))
+            : _BRLSmall(value: value ?? 0, size: 15, weight: FontWeight.w700, color: color),
         ]),
       ),
     );
@@ -259,7 +259,7 @@ class _BRLSmall extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final f = FinancialCalculatorService.formatBRL(value);
-    return Text(f, style: GoogleFonts.inter(fontSize: size, fontWeight: weight, color: color ?? context.colors.onSurface, fontFeatures: [FontFeature.tabularFigures()]));
+    return Text(f, style: GoogleFonts.inter(fontSize: size, fontWeight: weight, color: color ?? context.colors.onSurface, fontFeatures: const [FontFeature.tabularFigures()]));
   }
 }
 
@@ -272,8 +272,10 @@ class _ExpenseBreakdown extends ConsumerWidget {
     final goals = ref.watch(budgetGoalsMapProvider);
     final net = ref.watch(effectiveNetSalaryProvider);
     final l10n = AppLocalizations.of(context);
-    if (byCategory.isEmpty) return Card(child: Padding(padding: const EdgeInsets.all(24),
-      child: Column(children: [Icon(Icons.bar_chart, size: 48, color: Theme.of(context).colorScheme.outline), const SizedBox(height: 8), Text(l10n.translate('no_expenses'))])));
+    if (byCategory.isEmpty) {
+      return Card(child: Padding(padding: const EdgeInsets.all(24),
+        child: Column(children: [Icon(Icons.bar_chart, size: 48, color: Theme.of(context).colorScheme.outline), const SizedBox(height: 8), Text(l10n.translate('no_expenses'))])));
+    }
     final sorted = byCategory.entries.toList()..sort((a,b) => b.value.compareTo(a.value));
     return Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
@@ -301,7 +303,7 @@ class _ExpenseBreakdown extends ConsumerWidget {
               ],
               Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: colors.onSurface)),
             ]),
-            Text('R\$ ${actual.toInt()} / R\$ ${target.toInt()}', style: TextStyle(fontSize: 11, color: labelColor, fontFeatures: [FontFeature.tabularFigures()])),
+            Text('R\$ ${actual.toInt()} / R\$ ${target.toInt()}', style: TextStyle(fontSize: 11, color: labelColor, fontFeatures: const [FontFeature.tabularFigures()])),
           ]),
           const SizedBox(height: 6),
           ClipRRect(borderRadius: BorderRadius.circular(3), child: LinearProgressIndicator(value: pct, minHeight: 6, backgroundColor: colors.surfaceLow, valueColor: AlwaysStoppedAnimation(barColor))),

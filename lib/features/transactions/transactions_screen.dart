@@ -37,7 +37,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
             ]),
             actions: const [Icon(Icons.calendar_today, size: 22), SizedBox(width: 20)],
           ),
-          SliverToBoxAdapter(child: Column(children: const [
+          const SliverToBoxAdapter(child: Column(children: [
             _SearchBar(),
             _CategoryChips(),
             _TotalMonthlyHero(),
