@@ -9,6 +9,7 @@ import '../../core/i18n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:ui';
 import 'quick_add_bottom_sheet.dart';
+import 'edit_expense_bottom_sheet.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
   const TransactionsScreen({super.key});
@@ -177,39 +178,98 @@ class _DaySeparator extends StatelessWidget {
   }
 }
 
-class _TxRow extends StatelessWidget {
+class _TxRow extends ConsumerWidget {
   final dynamic expense;
   const _TxRow({required this.expense});
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final colors = context.colors;
-    String catLabel; try { catLabel = ExpenseCategory.fromDb(expense.category).localizedLabel(context); } catch (_) { catLabel = expense.category; }
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
-      child: Row(children: [
-        Container(width: 38, height: 38, decoration: BoxDecoration(color: colors.surfaceLow, shape: BoxShape.circle), child: Icon(Icons.shopping_bag_outlined, size: 18, color: colors.onSurfaceMuted)),
-        const SizedBox(width: 14),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(expense.storeDescription ?? 'Gasto', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface, height: 1.3)),
+    String catLabel;
+    try { catLabel = ExpenseCategory.fromDb(expense.category).localizedLabel(context); } catch (_) { catLabel = expense.category; }
+
+    return Dismissible(
+      key: ValueKey(expense.id),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        margin: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+        decoration: BoxDecoration(color: Colors.red.shade700, borderRadius: BorderRadius.circular(16)),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Icon(Icons.delete_outline, color: Colors.white, size: 22),
           const SizedBox(height: 4),
-          Row(children: [
-            Text(catLabel, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
-            const SizedBox(width: 6),
-            Text('•', style: TextStyle(color: colors.onSurfaceFaint)),
-            const SizedBox(width: 6),
-            if (expense.payType == 'Swile')
-              Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: AppTheme.tertiaryColor.withOpacity(0.15), borderRadius: BorderRadius.circular(6)), child: const Text('SWILE', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: AppTheme.tertiaryColor, letterSpacing: 0.5)))
-            else
-              Text(expense.payType ?? 'Cash', style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, letterSpacing: 0.5, fontWeight: FontWeight.w600)),
-          ]),
-        ])),
-        Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-          _BRLSmall(value: expense.amount, size: 15, weight: FontWeight.w700),
-          Text('12:00', style: TextStyle(fontSize: 11, color: colors.onSurfaceFaint)),
+          Text(l10n.delete, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
         ]),
-      ]),
+      ),
+      confirmDismiss: (_) async {
+        return await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(l10n.confirmDelete),
+            content: Text(l10n.cannotUndo),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: Text(l10n.delete),
+              ),
+            ],
+          ),
+        ) ?? false;
+      },
+      onDismissed: (_) async {
+        try {
+          await ref.read(expenseRepositoryProvider).delete(expense.id as int);
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(l10n.transactionDeleted)),
+            );
+          }
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('${l10n.errorSaving}: $e'), backgroundColor: Colors.red.shade700),
+            );
+          }
+        }
+      },
+      child: GestureDetector(
+        onTap: () => showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          builder: (_) => EditExpenseBottomSheet(expense: expense),
+        ),
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+          child: Row(children: [
+            Container(width: 38, height: 38, decoration: BoxDecoration(color: colors.surfaceLow, shape: BoxShape.circle), child: Icon(Icons.shopping_bag_outlined, size: 18, color: colors.onSurfaceMuted)),
+            const SizedBox(width: 14),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(expense.storeDescription ?? 'Gasto', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface, height: 1.3)),
+              const SizedBox(height: 4),
+              Row(children: [
+                Text(catLabel, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+                const SizedBox(width: 6),
+                Text('•', style: TextStyle(color: colors.onSurfaceFaint)),
+                const SizedBox(width: 6),
+                if (expense.payType == 'Swile')
+                  Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: AppTheme.tertiaryColor.withOpacity(0.15), borderRadius: BorderRadius.circular(6)), child: const Text('SWILE', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: AppTheme.tertiaryColor, letterSpacing: 0.5)))
+                else
+                  Text(expense.payType ?? 'Cash', style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, letterSpacing: 0.5, fontWeight: FontWeight.w600)),
+              ]),
+            ])),
+            Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+              _BRLSmall(value: expense.amount, size: 15, weight: FontWeight.w700),
+              Text('12:00', style: TextStyle(fontSize: 11, color: colors.onSurfaceFaint)),
+            ]),
+          ]),
+        ),
+      ),
     );
   }
 }
