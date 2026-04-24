@@ -44,6 +44,8 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 24),
               const _AppearanceCard(),
               const SizedBox(height: 24),
+              const _SimulatorsSection(),
+              const SizedBox(height: 24),
               const _ExportSection(),
               const SizedBox(height: 24),
               const _SupportSection(),
@@ -526,6 +528,43 @@ class _NetWorthSection extends ConsumerWidget {
               ]);
             },
           ),
+        ),
+      ),
+    ]);
+  }
+}
+
+class _SimulatorsSection extends StatelessWidget {
+  const _SimulatorsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(children: [
+        Icon(Icons.calculate_outlined, size: 16, color: colors.onSurfaceMuted),
+        const SizedBox(width: 8),
+        Text('Simuladores', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
+      ]),
+      const SizedBox(height: 12),
+      GestureDetector(
+        onTap: () => Navigator.of(context).pushNamed('/thirteenth_salary'),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+          child: Row(children: [
+            Container(
+              width: 34, height: 34,
+              decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: BorderRadius.circular(10)),
+              child: const Icon(Icons.payments_outlined, size: 18, color: AppTheme.secondaryColor),
+            ),
+            const SizedBox(width: 14),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('Simulador 13º Salário', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
+              Text('Calcule parcelas, INSS e IRRF', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+            ])),
+            Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
+          ]),
         ),
       ),
     ]);
