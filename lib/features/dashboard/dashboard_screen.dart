@@ -152,17 +152,25 @@ class _HealthGaugeCard extends ConsumerWidget {
     final housing=byCategory['HOUSING']??0; final instTotal=inst.fold(0.0,(s,i)=>s+i.monthlyAmount);
     final ef=snap?.emergencyFund??0;
     final score=FinancialCalculatorService.calculateHealthScore(netSalary:net,cashExpenses:cash,housingExpenses:housing,monthlyBalance:bal,emergencyFund:ef,avgMonthlyExpenses:cash,activeInstallmentsTotal:instTotal);
+    // Auto-save silencioso — el notifier persiste el snapshot en Supabase
+    ref.watch(healthAutoSaveProvider);
     String statusLabel = l10n.healthHealthy;
     String description = l10n.healthExcellentDesc;
     if (score < 4) { statusLabel = l10n.healthCritical; description = l10n.healthCriticalDesc; }
     else if (score < 7) { statusLabel = l10n.healthWarning; description = score < 5 ? l10n.healthFairDesc : l10n.healthGoodDesc; }
-    return Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(children: [
-      Align(alignment: Alignment.centerLeft, child: Text(l10n.healthScore, style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700))),
-      const SizedBox(height: 16),
-      HealthGauge(score: score.toDouble() * 10, size: 140, statusLabel: statusLabel),
-      const SizedBox(height: 16),
-      Text(description, textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontStyle: FontStyle.italic, color: colors.onSurfaceSoft)),
-    ])));
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, '/health'),
+      child: Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(children: [
+        Row(children: [
+          Expanded(child: Text(l10n.healthScore, style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700))),
+          Icon(Icons.chevron_right_rounded, size: 18, color: colors.onSurfaceFaint),
+        ]),
+        const SizedBox(height: 16),
+        HealthGauge(score: score.toDouble() * 10, size: 140, statusLabel: statusLabel),
+        const SizedBox(height: 16),
+        Text(description, textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontStyle: FontStyle.italic, color: colors.onSurfaceSoft)),
+      ]))),
+    );
   }
 }
 
