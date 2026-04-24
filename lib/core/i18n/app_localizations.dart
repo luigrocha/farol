@@ -91,6 +91,16 @@ class AppLocalizations {
       'pay_credit_inst': 'Credit (Installments)',
       'pay_swile_meal': 'Swile Meal',
       'pay_swile_food': 'Swile Food',
+      // Toast messages
+      'net_worth_saved': 'Net worth saved!',
+      'budget_saved': 'Budget saved!',
+      'budget_goals_saved': 'Budget goals saved!',
+      'expense_saved': 'Expense saved!',
+      'invalid_amount': 'Enter a valid amount',
+      'email_required': 'Enter your email first',
+      'recovery_email_sent': 'Recovery email sent',
+      'verification_email_resent': 'Verification email resent',
+      'error_saving': 'Error saving',
     },
     'es': {
       'app_name': 'Farol',
@@ -173,6 +183,16 @@ class AppLocalizations {
       'pay_credit_inst': 'Crédito (Cuotas)',
       'pay_swile_meal': 'Vale Comida',
       'pay_swile_food': 'Vale Alimento',
+      // Toast messages
+      'net_worth_saved': '¡Patrimonio guardado!',
+      'budget_saved': '¡Presupuesto guardado!',
+      'budget_goals_saved': '¡Metas de presupuesto guardadas!',
+      'expense_saved': '¡Gasto guardado!',
+      'invalid_amount': 'Ingresa un monto válido',
+      'email_required': 'Primero ingresa tu correo',
+      'recovery_email_sent': 'Correo de recuperación enviado',
+      'verification_email_resent': 'Correo de verificación reenviado',
+      'error_saving': 'Error al guardar',
     },
     'pt': {
       'app_name': 'Farol',
@@ -255,6 +275,16 @@ class AppLocalizations {
       'pay_credit_inst': 'Crédito Parcelado',
       'pay_swile_meal': 'Swile Refeição',
       'pay_swile_food': 'Swile Alimentação',
+      // Toast messages
+      'net_worth_saved': 'Patrimônio salvo!',
+      'budget_saved': 'Orçamento salvo!',
+      'budget_goals_saved': 'Metas de orçamento salvas!',
+      'expense_saved': 'Despesa salva!',
+      'invalid_amount': 'Insira um valor válido',
+      'email_required': 'Primeiro insira seu e-mail',
+      'recovery_email_sent': 'E-mail de recuperação enviado',
+      'verification_email_resent': 'E-mail de verificação reenviado',
+      'error_saving': 'Erro ao salvar',
     },
   };
 
@@ -302,6 +332,16 @@ class AppLocalizations {
   String get healthFairDesc => translate('health_fair');
   String get healthWarningDesc => translate('health_warning_desc');
   String get healthCriticalDesc => translate('health_critical_desc');
+
+  String get netWorthSaved => translate('net_worth_saved');
+  String get budgetSaved => translate('budget_saved');
+  String get budgetGoalsSaved => translate('budget_goals_saved');
+  String get expenseSaved => translate('expense_saved');
+  String get invalidAmount => translate('invalid_amount');
+  String get emailRequired => translate('email_required');
+  String get recoveryEmailSent => translate('recovery_email_sent');
+  String get verificationEmailResent => translate('verification_email_resent');
+  String get errorSaving => translate('error_saving');
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

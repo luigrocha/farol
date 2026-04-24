@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/i18n/app_localizations.dart';
 import 'auth_providers.dart';
 import 'widgets/auth_buttons.dart';
 
@@ -34,15 +35,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _forgotPassword() {
+    final l10n = AppLocalizations.of(context);
     final email = _emailController.text.trim();
     if (email.isNotEmpty) {
       ref.read(authControllerProvider.notifier).sendPasswordResetEmail(email);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Recovery email sent')),
+        SnackBar(content: Text(l10n.recoveryEmailSent)),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter your email first')),
+        SnackBar(content: Text(l10n.emailRequired)),
       );
     }
   }

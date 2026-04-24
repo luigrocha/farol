@@ -192,6 +192,7 @@ class VerificationScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     ref.listen<AsyncValue<void>>(authControllerProvider, (_, state) {
       if (state.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -200,7 +201,7 @@ class VerificationScreen extends ConsumerWidget {
       }
       if (state.hasValue && !state.isLoading) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Verification email resent')),
+          SnackBar(content: Text(l10n.verificationEmailResent)),
         );
       }
     });

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../core/i18n/app_localizations.dart';
 import '../../../core/models/enums.dart';
 import '../../../core/models/budget_goal.dart';
 import '../../../core/providers/providers.dart';
@@ -43,6 +44,7 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
   double _parse(String text) => double.tryParse(text.trim().replaceAll(',', '.')) ?? 0;
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
     setState(() => _saving = true);
     try {
       final effectiveSalary = ref.read(effectiveNetSalaryProvider);
@@ -73,19 +75,13 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Budget goals saved!'),
-            backgroundColor: Colors.green,
-          ),
+          SnackBar(content: Text(l10n.budgetGoalsSaved), backgroundColor: Colors.green),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error saving budget: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('${l10n.errorSaving}: $e'), backgroundColor: Colors.red),
         );
       }
     } finally {
