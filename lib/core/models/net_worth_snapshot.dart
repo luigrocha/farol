@@ -3,6 +3,7 @@ class NetWorthSnapshot {
   final String userId;
   final int month;
   final int year;
+  final double patrimonyTotal;
   final double fgtsBalance;
   final double investmentsTotal;
   final double emergencyFund;
@@ -15,6 +16,7 @@ class NetWorthSnapshot {
     required this.userId,
     required this.month,
     required this.year,
+    this.patrimonyTotal = 0,
     this.fgtsBalance = 0,
     this.investmentsTotal = 0,
     this.emergencyFund = 0,
@@ -28,6 +30,7 @@ class NetWorthSnapshot {
         userId: json['user_id'] as String,
         month: (json['month'] as num).toInt(),
         year: (json['year'] as num).toInt(),
+        patrimonyTotal: (json['patrimony_total'] as num?)?.toDouble() ?? 0,
         fgtsBalance: (json['fgts_balance'] as num?)?.toDouble() ?? 0,
         investmentsTotal: (json['investments_total'] as num?)?.toDouble() ?? 0,
         emergencyFund: (json['emergency_fund'] as num?)?.toDouble() ?? 0,

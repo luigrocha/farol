@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show DateUtils;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/expense.dart';
 
@@ -70,8 +71,91 @@ class ExpenseRepository {
     });
   }
 
+  Future<void> update({
+    required int id,
+    required DateTime transactionDate,
+    required int month,
+    required int year,
+    required String payType,
+    required String category,
+    String? subcategory,
+    required double amount,
+    required String paymentMethod,
+    int installments = 1,
+    bool isFixed = false,
+    String? storeDescription,
+  }) async {
+    await _supabase.from('expenses').update({
+      'transaction_date': transactionDate.toIso8601String().substring(0, 10),
+      'month': month,
+      'year': year,
+      'pay_type': payType,
+      'category': category,
+      'subcategory': subcategory,
+      'amount': amount,
+      'payment_method': paymentMethod,
+      'installments': installments,
+      'is_fixed': isFixed,
+      'store_description': storeDescription,
+    }).eq('id', id);
+  }
+
   Future<void> delete(int id) async {
     await _supabase.from('expenses').delete().eq('id', id);
+  }
+
+  Future<List<Expense>> getFixedForMonth(int month, int year) async {
+    final userId = _userId;
+    if (userId == null) return [];
+    final data = await _supabase
+        .from('expenses')
+        .select()
+        .eq('user_id', userId)
+        .eq('month', month)
+        .eq('year', year)
+        .eq('is_fixed', true);
+    return data.map((r) => Expense.fromJson(r)).toList();
+  }
+
+  /// Copies fixed expenses from the most recent prior month that has them
+  /// into [toMonth]/[toYear]. No-op if target month already has fixed expenses.
+  /// Returns the number of expenses propagated (0 = already done or none found).
+  Future<int> propagateFixedExpenses(int toMonth, int toYear) async {
+    final userId = _userId;
+    if (userId == null) return 0;
+
+    final existing = await getFixedForMonth(toMonth, toYear);
+    if (existing.isNotEmpty) return 0;
+
+    for (int i = 1; i <= 12; i++) {
+      final dt = DateTime(toYear, toMonth - i, 1);
+      final source = await getFixedForMonth(dt.month, dt.year);
+      if (source.isEmpty) continue;
+
+      final rows = source.map((e) {
+        final day = e.transactionDate.day;
+        final maxDay = DateUtils.getDaysInMonth(toYear, toMonth);
+        return {
+          'user_id': userId,
+          'transaction_date':
+              DateTime(toYear, toMonth, day.clamp(1, maxDay)).toIso8601String().substring(0, 10),
+          'month': toMonth,
+          'year': toYear,
+          'pay_type': e.payType,
+          'category': e.category,
+          if (e.subcategory != null) 'subcategory': e.subcategory,
+          'amount': e.amount,
+          'payment_method': e.paymentMethod,
+          'installments': e.installments,
+          'is_fixed': true,
+          if (e.storeDescription != null) 'store_description': e.storeDescription,
+        };
+      }).toList();
+
+      await _supabase.from('expenses').insert(rows);
+      return rows.length;
+    }
+    return 0;
   }
 
   bool _inRange(int m, int y, int sm, int sy, int em, int ey) {

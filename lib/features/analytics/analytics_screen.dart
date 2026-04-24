@@ -4,150 +4,349 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/i18n/app_localizations.dart';
+import '../../core/theme/farol_colors.dart';
 import '../../core/models/enums.dart';
+import '../../core/models/expense.dart';
+import '../../core/models/income.dart';
+import '../../core/i18n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'dart:math' as math;
 
 class AnalyticsScreen extends ConsumerWidget {
   const AnalyticsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final range = ref.watch(analyticsRangeProvider);
+    final expensesAsync = ref.watch(analyticsExpensesProvider);
+    final incomesAsync = ref.watch(analyticsIncomesProvider);
+
     return Scaffold(
-      backgroundColor: AppTheme.surface,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            backgroundColor: AppTheme.surface,
             floating: true,
             title: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Text('Farol', style: GoogleFonts.manrope(fontSize: 22, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
-              const Icon(Icons.notifications_outlined, size: 22, color: AppTheme.onSurface),
+              Icon(Icons.notifications_outlined, size: 22, color: context.colors.onSurface),
             ]),
           ),
-          SliverToBoxAdapter(child: Padding(padding: const EdgeInsets.fromLTRB(24, 8, 24, 0), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Spending Analysis', style: GoogleFonts.manrope(fontSize: 32, fontWeight: FontWeight.w800, letterSpacing: -0.9, height: 1.1)),
-            const SizedBox(height: 6),
-            const Text('Your financial health projected in real time.', style: TextStyle(fontSize: 13, color: AppTheme.onSurfaceSoft)),
-          ]))),
-          SliverToBoxAdapter(child: const _AnalyticsTabs()),
-          SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 20),
-            sliver: SliverList(delegate: SliverChildListDelegate([
-              const SizedBox(height: 16),
-              const _AvgDailyCard(),
-              const SizedBox(height: 16),
-              const _ProProjectionCard(),
-              const SizedBox(height: 24),
-              const _CategoryDistribution(),
-              const SizedBox(height: 24),
-              const _TrendChartCard(),
-              const SizedBox(height: 80),
-            ]))),
+          SliverToBoxAdapter(child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(l10n.analytics, style: GoogleFonts.manrope(fontSize: 32, fontWeight: FontWeight.w800, letterSpacing: -0.9, height: 1.1)),
+              const SizedBox(height: 6),
+              Text('Tu dinero, analizado en el tiempo.', style: TextStyle(fontSize: 13, color: context.colors.onSurfaceSoft)),
+            ]),
+          )),
+          SliverToBoxAdapter(child: _RangePicker(
+            current: range,
+            onSelect: (r) => ref.read(analyticsRangeProvider.notifier).state = r,
+          )),
+          expensesAsync.when(
+            loading: () => const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
+            error: (e, _) => SliverFillRemaining(child: Center(child: Text('Error: $e'))),
+            data: (expenses) {
+              final incomes = incomesAsync.value ?? [];
+              return SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                sliver: SliverList(delegate: SliverChildListDelegate([
+                  const SizedBox(height: 16),
+                  _SummaryCards(expenses: expenses, range: range),
+                  const SizedBox(height: 16),
+                  _MonthlyTrendCard(expenses: expenses, incomes: incomes, l10n: l10n),
+                  const SizedBox(height: 24),
+                  _CategoryBreakdown(expenses: expenses),
+                  const SizedBox(height: 24),
+                  _MonthlyBarsCard(expenses: expenses, l10n: l10n),
+                  const SizedBox(height: 80),
+                ])),
+              );
+            },
+          ),
         ],
       ),
     );
   }
 }
 
-class _AnalyticsTabs extends StatelessWidget {
-  const _AnalyticsTabs();
+// ─── Range Picker ────────────────────────────────────────────────────────────
+
+class _RangePicker extends StatelessWidget {
+  final AnalyticsRange current;
+  final ValueChanged<AnalyticsRange> onSelect;
+  const _RangePicker({required this.current, required this.onSelect});
+
   @override
   Widget build(BuildContext context) {
-    final tabs = ['Week', 'Month', 'Quarter', 'Year'];
+    final colors = context.colors;
+    final items = [
+      (AnalyticsRange.threeMonths, '3M'),
+      (AnalyticsRange.sixMonths, '6M'),
+      (AnalyticsRange.twelveMonths, '12M'),
+    ];
     return Container(
-      margin: const EdgeInsets.only(top: 20),
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppTheme.surfaceLow))),
-      child: Row(children: tabs.asMap().entries.map((e) {
-        final active = e.key == 1;
-        return Padding(padding: const EdgeInsets.only(right: 20), child: Column(children: [
-          Text(e.value, style: TextStyle(fontSize: 13, fontWeight: active ? FontWeight.w700 : FontWeight.w500, color: active ? AppTheme.secondaryColor : AppTheme.onSurfaceSoft)),
-          const SizedBox(height: 8),
-          if (active) Container(height: 2, width: 20, decoration: BoxDecoration(color: AppTheme.secondaryColor, borderRadius: BorderRadius.circular(2))),
-        ]));
+      margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(12)),
+      child: Row(children: items.map((item) {
+        final active = current == item.$1;
+        return Expanded(child: GestureDetector(
+          onTap: () => onSelect(item.$1),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            decoration: BoxDecoration(
+              color: active ? AppTheme.primaryColor : Colors.transparent,
+              borderRadius: BorderRadius.circular(9),
+            ),
+            child: Center(child: Text(item.$2, style: TextStyle(
+              fontSize: 13, fontWeight: FontWeight.w700,
+              color: active ? Colors.white : colors.onSurfaceSoft,
+            ))),
+          ),
+        ));
       }).toList()),
     );
   }
 }
 
-class _AvgDailyCard extends ConsumerWidget {
-  const _AvgDailyCard();
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final cash = ref.watch(cashExpensesProvider);
-    final avg = cash / 30;
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: AppTheme.surfaceLowest, borderRadius: BorderRadius.circular(22)),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          const Text('AVG DAILY SPENDING', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1.2, color: AppTheme.onSurfaceSoft)),
-          Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: AppTheme.secondaryContainer, borderRadius: BorderRadius.circular(99)),
-            child: Row(mainAxisSize: MainAxisSize.min, children: const [Icon(Icons.trending_down, size: 11, color: AppTheme.secondaryColor), SizedBox(width: 3), Text('12.6%', style: TextStyle(color: AppTheme.secondaryColor, fontSize: 11, fontWeight: FontWeight.bold))])),
-        ]),
-        const SizedBox(height: 10),
-        _BRLBig(value: avg, size: 44),
-        const SizedBox(height: 16),
-        SizedBox(height: 80, child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: List.generate(8, (i) {
-          final h = [40, 55, 48, 70, 60, 82, 95, 50][i];
-          return Expanded(child: Container(margin: const EdgeInsets.symmetric(horizontal: 3), height: h * 0.8, decoration: BoxDecoration(color: i == 6 ? AppTheme.primaryContainer : const Color(0xFFD4DBE3), borderRadius: BorderRadius.circular(5))));
-        }))),
-      ]),
-    );
+// ─── Data Helpers ─────────────────────────────────────────────────────────────
+
+Map<String, double> _cashByMonth(List<Expense> expenses) {
+  final map = <String, double>{};
+  for (final e in expenses.where((e) => e.payType == 'Cash')) {
+    final key = '${e.year}-${e.month.toString().padLeft(2, '0')}';
+    map[key] = (map[key] ?? 0) + e.amount;
   }
+  return map;
 }
 
-class _ProProjectionCard extends StatelessWidget {
-  const _ProProjectionCard();
+Map<String, double> _salaryByMonth(List<Income> incomes) {
+  final map = <String, double>{};
+  for (final i in incomes.where((i) => i.incomeType == 'NET_SALARY')) {
+    final key = '${i.year}-${i.month.toString().padLeft(2, '0')}';
+    map[key] = (map[key] ?? 0) + i.amount;
+  }
+  return map;
+}
+
+Map<String, double> _byCategory(List<Expense> expenses) {
+  final map = <String, double>{};
+  for (final e in expenses.where((e) => e.payType == 'Cash')) {
+    map[e.category] = (map[e.category] ?? 0) + e.amount;
+  }
+  return map;
+}
+
+String _shortMonth(String key, AppLocalizations l10n) {
+  final month = int.parse(key.split('-')[1]);
+  return l10n.months[month - 1];
+}
+
+// ─── Summary Cards ────────────────────────────────────────────────────────────
+
+class _SummaryCards extends StatelessWidget {
+  final List<Expense> expenses;
+  final AnalyticsRange range;
+  const _SummaryCards({required this.expenses, required this.range});
+
   @override
   Widget build(BuildContext context) {
+    final cash = expenses.where((e) => e.payType == 'Cash').toList();
+    final total = cash.fold(0.0, (s, e) => s + e.amount);
+    final months = switch (range) {
+      AnalyticsRange.threeMonths => 3,
+      AnalyticsRange.sixMonths => 6,
+      _ => 12,
+    };
+    final avg = months > 0 ? total / months : 0.0;
+    final byCat = _byCategory(expenses);
+    final topCat = byCat.isEmpty ? null : byCat.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+
+    return Row(children: [
+      Expanded(child: _MetricCard(
+        label: 'TOTAL',
+        value: FinancialCalculatorService.formatBRL(total),
+        icon: Icons.receipt_long_outlined,
+        color: AppTheme.primaryColor,
+      )),
+      const SizedBox(width: 10),
+      Expanded(child: _MetricCard(
+        label: 'AVG / MES',
+        value: FinancialCalculatorService.formatBRL(avg),
+        icon: Icons.calendar_month_outlined,
+        color: AppTheme.secondaryColor,
+      )),
+      if (topCat != null) ...[
+        const SizedBox(width: 10),
+        Expanded(child: _MetricCard(
+          label: 'TOP CAT.',
+          value: _emojiFor(topCat),
+          subvalue: _labelFor(topCat, context),
+          icon: Icons.star_outline,
+          color: AppTheme.getCategoryColor(topCat),
+        )),
+      ],
+    ]);
+  }
+
+  static String _emojiFor(String db) {
+    try { return ExpenseCategory.fromDb(db).emoji; } catch (_) { return '📦'; }
+  }
+
+  static String _labelFor(String db, BuildContext context) {
+    try { return ExpenseCategory.fromDb(db).localizedLabel(context); } catch (_) { return db; }
+  }
+}
+
+class _MetricCard extends StatelessWidget {
+  final String label, value;
+  final String? subvalue;
+  final IconData icon;
+  final Color color;
+  const _MetricCard({required this.label, required this.value, this.subvalue, required this.icon, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
     return Container(
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(22), gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppTheme.primaryContainer, AppTheme.primaryColor])),
-      child: Stack(children: [
-        Positioned(right: -30, top: -30, child: Container(width: 160, height: 160, decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [const Color(0xFF71F8E4).withOpacity(0.18), Colors.transparent])))),
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Icon(Icons.auto_awesome, size: 18, color: Color(0xFF7FCF9E)),
-          const SizedBox(height: 10),
-          Text('Proyección Pro', style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
-          const SizedBox(height: 6),
-          RichText(text: const TextSpan(style: TextStyle(fontSize: 13, color: Colors.white70, height: 1.5), children: [
-            TextSpan(text: 'Según tus hábitos, podrías ahorrar un '),
-            TextSpan(text: '15% adicional', style: TextStyle(color: AppTheme.secondaryColor, fontWeight: FontWeight.bold)),
-            TextSpan(text: ' este trimestre reduciendo gastos en ocio nocturno.'),
-          ])),
-          const SizedBox(height: 16),
-          ElevatedButton(onPressed: () {}, style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFCD37D), foregroundColor: AppTheme.primaryColor, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(99)), elevation: 0), child: const Text('Ver sugerencias', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13))),
-        ]),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Container(width: 30, height: 30, decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(8)),
+          child: Icon(icon, size: 15, color: color)),
+        const SizedBox(height: 8),
+        Text(label, style: TextStyle(fontSize: 9, letterSpacing: 0.8, fontWeight: FontWeight.w700, color: colors.onSurfaceSoft)),
+        const SizedBox(height: 2),
+        Text(value, style: GoogleFonts.manrope(fontSize: 12, fontWeight: FontWeight.w700, color: colors.onSurface), maxLines: 1, overflow: TextOverflow.ellipsis),
+        if (subvalue != null)
+          Text(subvalue!, style: TextStyle(fontSize: 9, color: colors.onSurfaceSoft), maxLines: 1, overflow: TextOverflow.ellipsis),
       ]),
     );
   }
 }
 
-class _CategoryDistribution extends ConsumerWidget {
-  const _CategoryDistribution();
+// ─── Monthly Trend Chart ──────────────────────────────────────────────────────
+
+class _MonthlyTrendCard extends StatelessWidget {
+  final List<Expense> expenses;
+  final List<Income> incomes;
+  final AppLocalizations l10n;
+  const _MonthlyTrendCard({required this.expenses, required this.incomes, required this.l10n});
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final byCategory = ref.watch(cashExpensesByCategoryProvider);
-    final total = ref.watch(cashExpensesProvider);
-    final cats = byCategory.entries.toList()..sort((a,b) => b.value.compareTo(a.value));
-    
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final monthlyExp = _cashByMonth(expenses);
+    final monthlyInc = _salaryByMonth(incomes);
+    final allKeys = {...monthlyExp.keys, ...monthlyInc.keys}.toList()..sort();
+    if (allKeys.isEmpty) return const SizedBox.shrink();
+
+    final expSpots = allKeys.asMap().entries.map((e) => FlSpot(e.key.toDouble(), monthlyExp[e.value] ?? 0)).toList();
+    final incSpots = allKeys.asMap().entries.map((e) => FlSpot(e.key.toDouble(), monthlyInc[e.value] ?? 0)).toList();
+    final hasIncome = incSpots.any((s) => s.y > 0);
+    final maxY = [...expSpots.map((s) => s.y), ...incSpots.map((s) => s.y)].fold(0.0, (a, b) => a > b ? a : b);
+
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Text('Tendencia Mensual', style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
+        Row(children: [
+          _Legend(color: AppTheme.secondaryColor, label: 'Gasto'),
+          if (hasIncome) ...[const SizedBox(width: 12), _Legend(color: AppTheme.primaryColor, label: 'Ingreso')],
+        ]),
+      ]),
+      const SizedBox(height: 12),
+      Container(
+        height: 160,
+        padding: const EdgeInsets.fromLTRB(4, 12, 12, 8),
+        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(18)),
+        child: LineChart(LineChartData(
+          gridData: FlGridData(show: true, drawVerticalLine: false, getDrawingHorizontalLine: (_) => FlLine(color: colors.surfaceLow, strokeWidth: 1)),
+          borderData: FlBorderData(show: false),
+          minY: 0,
+          maxY: maxY * 1.15,
+          titlesData: FlTitlesData(
+            leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            bottomTitles: AxisTitles(sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 20,
+              getTitlesWidget: (v, _) {
+                final i = v.toInt();
+                if (i < 0 || i >= allKeys.length) return const SizedBox.shrink();
+                return Text(_shortMonth(allKeys[i], l10n), style: TextStyle(fontSize: 9, color: colors.onSurfaceSoft));
+              },
+            )),
+          ),
+          lineBarsData: [
+            LineChartBarData(
+              spots: expSpots, isCurved: true, color: AppTheme.secondaryColor, barWidth: 2.5,
+              isStrokeCapRound: true, dotData: const FlDotData(show: false),
+              belowBarData: BarAreaData(show: true, gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppTheme.secondaryColor.withOpacity(0.2), AppTheme.secondaryColor.withOpacity(0)])),
+            ),
+            if (hasIncome)
+              LineChartBarData(
+                spots: incSpots, isCurved: true, color: AppTheme.primaryColor, barWidth: 2,
+                isStrokeCapRound: true, dotData: const FlDotData(show: false), dashArray: [4, 3],
+              ),
+          ],
+        )),
+      ),
+    ]);
+  }
+}
+
+class _Legend extends StatelessWidget {
+  final Color color; final String label;
+  const _Legend({required this.color, required this.label});
+  @override
+  Widget build(BuildContext context) => Row(children: [
+    Container(width: 12, height: 3, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(2))),
+    const SizedBox(width: 4),
+    Text(label, style: TextStyle(fontSize: 10, color: context.colors.onSurfaceSoft)),
+  ]);
+}
+
+// ─── Category Breakdown ───────────────────────────────────────────────────────
+
+class _CategoryBreakdown extends StatelessWidget {
+  final List<Expense> expenses;
+  const _CategoryBreakdown({required this.expenses});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final byCat = _byCategory(expenses);
+    final total = byCat.values.fold(0.0, (a, b) => a + b);
+    final sorted = byCat.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    if (sorted.isEmpty) return const SizedBox.shrink();
+
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text('Distribución por Categoría', style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
       const SizedBox(height: 16),
-      Center(child: _DonutChart(data: byCategory, total: total)),
-      const SizedBox(height: 16),
-      GridView.count(crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), crossAxisSpacing: 10, mainAxisSpacing: 10, childAspectRatio: 2.2, children: cats.take(4).map((e) {
-        String label; try { label = ExpenseCategory.fromDb(e.key).localizedLabel(context); } catch (_) { label = e.key; }
-        final pct = total > 0 ? (e.value / total * 100).toInt() : 0;
-        return Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppTheme.surfaceLowest, borderRadius: BorderRadius.circular(14)), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [Container(width: 8, height: 8, decoration: BoxDecoration(color: AppTheme.getCategoryColor(e.key), shape: BoxShape.circle)), const SizedBox(width: 6), Text(label.toUpperCase(), style: const TextStyle(fontSize: 10, letterSpacing: 0.8, color: AppTheme.onSurfaceSoft, fontWeight: FontWeight.w600))]),
-          const SizedBox(height: 4),
-          Text('$pct%', style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
-        ]));
-      }).toList()),
+      Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        _DonutChart(data: byCat, total: total),
+        const SizedBox(width: 16),
+        Expanded(child: Column(children: sorted.take(5).map((e) {
+          String label; try { label = ExpenseCategory.fromDb(e.key).localizedLabel(context); } catch (_) { label = e.key; }
+          final pct = total > 0 ? e.value / total : 0.0;
+          return Padding(padding: const EdgeInsets.only(bottom: 8), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Flexible(child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: colors.onSurface), overflow: TextOverflow.ellipsis)),
+              Text('${(pct * 100).toInt()}%', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: colors.onSurfaceSoft)),
+            ]),
+            const SizedBox(height: 3),
+            ClipRRect(borderRadius: BorderRadius.circular(2), child: LinearProgressIndicator(
+              value: pct, minHeight: 3,
+              backgroundColor: colors.surfaceLow,
+              valueColor: AlwaysStoppedAnimation(AppTheme.getCategoryColor(e.key)),
+            )),
+          ]));
+        }).toList())),
+      ]),
     ]);
   }
 }
@@ -157,42 +356,66 @@ class _DonutChart extends StatelessWidget {
   const _DonutChart({required this.data, required this.total});
   @override
   Widget build(BuildContext context) {
-    return SizedBox(width: 180, height: 180, child: Stack(alignment: Alignment.center, children: [
-      PieChart(PieChartData(sectionsSpace: 0, centerSpaceRadius: 72, sections: data.entries.map((e) => PieChartSectionData(color: AppTheme.getCategoryColor(e.key), value: e.value, radius: 20, showTitle: false)).toList())),
+    final colors = context.colors;
+    return SizedBox(width: 130, height: 130, child: Stack(alignment: Alignment.center, children: [
+      PieChart(PieChartData(sectionsSpace: 0, centerSpaceRadius: 48, sections: data.entries.map((e) => PieChartSectionData(color: AppTheme.getCategoryColor(e.key), value: e.value, radius: 16, showTitle: false)).toList())),
       Column(mainAxisSize: MainAxisSize.min, children: [
-        const Text('TOTAL', style: TextStyle(fontSize: 10, color: AppTheme.onSurfaceSoft, fontWeight: FontWeight.w600, letterSpacing: 1)),
-        Text(FinancialCalculatorService.formatBRL(total).split(',')[0], style: GoogleFonts.manrope(fontSize: 20, fontWeight: FontWeight.w800)),
+        Text('TOTAL', style: TextStyle(fontSize: 8, color: colors.onSurfaceSoft, fontWeight: FontWeight.w600, letterSpacing: 0.8)),
+        Text(FinancialCalculatorService.formatBRL(total).split(',')[0], style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w800, color: colors.onSurface)),
       ]),
     ]));
   }
 }
 
-class _TrendChartCard extends StatelessWidget {
-  const _TrendChartCard();
-  @override
-  Widget build(BuildContext context) {
-    return Column(children: [
-      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text('Tendencia de Gasto', style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
-        Row(children: [Container(width: 10, height: 2, decoration: BoxDecoration(color: AppTheme.secondaryColor, borderRadius: BorderRadius.circular(1))), const SizedBox(width: 6), const Text('Gasto Real', style: TextStyle(fontSize: 11, color: AppTheme.onSurfaceSoft))]),
-      ]),
-      const SizedBox(height: 12),
-      Container(height: 150, padding: const EdgeInsets.all(18), decoration: BoxDecoration(color: AppTheme.surfaceLowest, borderRadius: BorderRadius.circular(18)), child: LineChart(LineChartData(gridData: FlGridData(show: false), titlesData: FlTitlesData(show: false), borderData: FlBorderData(show: false), lineBarsData: [LineChartBarData(spots: const [FlSpot(0, 30), FlSpot(1, 45), FlSpot(2, 40), FlSpot(3, 55), FlSpot(4, 48), FlSpot(5, 62), FlSpot(6, 58)], isCurved: true, color: AppTheme.secondaryColor, barWidth: 3, isStrokeCapRound: true, dotData: FlDotData(show: false), belowBarData: BarAreaData(show: true, gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppTheme.secondaryColor.withOpacity(0.2), AppTheme.secondaryColor.withOpacity(0)])))]))),
-    ]);
-  }
-}
+// ─── Monthly Bars ─────────────────────────────────────────────────────────────
 
-class _BRLBig extends StatelessWidget {
-  final double value; final double size;
-  const _BRLBig({required this.value, required this.size});
+class _MonthlyBarsCard extends StatelessWidget {
+  final List<Expense> expenses;
+  final AppLocalizations l10n;
+  const _MonthlyBarsCard({required this.expenses, required this.l10n});
+
   @override
   Widget build(BuildContext context) {
-    final f = FinancialCalculatorService.formatBRL(value).split(',')[0];
-    final cents = FinancialCalculatorService.formatBRL(value).split(',')[1];
-    return Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
-      Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.48, fontWeight: FontWeight.w500)),
-      Text(f.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: FontWeight.w800, letterSpacing: -size * 0.028)),
-      Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: FontWeight.w800, color: AppTheme.onSurface.withOpacity(0.85))),
+    final colors = context.colors;
+    final monthly = _cashByMonth(expenses);
+    final sorted = monthly.entries.toList()..sort((a, b) => a.key.compareTo(b.key));
+    if (sorted.isEmpty) return const SizedBox.shrink();
+
+    final maxVal = sorted.map((e) => e.value).fold(0.0, (a, b) => a > b ? a : b);
+    final avgVal = sorted.fold(0.0, (s, e) => s + e.value) / sorted.length;
+
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text('Comparativo Mensual', style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
+      const SizedBox(height: 12),
+      ...sorted.map((entry) {
+        final pct = maxVal > 0 ? entry.value / maxVal : 0.0;
+        final isAboveAvg = entry.value > avgVal * 1.05;
+        final barColor = isAboveAvg ? Colors.orange.shade600 : AppTheme.secondaryColor;
+        return Padding(padding: const EdgeInsets.only(bottom: 10), child: Row(children: [
+          SizedBox(width: 30, child: Text(_shortMonth(entry.key, l10n),
+            style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, fontWeight: FontWeight.w600))),
+          const SizedBox(width: 8),
+          Expanded(child: LayoutBuilder(builder: (ctx, constraints) => ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: Stack(children: [
+              Container(height: 22, width: constraints.maxWidth, color: colors.surfaceLowest),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeOut,
+                width: constraints.maxWidth * pct,
+                height: 22,
+                color: barColor.withOpacity(0.85),
+              ),
+            ]),
+          ))),
+          const SizedBox(width: 8),
+          SizedBox(width: 80, child: Text(FinancialCalculatorService.formatBRL(entry.value),
+            style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.onSurface),
+            textAlign: TextAlign.right)),
+          if (isAboveAvg)
+            Padding(padding: const EdgeInsets.only(left: 4), child: Icon(Icons.arrow_upward, size: 10, color: Colors.orange.shade600)),
+        ]));
+      }),
     ]);
   }
 }

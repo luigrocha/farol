@@ -26,4 +26,12 @@ class BudgetGoal {
         type: json['type'] as String,
         createdAt: DateTime.parse(json['created_at'] as String),
       );
+
+  Map<String, dynamic> toJson() => {
+        'user_id': userId,
+        'category': category,
+        'target_percentage': targetPercentage,
+        'target_amount': targetAmount,
+        'type': type,
+      };
 }

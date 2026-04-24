@@ -3,24 +3,27 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/providers.dart';
 import '../../core/models/enums.dart';
+import '../../core/models/expense.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../core/i18n/app_localizations.dart';
 
-class QuickAddBottomSheet extends ConsumerStatefulWidget {
-  const QuickAddBottomSheet({super.key});
+class EditExpenseBottomSheet extends ConsumerStatefulWidget {
+  final Expense expense;
+  const EditExpenseBottomSheet({super.key, required this.expense});
+
   @override
-  ConsumerState<QuickAddBottomSheet> createState() => _QuickAddState();
+  ConsumerState<EditExpenseBottomSheet> createState() => _EditExpenseState();
 }
 
-class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
-  final _amountCtrl = TextEditingController();
-  final _descCtrl = TextEditingController();
-  final _installmentsCtrl = TextEditingController(text: '2');
-  ExpenseCategory _category = ExpenseCategory.foodGrocery;
-  PaymentMethod _method = PaymentMethod.pix;
-  bool _isFixed = false;
-  DateTime _date = DateTime.now();
+class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
+  late final TextEditingController _amountCtrl;
+  late final TextEditingController _descCtrl;
+  late final TextEditingController _installmentsCtrl;
+  late ExpenseCategory _category;
+  late PaymentMethod _method;
+  late bool _isFixed;
+  late DateTime _date;
   String? _subcategory;
 
   static const _subcategories = {
@@ -36,7 +39,34 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
   };
 
   @override
-  void dispose() { _amountCtrl.dispose(); _descCtrl.dispose(); _installmentsCtrl.dispose(); super.dispose(); }
+  void initState() {
+    super.initState();
+    final e = widget.expense;
+    _amountCtrl = TextEditingController(text: e.amount.toStringAsFixed(2).replaceAll('.', ','));
+    _descCtrl = TextEditingController(text: e.storeDescription ?? '');
+    _installmentsCtrl = TextEditingController(text: e.installments.toString());
+    _date = e.transactionDate;
+    _isFixed = e.isFixed;
+    _subcategory = e.subcategory;
+    try {
+      _category = ExpenseCategory.fromDb(e.category);
+    } catch (_) {
+      _category = ExpenseCategory.other;
+    }
+    try {
+      _method = PaymentMethod.values.firstWhere((m) => m.dbValue == e.paymentMethod);
+    } catch (_) {
+      _method = PaymentMethod.pix;
+    }
+  }
+
+  @override
+  void dispose() {
+    _amountCtrl.dispose();
+    _descCtrl.dispose();
+    _installmentsCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,10 +81,10 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
       child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
         Container(width: 40, height: 4, decoration: BoxDecoration(color: Theme.of(context).colorScheme.outline, borderRadius: BorderRadius.circular(2))),
         const SizedBox(height: 16),
-        Text(l10n.addExpense, style: Theme.of(context).textTheme.titleLarge),
+        Text(l10n.editExpense, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 20),
 
-        // 1. Amount
+        // Amount
         TextField(controller: _amountCtrl, autofocus: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700),
@@ -62,7 +92,7 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
           inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.,]'))]),
         const SizedBox(height: 16),
 
-        // 2. Category grid
+        // Category grid
         Align(alignment: Alignment.centerLeft, child: Text(l10n.category, style: Theme.of(context).textTheme.labelLarge)),
         const SizedBox(height: 8),
         GridView.count(crossAxisCount: 3, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
@@ -70,24 +100,24 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
           children: ExpenseCategory.values.map((c) => _catChip(c, context)).toList()),
         const SizedBox(height: 16),
 
-        // 3. Subcategory chips
+        // Subcategory chips
         if (_subcategories[_category] != null) ...[
           Align(alignment: Alignment.centerLeft, child: Text(l10n.translate('subcategory'), style: Theme.of(context).textTheme.labelLarge)),
           const SizedBox(height: 8),
           Wrap(spacing: 8, runSpacing: 4, children: _subcategories[_category]!.map((s) =>
-            ChoiceChip(label: Text(s, style: const TextStyle(fontSize: 12)), selected: _subcategory==s,
+            ChoiceChip(label: Text(s, style: const TextStyle(fontSize: 12)), selected: _subcategory == s,
               onSelected: (v) => setState(() => _subcategory = v ? s : null))).toList()),
           const SizedBox(height: 16),
         ],
 
-        // 4. Payment method pills
+        // Payment method pills
         Align(alignment: Alignment.centerLeft, child: Text(l10n.paymentMethod, style: Theme.of(context).textTheme.labelLarge)),
         const SizedBox(height: 8),
         Wrap(spacing: 8, runSpacing: 4, children: [
           PaymentMethod.debit, PaymentMethod.pix, PaymentMethod.creditFull,
           PaymentMethod.creditInstallment, PaymentMethod.swileMeal, PaymentMethod.swileFood,
         ].map((m) => ChoiceChip(label: Text(m.localizedLabel(context), style: const TextStyle(fontSize: 12)),
-          selected: _method==m, onSelected: (v) => setState(() { if(v) _method=m; }))).toList()),
+          selected: _method == m, onSelected: (v) => setState(() { if (v) _method = m; }))).toList()),
         const SizedBox(height: 12),
 
         // Installments field (conditional)
@@ -97,19 +127,19 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
           const SizedBox(height: 12),
         ],
 
-        // 5. Fixed/Variable toggle
+        // Fixed/Variable toggle
         SwitchListTile(title: Text(l10n.fixedCost), value: _isFixed,
           onChanged: (v) => setState(() => _isFixed = v),
           contentPadding: EdgeInsets.zero),
 
-        // 6. Description
+        // Description
         TextField(controller: _descCtrl,
           decoration: InputDecoration(labelText: '${l10n.translate('description')} (${l10n.translate('optional')})', prefixIcon: const Icon(Icons.description))),
         const SizedBox(height: 12),
 
-        // 7. Date
+        // Date
         ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.calendar_today),
-          title: Text('${_date.day.toString().padLeft(2,'0')}/${_date.month.toString().padLeft(2,'0')}/${_date.year}'),
+          title: Text('${_date.day.toString().padLeft(2, '0')}/${_date.month.toString().padLeft(2, '0')}/${_date.year}'),
           trailing: const Icon(Icons.chevron_right),
           onTap: () async {
             final d = await showDatePicker(context: context, initialDate: _date,
@@ -160,7 +190,8 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
     final desc = _descCtrl.text.isEmpty ? _subcategory ?? _category.label : _descCtrl.text;
 
     try {
-      await ref.read(expenseRepositoryProvider).insert(
+      await ref.read(expenseRepositoryProvider).update(
+        id: widget.expense.id,
         transactionDate: _date,
         month: _date.month,
         year: _date.year,
@@ -174,21 +205,11 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
         storeDescription: desc,
       );
 
-      if (_method == PaymentMethod.creditInstallment) {
-        await ref.read(installmentRepositoryProvider).insert(
-          description: desc,
-          purchaseDate: _date,
-          totalValue: amount * numInst,
-          numInstallments: numInst,
-          monthlyAmount: amount,
-        );
-      }
-
       HapticFeedback.mediumImpact();
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.expenseSaved), backgroundColor: Colors.green),
+          SnackBar(content: Text(l10n.transactionUpdated), backgroundColor: Colors.green),
         );
       }
     } catch (e) {

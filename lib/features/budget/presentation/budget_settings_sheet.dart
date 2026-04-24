@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../core/i18n/app_localizations.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/farol_colors.dart';
 import '../../../core/services/financial_calculator_service.dart';
 import '../domain/budget_settings.dart';
 
@@ -39,36 +41,25 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
     super.dispose();
   }
 
-  double _parse(String text) =>
-      double.tryParse(text.trim().replaceAll(',', '.')) ?? 0;
+  double _parse(String text) => double.tryParse(text.trim().replaceAll(',', '.')) ?? 0;
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
+    final l10n = AppLocalizations.of(context);
     setState(() => _saving = true);
     try {
-      final settings = BudgetSettings(
+      await ref.read(budgetSettingsProvider.notifier).save(BudgetSettings(
         netSalary: _parse(_netSalaryController.text),
         swileMeal: _parse(_swileMealController.text),
         swileFood: _parse(_swileFoodController.text),
-      );
-      await ref.read(budgetSettingsProvider.notifier).save(settings);
+      ));
       if (mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Budget saved successfully!'),
-            backgroundColor: Colors.green.shade700,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.budgetSaved), backgroundColor: Colors.green));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error saving budget: $e'),
-            backgroundColor: Colors.red.shade700,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.errorSaving}: $e'), backgroundColor: Colors.red));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -77,6 +68,7 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final budget = ref.watch(budgetSettingsProvider).value;
     final total = budget?.totalBudget ?? 0;
 
@@ -84,93 +76,37 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
         padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
-        decoration: const BoxDecoration(
-          color: AppTheme.surfaceLowest,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
+        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
         child: Form(
           key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 36, height: 4,
-                  decoration: BoxDecoration(
-                    color: AppTheme.onSurfaceFaint,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(children: [
-                Container(
-                  width: 38, height: 38,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE3ECFA),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(Icons.account_balance_wallet_outlined, size: 20, color: AppTheme.primaryColor),
-                ),
-                const SizedBox(width: 12),
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('Monthly Budget', style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700)),
-                  if (total > 0)
-                    Text(
-                      'Total: ${FinancialCalculatorService.formatBRL(total)}',
-                      style: const TextStyle(fontSize: 11, color: AppTheme.onSurfaceSoft),
-                    ),
-                ]),
+          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Center(child: Container(width: 36, height: 4, decoration: BoxDecoration(color: colors.onSurfaceFaint, borderRadius: BorderRadius.circular(2)))),
+            const SizedBox(height: 20),
+            Row(children: [
+              Container(width: 38, height: 38, decoration: BoxDecoration(color: colors.iconTintBlue, borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.account_balance_wallet_outlined, size: 20, color: AppTheme.primaryColor)),
+              const SizedBox(width: 12),
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('Monthly Budget', style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700)),
+                if (total > 0) Text('Total: ${FinancialCalculatorService.formatBRL(total)}', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
               ]),
-              const SizedBox(height: 6),
-              const Text(
-                'Set your planned monthly income. The dashboard will track remaining amounts as you add transactions.',
-                style: TextStyle(fontSize: 12, color: AppTheme.onSurfaceSoft, height: 1.5),
-              ),
-              const SizedBox(height: 20),
-              _AmountField(
-                controller: _netSalaryController,
-                label: 'Net Salary',
-                hint: '9651.91',
-                icon: Icons.account_balance_wallet,
-              ),
-              const SizedBox(height: 12),
-              _AmountField(
-                controller: _swileMealController,
-                label: 'Swile Meal',
-                hint: '1400.00',
-                icon: Icons.restaurant,
-              ),
-              const SizedBox(height: 12),
-              _AmountField(
-                controller: _swileFoodController,
-                label: 'Swile Food',
-                hint: '1031.00',
-                icon: Icons.shopping_basket_outlined,
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _saving ? null : _save,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryColor,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    elevation: 0,
-                  ),
-                  child: _saving
-                      ? const SizedBox(
-                          height: 18, width: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                        )
-                      : const Text('Save Budget', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-                ),
-              ),
-            ],
-          ),
+            ]),
+            const SizedBox(height: 6),
+            Text('Set your planned monthly income. The dashboard will track remaining amounts as you add transactions.', style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft, height: 1.5)),
+            const SizedBox(height: 20),
+            _AmountField(controller: _netSalaryController, label: 'Net Salary', hint: '9651.91', icon: Icons.account_balance_wallet),
+            const SizedBox(height: 12),
+            _AmountField(controller: _swileMealController, label: 'Swile Meal', hint: '1400.00', icon: Icons.restaurant),
+            const SizedBox(height: 12),
+            _AmountField(controller: _swileFoodController, label: 'Swile Food', hint: '1031.00', icon: Icons.shopping_basket_outlined),
+            const SizedBox(height: 24),
+            SizedBox(width: double.infinity, child: ElevatedButton(
+              onPressed: _saving ? null : _save,
+              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation: 0),
+              child: _saving
+                ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                : const Text('Save Budget', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+            )),
+          ]),
         ),
       ),
     );
@@ -179,16 +115,9 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
 
 class _AmountField extends StatelessWidget {
   final TextEditingController controller;
-  final String label;
-  final String hint;
+  final String label, hint;
   final IconData icon;
-
-  const _AmountField({
-    required this.controller,
-    required this.label,
-    required this.hint,
-    required this.icon,
-  });
+  const _AmountField({required this.controller, required this.label, required this.hint, required this.icon});
 
   @override
   Widget build(BuildContext context) {

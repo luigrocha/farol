@@ -15,6 +15,12 @@ import '../repositories/installment_repository.dart';
 import '../repositories/investment_repository.dart';
 import '../repositories/net_worth_repository.dart';
 import '../repositories/budget_goals_repository.dart';
+import '../repositories/user_preferences_repository.dart';
+import '../repositories/health_repository.dart';
+import '../services/export_service.dart';
+import '../models/health_snapshot.dart';
+import '../models/budget_alert.dart';
+import '../services/financial_calculator_service.dart';
 import '../../features/budget/data/budget_settings_repository.dart';
 import '../../features/budget/domain/budget_settings.dart';
 
@@ -46,8 +52,67 @@ final userSettingsProvider = FutureProvider<Map<String, String>>((ref) {
 
 final selectedMonthProvider = StateProvider<int>((ref) => DateTime.now().month);
 final selectedYearProvider = StateProvider<int>((ref) => DateTime.now().year);
-final localeProvider = StateProvider<Locale>((ref) => const Locale('es'));
 final searchQueryProvider = StateProvider<String>((ref) => '');
+
+final userPreferencesRepositoryProvider =
+    Provider<UserPreferencesRepository>((ref) {
+  return UserPreferencesRepository(Supabase.instance.client);
+});
+
+final localeProvider = NotifierProvider<LocaleNotifier, Locale>(LocaleNotifier.new);
+
+class LocaleNotifier extends Notifier<Locale> {
+  @override
+  Locale build() {
+    Future.microtask(() async {
+      final db = ref.read(databaseProvider);
+      final remote = await ref.read(userPreferencesRepositoryProvider).fetch();
+      if (remote.locale != null) {
+        state = Locale(remote.locale!);
+        await db.setSetting('locale', remote.locale!);
+        return;
+      }
+      final local = await db.getSetting('locale');
+      if (local != null) state = Locale(local);
+    });
+    return const Locale('es');
+  }
+
+  Future<void> setLocale(Locale locale) async {
+    state = locale;
+    await Future.wait([
+      ref.read(databaseProvider).setSetting('locale', locale.languageCode),
+      ref.read(userPreferencesRepositoryProvider).setLocale(locale.languageCode),
+    ]);
+  }
+}
+
+final privacyModeProvider = NotifierProvider<PrivacyModeNotifier, bool>(PrivacyModeNotifier.new);
+
+class PrivacyModeNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    Future.microtask(() async {
+      final db = ref.read(databaseProvider);
+      final local = await db.getSetting('privacy_mode');
+      if (local != null) state = local == 'true';
+      final remote = await ref.read(userPreferencesRepositoryProvider).fetch();
+      if (remote.privacyMode != null) {
+        state = remote.privacyMode!;
+        await db.setSetting('privacy_mode', state.toString());
+      }
+    });
+    return false;
+  }
+
+  Future<void> toggle() async {
+    state = !state;
+    await Future.wait([
+      ref.read(databaseProvider).setSetting('privacy_mode', state.toString()),
+      ref.read(userPreferencesRepositoryProvider).setPrivacyMode(state),
+    ]);
+  }
+}
 
 // ═══════════════════════════════════════════
 // REPOSITORY PROVIDERS
@@ -281,6 +346,21 @@ class BudgetSettingsNotifier extends AsyncNotifier<BudgetSettings?> {
   }
 }
 
+final budgetGoalsNotifierProvider =
+    AsyncNotifierProvider<BudgetGoalsNotifier, void>(() {
+  return BudgetGoalsNotifier();
+});
+
+class BudgetGoalsNotifier extends AsyncNotifier<void> {
+  @override
+  Future<void> build() async {}
+
+  Future<void> save(BudgetGoal goal) async {
+    await ref.read(budgetGoalsRepositoryProvider).upsert(goal);
+    ref.invalidate(budgetGoalsProvider);
+  }
+}
+
 /// Net salary: uses budget if configured, falls back to actual income records.
 final effectiveNetSalaryProvider = Provider.autoDispose<double>((ref) {
   final budget = ref.watch(budgetSettingsProvider).value;
@@ -312,6 +392,117 @@ final effectiveSavingsRateProvider = Provider.autoDispose<double>((ref) {
   if (net <= 0) return 0.0;
   return ((net - cash) / net) * 100;
 });
+
+final netWorthNotifierProvider =
+    AsyncNotifierProvider<NetWorthNotifier, void>(NetWorthNotifier.new);
+
+class NetWorthNotifier extends AsyncNotifier<void> {
+  @override
+  Future<void> build() async {}
+
+  Future<void> save({
+    required int month,
+    required int year,
+    double patrimonyTotal = 0,
+    double fgtsBalance = 0,
+    double investmentsTotal = 0,
+    double emergencyFund = 0,
+  }) async {
+    await ref.read(netWorthRepositoryProvider).upsert(
+      month: month,
+      year: year,
+      patrimonyTotal: patrimonyTotal,
+      fgtsBalance: fgtsBalance,
+      investmentsTotal: investmentsTotal,
+      emergencyFund: emergencyFund,
+    );
+    ref.invalidate(netWorthSnapshotProvider);
+  }
+}
+
+// ═══════════════════════════════════════════
+// EXPORT SERVICE PROVIDER
+// ═══════════════════════════════════════════
+
+final exportServiceProvider = Provider<ExportService>((ref) => ExportService(
+  expenseRepo: ref.watch(expenseRepositoryProvider),
+  incomeRepo: ref.watch(incomeRepositoryProvider),
+  installmentRepo: ref.watch(installmentRepositoryProvider),
+  investmentRepo: ref.watch(investmentRepositoryProvider),
+  netWorthRepo: ref.watch(netWorthRepositoryProvider),
+  budgetGoalsRepo: ref.watch(budgetGoalsRepositoryProvider),
+));
+
+// ═══════════════════════════════════════════
+// HEALTH PROVIDERS
+// ═══════════════════════════════════════════
+
+final healthRepositoryProvider = Provider<HealthRepository>((ref) =>
+    HealthRepository(Supabase.instance.client));
+
+final healthHistoryProvider =
+    FutureProvider.autoDispose<List<HealthSnapshot>>((ref) =>
+        ref.watch(healthRepositoryProvider).fetchHistory());
+
+final healthAutoSaveProvider =
+    AsyncNotifierProvider.autoDispose<HealthAutoSaveNotifier, void>(
+        HealthAutoSaveNotifier.new);
+
+class HealthAutoSaveNotifier extends AutoDisposeAsyncNotifier<void> {
+  @override
+  Future<void> build() async {
+    final month = ref.watch(selectedMonthProvider);
+    final year = ref.watch(selectedYearProvider);
+    final net = ref.watch(effectiveNetSalaryProvider);
+    if (net <= 0) return;
+    final cash = ref.watch(cashExpensesProvider);
+    final byCategory = ref.watch(cashExpensesByCategoryProvider);
+    final balance = ref.watch(cashRemainingProvider);
+    final snap = ref.watch(netWorthSnapshotProvider).value;
+    final inst = ref.watch(installmentsProvider).value ?? [];
+    final housing = byCategory['HOUSING'] ?? 0;
+    final instTotal = inst.fold(0.0, (s, i) => s + i.monthlyAmount);
+    final ef = snap?.emergencyFund ?? 0;
+    final efMonths = cash > 0 ? ef / cash : 0.0;
+    final score = FinancialCalculatorService.calculateHealthScore(
+      netSalary: net,
+      cashExpenses: cash,
+      housingExpenses: housing,
+      monthlyBalance: balance,
+      emergencyFund: ef,
+      avgMonthlyExpenses: cash,
+      activeInstallmentsTotal: instTotal,
+    );
+    await ref.read(healthRepositoryProvider).upsert(
+      month: month,
+      year: year,
+      score: score,
+      savingsRate: (net - cash) / net * 100,
+      housingRate: housing / net * 100,
+      monthlyBalance: balance,
+      emergencyFundMonths: efMonths,
+      installmentsRate: instTotal / net * 100,
+      netSalary: net,
+    );
+  }
+}
+
+// ═══════════════════════════════════════════
+// FIXED EXPENSE AUTO-PROPAGATION
+// ═══════════════════════════════════════════
+
+final fixedExpensePropagationProvider =
+    AsyncNotifierProvider.autoDispose<FixedExpensePropagationNotifier, int>(
+        FixedExpensePropagationNotifier.new);
+
+class FixedExpensePropagationNotifier extends AutoDisposeAsyncNotifier<int> {
+  @override
+  Future<int> build() async {
+    final month = ref.watch(selectedMonthProvider);
+    final year = ref.watch(selectedYearProvider);
+    return ref.read(expenseRepositoryProvider).propagateFixedExpenses(month, year);
+  }
+}
 
 // ═══════════════════════════════════════════
 // ANALYTICS RANGE PROVIDERS
@@ -350,4 +541,36 @@ final analyticsIncomesProvider =
   };
   final start = DateTime(now.year, now.month - months + 1, 1);
   return repo.getByRange(start.month, start.year, now.month, now.year);
+});
+
+// ═══════════════════════════════════════════
+// BUDGET ALERTS PROVIDER
+// ═══════════════════════════════════════════
+
+/// Derives active budget alerts from goals vs current month cash spending.
+/// Thresholds: warning ≥75%, critical ≥90%, exceeded ≥100%.
+final budgetAlertsProvider = Provider.autoDispose<List<BudgetAlert>>((ref) {
+  final goalsMap = ref.watch(budgetGoalsMapProvider);
+  final byCategory = ref.watch(cashExpensesByCategoryProvider);
+
+  final alerts = <BudgetAlert>[];
+  for (final goal in goalsMap.values) {
+    if (goal.targetAmount <= 0) continue;
+    final spent = byCategory[goal.category] ?? 0;
+    final pct = spent / goal.targetAmount;
+    if (pct < 0.75) continue;
+    alerts.add(BudgetAlert(
+      category: goal.category,
+      spent: spent,
+      limit: goal.targetAmount,
+      percentage: pct,
+      level: pct >= 1.0
+          ? AlertLevel.exceeded
+          : pct >= 0.90
+              ? AlertLevel.critical
+              : AlertLevel.warning,
+    ));
+  }
+  alerts.sort((a, b) => b.percentage.compareTo(a.percentage));
+  return alerts;
 });

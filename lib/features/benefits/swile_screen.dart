@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/farol_colors.dart';
 import '../../core/services/financial_calculator_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -9,10 +10,9 @@ class SwileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Scaffold(
-      backgroundColor: AppTheme.surfaceLow,
       appBar: AppBar(
-        backgroundColor: AppTheme.surfaceLow,
         leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
         title: Text('Corporate Benefits', style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700)),
         actions: [IconButton(icon: const Icon(Icons.settings_outlined), onPressed: () {})],
@@ -25,7 +25,7 @@ class SwileScreen extends StatelessWidget {
             const SizedBox(height: 4),
             Text('Swile', style: GoogleFonts.manrope(fontSize: 32, fontWeight: FontWeight.w800, letterSpacing: -0.8)),
             const SizedBox(height: 18),
-            
+
             // Virtual Card
             Container(
               width: double.infinity,
@@ -44,8 +44,7 @@ class SwileScreen extends StatelessWidget {
               child: Stack(
                 children: [
                   Positioned(
-                    top: -20,
-                    right: -20,
+                    top: -20, right: -20,
                     child: Container(width: 120, height: 120, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.1))),
                   ),
                   Column(
@@ -55,7 +54,7 @@ class SwileScreen extends StatelessWidget {
                       const SizedBox(height: 36),
                       const Text('AVAILABLE BALANCE', style: TextStyle(fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: Colors.white70)),
                       const SizedBox(height: 4),
-                      _BRLBig(value: 1450.30, size: 30, color: Colors.white),
+                      const _BRLBig(value: 1450.30, size: 30, color: Colors.white),
                       const SizedBox(height: 18),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -69,9 +68,8 @@ class SwileScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 14),
-            // Breakdown grid
             Row(
               children: const [
                 Expanded(child: _BreakdownCard(label: 'Food Voucher', value: 920.50, note: 'Renews on 01/10', color: AppTheme.secondaryColor)),
@@ -79,12 +77,11 @@ class SwileScreen extends StatelessWidget {
                 Expanded(child: _BreakdownCard(label: 'Meal Voucher', value: 529.80, note: 'Daily · R\$ 33', color: AppTheme.secondaryColor)),
               ],
             ),
-            
+
             const SizedBox(height: 12),
-            // Chart card
             Container(
               padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(color: AppTheme.surfaceLowest, borderRadius: BorderRadius.circular(20)),
+              decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(20)),
               child: Column(
                 children: [
                   Row(
@@ -94,7 +91,7 @@ class SwileScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Monthly Spending', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w800)),
-                          const Text('Last 7 days', style: TextStyle(fontSize: 11, color: AppTheme.onSurfaceSoft)),
+                          Text('Last 7 days', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
                         ],
                       ),
                       Column(
@@ -124,11 +121,11 @@ class SwileScreen extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
                                     gradient: active ? const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppTheme.secondaryColor, AppTheme.tertiaryColor]) : null,
-                                    color: active ? null : const Color(0xFFD4DBE3),
+                                    color: active ? null : colors.surfaceLow,
                                   ),
                                 ),
                                 const SizedBox(height: 6),
-                                Text(['M','T','W','T','F','S','S'][e.key], style: const TextStyle(fontSize: 9, color: AppTheme.onSurfaceFaint, fontWeight: FontWeight.w600)),
+                                Text(['M','T','W','T','F','S','S'][e.key], style: TextStyle(fontSize: 9, color: colors.onSurfaceFaint, fontWeight: FontWeight.w600)),
                               ],
                             ),
                           ),
@@ -139,7 +136,7 @@ class SwileScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,13 +164,14 @@ class _BreakdownCard extends StatelessWidget {
   const _BreakdownCard({required this.label, required this.value, required this.note, required this.color});
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: AppTheme.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label.toUpperCase(), style: const TextStyle(fontSize: 10, letterSpacing: 1, fontWeight: FontWeight.w700, color: AppTheme.onSurfaceSoft)),
+          Text(label.toUpperCase(), style: TextStyle(fontSize: 10, letterSpacing: 1, fontWeight: FontWeight.w700, color: colors.onSurfaceSoft)),
           const SizedBox(height: 6),
           _BRLSmall(value: value, size: 18, weight: FontWeight.w800),
           const SizedBox(height: 4),
@@ -190,15 +188,15 @@ class _TxSwile extends StatelessWidget {
   const _TxSwile({required this.name, required this.cat, required this.value});
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: AppTheme.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
       child: Row(
         children: [
           Container(
-            width: 36,
-            height: 36,
+            width: 36, height: 36,
             decoration: BoxDecoration(color: const Color(0xFFF97366).withOpacity(0.15), borderRadius: BorderRadius.circular(10)),
             child: const Icon(Icons.restaurant, size: 16, color: Color(0xFFE84840)),
           ),
@@ -207,8 +205,8 @@ class _TxSwile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                Text(cat, style: const TextStyle(fontSize: 10, letterSpacing: 0.8, color: AppTheme.onSurfaceSoft, fontWeight: FontWeight.w700)),
+                Text(name, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurface)),
+                Text(cat, style: TextStyle(fontSize: 10, letterSpacing: 0.8, color: colors.onSurfaceSoft, fontWeight: FontWeight.w700)),
               ],
             ),
           ),
@@ -224,12 +222,13 @@ class _BRLBig extends StatelessWidget {
   const _BRLBig({required this.value, required this.size, this.color, this.weight = FontWeight.w800});
   @override
   Widget build(BuildContext context) {
+    final c = color ?? context.colors.onSurface;
     final f = FinancialCalculatorService.formatBRL(value).split(',')[0];
     final cents = FinancialCalculatorService.formatBRL(value).split(',')[1];
     return Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
-      Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.48, fontWeight: FontWeight.w500, color: color)),
-      Text(f.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: weight, color: color, letterSpacing: -size * 0.028)),
-      Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: weight, color: (color ?? AppTheme.onSurface).withOpacity(0.85))),
+      Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.48, fontWeight: FontWeight.w500, color: c)),
+      Text(f.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: weight, color: c, letterSpacing: -size * 0.028)),
+      Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: weight, color: c.withOpacity(0.85))),
     ]);
   }
 }
@@ -240,6 +239,6 @@ class _BRLSmall extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final f = FinancialCalculatorService.formatBRL(value);
-    return Text(f, style: GoogleFonts.inter(fontSize: size, fontWeight: weight, color: color ?? AppTheme.onSurface, fontFeatures: [FontFeature.tabularFigures()]));
+    return Text(f, style: GoogleFonts.inter(fontSize: size, fontWeight: weight, color: color ?? context.colors.onSurface, fontFeatures: [FontFeature.tabularFigures()]));
   }
 }

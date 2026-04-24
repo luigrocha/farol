@@ -3,11 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/farol_colors.dart' show FarolColorsContext;
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/transactions/transactions_screen.dart';
 import 'features/analytics/analytics_screen.dart';
 import 'features/investments/investments_screen.dart';
 import 'features/investments/investment_detail_screen.dart';
+import 'core/models/investment.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/benefits/swile_screen.dart';
 import 'features/notifications/notifications_screen.dart';
@@ -21,8 +23,51 @@ import 'core/providers/providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'features/auth/presentation/auth_providers.dart';
 import 'features/auth/domain/auth_state.dart';
+import 'features/health/health_screen.dart';
+import 'features/simulators/thirteenth_salary_screen.dart';
 
-final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
+final themeModeProvider =
+    NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
+
+class ThemeModeNotifier extends Notifier<ThemeMode> {
+  @override
+  ThemeMode build() {
+    Future.microtask(() async {
+      final db = ref.read(databaseProvider);
+      final remote =
+          await ref.read(userPreferencesRepositoryProvider).fetch();
+      if (remote.themeMode != null) {
+        state = _fromString(remote.themeMode!);
+        await db.setSetting('theme_mode', remote.themeMode!);
+        return;
+      }
+      final local = await db.getSetting('theme_mode');
+      if (local != null) state = _fromString(local);
+    });
+    return ThemeMode.system;
+  }
+
+  Future<void> setThemeMode(ThemeMode mode) async {
+    state = mode;
+    final val = _toString(mode);
+    await Future.wait([
+      ref.read(databaseProvider).setSetting('theme_mode', val),
+      ref.read(userPreferencesRepositoryProvider).setThemeMode(val),
+    ]);
+  }
+
+  ThemeMode _fromString(String s) => switch (s) {
+        'light' => ThemeMode.light,
+        'dark' => ThemeMode.dark,
+        _ => ThemeMode.system,
+      };
+
+  String _toString(ThemeMode m) => switch (m) {
+        ThemeMode.light => 'light',
+        ThemeMode.dark => 'dark',
+        ThemeMode.system => 'system',
+      };
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -87,13 +132,14 @@ class FarolApp extends ConsumerWidget {
         '/edit_profile': (context) => const EditProfileScreen(),
         '/swile': (context) => const SwileScreen(),
         '/notifications': (context) => const NotificationsScreen(),
+        '/health': (context) => const HealthScreen(),
+        '/thirteenth_salary': (context) => const ThirteenthSalaryScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/investment_detail') {
-          final args = settings.arguments as String;
+          final inv = settings.arguments as Investment;
           return MaterialPageRoute(
-              builder: (context) =>
-                  InvestmentDetailScreen(productName: args));
+              builder: (context) => InvestmentDetailScreen(investment: inv));
         }
         return null;
       },
@@ -148,6 +194,7 @@ class VerificationScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     ref.listen<AsyncValue<void>>(authControllerProvider, (_, state) {
       if (state.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -156,7 +203,7 @@ class VerificationScreen extends ConsumerWidget {
       }
       if (state.hasValue && !state.isLoading) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Verification email resent')),
+          SnackBar(content: Text(l10n.verificationEmailResent)),
         );
       }
     });
@@ -177,10 +224,10 @@ class VerificationScreen extends ConsumerWidget {
                   style: TextStyle(
                       fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'We sent a verification link to your email. Please check it to continue.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppTheme.onSurfaceSoft),
+                style: TextStyle(color: context.colors.onSurfaceSoft),
               ),
               const SizedBox(height: 32),
               ElevatedButton.icon(
