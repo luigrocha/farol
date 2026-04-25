@@ -28,6 +28,7 @@ import 'features/health/health_screen.dart';
 import 'features/simulators/thirteenth_salary_screen.dart';
 import 'features/installments/installments_screen.dart';
 import 'features/simulators/fgts_aniversario_screen.dart';
+import 'features/period_budget/presentation/period_budget_screen.dart';
 
 final themeModeProvider =
     NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
@@ -279,6 +280,7 @@ class _MainShellState extends State<MainShell> {
     DashboardScreen(),
     TransactionsScreen(),
     AnalyticsScreen(),
+    PeriodBudgetScreen(),
     InvestmentsScreen(),
     SettingsScreen(),
   ];
@@ -310,6 +312,11 @@ class _MainShellState extends State<MainShell> {
             icon: const Icon(Icons.bar_chart_outlined),
             selectedIcon: const Icon(Icons.bar_chart),
             label: l10n.analytics,
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.pie_chart_outline),
+            selectedIcon: Icon(Icons.pie_chart),
+            label: 'Budget',
           ),
           NavigationDestination(
             icon: const Icon(Icons.trending_up_outlined),
