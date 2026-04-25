@@ -78,6 +78,8 @@ class DashboardScreen extends ConsumerWidget {
               const _ExpenseBreakdown(),
               const SizedBox(height: 16),
               const _MonthlyGoalCard(),
+              const SizedBox(height: 16),
+              const _InstallmentsSummaryCard(),
               const SizedBox(height: 80),
             ]))),
         ],
@@ -388,6 +390,91 @@ class _AlertBanner extends ConsumerWidget {
               child: Text('+${alerts.length - 1}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color)),
             ),
           Icon(Icons.chevron_right, size: 16, color: color),
+        ]),
+      ),
+    );
+  }
+}
+
+class _InstallmentsSummaryCard extends ConsumerWidget {
+  const _InstallmentsSummaryCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final installments = ref.watch(installmentsProvider).value ?? [];
+    const purple = Color(0xFF6B3FA0);
+
+    if (installments.isEmpty) return const SizedBox.shrink();
+
+    final totalMonthly = installments.fold(0.0, (s, i) => s + i.monthlyAmount);
+    final totalRemaining = installments.fold(0.0, (s, i) => s + i.remainingBalance);
+
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, '/installments'),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(20)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Row(children: [
+              Container(
+                width: 32, height: 32,
+                decoration: BoxDecoration(color: purple.withOpacity(0.12), borderRadius: BorderRadius.circular(10)),
+                child: const Center(child: Text('💳', style: TextStyle(fontSize: 15))),
+              ),
+              const SizedBox(width: 10),
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('Parcelas', style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w700, color: colors.onSurface)),
+                Text('${installments.length} ativa${installments.length == 1 ? '' : 's'}', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+              ]),
+            ]),
+            const Row(children: [
+              Text('Ver todas', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF6B3FA0))),
+              Icon(Icons.chevron_right, size: 14, color: Color(0xFF6B3FA0)),
+            ]),
+          ]),
+          const SizedBox(height: 14),
+          Row(children: [
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('MENSAL', style: TextStyle(fontSize: 9, letterSpacing: 1, fontWeight: FontWeight.w600, color: colors.onSurfaceFaint)),
+              const SizedBox(height: 3),
+              Text(FinancialCalculatorService.formatBRL(totalMonthly),
+                style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: purple,
+                  fontFeatures: const [FontFeature.tabularFigures()])),
+            ])),
+            Container(width: 1, height: 32, color: colors.surfaceLow),
+            Expanded(child: Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('SALDO RESTANTE', style: TextStyle(fontSize: 9, letterSpacing: 1, fontWeight: FontWeight.w600, color: colors.onSurfaceFaint)),
+                const SizedBox(height: 3),
+                Text(FinancialCalculatorService.formatBRL(totalRemaining),
+                  style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface,
+                    fontFeatures: const [FontFeature.tabularFigures()])),
+              ]),
+            )),
+          ]),
+          const SizedBox(height: 14),
+          ...installments.take(3).map((inst) => Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Expanded(child: Text(inst.description, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: colors.onSurface), overflow: TextOverflow.ellipsis)),
+                Text('${inst.currentInstallment}/${inst.numInstallments}', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+              ]),
+              const SizedBox(height: 4),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(3),
+                child: LinearProgressIndicator(
+                  value: inst.progressPercent,
+                  minHeight: 4,
+                  backgroundColor: purple.withOpacity(0.1),
+                  valueColor: const AlwaysStoppedAnimation(purple),
+                ),
+              ),
+            ]),
+          )),
         ]),
       ),
     );

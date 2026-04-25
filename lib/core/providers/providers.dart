@@ -274,6 +274,20 @@ final installmentsProvider = StreamProvider.autoDispose<List<CardInstallment>>((
   return ref.watch(installmentRepositoryProvider).watchActive();
 });
 
+final allInstallmentsProvider = StreamProvider.autoDispose<List<CardInstallment>>((ref) {
+  return ref.watch(installmentRepositoryProvider).watchAll();
+});
+
+final totalMonthlyInstallmentsProvider = Provider.autoDispose<double>((ref) {
+  final list = ref.watch(installmentsProvider).value ?? [];
+  return list.fold(0.0, (sum, i) => sum + i.monthlyAmount);
+});
+
+final totalRemainingInstallmentsProvider = Provider.autoDispose<double>((ref) {
+  final list = ref.watch(installmentsProvider).value ?? [];
+  return list.fold(0.0, (sum, i) => sum + i.remainingBalance);
+});
+
 // ═══════════════════════════════════════════
 // INVESTMENTS PROVIDERS
 // ═══════════════════════════════════════════

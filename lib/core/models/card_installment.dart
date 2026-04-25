@@ -25,6 +25,40 @@ class CardInstallment {
     required this.createdAt,
   });
 
+  int get remainingInstallments => numInstallments - currentInstallment;
+  double get progressPercent => numInstallments > 0 ? currentInstallment / numInstallments : 0.0;
+  double get remainingBalance => monthlyAmount * remainingInstallments;
+  bool get isComplete => currentInstallment >= numInstallments;
+  bool get isActive => status == 'Active';
+
+  CardInstallment copyWith({
+    int? id,
+    String? userId,
+    String? description,
+    DateTime? purchaseDate,
+    double? totalValue,
+    int? numInstallments,
+    int? currentInstallment,
+    double? monthlyAmount,
+    String? status,
+    String? notes,
+    DateTime? createdAt,
+  }) {
+    return CardInstallment(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      description: description ?? this.description,
+      purchaseDate: purchaseDate ?? this.purchaseDate,
+      totalValue: totalValue ?? this.totalValue,
+      numInstallments: numInstallments ?? this.numInstallments,
+      currentInstallment: currentInstallment ?? this.currentInstallment,
+      monthlyAmount: monthlyAmount ?? this.monthlyAmount,
+      status: status ?? this.status,
+      notes: notes ?? this.notes,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
   factory CardInstallment.fromJson(Map<String, dynamic> json) => CardInstallment(
         id: (json['id'] as num).toInt(),
         userId: json['user_id'] as String,

@@ -25,6 +25,7 @@ import 'features/auth/presentation/auth_providers.dart';
 import 'features/auth/domain/auth_state.dart';
 import 'features/health/health_screen.dart';
 import 'features/simulators/thirteenth_salary_screen.dart';
+import 'features/installments/installments_screen.dart';
 
 final themeModeProvider =
     NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
@@ -134,6 +135,7 @@ class FarolApp extends ConsumerWidget {
         '/notifications': (context) => const NotificationsScreen(),
         '/health': (context) => const HealthScreen(),
         '/thirteenth_salary': (context) => const ThirteenthSalaryScreen(),
+        '/installments': (context) => const InstallmentsScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/investment_detail') {
