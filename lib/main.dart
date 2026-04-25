@@ -232,7 +232,7 @@ class VerificationScreen extends ConsumerWidget {
                       fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
               Text(
-                'We sent a verification link to your email. Please check it to continue.',
+                l10n.translate('we_sent_verification'),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: context.colors.onSurfaceSoft),
               ),

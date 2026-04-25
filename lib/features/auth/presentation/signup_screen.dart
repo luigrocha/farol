@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/farol_colors.dart';
 import '../../../design/farol_colors.dart' as tokens;
 import '../../../design/widgets/farol_button.dart';
+import '../../../core/i18n/app_localizations.dart';
 import 'auth_providers.dart';
 import 'widgets/auth_buttons.dart';
 
@@ -60,11 +61,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     final colors = context.colors;
     final cs = Theme.of(context).colorScheme;
     final isLoading = ref.watch(authControllerProvider).isLoading;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: cs.background,
       body: AuthActionHandler(
-        successMessage: 'Conta criada! Verifique seu e-mail para continuar.',
+        successMessage: l10n.translate('account_created_check_email'),
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(28, 20, 28, 32),
@@ -91,7 +93,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   Text.rich(
                     TextSpan(children: [
                       TextSpan(
-                        text: 'Criar sua\n',
+                        text: l10n.translate('create_your'),
                         style: GoogleFonts.manrope(
                           fontSize: 34,
                           fontWeight: FontWeight.w800,
@@ -101,7 +103,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         ),
                       ),
                       TextSpan(
-                        text: 'conta Farol.',
+                        text: l10n.translate('farol_account'),
                         style: GoogleFonts.manrope(
                           fontSize: 34,
                           fontWeight: FontWeight.w600,
@@ -114,7 +116,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Comece a iluminar seu caminho financeiro hoje.',
+                    l10n.translate('start_illuminating'),
                     style: GoogleFonts.inter(
                         fontSize: 14, color: colors.onSurfaceSoft, height: 1.5),
                   ),
@@ -124,12 +126,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'E-mail',
-                      prefixIcon: Icon(Icons.mail_outline_rounded),
+                    decoration: InputDecoration(
+                      labelText: l10n.translate('email'),
+                      prefixIcon: const Icon(Icons.mail_outline_rounded),
                     ),
                     validator: (v) =>
-                        _emailRegex.hasMatch(v ?? '') ? null : 'E-mail inválido',
+                        _emailRegex.hasMatch(v ?? '') ? null : l10n.translate('invalid_email'),
                   ),
                   const SizedBox(height: 12),
 
@@ -139,7 +141,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     obscureText: _obscurePassword,
                     onChanged: _onPasswordChanged,
                     decoration: InputDecoration(
-                      labelText: 'Senha',
+                      labelText: l10n.translate('password'),
                       prefixIcon: const Icon(Icons.lock_outline_rounded),
                       suffixIcon: IconButton(
                         icon: Icon(_obscurePassword
@@ -150,7 +152,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       ),
                     ),
                     validator: (v) =>
-                        (v?.length ?? 0) >= 6 ? null : 'Mínimo 6 caracteres',
+                        (v?.length ?? 0) >= 6 ? null : l10n.translate('min_6_chars'),
                   ),
                   const SizedBox(height: 8),
 
@@ -163,7 +165,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     controller: _confirmPasswordController,
                     obscureText: _obscureConfirm,
                     decoration: InputDecoration(
-                      labelText: 'Confirmar senha',
+                      labelText: l10n.translate('confirm_password'),
                       prefixIcon: const Icon(Icons.lock_outline_rounded),
                       suffixIcon: IconButton(
                         icon: Icon(_obscureConfirm
@@ -175,7 +177,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     ),
                     validator: (v) => v == _passwordController.text
                         ? null
-                        : 'As senhas não coincidem',
+                        : l10n.translate('passwords_dont_match'),
                   ),
                   const SizedBox(height: 28),
 
@@ -183,7 +185,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: FarolButton.primary(
-                      label: 'Criar conta →',
+                      label: l10n.translate('create_account_arrow'),
                       onPressed: isLoading ? null : _submit,
                       loading: isLoading,
                     ),
@@ -200,12 +202,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       child: Text.rich(
                         TextSpan(children: [
                           TextSpan(
-                            text: 'Já tem uma conta? ',
+                            text: l10n.translate('already_have_account'),
                             style: GoogleFonts.inter(
                                 fontSize: 13, color: colors.onSurfaceSoft),
                           ),
                           TextSpan(
-                            text: 'Entrar',
+                            text: l10n.translate('sign_in'),
                             style: GoogleFonts.inter(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
@@ -247,17 +249,18 @@ class _StrengthMeter extends StatelessWidget {
     };
   }
 
-  String _label() => switch (strength) {
+  String _label(AppLocalizations l10n) => switch (strength) {
         0 => '',
-        1 => 'Muito fraca',
-        2 => 'Fraca',
-        3 => 'Boa',
-        _ => 'Forte',
+        1 => l10n.translate('very_weak'),
+        2 => l10n.translate('weak'),
+        3 => l10n.translate('good'),
+        _ => l10n.translate('strong'),
       };
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Row(
       children: [
@@ -274,7 +277,7 @@ class _StrengthMeter extends StatelessWidget {
         if (strength > 0) ...[
           const SizedBox(width: 10),
           Text(
-            _label(),
+            _label(l10n),
             style: GoogleFonts.inter(
               fontSize: 11,
               fontWeight: FontWeight.w600,

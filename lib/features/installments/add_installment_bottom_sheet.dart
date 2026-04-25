@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/providers.dart';
+import '../../core/i18n/app_localizations.dart';
 import '../../core/theme/farol_colors.dart';
 
 class AddInstallmentBottomSheet extends ConsumerStatefulWidget {
@@ -36,6 +37,7 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
   Widget build(BuildContext context) {
     final bottom = MediaQuery.of(context).viewInsets.bottom;
     final colors = context.colors;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -49,7 +51,7 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
             color: colors.surfaceLow, borderRadius: BorderRadius.circular(2)))),
           const SizedBox(height: 16),
 
-          Center(child: Text('Nova Parcela', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800))),
+          Center(child: Text(l10n.translate('new_installment'), style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800))),
           const SizedBox(height: 24),
 
           // Description
@@ -57,16 +59,16 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
             controller: _descCtrl,
             autofocus: true,
             textCapitalization: TextCapitalization.sentences,
-            decoration: const InputDecoration(
-              labelText: 'Descrição *',
-              prefixIcon: Icon(Icons.label_outline),
-              hintText: 'ex: Notebook, Celular…',
+            decoration: InputDecoration(
+              labelText: l10n.translate('description_required'),
+              prefixIcon: const Icon(Icons.label_outline),
+              hintText: l10n.translate('desc_example'),
             ),
           ),
           const SizedBox(height: 16),
 
           // Monthly amount
-          Text('Valor da parcela mensal', style: Theme.of(context).textTheme.labelLarge),
+          Text(l10n.translate('monthly_installment_amount'), style: Theme.of(context).textTheme.labelLarge),
           const SizedBox(height: 8),
           TextField(
             controller: _amountCtrl,
@@ -82,7 +84,7 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
           const SizedBox(height: 20),
 
           // Number of installments
-          _Label(label: 'Número de parcelas: $_numInstallments'),
+          _Label(label: '${l10n.translate('num_installments')}: $_numInstallments'),
           const SizedBox(height: 8),
           Row(children: [
             _StepButton(
@@ -105,7 +107,7 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
           const SizedBox(height: 12),
 
           // Current installment (already paid)
-          _Label(label: 'Parcela atual: $_currentInstallment de $_numInstallments'),
+          _Label(label: '${l10n.translate('current_installment')}: $_currentInstallment ${l10n.translate('of')} $_numInstallments'),
           const SizedBox(height: 8),
           Row(children: [
             _StepButton(
@@ -130,7 +132,7 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
             contentPadding: EdgeInsets.zero,
             leading: Icon(Icons.calendar_today, color: colors.onSurfaceMuted, size: 20),
             title: Text(
-              'Compra em ${_purchaseDate.day.toString().padLeft(2, '0')}/${_purchaseDate.month.toString().padLeft(2, '0')}/${_purchaseDate.year}',
+              '${l10n.translate('purchased_on')} ${_purchaseDate.day.toString().padLeft(2, '0')}/${_purchaseDate.month.toString().padLeft(2, '0')}/${_purchaseDate.year}',
               style: const TextStyle(fontSize: 14),
             ),
             trailing: Icon(Icons.chevron_right, color: colors.onSurfaceMuted),
@@ -148,7 +150,7 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
           TextField(
             controller: _notesCtrl,
             decoration: InputDecoration(
-              labelText: 'Observações (opcional)',
+              labelText: l10n.translate('notes_optional'),
               prefixIcon: Icon(Icons.notes, color: colors.onSurfaceMuted),
             ),
           ),
@@ -160,6 +162,7 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
               monthly: _parseBRL(_amountCtrl.text)!,
               numInstallments: _numInstallments,
               currentInstallment: _currentInstallment,
+              l10n: l10n,
             ),
             const SizedBox(height: 16),
           ],
@@ -176,7 +179,7 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
               ),
               child: _saving
                   ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Text('SALVAR', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                  : Text(l10n.save.toUpperCase(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
             ),
           ),
         ]),
@@ -185,11 +188,12 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
     final desc = _descCtrl.text.trim();
     final monthly = _parseBRL(_amountCtrl.text);
 
-    if (desc.isEmpty) { _snack('Informe a descrição'); return; }
-    if (monthly == null || monthly <= 0) { _snack('Informe o valor da parcela'); return; }
+    if (desc.isEmpty) { _snack(l10n.translate('enter_description')); return; }
+    if (monthly == null || monthly <= 0) { _snack(l10n.translate('enter_installment_amount')); return; }
 
     setState(() => _saving = true);
     try {
@@ -206,13 +210,13 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Parcela adicionada!'), backgroundColor: _purple),
+          SnackBar(content: Text(l10n.translate('installment_added')), backgroundColor: _purple),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro: $e'), backgroundColor: Colors.red.shade700),
+          SnackBar(content: Text('${l10n.translate('error')}: $e'), backgroundColor: Colors.red.shade700),
         );
       }
     } finally {
@@ -227,7 +231,8 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
 class _PreviewCard extends StatelessWidget {
   final double monthly;
   final int numInstallments, currentInstallment;
-  const _PreviewCard({required this.monthly, required this.numInstallments, required this.currentInstallment});
+  final AppLocalizations l10n;
+  const _PreviewCard({required this.monthly, required this.numInstallments, required this.currentInstallment, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -242,9 +247,9 @@ class _PreviewCard extends StatelessWidget {
         border: Border.all(color: const Color(0xFF6B3FA0).withOpacity(0.2)),
       ),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-        _PreviewStat(label: 'Total', value: 'R\$ ${(monthly * numInstallments).toStringAsFixed(0)}', colors: colors),
-        _PreviewStat(label: 'Restam', value: '$remaining parcelas', colors: colors),
-        _PreviewStat(label: 'Saldo restante', value: 'R\$ ${remainingBalance.toStringAsFixed(0)}', colors: colors),
+        _PreviewStat(label: l10n.translate('total'), value: 'R\$ ${(monthly * numInstallments).toStringAsFixed(0)}', colors: colors),
+        _PreviewStat(label: l10n.translate('remaining'), value: '$remaining ${l10n.translate('installments')}', colors: colors),
+        _PreviewStat(label: l10n.translate('remaining_balance'), value: 'R\$ ${remainingBalance.toStringAsFixed(0)}', colors: colors),
       ]),
     );
   }

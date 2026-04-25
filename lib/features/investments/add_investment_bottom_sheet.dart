@@ -61,7 +61,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
         const SizedBox(height: 24),
 
         // Type selector — horizontal scroll
-        Text('Type', style: Theme.of(context).textTheme.labelLarge),
+        Text(l10n.translate('type'), style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 8),
         SizedBox(height: 48, child: ListView(
           scrollDirection: Axis.horizontal,
@@ -127,7 +127,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
             controller: _balanceCtrl,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.,]'))],
-            decoration: const InputDecoration(labelText: 'Current balance', prefixText: 'R\$ '),
+            decoration: InputDecoration(labelText: l10n.translate('current_balance_input'), prefixText: 'R\$ '),
           ),
         ],
         const SizedBox(height: 16),
@@ -136,18 +136,18 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
         TextField(
           controller: _productCtrl,
           textCapitalization: TextCapitalization.words,
-          decoration: const InputDecoration(
-            labelText: 'Product name',
-            prefixIcon: Icon(Icons.label_outline),
+          decoration: InputDecoration(
+            labelText: l10n.translate('product_name'),
+            prefixIcon: const Icon(Icons.label_outline),
           ),
         ),
         const SizedBox(height: 12),
         TextField(
           controller: _institutionCtrl,
           textCapitalization: TextCapitalization.words,
-          decoration: const InputDecoration(
-            labelText: 'Institution / Broker',
-            prefixIcon: Icon(Icons.account_balance_outlined),
+          decoration: InputDecoration(
+            labelText: l10n.translate('institution'),
+            prefixIcon: const Icon(Icons.account_balance_outlined),
           ),
         ),
         const SizedBox(height: 12),
@@ -174,7 +174,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
         TextField(
           controller: _notesCtrl,
           decoration: InputDecoration(
-            labelText: 'Notes (optional)',
+            labelText: l10n.translate('notes_optional'),
             prefixIcon: Icon(Icons.notes, color: colors.onSurfaceMuted),
           ),
         ),
@@ -191,7 +191,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
             ),
             child: _saving
                 ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('SAVE', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                : Text(l10n.save.toUpperCase(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
           )),
       ])),
     );
@@ -207,19 +207,19 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
         : totalInvested;
 
     if (productName.isEmpty) {
-      _snack('Enter a product name');
+      _snack(l10n.translate('enter_product_name'));
       return;
     }
     if (institution.isEmpty) {
-      _snack('Enter the institution');
+      _snack(l10n.translate('enter_institution'));
       return;
     }
     if (totalInvested == null || totalInvested <= 0) {
-      _snack('Enter the invested amount');
+      _snack(l10n.translate('enter_invested_amount'));
       return;
     }
     if (_balanceDiffers && currentBalance == null) {
-      _snack('Enter a valid current balance');
+      _snack(l10n.translate('enter_valid_balance'));
       return;
     }
 
@@ -246,7 +246,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red.shade700),
+          SnackBar(content: Text('${l10n.translate('error')}: $e'), backgroundColor: Colors.red.shade700),
         );
       }
     } finally {

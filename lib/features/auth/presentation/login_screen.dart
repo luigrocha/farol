@@ -87,7 +87,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Text.rich(
                     TextSpan(children: [
                       TextSpan(
-                        text: 'Bem-vindo\n',
+                        text: l10n.translate('welcome'),
                         style: GoogleFonts.manrope(
                           fontSize: 34,
                           fontWeight: FontWeight.w800,
@@ -97,7 +97,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                       ),
                       TextSpan(
-                        text: 'de volta.',
+                        text: l10n.translate('back'),
                         style: GoogleFonts.manrope(
                           fontSize: 34,
                           fontWeight: FontWeight.w600,
@@ -110,7 +110,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Entre e continue iluminando seu caminho financeiro.',
+                    l10n.translate('login_subtitle'),
                     style: GoogleFonts.inter(
                         fontSize: 14,
                         color: colors.onSurfaceSoft,
@@ -122,12 +122,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'E-mail',
-                      prefixIcon: Icon(Icons.mail_outline_rounded),
+                    decoration: InputDecoration(
+                      labelText: l10n.translate('email'),
+                      prefixIcon: const Icon(Icons.mail_outline_rounded),
                     ),
                     validator: (v) =>
-                        _emailRegex.hasMatch(v ?? '') ? null : 'E-mail inválido',
+                        _emailRegex.hasMatch(v ?? '') ? null : l10n.translate('invalid_email'),
                   ),
                   const SizedBox(height: 12),
 
@@ -136,7 +136,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
-                      labelText: 'Senha',
+                      labelText: l10n.translate('password'),
                       prefixIcon: const Icon(Icons.lock_outline_rounded),
                       suffixIcon: IconButton(
                         icon: Icon(_obscurePassword
@@ -147,7 +147,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                     validator: (v) =>
-                        (v?.length ?? 0) >= 6 ? null : 'Mínimo 6 caracteres',
+                        (v?.length ?? 0) >= 6 ? null : l10n.translate('min_6_chars'),
                   ),
                   const SizedBox(height: 4),
 
@@ -179,7 +179,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: FarolButton.primary(
-                      label: 'Entrar →',
+                      label: l10n.signIn,
                       onPressed: isLoading ? null : _submit,
                       loading: isLoading,
                     ),
@@ -194,7 +194,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Text(
-                        'ou continue com',
+                        l10n.orSignInWith,
                         style: GoogleFonts.inter(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
@@ -245,12 +245,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       child: Text.rich(
                         TextSpan(children: [
                           TextSpan(
-                            text: 'Ainda não tem conta? ',
+                            text: l10n.translate('dont_have_account'),
                             style: GoogleFonts.inter(
                                 fontSize: 13, color: colors.onSurfaceSoft),
                           ),
                           TextSpan(
-                            text: 'Criar conta',
+                            text: l10n.signUp,
                             style: GoogleFonts.inter(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,

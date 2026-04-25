@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/farol_colors.dart';
 import '../../../design/farol_colors.dart' as tokens;
 import '../../../design/widgets/farol_button.dart';
+import '../../../core/i18n/app_localizations.dart';
 import 'auth_providers.dart';
 import 'widgets/auth_buttons.dart';
 
@@ -56,6 +57,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
     final colors = context.colors;
     final cs = Theme.of(context).colorScheme;
     final isLoading = ref.watch(authControllerProvider).isLoading;
+    final l10n = AppLocalizations.of(context);
 
     ref.listen<AsyncValue<void>>(authControllerProvider, (_, state) {
       if (state.hasError) {
@@ -99,7 +101,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
                   Text.rich(
                     TextSpan(children: [
                       TextSpan(
-                        text: 'Nova\n',
+                        text: l10n.translate('new_password_title_1'),
                         style: GoogleFonts.manrope(
                           fontSize: 34,
                           fontWeight: FontWeight.w800,
@@ -109,7 +111,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
                         ),
                       ),
                       TextSpan(
-                        text: 'senha.',
+                        text: l10n.translate('new_password_title_2'),
                         style: GoogleFonts.manrope(
                           fontSize: 34,
                           fontWeight: FontWeight.w600,
@@ -122,7 +124,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Escolha uma senha forte para proteger sua conta.',
+                    l10n.translate('choose_strong_password'),
                     style: GoogleFonts.inter(
                         fontSize: 14, color: colors.onSurfaceSoft, height: 1.5),
                   ),
@@ -134,7 +136,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
                     obscureText: _obscurePassword,
                     onChanged: _onPasswordChanged,
                     decoration: InputDecoration(
-                      labelText: 'Nova senha',
+                      labelText: l10n.translate('new_password'),
                       prefixIcon: const Icon(Icons.lock_outline_rounded),
                       suffixIcon: IconButton(
                         icon: Icon(_obscurePassword
@@ -145,7 +147,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
                       ),
                     ),
                     validator: (v) =>
-                        (v?.length ?? 0) >= 8 ? null : 'Mínimo 8 caracteres',
+                        (v?.length ?? 0) >= 8 ? null : l10n.translate('min_8_chars'),
                   ),
                   const SizedBox(height: 8),
 
@@ -158,7 +160,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
                     controller: _confirmController,
                     obscureText: _obscureConfirm,
                     decoration: InputDecoration(
-                      labelText: 'Confirmar nova senha',
+                      labelText: l10n.translate('confirm_new_password'),
                       prefixIcon: const Icon(Icons.lock_outline_rounded),
                       suffixIcon: IconButton(
                         icon: Icon(_obscureConfirm
@@ -170,7 +172,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
                     ),
                     validator: (v) => v == _passwordController.text
                         ? null
-                        : 'As senhas não coincidem',
+                        : l10n.translate('passwords_dont_match'),
                   ),
                   const SizedBox(height: 32),
 
@@ -178,7 +180,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: FarolButton.primary(
-                      label: 'Atualizar senha →',
+                      label: l10n.translate('update_password_arrow'),
                       onPressed: isLoading ? null : _submit,
                       loading: isLoading,
                     ),
@@ -214,17 +216,18 @@ class _StrengthMeter extends StatelessWidget {
     };
   }
 
-  String _label() => switch (strength) {
+  String _label(AppLocalizations l10n) => switch (strength) {
         0 => '',
-        1 => 'Muito fraca',
-        2 => 'Fraca',
-        3 => 'Boa',
-        _ => 'Forte',
+        1 => l10n.translate('very_weak'),
+        2 => l10n.translate('weak'),
+        3 => l10n.translate('good'),
+        _ => l10n.translate('strong'),
       };
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Row(
       children: [
@@ -241,7 +244,7 @@ class _StrengthMeter extends StatelessWidget {
         if (strength > 0) ...[
           const SizedBox(width: 10),
           Text(
-            _label(),
+            _label(l10n),
             style: GoogleFonts.inter(
               fontSize: 11,
               fontWeight: FontWeight.w600,

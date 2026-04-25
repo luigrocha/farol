@@ -84,16 +84,16 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 const SizedBox(height: 24),
                 _Field(
                   controller: _nameCtrl,
-                  label: 'Name',
+                  label: l10n.translate('name'),
                   icon: Icons.person_outline,
                   fillColor: colors.surfaceLowest,
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'Name is required' : null,
+                  validator: (v) => (v == null || v.trim().isEmpty) ? l10n.translate('name_required') : null,
                   onChanged: (_) => setState(() {}),
                 ),
                 const SizedBox(height: 16),
                 _Field(
                   controller: _avatarCtrl,
-                  label: 'Avatar URL (optional)',
+                  label: l10n.translate('avatar_optional'),
                   icon: Icons.image_outlined,
                   fillColor: colors.surfaceLowest,
                   onChanged: (_) => setState(() {}),
@@ -108,7 +108,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   ),
                   child: controllerState.isLoading
                       ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : const Text('Save', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      : Text(l10n.save, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ],
             ),

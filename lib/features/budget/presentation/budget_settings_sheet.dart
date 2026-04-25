@@ -55,11 +55,11 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
       ));
       if (mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.budgetSaved), backgroundColor: Colors.green));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.budgetSaved), backgroundColor: tokens.FarolColors.beam));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.errorSaving}: $e'), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.errorSaving}: $e'), backgroundColor: tokens.FarolColors.coral));
       }
     } finally {
       if (mounted) setState(() => _saving = false);

@@ -135,7 +135,7 @@ class _PeriodSettingsRow extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Período financiero',
+                  Text(AppLocalizations.of(context).translate('financial_period'),
                       style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurface)),
                   Text(period.label,
                       style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
@@ -173,7 +173,15 @@ class _CutoffDaySheetState extends ConsumerState<_CutoffDaySheet> {
     try {
       final current = ref.read(budgetSettingsProvider).value ?? const BudgetSettings();
       await ref.read(budgetSettingsProvider.notifier).save(current.copyWith(cutoffDay: _selected));
-      if (mounted) Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).translate('settings_saved')),
+            backgroundColor: tokens.FarolColors.beam,
+          ),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -217,15 +225,15 @@ class _CutoffDaySheetState extends ConsumerState<_CutoffDaySheet> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Inicio del período', style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700)),
-                  Text('Día $_selected de cada mes', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+                  Text(AppLocalizations.of(context).translate('period_start'), style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700)),
+                  Text('${AppLocalizations.of(context).translate('day_of_each_month').split(' ')[0]} $_selected ${AppLocalizations.of(context).translate('day_of_each_month').split(' ').skip(1).join(' ')}', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
                 ],
               ),
             ],
           ),
           const SizedBox(height: 20),
           Text(
-            'Selecciona el día en que comienza tu período financiero (1–28):',
+            AppLocalizations.of(context).translate('select_period_start'),
             style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft, height: 1.5),
           ),
           const SizedBox(height: 16),
@@ -272,7 +280,7 @@ class _CutoffDaySheetState extends ConsumerState<_CutoffDaySheet> {
               ),
               child: _saving
                   ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Text('Guardar', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                  : Text(AppLocalizations.of(context).translate('save'), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
             ),
           ),
         ],
@@ -415,6 +423,14 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
     setState(() => _loading = task);
     try {
       await fn();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).translate('export_success')),
+            backgroundColor: tokens.FarolColors.beam,
+          ),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -436,12 +452,12 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
       Row(children: [
         Icon(Icons.shield_outlined, size: 16, color: colors.onSurfaceMuted),
         const SizedBox(width: 8),
-        Text('Data & Privacy', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
+        Text(AppLocalizations.of(context).translate('data_privacy'), style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
       ]),
       const SizedBox(height: 12),
       _DataRow(
         icon: Icons.receipt_long_outlined,
-        name: 'Export Transactions',
+        name: AppLocalizations.of(context).translate('export_transactions'),
         sub: 'CSV — $month/$year',
         color: tokens.FarolColors.beam,
         isLoading: _loading == _ExportTask.transactions,
@@ -465,8 +481,8 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
       ),
       _DataRow(
         icon: Icons.picture_as_pdf,
-        name: 'Resumen Mensual PDF',
-        sub: 'Informe completo — $month/$year',
+        name: AppLocalizations.of(context).translate('monthly_report_pdf'),
+        sub: 'PDF — $month/$year',
         color: tokens.FarolColors.coral,
         isLoading: _loading == _ExportTask.pdf,
         onTap: () => _run(_ExportTask.pdf,
@@ -482,12 +498,12 @@ class _SupportSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text('Concierge Support', style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700)),
+      Text(AppLocalizations.of(context).translate('concierge_support'), style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700)),
       const SizedBox(height: 12),
-      const Row(children: [
-        Expanded(child: _SupportCard(icon: Icons.chat_bubble_outline, label: 'Chat 24/7')),
-        SizedBox(width: 10),
-        Expanded(child: _SupportCard(icon: Icons.headset_mic_outlined, label: 'VIP Call')),
+      Row(children: [
+        Expanded(child: _SupportCard(icon: Icons.chat_bubble_outline, label: AppLocalizations.of(context).translate('chat_24_7'))),
+        const SizedBox(width: 10),
+        Expanded(child: _SupportCard(icon: Icons.headset_mic_outlined, label: AppLocalizations.of(context).translate('vip_call'))),
       ]),
     ]);
   }

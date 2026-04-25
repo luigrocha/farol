@@ -143,8 +143,8 @@ class SwileScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Recent Transactions', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w800)),
-                const Text('See all', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: tokens.FarolColors.beam)),
+                Text(l10n.translate('recent_transactions'), style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w800)),
+                Text(l10n.translate('see_all'), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: tokens.FarolColors.beam)),
               ],
             ),
             const SizedBox(height: 12),

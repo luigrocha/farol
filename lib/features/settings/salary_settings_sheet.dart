@@ -7,6 +7,7 @@ import '../../core/providers/providers.dart';
 import '../../core/services/clt_calculator_service.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../design/farol_colors.dart' as tokens;
+import '../../core/i18n/app_localizations.dart';
 import '../../core/theme/farol_colors.dart';
 
 const _kGreen = tokens.FarolColors.beam;
@@ -56,7 +57,7 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
     final gross = _parse(_grossCtrl.text);
     if (gross <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Informe o salário bruto')),
+        SnackBar(content: Text(AppLocalizations.of(context).translate('enter_gross_salary'))),
       );
       return;
     }
@@ -72,8 +73,8 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Configuração CLT salva!'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context).translate('salary_saved')),
             backgroundColor: _kGreen,
           ),
         );
@@ -82,8 +83,8 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('Erro: $e'),
-              backgroundColor: Colors.red.shade700),
+              content: Text('${AppLocalizations.of(context).translate('error') ?? "Error"}: $e'),
+              backgroundColor: tokens.FarolColors.coral),
         );
       }
     } finally {
@@ -114,6 +115,7 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
 
     final bottom = MediaQuery.of(context).viewInsets.bottom;
     final colors = context.colors;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -286,14 +288,14 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
                   ),
                   child: _saving
                       ? const SizedBox(
-                          width: 22,
-                          height: 22,
+                          height: 20,
+                          width: 20,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.white),
+                              color: Colors.white, strokeWidth: 2),
                         )
-                      : const Text('SALVAR',
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w700)),
+                      : Text(l10n.save.toUpperCase(),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w700)),
                 ),
               ),
             ]),
