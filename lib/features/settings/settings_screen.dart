@@ -80,7 +80,7 @@ class _ProfileCard extends ConsumerWidget {
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(24)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('PROFILE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 1.6, color: colors.onSurfaceFaint)),
+        Text(l10n.translate('profile').toUpperCase(), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 1.6, color: colors.onSurfaceFaint)),
         const SizedBox(height: 6),
         Text(
           displayName.isNotEmpty ? displayName : '—',
@@ -347,8 +347,8 @@ class _AppearanceCard extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.all(4), decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(99)),
           child: Row(children: [
-            _ThemeBtn(label: 'Light', icon: Icons.light_mode, active: theme == ThemeMode.light, onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.light)),
-            _ThemeBtn(label: 'Dark', icon: Icons.dark_mode, active: theme == ThemeMode.dark, onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark)),
+            _ThemeBtn(label: l10n.translate('light_mode'), icon: Icons.light_mode, active: theme == ThemeMode.light, onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.light)),
+            _ThemeBtn(label: l10n.translate('dark_mode'), icon: Icons.dark_mode, active: theme == ThemeMode.dark, onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark)),
           ]),
         ),
       ]),
@@ -465,7 +465,7 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
       ),
       _DataRow(
         icon: Icons.description_outlined,
-        name: 'Income Statement',
+        name: AppLocalizations.of(context).translate('income_statement'),
         sub: 'CSV — $month/$year',
         color: tokens.FarolColors.navy,
         isLoading: _loading == _ExportTask.income,
@@ -473,8 +473,8 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
       ),
       _DataRow(
         icon: Icons.cloud_download_outlined,
-        name: 'Full Backup',
-        sub: 'All data as JSON',
+        name: AppLocalizations.of(context).translate('full_backup'),
+        sub: 'JSON',
         color: tokens.FarolColors.tide,
         isLoading: _loading == _ExportTask.backup,
         onTap: () => _run(_ExportTask.backup, svc.exportBackup),
@@ -531,6 +531,7 @@ class _SalarySection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final colors = context.colors;
     final salaryAsync = ref.watch(salarySettingsProvider);
 
@@ -580,7 +581,7 @@ class _SalarySection extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                   Text(
-                    hasData ? 'Salário CLT configurado' : 'Configurar Salário CLT',
+                    hasData ? l10n.translate('salary_configured') : l10n.translate('configure_salary'),
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -589,7 +590,7 @@ class _SalarySection extends ConsumerWidget {
                   Text(
                     hasData
                         ? 'Bruto: ${FinancialCalculatorService.formatBRL(salary.grossSalary)} · Líquido: ${FinancialCalculatorService.formatBRL(salary.netSalary)}'
-                        : 'INSS, IRRF e FGTS calculados automaticamente',
+                        : l10n.translate('salary_calculated'),
                     style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
                   ),
                 ]),
@@ -615,7 +616,7 @@ class _BudgetSection extends ConsumerWidget {
       Row(children: [
         Icon(Icons.account_balance_wallet_outlined, size: 16, color: colors.onSurfaceMuted),
         const SizedBox(width: 8),
-        Text('Budget', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
+        Text(AppLocalizations.of(context).translate('monthly_budget'), style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
       ]),
       const SizedBox(height: 12),
       GestureDetector(
@@ -649,7 +650,7 @@ class _BudgetSection extends ConsumerWidget {
                 const SizedBox(width: 14),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(
-                    hasData ? 'Monthly Budget' : 'Set Monthly Budget',
+                    AppLocalizations.of(context).translate('monthly_budget'),
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface),
                   ),
                   Text(
@@ -700,11 +701,11 @@ class _BudgetSection extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Category Budgets',
+                    AppLocalizations.of(context).translate('category_budgets'),
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface),
                   ),
                   Text(
-                    'Set spending limits per category',
+                    AppLocalizations.of(context).translate('set_spending_limits'),
                     style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
                   ),
                 ],
@@ -749,7 +750,7 @@ class _NetWorthSection extends ConsumerWidget {
       Row(children: [
         Icon(Icons.account_balance_outlined, size: 16, color: colors.onSurfaceMuted),
         const SizedBox(width: 8),
-        Text('Patrimônio Neto', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
+        Text(AppLocalizations.of(context).translate('net_worth'), style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
       ]),
       const SizedBox(height: 12),
       GestureDetector(
@@ -792,7 +793,7 @@ class _NetWorthSection extends ConsumerWidget {
                 const SizedBox(width: 14),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(
-                    hasData ? 'Patrimônio configurado' : 'Configurar Patrimônio',
+                    hasData ? AppLocalizations.of(context).translate('net_worth_configured') : AppLocalizations.of(context).translate('configure_net_worth'),
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface),
                   ),
                   Text(

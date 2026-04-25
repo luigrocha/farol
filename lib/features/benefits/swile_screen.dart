@@ -54,7 +54,7 @@ class SwileScreen extends StatelessWidget {
                     children: [
                       Text('swile', style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w800, letterSpacing: 1, color: Colors.white)),
                       const SizedBox(height: 36),
-                      const Text('AVAILABLE BALANCE', style: TextStyle(fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: Colors.white70)),
+                      Text(l10n.translate('swile_remaining').toUpperCase(), style: const TextStyle(fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: Colors.white70)),
                       const SizedBox(height: 4),
                       const _BRLBig(value: 1450.30, size: 30, color: Colors.white),
                       const SizedBox(height: 18),
@@ -72,11 +72,11 @@ class SwileScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 14),
-            const Row(
+            Row(
               children: [
-                Expanded(child: _BreakdownCard(label: 'Food Voucher', value: 920.50, note: 'Renews on 01/10', color: tokens.FarolColors.beam)),
-                SizedBox(width: 10),
-                Expanded(child: _BreakdownCard(label: 'Meal Voucher', value: 529.80, note: 'Daily · R\$ 33', color: tokens.FarolColors.beam)),
+                Expanded(child: _BreakdownCard(label: l10n.translate('pay_swile_food'), value: 920.50, note: 'Renews on 01/10', color: tokens.FarolColors.beam)),
+                const SizedBox(width: 10),
+                Expanded(child: _BreakdownCard(label: l10n.translate('pay_swile_meal'), value: 529.80, note: 'Daily · R\$ 33', color: tokens.FarolColors.beam)),
               ],
             ),
 

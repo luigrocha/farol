@@ -92,13 +92,13 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
               ]),
             ]),
             const SizedBox(height: 6),
-            Text('Set your planned monthly income. The dashboard will track remaining amounts as you add transactions.', style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft, height: 1.5)),
+            Text(l10n.translate('set_planned_income'), style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft, height: 1.5)),
             const SizedBox(height: 20),
-            _AmountField(controller: _netSalaryController, label: 'Net Salary', hint: '9651.91', icon: Icons.account_balance_wallet),
+            _AmountField(controller: _netSalaryController, label: l10n.translate('net_salary'), hint: '9651.91', icon: Icons.account_balance_wallet),
             const SizedBox(height: 12),
-            _AmountField(controller: _swileMealController, label: 'Swile Meal', hint: '1400.00', icon: Icons.restaurant),
+            _AmountField(controller: _swileMealController, label: l10n.translate('pay_swile_meal'), hint: '1400.00', icon: Icons.restaurant),
             const SizedBox(height: 12),
-            _AmountField(controller: _swileFoodController, label: 'Swile Food', hint: '1031.00', icon: Icons.shopping_basket_outlined),
+            _AmountField(controller: _swileFoodController, label: l10n.translate('pay_swile_food'), hint: '1031.00', icon: Icons.shopping_basket_outlined),
             const SizedBox(height: 24),
             SizedBox(width: double.infinity, child: ElevatedButton(
               onPressed: _saving ? null : _save,
@@ -136,7 +136,7 @@ class _AmountField extends StatelessWidget {
       validator: (v) {
         if (v == null || v.trim().isEmpty) return null;
         final val = double.tryParse(v.trim().replaceAll(',', '.'));
-        if (val == null || val < 0) return 'Enter a valid amount';
+        if (val == null || val < 0) return AppLocalizations.of(context).translate('invalid_amount');
         return null;
       },
     );
