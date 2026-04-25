@@ -17,10 +17,13 @@ import '../repositories/net_worth_repository.dart';
 import '../repositories/budget_goals_repository.dart';
 import '../repositories/user_preferences_repository.dart';
 import '../repositories/health_repository.dart';
+import '../repositories/salary_settings_repository.dart';
 import '../services/export_service.dart';
 import '../models/health_snapshot.dart';
 import '../models/budget_alert.dart';
+import '../models/salary_settings.dart';
 import '../services/financial_calculator_service.dart';
+import '../services/clt_calculator_service.dart';
 import '../../features/budget/data/budget_settings_repository.dart';
 import '../../features/budget/domain/budget_settings.dart';
 
@@ -588,3 +591,48 @@ final budgetAlertsProvider = Provider.autoDispose<List<BudgetAlert>>((ref) {
   alerts.sort((a, b) => b.percentage.compareTo(a.percentage));
   return alerts;
 });
+
+// ═══════════════════════════════════════════
+// SALARY SETTINGS (CLT 2026)
+// ═══════════════════════════════════════════
+
+final salarySettingsRepositoryProvider =
+    Provider<SalarySettingsRepository>((ref) =>
+        SalarySettingsRepository(Supabase.instance.client));
+
+final salarySettingsProvider =
+    AsyncNotifierProvider<SalarySettingsNotifier, SalarySettings?>(
+        SalarySettingsNotifier.new);
+
+class SalarySettingsNotifier extends AsyncNotifier<SalarySettings?> {
+  @override
+  Future<SalarySettings?> build() =>
+      ref.read(salarySettingsRepositoryProvider).fetch();
+
+  Future<void> save({
+    required double grossSalary,
+    int dependents = 0,
+    double otherDeductions = 0,
+    bool useSimplifiedDeduction = false,
+  }) async {
+    final result = CltCalculatorService.compute(
+      grossSalary: grossSalary,
+      dependents: dependents,
+      otherDeductions: otherDeductions,
+      useSimplifiedDeduction: useSimplifiedDeduction,
+    );
+    final settings = SalarySettings(
+      grossSalary: result.grossSalary,
+      inss: result.inss,
+      irrf: result.irrf,
+      netSalary: result.netSalary,
+      fgts: result.fgts,
+      dependents: dependents,
+      otherDeductions: otherDeductions,
+      useSimplifiedDeduction: useSimplifiedDeduction,
+    );
+    state = const AsyncLoading();
+    await ref.read(salarySettingsRepositoryProvider).upsert(settings);
+    state = AsyncData(settings);
+  }
+}

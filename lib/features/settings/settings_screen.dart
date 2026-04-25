@@ -12,6 +12,7 @@ import '../budget/presentation/budget_settings_sheet.dart';
 import '../budget/presentation/budget_goals_sheet.dart';
 import '../net_worth/presentation/net_worth_settings_sheet.dart';
 import '../profile/presentation/profile_providers.dart';
+import 'salary_settings_sheet.dart';
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -33,6 +34,8 @@ class SettingsScreen extends ConsumerWidget {
               const _ProfileCard(),
               const SizedBox(height: 16),
               const _BudgetSection(),
+              const SizedBox(height: 16),
+              const _SalarySection(),
               const SizedBox(height: 24),
               const _NetWorthSection(),
               const SizedBox(height: 24),
@@ -323,6 +326,83 @@ class _SupportCard extends StatelessWidget {
         const SizedBox(height: 10),
         Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurface), textAlign: TextAlign.center),
       ]),
+    );
+  }
+}
+
+class _SalarySection extends ConsumerWidget {
+  const _SalarySection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final salaryAsync = ref.watch(salarySettingsProvider);
+
+    return GestureDetector(
+      onTap: () => showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => const SalarySettingsSheet(),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+            color: colors.surfaceLowest,
+            borderRadius: BorderRadius.circular(16)),
+        child: salaryAsync.when(
+          loading: () => const Center(
+              child: SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2))),
+          error: (_, __) => const Text('Could not load salary settings'),
+          data: (salary) {
+            final hasData = salary != null && salary.grossSalary > 0;
+            return Row(children: [
+              Container(
+                width: 34, height: 34,
+                decoration: BoxDecoration(
+                  color: hasData
+                      ? AppTheme.secondaryColor.withOpacity(0.12)
+                      : colors.iconTintBlue,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  hasData
+                      ? Icons.account_balance_outlined
+                      : Icons.add,
+                  size: 18,
+                  color: hasData
+                      ? AppTheme.secondaryColor
+                      : colors.onSurface,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                  Text(
+                    hasData ? 'Salário CLT configurado' : 'Configurar Salário CLT',
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: colors.onSurface),
+                  ),
+                  Text(
+                    hasData
+                        ? 'Bruto: ${FinancialCalculatorService.formatBRL(salary.grossSalary)} · Líquido: ${FinancialCalculatorService.formatBRL(salary.netSalary)}'
+                        : 'INSS, IRRF e FGTS calculados automaticamente',
+                    style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
+                  ),
+                ]),
+              ),
+              Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
+            ]);
+          },
+        ),
+      ),
     );
   }
 }
