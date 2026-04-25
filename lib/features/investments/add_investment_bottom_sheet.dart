@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/i18n/app_localizations.dart';
 import '../../core/providers/providers.dart';
 import '../../core/models/enums.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/theme/farol_colors.dart';
+import '../../design/farol_colors.dart' as tokens;
 
 class AddInvestmentBottomSheet extends ConsumerStatefulWidget {
   const AddInvestmentBottomSheet({super.key});
@@ -42,7 +42,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
     final l10n = AppLocalizations.of(context);
     final bottom = MediaQuery.of(context).viewInsets.bottom;
     final colors = context.colors;
-    final typeColor = AppTheme.getCategoryColor(_type.dbValue);
+    final typeColor = tokens.FarolColors.getCategoryColor(_type.dbValue);
 
     return Container(
       decoration: BoxDecoration(
@@ -67,7 +67,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
           scrollDirection: Axis.horizontal,
           children: InvestmentType.values.map((t) {
             final sel = _type == t;
-            final c = AppTheme.getCategoryColor(t.dbValue);
+            final c = tokens.FarolColors.getCategoryColor(t.dbValue);
             return GestureDetector(
               onTap: () => setState(() => _type = t),
               child: AnimatedContainer(

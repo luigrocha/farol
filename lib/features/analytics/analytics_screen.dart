@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/theme/farol_colors.dart';
+import '../../design/farol_colors.dart' as tokens;
 import '../../core/models/enums.dart';
 import '../../core/models/expense.dart';
 import '../../core/models/income.dart';
@@ -97,7 +97,7 @@ class _RangePicker extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
-              color: active ? AppTheme.primaryColor : Colors.transparent,
+              color: active ? tokens.FarolColors.navy : Colors.transparent,
               borderRadius: BorderRadius.circular(9),
             ),
             child: Center(child: Text(item.$2, style: TextStyle(
@@ -169,14 +169,14 @@ class _SummaryCards extends StatelessWidget {
         label: 'TOTAL',
         value: FinancialCalculatorService.formatBRL(total),
         icon: Icons.receipt_long_outlined,
-        color: AppTheme.primaryColor,
+        color: tokens.FarolColors.navy,
       )),
       const SizedBox(width: 10),
       Expanded(child: _MetricCard(
         label: 'AVG / MES',
         value: FinancialCalculatorService.formatBRL(avg),
         icon: Icons.calendar_month_outlined,
-        color: AppTheme.secondaryColor,
+        color: tokens.FarolColors.beam,
       )),
       if (topCat != null) ...[
         const SizedBox(width: 10),
@@ -185,7 +185,7 @@ class _SummaryCards extends StatelessWidget {
           value: _emojiFor(topCat),
           subvalue: _labelFor(topCat, context),
           icon: Icons.star_outline,
-          color: AppTheme.getCategoryColor(topCat),
+          color: tokens.FarolColors.getCategoryColor(topCat),
         )),
       ],
     ]);
@@ -252,8 +252,8 @@ class _MonthlyTrendCard extends StatelessWidget {
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Text('Tendencia Mensual', style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
         Row(children: [
-          const _Legend(color: AppTheme.secondaryColor, label: 'Gasto'),
-          if (hasIncome) ...[const SizedBox(width: 12), const _Legend(color: AppTheme.primaryColor, label: 'Ingreso')],
+          const _Legend(color: tokens.FarolColors.beam, label: 'Gasto'),
+          if (hasIncome) ...[const SizedBox(width: 12), const _Legend(color: tokens.FarolColors.navy, label: 'Ingreso')],
         ]),
       ]),
       const SizedBox(height: 12),
@@ -282,13 +282,13 @@ class _MonthlyTrendCard extends StatelessWidget {
           ),
           lineBarsData: [
             LineChartBarData(
-              spots: expSpots, isCurved: true, color: AppTheme.secondaryColor, barWidth: 2.5,
+              spots: expSpots, isCurved: true, color: tokens.FarolColors.beam, barWidth: 2.5,
               isStrokeCapRound: true, dotData: const FlDotData(show: false),
-              belowBarData: BarAreaData(show: true, gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppTheme.secondaryColor.withOpacity(0.2), AppTheme.secondaryColor.withOpacity(0)])),
+              belowBarData: BarAreaData(show: true, gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [tokens.FarolColors.beam.withOpacity(0.2), tokens.FarolColors.beam.withOpacity(0)])),
             ),
             if (hasIncome)
               LineChartBarData(
-                spots: incSpots, isCurved: true, color: AppTheme.primaryColor, barWidth: 2,
+                spots: incSpots, isCurved: true, color: tokens.FarolColors.navy, barWidth: 2,
                 isStrokeCapRound: true, dotData: const FlDotData(show: false), dashArray: [4, 3],
               ),
           ],
@@ -341,7 +341,7 @@ class _CategoryBreakdown extends StatelessWidget {
             ClipRRect(borderRadius: BorderRadius.circular(2), child: LinearProgressIndicator(
               value: pct, minHeight: 3,
               backgroundColor: colors.surfaceLow,
-              valueColor: AlwaysStoppedAnimation(AppTheme.getCategoryColor(e.key)),
+              valueColor: AlwaysStoppedAnimation(tokens.FarolColors.getCategoryColor(e.key)),
             )),
           ]));
         }).toList())),
@@ -357,7 +357,7 @@ class _DonutChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     return SizedBox(width: 130, height: 130, child: Stack(alignment: Alignment.center, children: [
-      PieChart(PieChartData(sectionsSpace: 0, centerSpaceRadius: 48, sections: data.entries.map((e) => PieChartSectionData(color: AppTheme.getCategoryColor(e.key), value: e.value, radius: 16, showTitle: false)).toList())),
+      PieChart(PieChartData(sectionsSpace: 0, centerSpaceRadius: 48, sections: data.entries.map((e) => PieChartSectionData(color: tokens.FarolColors.getCategoryColor(e.key), value: e.value, radius: 16, showTitle: false)).toList())),
       Column(mainAxisSize: MainAxisSize.min, children: [
         Text('TOTAL', style: TextStyle(fontSize: 8, color: colors.onSurfaceSoft, fontWeight: FontWeight.w600, letterSpacing: 0.8)),
         Text(FinancialCalculatorService.formatBRL(total).split(',')[0], style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w800, color: colors.onSurface)),
@@ -389,7 +389,7 @@ class _MonthlyBarsCard extends StatelessWidget {
       ...sorted.map((entry) {
         final pct = maxVal > 0 ? entry.value / maxVal : 0.0;
         final isAboveAvg = entry.value > avgVal * 1.05;
-        final barColor = isAboveAvg ? Colors.orange.shade600 : AppTheme.secondaryColor;
+        final barColor = isAboveAvg ? Colors.orange.shade600 : tokens.FarolColors.beam;
         return Padding(padding: const EdgeInsets.only(bottom: 10), child: Row(children: [
           SizedBox(width: 30, child: Text(_shortMonth(entry.key, l10n),
             style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, fontWeight: FontWeight.w600))),

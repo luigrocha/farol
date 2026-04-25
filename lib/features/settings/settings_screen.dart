@@ -4,8 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../main.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/theme/farol_colors.dart';
+import '../../design/farol_colors.dart' as tokens;
 import '../../core/i18n/app_localizations.dart';
 import '../auth/presentation/auth_providers.dart';
 import '../budget/presentation/budget_settings_sheet.dart';
@@ -55,8 +55,8 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 28),
               Center(child: TextButton.icon(
                 onPressed: () => ref.read(authControllerProvider.notifier).signOut(),
-                icon: const Icon(Icons.logout, color: AppTheme.errorColor, size: 16),
-                label: Text(l10n.translate('logout'), style: const TextStyle(color: AppTheme.errorColor, fontWeight: FontWeight.w600)),
+                icon: const Icon(Icons.logout, color: tokens.FarolColors.coral, size: 16),
+                label: Text(l10n.translate('logout'), style: const TextStyle(color: tokens.FarolColors.coral, fontWeight: FontWeight.w600)),
               )),
               const SizedBox(height: 40),
             ]))),
@@ -89,7 +89,7 @@ class _ProfileCard extends ConsumerWidget {
         ElevatedButton(
           onPressed: () => Navigator.of(context).pushNamed('/edit_profile'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor, foregroundColor: Colors.white,
+            backgroundColor: tokens.FarolColors.navy, foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             elevation: 0,
@@ -127,7 +127,7 @@ class _LangRow extends ConsumerWidget {
       onTap: () => ref.read(localeProvider.notifier).setLocale(locale),
       child: Container(
         margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16), border: Border.all(color: selected ? AppTheme.secondaryColor : Colors.transparent, width: 2)),
+        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16), border: Border.all(color: selected ? tokens.FarolColors.beam : Colors.transparent, width: 2)),
         child: Row(children: [
           Container(width: 34, height: 34, decoration: BoxDecoration(color: colors.surfaceLow, shape: BoxShape.circle), child: Center(child: Text(flag, style: const TextStyle(fontSize: 18)))),
           const SizedBox(width: 14),
@@ -135,7 +135,7 @@ class _LangRow extends ConsumerWidget {
             Text(name, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: colors.onSurface)),
             Text(sub, style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
           ])),
-          if (selected) Container(width: 18, height: 18, decoration: const BoxDecoration(color: AppTheme.secondaryColor, shape: BoxShape.circle), child: const Icon(Icons.check, size: 12, color: Colors.white)),
+          if (selected) Container(width: 18, height: 18, decoration: const BoxDecoration(color: tokens.FarolColors.beam, shape: BoxShape.circle), child: const Icon(Icons.check, size: 12, color: Colors.white)),
         ]),
       ),
     );
@@ -150,7 +150,7 @@ class _AppearanceCard extends ConsumerWidget {
     final theme = ref.watch(themeModeProvider);
     return Container(
       padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppTheme.primaryContainer, AppTheme.primaryColor])),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF244A72), tokens.FarolColors.navy])),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(l10n.appearance, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
         const SizedBox(height: 4),
@@ -179,9 +179,9 @@ class _ThemeBtn extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(color: active ? Colors.white : Colors.transparent, borderRadius: BorderRadius.circular(99)),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Icon(icon, size: 14, color: active ? AppTheme.primaryColor : Colors.white),
+          Icon(icon, size: 14, color: active ? tokens.FarolColors.navy : Colors.white),
           const SizedBox(width: 6),
-          Text(label, style: TextStyle(color: active ? AppTheme.primaryColor : Colors.white, fontWeight: FontWeight.w600, fontSize: 13)),
+          Text(label, style: TextStyle(color: active ? tokens.FarolColors.navy : Colors.white, fontWeight: FontWeight.w600, fontSize: 13)),
         ]),
       ),
     ));
@@ -263,7 +263,7 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
         icon: Icons.receipt_long_outlined,
         name: 'Export Transactions',
         sub: 'CSV — $month/$year',
-        color: AppTheme.secondaryColor,
+        color: tokens.FarolColors.beam,
         isLoading: _loading == _ExportTask.transactions,
         onTap: () => _run(_ExportTask.transactions, () => svc.exportExpensesToCsv(month, year)),
       ),
@@ -271,7 +271,7 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
         icon: Icons.description_outlined,
         name: 'Income Statement',
         sub: 'CSV — $month/$year',
-        color: AppTheme.primaryColor,
+        color: tokens.FarolColors.navy,
         isLoading: _loading == _ExportTask.income,
         onTap: () => _run(_ExportTask.income, () => svc.exportIncomesToCsv(month, year)),
       ),
@@ -279,7 +279,7 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
         icon: Icons.cloud_download_outlined,
         name: 'Full Backup',
         sub: 'All data as JSON',
-        color: AppTheme.tertiaryColor,
+        color: tokens.FarolColors.tide,
         isLoading: _loading == _ExportTask.backup,
         onTap: () => _run(_ExportTask.backup, svc.exportBackup),
       ),
@@ -287,7 +287,7 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
         icon: Icons.picture_as_pdf,
         name: 'Resumen Mensual PDF',
         sub: 'Informe completo — $month/$year',
-        color: AppTheme.errorColor,
+        color: tokens.FarolColors.coral,
         isLoading: _loading == _ExportTask.pdf,
         onTap: () => _run(_ExportTask.pdf,
             () => svc.exportMonthlyReport(month, year, ref.read(budgetSettingsProvider).value)),
@@ -322,7 +322,7 @@ class _SupportCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(18)),
       child: Column(children: [
-        Container(width: 44, height: 44, decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: BorderRadius.circular(12)), child: Icon(icon, size: 22, color: AppTheme.secondaryColor)),
+        Container(width: 44, height: 44, decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: BorderRadius.circular(12)), child: Icon(icon, size: 22, color: tokens.FarolColors.beam)),
         const SizedBox(height: 10),
         Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurface), textAlign: TextAlign.center),
       ]),
@@ -364,7 +364,7 @@ class _SalarySection extends ConsumerWidget {
                 width: 34, height: 34,
                 decoration: BoxDecoration(
                   color: hasData
-                      ? AppTheme.secondaryColor.withOpacity(0.12)
+                      ? tokens.FarolColors.beam.withOpacity(0.12)
                       : colors.iconTintBlue,
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -374,7 +374,7 @@ class _SalarySection extends ConsumerWidget {
                       : Icons.add,
                   size: 18,
                   color: hasData
-                      ? AppTheme.secondaryColor
+                      ? tokens.FarolColors.beam
                       : colors.onSurface,
                 ),
               ),
@@ -447,7 +447,7 @@ class _BudgetSection extends ConsumerWidget {
                   child: Icon(
                     hasData ? Icons.check_circle_outline : Icons.add,
                     size: 18,
-                    color: hasData ? AppTheme.secondaryColor : colors.onSurface,
+                    color: hasData ? tokens.FarolColors.beam : colors.onSurface,
                   ),
                 ),
                 const SizedBox(width: 14),
@@ -496,7 +496,7 @@ class _BudgetSection extends ConsumerWidget {
                 color: colors.iconTintBlue,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.category_outlined, size: 18, color: AppTheme.primaryColor),
+              child: const Icon(Icons.category_outlined, size: 18, color: tokens.FarolColors.navy),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -590,7 +590,7 @@ class _NetWorthSection extends ConsumerWidget {
                   child: Icon(
                     hasData ? Icons.check_circle_outline : Icons.add,
                     size: 18,
-                    color: hasData ? AppTheme.secondaryColor : colors.onSurface,
+                    color: hasData ? tokens.FarolColors.beam : colors.onSurface,
                   ),
                 ),
                 const SizedBox(width: 14),
@@ -638,7 +638,7 @@ class _SimulatorsSection extends StatelessWidget {
             Container(
               width: 34, height: 34,
               decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: BorderRadius.circular(10)),
-              child: const Icon(Icons.payments_outlined, size: 18, color: AppTheme.secondaryColor),
+              child: const Icon(Icons.payments_outlined, size: 18, color: tokens.FarolColors.beam),
             ),
             const SizedBox(width: 14),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -702,7 +702,7 @@ class _PrivacyToggleRow extends ConsumerWidget {
         Switch(
           value: isPrivate,
           onChanged: (_) => ref.read(privacyModeProvider.notifier).toggle(),
-          activeColor: AppTheme.primaryColor,
+          activeColor: tokens.FarolColors.navy,
         ),
       ]),
     );

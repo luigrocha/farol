@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-import '../theme/app_theme.dart';
+import '../../design/farol_colors.dart' as tokens;
 import '../theme/farol_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -16,11 +16,11 @@ class HealthGauge extends StatelessWidget {
     final colors = context.colors;
     Color scoreColor;
     if (score >= 80) {
-      scoreColor = AppTheme.healthGreen;
+      scoreColor = tokens.FarolColors.tide;
     } else if (score >= 50) {
-      scoreColor = AppTheme.healthAmber;
+      scoreColor = tokens.FarolColors.beam;
     } else {
-      scoreColor = AppTheme.healthRed;
+      scoreColor = tokens.FarolColors.coral;
     }
 
     return SizedBox(

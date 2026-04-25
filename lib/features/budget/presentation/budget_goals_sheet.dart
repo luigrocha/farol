@@ -5,7 +5,7 @@ import '../../../core/i18n/app_localizations.dart';
 import '../../../core/models/enums.dart';
 import '../../../core/models/budget_goal.dart';
 import '../../../core/providers/providers.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../../design/farol_colors.dart' as tokens;
 import '../../../core/theme/farol_colors.dart';
 import '../../../core/services/financial_calculator_service.dart';
 
@@ -130,7 +130,7 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
                   child: const Icon(
                     Icons.category_outlined,
                     size: 20,
-                    color: AppTheme.primaryColor,
+                    color: tokens.FarolColors.navy,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -180,7 +180,7 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
               child: ElevatedButton(
                 onPressed: _saving ? null : _save,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
+                  backgroundColor: tokens.FarolColors.navy,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'core/theme/app_theme.dart';
+import 'design/farol_colors.dart' as tokens;
 import 'core/theme/farol_colors.dart' show FarolColorsContext;
+import 'design/farol_theme.dart';
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/transactions/transactions_screen.dart';
 import 'features/analytics/analytics_screen.dart';
@@ -110,8 +111,8 @@ class FarolApp extends ConsumerWidget {
     return MaterialApp(
       title: 'Farol',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: farolLightTheme,
+      darkTheme: farolDarkTheme,
       themeMode: themeMode,
       locale: locale,
       localizationsDelegates: const [
@@ -223,7 +224,7 @@ class VerificationScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.email_outlined,
-                  size: 80, color: AppTheme.primaryColor),
+                  size: 80, color: tokens.FarolColors.navy),
               const SizedBox(height: 24),
               Text(l10n.verifyEmail,
                   style: const TextStyle(

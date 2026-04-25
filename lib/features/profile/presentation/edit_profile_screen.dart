@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/i18n/app_localizations.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../../design/farol_colors.dart' as tokens;
 import '../../../core/theme/farol_colors.dart';
 import 'profile_providers.dart';
 
@@ -58,7 +58,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     ref.listen<AsyncValue<void>>(profileControllerProvider, (_, state) {
       if (state.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(state.error.toString()), backgroundColor: AppTheme.errorColor),
+          SnackBar(content: Text(state.error.toString()), backgroundColor: tokens.FarolColors.coral),
         );
       }
     });
@@ -102,7 +102,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 FilledButton(
                   onPressed: controllerState.isLoading ? null : _submit,
                   style: FilledButton.styleFrom(
-                    backgroundColor: AppTheme.primaryColor,
+                    backgroundColor: tokens.FarolColors.navy,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   ),
@@ -128,7 +128,7 @@ class _AvatarPreview extends StatelessWidget {
     return Center(
       child: CircleAvatar(
         radius: 44,
-        backgroundColor: AppTheme.primaryContainer,
+        backgroundColor: const Color(0xFF244A72),
         backgroundImage: url.isNotEmpty ? NetworkImage(url) : null,
         child: url.isEmpty ? const Icon(Icons.person, size: 44, color: Colors.white) : null,
       ),
@@ -165,7 +165,7 @@ class _Field extends StatelessWidget {
         filled: true,
         fillColor: fillColor,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppTheme.primaryColor, width: 1.5)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: tokens.FarolColors.navy, width: 1.5)),
       ),
     );
   }

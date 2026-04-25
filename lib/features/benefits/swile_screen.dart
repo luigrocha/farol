@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../../core/i18n/app_localizations.dart';
-import '../../core/theme/app_theme.dart';
+import '../../design/farol_colors.dart' as tokens;
 import '../../core/theme/farol_colors.dart';
 import '../../core/services/financial_calculator_service.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -74,9 +74,9 @@ class SwileScreen extends StatelessWidget {
             const SizedBox(height: 14),
             const Row(
               children: [
-                Expanded(child: _BreakdownCard(label: 'Food Voucher', value: 920.50, note: 'Renews on 01/10', color: AppTheme.secondaryColor)),
+                Expanded(child: _BreakdownCard(label: 'Food Voucher', value: 920.50, note: 'Renews on 01/10', color: tokens.FarolColors.beam)),
                 SizedBox(width: 10),
-                Expanded(child: _BreakdownCard(label: 'Meal Voucher', value: 529.80, note: 'Daily · R\$ 33', color: AppTheme.secondaryColor)),
+                Expanded(child: _BreakdownCard(label: 'Meal Voucher', value: 529.80, note: 'Daily · R\$ 33', color: tokens.FarolColors.beam)),
               ],
             ),
 
@@ -100,7 +100,7 @@ class SwileScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           _BRLSmall(value: 348.40, size: 15, weight: FontWeight.w800),
-                          Text('+12% vs prev. week', style: TextStyle(fontSize: 10, color: AppTheme.secondaryColor, fontWeight: FontWeight.bold)),
+                          Text('+12% vs prev. week', style: TextStyle(fontSize: 10, color: tokens.FarolColors.beam, fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ],
@@ -122,7 +122,7 @@ class SwileScreen extends StatelessWidget {
                                   height: e.value.toDouble() * 0.8,
                                   decoration: BoxDecoration(
                                     borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
-                                    gradient: active ? const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppTheme.secondaryColor, AppTheme.tertiaryColor]) : null,
+                                    gradient: active ? const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [tokens.FarolColors.beam, tokens.FarolColors.tide]) : null,
                                     color: active ? null : colors.surfaceLow,
                                   ),
                                 ),
@@ -144,7 +144,7 @@ class SwileScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Recent Transactions', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w800)),
-                const Text('See all', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.secondaryColor)),
+                const Text('See all', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: tokens.FarolColors.beam)),
               ],
             ),
             const SizedBox(height: 12),

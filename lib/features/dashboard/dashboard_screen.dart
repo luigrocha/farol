@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
-import '../../core/theme/app_theme.dart';
+import '../../design/farol_colors.dart' as tokens;
 import '../../core/theme/farol_colors.dart';
 import 'dart:math' as math;
 import '../../core/models/enums.dart';
@@ -56,7 +56,7 @@ class DashboardScreen extends ConsumerWidget {
                 return Badge(
                   isLabelVisible: critical > 0,
                   label: Text('$critical'),
-                  backgroundColor: AppTheme.errorColor,
+                  backgroundColor: tokens.FarolColors.coral,
                   child: IconButton(
                     icon: const Icon(Icons.notifications_outlined, size: 20),
                     onPressed: () => Navigator.pushNamed(context, '/notifications'),
@@ -86,8 +86,8 @@ class DashboardScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showModalBottomSheet(context: context, isScrollControlled: true, builder: (_) => const QuickAddBottomSheet()),
-        backgroundColor: AppTheme.secondaryColor,
-        child: const Icon(Icons.add, color: AppTheme.primaryColor),
+        backgroundColor: tokens.FarolColors.beam,
+        child: const Icon(Icons.add, color: tokens.FarolColors.navy),
       ),
     );
   }
@@ -114,7 +114,7 @@ class _NetWorthHero extends ConsumerWidget {
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppTheme.primaryContainer, AppTheme.primaryColor]),
+        gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF244A72), tokens.FarolColors.navy]),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(l10n.netWorth.toUpperCase(), style: const TextStyle(fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: Colors.white60)),
@@ -124,7 +124,7 @@ class _NetWorthHero extends ConsumerWidget {
         Row(children: [
           _MiniStat(label: 'Invertido', value: snap?.investmentsTotal ?? 0, color: Colors.white),
           const SizedBox(width: 10),
-          _MiniStat(label: 'Líquido FGTS', value: (snap?.fgtsBalance ?? 0) + (snap?.emergencyFund ?? 0), color: AppTheme.secondaryColor),
+          _MiniStat(label: 'Líquido FGTS', value: (snap?.fgtsBalance ?? 0) + (snap?.emergencyFund ?? 0), color: tokens.FarolColors.beam),
         ]),
       ]),
     );
@@ -219,10 +219,10 @@ class _KpiGrid extends ConsumerWidget {
       crossAxisSpacing: 8, mainAxisSpacing: 8, childAspectRatio: 1.5,
       children: [
         _KpiCard(icon: Icons.account_balance_wallet, bg: colors.iconTintBlue, label: l10n.translate('net_salary'), value: net),
-        _KpiCard(icon: Icons.fastfood, bg: colors.secondaryContainer, label: l10n.translate('swile'), value: swile, color: AppTheme.secondaryColor),
-        _KpiCard(icon: Icons.account_balance, bg: cashRemaining >= 0 ? colors.secondaryContainer : colors.iconTintRed, label: l10n.translate('available_total'), value: cashRemaining, color: cashRemaining >= 0 ? AppTheme.secondaryColor : AppTheme.errorColor),
-        _KpiCard(icon: Icons.trending_down, bg: colors.iconTintRed, label: l10n.translate('cash_expenses'), value: cash, color: AppTheme.errorColor),
-        _KpiCard(icon: Icons.restaurant, bg: swileRemaining >= 0 ? colors.secondaryContainer : colors.iconTintRed, label: l10n.translate('swile_remaining'), value: swileRemaining, color: swileRemaining >= 0 ? AppTheme.secondaryColor : AppTheme.errorColor),
+        _KpiCard(icon: Icons.fastfood, bg: colors.secondaryContainer, label: l10n.translate('swile'), value: swile, color: tokens.FarolColors.beam),
+        _KpiCard(icon: Icons.account_balance, bg: cashRemaining >= 0 ? colors.secondaryContainer : colors.iconTintRed, label: l10n.translate('available_total'), value: cashRemaining, color: cashRemaining >= 0 ? tokens.FarolColors.beam : tokens.FarolColors.coral),
+        _KpiCard(icon: Icons.trending_down, bg: colors.iconTintRed, label: l10n.translate('cash_expenses'), value: cash, color: tokens.FarolColors.coral),
+        _KpiCard(icon: Icons.restaurant, bg: swileRemaining >= 0 ? colors.secondaryContainer : colors.iconTintRed, label: l10n.translate('swile_remaining'), value: swileRemaining, color: swileRemaining >= 0 ? tokens.FarolColors.beam : tokens.FarolColors.coral),
         _KpiCard(icon: Icons.savings, bg: colors.iconTintBlue, label: l10n.translate('savings_rate'), raw: '${sr.toStringAsFixed(1)}%'),
       ],
     );
@@ -290,10 +290,10 @@ class _ExpenseBreakdown extends ConsumerWidget {
         final cat=e.key; final actual=e.value; final goal=goals[cat]; final target=goal?.targetAmount??(net*0.1);
         final ratio = actual / target;
         final pct = math.min(ratio, 1.0);
-        final barColor = ratio >= 1.0 ? AppTheme.errorColor
+        final barColor = ratio >= 1.0 ? tokens.FarolColors.coral
             : ratio >= 0.90 ? const Color(0xFFFF6B35)
-            : ratio >= 0.75 ? AppTheme.secondaryColor
-            : AppTheme.tertiaryColor;
+            : ratio >= 0.75 ? tokens.FarolColors.beam
+            : tokens.FarolColors.tide;
         final labelColor = ratio >= 0.75 ? barColor : colors.onSurfaceSoft;
         String label; try { label = ExpenseCategory.fromDb(cat).localizedLabel(context); } catch (_) { label = cat; }
         return Padding(padding: const EdgeInsets.only(bottom: 14), child: Column(children: [
@@ -336,10 +336,10 @@ class _MonthlyGoalCard extends ConsumerWidget {
       ])),
       const SizedBox(height: 12),
       Row(children: [
-        Expanded(child: ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: pct, minHeight: 8, backgroundColor: colors.secondaryContainer, valueColor: const AlwaysStoppedAnimation(AppTheme.secondaryColor)))),
+        Expanded(child: ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: pct, minHeight: 8, backgroundColor: colors.secondaryContainer, valueColor: const AlwaysStoppedAnimation(tokens.FarolColors.beam)))),
         const SizedBox(width: 10),
-        const Text('', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.secondaryColor)),
-        Text('${(pct*100).toInt()}%', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.secondaryColor)),
+        const Text('', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: tokens.FarolColors.beam)),
+        Text('${(pct*100).toInt()}%', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: tokens.FarolColors.beam)),
       ]),
     ])));
   }
@@ -355,9 +355,9 @@ class _AlertBanner extends ConsumerWidget {
     final top = alerts.first;
 
     final color = switch (top.level) {
-      AlertLevel.exceeded => AppTheme.errorColor,
+      AlertLevel.exceeded => tokens.FarolColors.coral,
       AlertLevel.critical => const Color(0xFFFF6B35),
-      AlertLevel.warning  => AppTheme.secondaryColor,
+      AlertLevel.warning  => tokens.FarolColors.beam,
     };
     final icon = switch (top.level) {
       AlertLevel.exceeded => Icons.error_outline,

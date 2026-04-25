@@ -6,10 +6,10 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/clt_calculator_service.dart';
 import '../../core/services/financial_calculator_service.dart';
-import '../../core/theme/app_theme.dart';
+import '../../design/farol_colors.dart' as tokens;
 import '../../core/theme/farol_colors.dart';
 
-const _kGreen = AppTheme.secondaryColor;
+const _kGreen = tokens.FarolColors.beam;
 
 class SalarySettingsSheet extends ConsumerStatefulWidget {
   const SalarySettingsSheet({super.key});

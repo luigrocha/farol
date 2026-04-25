@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/theme/farol_colors.dart';
+import '../../design/farol_colors.dart' as tokens;
 import '../../core/models/enums.dart';
 import '../../core/widgets/farol_charts.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -51,8 +51,8 @@ class InvestmentsScreen extends ConsumerWidget {
           isScrollControlled: true,
           builder: (_) => const AddInvestmentBottomSheet(),
         ),
-        backgroundColor: AppTheme.secondaryColor,
-        child: const Icon(Icons.add, color: AppTheme.primaryColor),
+        backgroundColor: tokens.FarolColors.beam,
+        child: const Icon(Icons.add, color: tokens.FarolColors.navy),
       ),
     );
   }
@@ -67,7 +67,7 @@ class _ConsolidatedHero extends ConsumerWidget {
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22),
-        gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppTheme.primaryContainer, AppTheme.primaryColor]),
+        gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF244A72), tokens.FarolColors.navy]),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -142,7 +142,7 @@ class _AllocationCard extends ConsumerWidget {
           String label; try { label = InvestmentType.fromDb(e.key).label; } catch (_) { label = e.key; }
           final pct = total > 0 ? (e.value / total * 100).toInt() : 0;
           return Padding(padding: const EdgeInsets.only(bottom: 10), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Row(children: [Container(width: 8, height: 8, decoration: BoxDecoration(color: AppTheme.getCategoryColor(e.key), shape: BoxShape.circle)), const SizedBox(width: 8), Text(label, style: TextStyle(fontSize: 13, color: colors.onSurface))]),
+            Row(children: [Container(width: 8, height: 8, decoration: BoxDecoration(color: tokens.FarolColors.getCategoryColor(e.key), shape: BoxShape.circle)), const SizedBox(width: 8), Text(label, style: TextStyle(fontSize: 13, color: colors.onSurface))]),
             Text('$pct%', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colors.onSurface)),
           ]));
         }),
@@ -160,7 +160,7 @@ class _IASuggestionCard extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: BorderRadius.circular(20)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Icon(Icons.auto_awesome, color: AppTheme.secondaryColor, size: 18),
+        const Icon(Icons.auto_awesome, color: tokens.FarolColors.beam, size: 18),
         const SizedBox(height: 10),
         Text(AppLocalizations.of(context).translate('ia_suggestion'), style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700)),
         const SizedBox(height: 4),
@@ -168,7 +168,7 @@ class _IASuggestionCard extends StatelessWidget {
         const SizedBox(height: 12),
         ElevatedButton(
           onPressed: () {},
-          style: ElevatedButton.styleFrom(backgroundColor: AppTheme.secondaryColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0, padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10)),
+          style: ElevatedButton.styleFrom(backgroundColor: tokens.FarolColors.beam, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0, padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10)),
           child: const Text('Explorar FIIs', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
         ),
       ]),
@@ -187,8 +187,8 @@ class _InversionesHeader extends StatelessWidget {
         Text('Detalle por activo', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
       ]),
       const Row(children: [
-        Text('Ver Historial', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.secondaryColor)),
-        Icon(Icons.chevron_right, size: 14, color: AppTheme.secondaryColor),
+        Text('Ver Historial', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: tokens.FarolColors.beam)),
+        Icon(Icons.chevron_right, size: 14, color: tokens.FarolColors.beam),
       ]),
     ]));
   }
@@ -219,7 +219,7 @@ class _InvRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
-    final typeColor = AppTheme.getCategoryColor(inv.type);
+    final typeColor = tokens.FarolColors.getCategoryColor(inv.type);
     String typeLabel;
     try { typeLabel = InvestmentType.fromDb(inv.type).label; } catch (_) { typeLabel = inv.type; }
     final returnPct = inv.totalInvested > 0 ? (inv.returnAmount / inv.totalInvested * 100) : 0.0;
@@ -310,7 +310,7 @@ class _InvRow extends ConsumerWidget {
                 Text(
                   '${isPositive ? '+' : ''}${returnPct.toStringAsFixed(2)}%',
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700,
-                    color: isPositive ? AppTheme.tertiaryColor : AppTheme.errorColor),
+                    color: isPositive ? tokens.FarolColors.tide : tokens.FarolColors.coral),
                 ),
               ]),
             ]),

@@ -1,14 +1,19 @@
+// State preserved: nav to /signup, nav to /login, i18n strings via AppLocalizations.translate,
+//   aurora blobs, feature rows, page indicator dots.
+// Design: navy gradient bg, beam accent, Manrope display, FarolColors tokens.
 import 'package:flutter/material.dart';
-import '../../core/theme/app_theme.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/i18n/app_localizations.dart';
+import '../../design/farol_colors.dart' as tokens;
 
 class OnboardingScreen extends ConsumerWidget {
   const OnboardingScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -18,54 +23,60 @@ class OnboardingScreen extends ConsumerWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF0D2238), // primaryDeep
-              AppTheme.primaryColor,
-              AppTheme.primaryContainer,
+              Color(0xFF0A1628), // deep navy
+              tokens.FarolColors.navy,
+              Color(0xFF0F2744),
             ],
-            stops: [0.0, 0.6, 1.0],
+            stops: [0.0, 0.55, 1.0],
           ),
         ),
         child: Stack(
           children: [
-            // Aurora effects
+            // ── Aurora blobs ─────────────────────────────────────────
             Positioned(
               top: -80,
               left: -80,
-              child: _Aurora(color: const Color(0xFF71F8E4).withOpacity(0.3)),
+              child: _Aurora(
+                  color: tokens.FarolColors.beam.withOpacity(0.22)),
             ),
             Positioned(
               bottom: -100,
               right: -60,
-              child: _Aurora(color: const Color(0xFF9BF6BA).withOpacity(0.18)),
+              child: _Aurora(
+                  color: tokens.FarolColors.tide.withOpacity(0.14)),
             ),
-            
-            // Content
+
+            // ── Content ──────────────────────────────────────────────
             SafeArea(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 20),
-                    // Logo
+                    const SizedBox(height: 12),
+
+                    // ── Logo mark ─────────────────────────────────────
                     Row(
                       children: [
                         Container(
-                          width: 44,
-                          height: 44,
+                          width: 46,
+                          height: 46,
                           decoration: BoxDecoration(
-                            color: AppTheme.secondaryColor,
-                            borderRadius: BorderRadius.circular(12),
+                            color: tokens.FarolColors.beam,
+                            borderRadius: BorderRadius.circular(14),
                             boxShadow: [
                               BoxShadow(
-                                color: AppTheme.secondaryColor.withOpacity(0.35),
-                                blurRadius: 28,
+                                color: tokens.FarolColors.beam.withOpacity(0.40),
+                                blurRadius: 24,
                                 offset: const Offset(0, 8),
                               ),
                             ],
                           ),
-                          child: const Center(
-                            child: Icon(Icons.wb_sunny_outlined, color: AppTheme.primaryColor, size: 26),
+                          child: const Icon(
+                            Icons.anchor_rounded,
+                            color: tokens.FarolColors.navy,
+                            size: 26,
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -80,109 +91,120 @@ class OnboardingScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    
+
                     const Spacer(),
-                    
+
+                    // ── Eyebrow ───────────────────────────────────────
                     Text(
                       'FINANÇAS COM CLAREZA',
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         fontSize: 11,
                         letterSpacing: 2.5,
                         fontWeight: FontWeight.w700,
-                        color: AppTheme.secondaryColor.withOpacity(0.8),
+                        color: tokens.FarolColors.beam.withOpacity(0.85),
                       ),
                     ),
                     const SizedBox(height: 14),
+
+                    // ── Headline ──────────────────────────────────────
                     Text(
-                      AppLocalizations.of(context).translate('onboarding_title'),
+                      l10n.translate('onboarding_title'),
                       style: GoogleFonts.manrope(
-                        fontSize: 46,
+                        fontSize: 44,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
                         letterSpacing: -1.6,
-                        height: 1.02,
+                        height: 1.04,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 18),
+
+                    // ── Subtitle ──────────────────────────────────────
                     Text(
-                      AppLocalizations.of(context).translate('onboarding_subtitle'),
-                      style: TextStyle(
+                      l10n.translate('onboarding_subtitle'),
+                      style: GoogleFonts.inter(
                         fontSize: 15,
-                        color: Colors.white.withOpacity(0.75),
+                        color: Colors.white.withOpacity(0.72),
                         height: 1.55,
                       ),
                     ),
-                    
-                    const SizedBox(height: 34),
-                    
-                    // Features
+                    const SizedBox(height: 32),
+
+                    // ── Feature rows ──────────────────────────────────
                     _FeatureRow(
                       icon: Icons.shield_outlined,
-                      text: AppLocalizations.of(context).translate('onboarding_f1'),
+                      text: l10n.translate('onboarding_f1'),
                     ),
                     const SizedBox(height: 12),
                     _FeatureRow(
                       icon: Icons.auto_awesome_outlined,
-                      text: AppLocalizations.of(context).translate('onboarding_f2'),
+                      text: l10n.translate('onboarding_f2'),
                     ),
                     const SizedBox(height: 12),
                     _FeatureRow(
                       icon: Icons.headset_mic_outlined,
-                      text: AppLocalizations.of(context).translate('onboarding_f3'),
+                      text: l10n.translate('onboarding_f3'),
                     ),
-                    
+
                     const Spacer(),
-                    
-                    // Buttons
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/signup');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 56),
-                        backgroundColor: const Color(0xFF9BF6BA),
-                        foregroundColor: AppTheme.primaryColor,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                        elevation: 0,
-                      ).copyWith(
-                        backgroundColor: MaterialStateProperty.all(const Color(0xFF9BF6BA)),
-                      ),
-                      child: Text(
-                        AppLocalizations.of(context).translate('onboarding_button'),
-                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+
+                    // ── Primary CTA ───────────────────────────────────
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: () =>
+                            Navigator.pushNamed(context, '/signup'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: tokens.FarolColors.beam,
+                          foregroundColor: tokens.FarolColors.navy,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18)),
+                          textStyle: GoogleFonts.inter(
+                              fontWeight: FontWeight.w700, fontSize: 15),
+                        ),
+                        child: Text(l10n.translate('onboarding_button')),
                       ),
                     ),
                     const SizedBox(height: 12),
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/login');
-                      },
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 52),
-                        side: BorderSide(color: Colors.white.withOpacity(0.18)),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                      ),
-                      child: Text(
-                        AppLocalizations.of(context).translate('onboarding_login'),
-                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+
+                    // ── Secondary CTA ─────────────────────────────────
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: OutlinedButton(
+                        onPressed: () =>
+                            Navigator.pushNamed(context, '/login'),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(
+                              color: Colors.white.withOpacity(0.20)),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18)),
+                          textStyle: GoogleFonts.inter(
+                              fontWeight: FontWeight.w600, fontSize: 14),
+                        ),
+                        child: Text(l10n.translate('onboarding_login')),
                       ),
                     ),
-                    
-                    const SizedBox(height: 20),
-                    Center(
+
+                    const SizedBox(height: 24),
+
+                    // ── Page indicator ────────────────────────────────
+                    const Center(
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Container(width: 22, height: 4, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(2))),
-                          const SizedBox(width: 6),
-                          Container(width: 4, height: 4, decoration: BoxDecoration(color: Colors.white.withOpacity(0.3), borderRadius: BorderRadius.circular(2))),
-                          const SizedBox(width: 6),
-                          Container(width: 4, height: 4, decoration: BoxDecoration(color: Colors.white.withOpacity(0.3), borderRadius: BorderRadius.circular(2))),
+                          _Dot(active: true),
+                          SizedBox(width: 6),
+                          _Dot(active: false),
+                          SizedBox(width: 6),
+                          _Dot(active: false),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -193,6 +215,8 @@ class OnboardingScreen extends ConsumerWidget {
     );
   }
 }
+
+// ── Widgets locais ────────────────────────────────────────────────────────────
 
 class _Aurora extends StatelessWidget {
   final Color color;
@@ -207,7 +231,7 @@ class _Aurora extends StatelessWidget {
         shape: BoxShape.circle,
         gradient: RadialGradient(
           colors: [color, Colors.transparent],
-          stops: const [0.0, 0.6],
+          stops: const [0.0, 0.65],
         ),
       ),
     );
@@ -224,33 +248,48 @@ class _FeatureRow extends StatelessWidget {
     return Row(
       children: [
         Container(
-          width: 34,
-          height: 34,
+          width: 36,
+          height: 36,
           decoration: BoxDecoration(
-            color: const Color(0xFF9BF6BA).withOpacity(0.18),
-            border: Border.all(color: const Color(0xFF9BF6BA).withOpacity(0.25)),
+            color: tokens.FarolColors.beam.withOpacity(0.15),
+            border: Border.all(
+                color: tokens.FarolColors.beam.withOpacity(0.22)),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Center(
-            child: Container(
-              width: 22,
-              height: 22,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFCD37D), // secondaryFixed
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Icon(icon, size: 16, color: AppTheme.primaryColor),
-            ),
-          ),
+          child: Icon(icon, size: 18, color: tokens.FarolColors.beam),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 14),
         Expanded(
           child: Text(
             text,
-            style: TextStyle(fontSize: 13, color: Colors.white.withOpacity(0.9)),
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: Colors.white.withOpacity(0.88),
+              height: 1.4,
+            ),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _Dot extends StatelessWidget {
+  final bool active;
+  const _Dot({required this.active});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      width: active ? 22 : 6,
+      height: 5,
+      decoration: BoxDecoration(
+        color: active
+            ? tokens.FarolColors.beam
+            : Colors.white.withOpacity(0.28),
+        borderRadius: BorderRadius.circular(3),
+      ),
     );
   }
 }

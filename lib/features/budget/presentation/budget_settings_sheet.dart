@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/i18n/app_localizations.dart';
 import '../../../core/providers/providers.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../../design/farol_colors.dart' as tokens;
 import '../../../core/theme/farol_colors.dart';
 import '../../../core/services/financial_calculator_service.dart';
 import '../domain/budget_settings.dart';
@@ -84,7 +84,7 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
             Center(child: Container(width: 36, height: 4, decoration: BoxDecoration(color: colors.onSurfaceFaint, borderRadius: BorderRadius.circular(2)))),
             const SizedBox(height: 20),
             Row(children: [
-              Container(width: 38, height: 38, decoration: BoxDecoration(color: colors.iconTintBlue, borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.account_balance_wallet_outlined, size: 20, color: AppTheme.primaryColor)),
+              Container(width: 38, height: 38, decoration: BoxDecoration(color: colors.iconTintBlue, borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.account_balance_wallet_outlined, size: 20, color: tokens.FarolColors.navy)),
               const SizedBox(width: 12),
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(l10n.monthlyBudget, style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700)),
@@ -102,7 +102,7 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
             const SizedBox(height: 24),
             SizedBox(width: double.infinity, child: ElevatedButton(
               onPressed: _saving ? null : _save,
-              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation: 0),
+              style: ElevatedButton.styleFrom(backgroundColor: tokens.FarolColors.navy, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation: 0),
               child: _saving
                 ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                 : Text(l10n.saveBudget, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),

@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/providers.dart';
 import '../../core/models/enums.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/theme/farol_colors.dart';
+import '../../design/farol_colors.dart' as tokens;
 import '../../core/i18n/app_localizations.dart';
 
 class QuickAddBottomSheet extends ConsumerStatefulWidget {
@@ -122,7 +122,7 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
         SizedBox(width: double.infinity, height: 52,
           child: ElevatedButton(
             onPressed: _save,
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.secondaryColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), elevation: 0),
+            style: ElevatedButton.styleFrom(backgroundColor: tokens.FarolColors.beam, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), elevation: 0),
             child: Text(l10n.save.toUpperCase(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)))),
       ])),
     );
@@ -130,7 +130,7 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
 
   Widget _catChip(ExpenseCategory c, BuildContext context) {
     final sel = _category == c;
-    final color = AppTheme.getCategoryColor(c.dbValue);
+    final color = tokens.FarolColors.getCategoryColor(c.dbValue);
     return GestureDetector(
       onTap: () => setState(() { _category = c; _subcategory = null; }),
       child: AnimatedContainer(duration: const Duration(milliseconds: 200),

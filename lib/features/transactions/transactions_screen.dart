@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/models/enums.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/theme/farol_colors.dart';
+import '../../design/farol_colors.dart' as tokens;
 import '../../core/i18n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:ui';
@@ -64,8 +64,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showModalBottomSheet(context: context, isScrollControlled: true, builder: (_) => const QuickAddBottomSheet()),
-        backgroundColor: AppTheme.secondaryColor,
-        child: const Icon(Icons.add, color: AppTheme.primaryColor),
+        backgroundColor: tokens.FarolColors.beam,
+        child: const Icon(Icons.add, color: tokens.FarolColors.navy),
       ),
     );
   }
@@ -83,7 +83,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
 class _Avatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(width: 36, height: 36, decoration: const BoxDecoration(gradient: LinearGradient(colors: [AppTheme.tertiaryColor, AppTheme.secondaryColor]), shape: BoxShape.circle), child: const Center(child: Text('RA', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 14))));
+    return Container(width: 36, height: 36, decoration: const BoxDecoration(gradient: LinearGradient(colors: [tokens.FarolColors.tide, tokens.FarolColors.beam]), shape: BoxShape.circle), child: const Center(child: Text('RA', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 14))));
   }
 }
 
@@ -117,7 +117,7 @@ class _CategoryChips extends StatelessWidget {
       itemCount: chips.length,
       itemBuilder: (ctx, i) => Container(
         margin: const EdgeInsets.only(right: 8), padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-        decoration: BoxDecoration(color: i == 0 ? AppTheme.primaryColor : colors.surfaceLowest, borderRadius: BorderRadius.circular(99)),
+        decoration: BoxDecoration(color: i == 0 ? tokens.FarolColors.navy : colors.surfaceLowest, borderRadius: BorderRadius.circular(99)),
         child: Center(child: Text(chips[i], style: TextStyle(color: i == 0 ? Colors.white : colors.onSurface, fontSize: 13, fontWeight: FontWeight.w600))),
       ),
     ));
@@ -134,7 +134,7 @@ class _TotalMonthlyHero extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(22), gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppTheme.primaryContainer, AppTheme.primaryColor])),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(22), gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF244A72), tokens.FarolColors.navy])),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         const Text('TOTAL MENSUAL', style: TextStyle(fontSize: 10, letterSpacing: 1.8, fontWeight: FontWeight.w700, color: Colors.white60)),
         const SizedBox(height: 6),
@@ -143,7 +143,7 @@ class _TotalMonthlyHero extends ConsumerWidget {
         ...sorted.take(3).map((e) {
           String label; try { label = ExpenseCategory.fromDb(e.key).localizedLabel(context); } catch (_) { label = e.key; }
           final pct = total > 0 ? (e.value / total) : 0.0;
-          return _HeroBar(label: label, value: e.value, pct: pct, color: AppTheme.getCategoryColor(e.key));
+          return _HeroBar(label: label, value: e.value, pct: pct, color: tokens.FarolColors.getCategoryColor(e.key));
         }),
       ]),
     );
@@ -259,7 +259,7 @@ class _TxRow extends ConsumerWidget {
                 Text('•', style: TextStyle(color: colors.onSurfaceFaint)),
                 const SizedBox(width: 6),
                 if (expense.payType == 'Swile')
-                  Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: AppTheme.tertiaryColor.withOpacity(0.15), borderRadius: BorderRadius.circular(6)), child: const Text('SWILE', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: AppTheme.tertiaryColor, letterSpacing: 0.5)))
+                  Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: tokens.FarolColors.tide.withOpacity(0.15), borderRadius: BorderRadius.circular(6)), child: const Text('SWILE', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: tokens.FarolColors.tide, letterSpacing: 0.5)))
                 else
                   Text(expense.payType ?? 'Cash', style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, letterSpacing: 0.5, fontWeight: FontWeight.w600)),
                 if (expense.isFixed) ...[

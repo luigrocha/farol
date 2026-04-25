@@ -634,5 +634,14 @@ class SalarySettingsNotifier extends AsyncNotifier<SalarySettings?> {
     state = const AsyncLoading();
     await ref.read(salarySettingsRepositoryProvider).upsert(settings);
     state = AsyncData(settings);
+
+    // Keep budget_settings.net_salary in sync so effectiveNetSalaryProvider
+    // reflects the updated CLT net salary immediately.
+    final budgetNotifier = ref.read(budgetSettingsProvider.notifier);
+    final currentBudget = ref.read(budgetSettingsProvider).value;
+    final updatedBudget = (currentBudget ?? const BudgetSettings()).copyWith(
+      netSalary: result.netSalary,
+    );
+    await budgetNotifier.save(updatedBudget);
   }
 }

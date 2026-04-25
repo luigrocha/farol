@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/models/card_installment.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
-import '../../core/theme/app_theme.dart';
+import '../../design/farol_colors.dart' as tokens;
 import '../../core/theme/farol_colors.dart';
 import 'add_installment_bottom_sheet.dart';
 
@@ -61,8 +61,8 @@ class InstallmentsScreen extends ConsumerWidget {
           isScrollControlled: true,
           builder: (_) => const AddInstallmentBottomSheet(),
         ),
-        backgroundColor: AppTheme.secondaryColor,
-        child: const Icon(Icons.add, color: AppTheme.primaryColor),
+        backgroundColor: tokens.FarolColors.beam,
+        child: const Icon(Icons.add, color: tokens.FarolColors.navy),
       ),
     );
   }
