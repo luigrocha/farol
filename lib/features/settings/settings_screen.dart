@@ -8,6 +8,7 @@ import '../../core/theme/farol_colors.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../core/i18n/app_localizations.dart';
 import '../auth/presentation/auth_providers.dart';
+import '../budget/domain/budget_settings.dart';
 import '../budget/presentation/budget_settings_sheet.dart';
 import '../budget/presentation/budget_goals_sheet.dart';
 import '../net_worth/presentation/net_worth_settings_sheet.dart';
@@ -96,7 +97,186 @@ class _ProfileCard extends ConsumerWidget {
           ),
           child: Text(l10n.editProfile, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
         ),
+        const SizedBox(height: 12),
+        const _PeriodSettingsRow(),
       ]),
+    );
+  }
+}
+
+class _PeriodSettingsRow extends ConsumerWidget {
+  const _PeriodSettingsRow();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final period = ref.watch(currentPeriodProvider);
+    final settings = ref.watch(budgetSettingsProvider).value;
+    final cutoffDay = settings?.cutoffDay ?? 1;
+
+    return GestureDetector(
+      onTap: () => showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => _CutoffDaySheet(currentDay: cutoffDay),
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: colors.surfaceLow,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.calendar_month_outlined, size: 18, color: colors.onSurfaceSoft),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Período financiero',
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurface)),
+                  Text(period.label,
+                      style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CutoffDaySheet extends ConsumerStatefulWidget {
+  final int currentDay;
+  const _CutoffDaySheet({required this.currentDay});
+
+  @override
+  ConsumerState<_CutoffDaySheet> createState() => _CutoffDaySheetState();
+}
+
+class _CutoffDaySheetState extends ConsumerState<_CutoffDaySheet> {
+  late int _selected;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = widget.currentDay;
+  }
+
+  Future<void> _save() async {
+    setState(() => _saving = true);
+    try {
+      final current = ref.read(budgetSettingsProvider).value ?? const BudgetSettings();
+      await ref.read(budgetSettingsProvider.notifier).save(current.copyWith(cutoffDay: _selected));
+      if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+      decoration: BoxDecoration(
+        color: colors.surfaceLowest,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 36, height: 4,
+              decoration: BoxDecoration(color: colors.onSurfaceFaint, borderRadius: BorderRadius.circular(2)),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Container(
+                width: 38, height: 38,
+                decoration: BoxDecoration(color: colors.iconTintBlue, borderRadius: BorderRadius.circular(10)),
+                child: const Icon(Icons.calendar_month_outlined, size: 20, color: tokens.FarolColors.navy),
+              ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Inicio del período', style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700)),
+                  Text('Día $_selected de cada mes', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Selecciona el día en que comienza tu período financiero (1–28):',
+            style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft, height: 1.5),
+          ),
+          const SizedBox(height: 16),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 7, crossAxisSpacing: 8, mainAxisSpacing: 8, childAspectRatio: 1,
+            ),
+            itemCount: 28,
+            itemBuilder: (_, i) {
+              final day = i + 1;
+              final isSelected = day == _selected;
+              return GestureDetector(
+                onTap: () => setState(() => _selected = day),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  decoration: BoxDecoration(
+                    color: isSelected ? tokens.FarolColors.navy : colors.surfaceLow,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Text('$day', style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                      color: isSelected ? Colors.white : colors.onSurface,
+                    )),
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _saving ? null : _save,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: tokens.FarolColors.navy,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                elevation: 0,
+              ),
+              child: _saving
+                  ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                  : const Text('Guardar', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

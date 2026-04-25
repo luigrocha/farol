@@ -69,6 +69,8 @@ class DashboardScreen extends ConsumerWidget {
           SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverList(delegate: SliverChildListDelegate([
               const _AlertBanner(),
+              const _PeriodBanner(),
+              const SizedBox(height: 12),
               const _NetWorthHero(),
               const SizedBox(height: 12),
               const _HealthGaugeCard(),
@@ -395,6 +397,49 @@ class _AlertBanner extends ConsumerWidget {
     );
   }
 }
+
+class _PeriodBanner extends ConsumerWidget {
+  const _PeriodBanner();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final period = ref.watch(currentPeriodProvider);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+      decoration: BoxDecoration(
+        color: colors.surfaceLowest,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: colors.onSurfaceFaint.withOpacity(0.4)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.calendar_today_outlined,
+              size: 15, color: colors.onSurfaceSoft),
+          const SizedBox(width: 8),
+          Text(
+            'Período actual',
+            style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: colors.onSurfaceSoft),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            period.label,
+            style: GoogleFonts.manrope(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: colors.onSurface),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 
 class _InstallmentsSummaryCard extends ConsumerWidget {
   const _InstallmentsSummaryCard();
