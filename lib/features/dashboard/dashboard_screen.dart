@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
-import '../../core/theme/app_theme.dart';
+import '../../design/farol_colors.dart' as tokens;
 import '../../core/theme/farol_colors.dart';
 import 'dart:math' as math;
 import '../../core/models/enums.dart';
@@ -56,7 +56,7 @@ class DashboardScreen extends ConsumerWidget {
                 return Badge(
                   isLabelVisible: critical > 0,
                   label: Text('$critical'),
-                  backgroundColor: AppTheme.errorColor,
+                  backgroundColor: tokens.FarolColors.coral,
                   child: IconButton(
                     icon: const Icon(Icons.notifications_outlined, size: 20),
                     onPressed: () => Navigator.pushNamed(context, '/notifications'),
@@ -69,6 +69,8 @@ class DashboardScreen extends ConsumerWidget {
           SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverList(delegate: SliverChildListDelegate([
               const _AlertBanner(),
+              const _PeriodBanner(),
+              const SizedBox(height: 12),
               const _NetWorthHero(),
               const SizedBox(height: 12),
               const _HealthGaugeCard(),
@@ -78,14 +80,16 @@ class DashboardScreen extends ConsumerWidget {
               const _ExpenseBreakdown(),
               const SizedBox(height: 16),
               const _MonthlyGoalCard(),
+              const SizedBox(height: 16),
+              const _InstallmentsSummaryCard(),
               const SizedBox(height: 80),
             ]))),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showModalBottomSheet(context: context, isScrollControlled: true, builder: (_) => const QuickAddBottomSheet()),
-        backgroundColor: AppTheme.secondaryColor,
-        child: const Icon(Icons.add, color: AppTheme.primaryColor),
+        backgroundColor: tokens.FarolColors.beam,
+        child: const Icon(Icons.add, color: tokens.FarolColors.navy),
       ),
     );
   }
@@ -112,7 +116,7 @@ class _NetWorthHero extends ConsumerWidget {
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppTheme.primaryContainer, AppTheme.primaryColor]),
+        gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF244A72), tokens.FarolColors.navy]),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(l10n.netWorth.toUpperCase(), style: const TextStyle(fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: Colors.white60)),
@@ -122,7 +126,7 @@ class _NetWorthHero extends ConsumerWidget {
         Row(children: [
           _MiniStat(label: 'Invertido', value: snap?.investmentsTotal ?? 0, color: Colors.white),
           const SizedBox(width: 10),
-          _MiniStat(label: 'Líquido FGTS', value: (snap?.fgtsBalance ?? 0) + (snap?.emergencyFund ?? 0), color: AppTheme.secondaryColor),
+          _MiniStat(label: 'Líquido FGTS', value: (snap?.fgtsBalance ?? 0) + (snap?.emergencyFund ?? 0), color: tokens.FarolColors.beam),
         ]),
       ]),
     );
@@ -217,10 +221,10 @@ class _KpiGrid extends ConsumerWidget {
       crossAxisSpacing: 8, mainAxisSpacing: 8, childAspectRatio: 1.5,
       children: [
         _KpiCard(icon: Icons.account_balance_wallet, bg: colors.iconTintBlue, label: l10n.translate('net_salary'), value: net),
-        _KpiCard(icon: Icons.fastfood, bg: colors.secondaryContainer, label: l10n.translate('swile'), value: swile, color: AppTheme.secondaryColor),
-        _KpiCard(icon: Icons.account_balance, bg: cashRemaining >= 0 ? colors.secondaryContainer : colors.iconTintRed, label: l10n.translate('available_total'), value: cashRemaining, color: cashRemaining >= 0 ? AppTheme.secondaryColor : AppTheme.errorColor),
-        _KpiCard(icon: Icons.trending_down, bg: colors.iconTintRed, label: l10n.translate('cash_expenses'), value: cash, color: AppTheme.errorColor),
-        _KpiCard(icon: Icons.restaurant, bg: swileRemaining >= 0 ? colors.secondaryContainer : colors.iconTintRed, label: l10n.translate('swile_remaining'), value: swileRemaining, color: swileRemaining >= 0 ? AppTheme.secondaryColor : AppTheme.errorColor),
+        _KpiCard(icon: Icons.fastfood, bg: colors.secondaryContainer, label: l10n.translate('swile'), value: swile, color: tokens.FarolColors.beam),
+        _KpiCard(icon: Icons.account_balance, bg: cashRemaining >= 0 ? colors.secondaryContainer : colors.iconTintRed, label: l10n.translate('available_total'), value: cashRemaining, color: cashRemaining >= 0 ? tokens.FarolColors.beam : tokens.FarolColors.coral),
+        _KpiCard(icon: Icons.trending_down, bg: colors.iconTintRed, label: l10n.translate('cash_expenses'), value: cash, color: tokens.FarolColors.coral),
+        _KpiCard(icon: Icons.restaurant, bg: swileRemaining >= 0 ? colors.secondaryContainer : colors.iconTintRed, label: l10n.translate('swile_remaining'), value: swileRemaining, color: swileRemaining >= 0 ? tokens.FarolColors.beam : tokens.FarolColors.coral),
         _KpiCard(icon: Icons.savings, bg: colors.iconTintBlue, label: l10n.translate('savings_rate'), raw: '${sr.toStringAsFixed(1)}%'),
       ],
     );
@@ -228,8 +232,8 @@ class _KpiGrid extends ConsumerWidget {
 }
 
 class _KpiCard extends StatelessWidget {
-  final IconData icon; final Color bg; final String label; final double? value; final String? raw; final Color? color; final bool positive;
-  const _KpiCard({required this.icon, required this.bg, required this.label, this.value, this.raw, this.color, this.positive = false});
+  final IconData icon; final Color bg; final String label; final double? value; final String? raw; final Color? color;
+  const _KpiCard({required this.icon, required this.bg, required this.label, this.value, this.raw, this.color});
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -245,8 +249,8 @@ class _KpiCard extends StatelessWidget {
           Text(label, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft, fontWeight: FontWeight.w500)),
           const SizedBox(height: 2),
           raw != null
-            ? Text(raw!, style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w800, color: positive ? AppTheme.secondaryColor : colors.onSurface))
-            : _BRLSmall(value: value ?? 0, size: 15, weight: FontWeight.w700, color: positive ? AppTheme.secondaryColor : colors.onSurface),
+            ? Text(raw!, style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w800, color: color ?? colors.onSurface))
+            : _BRLSmall(value: value ?? 0, size: 15, weight: FontWeight.w700, color: color),
         ]),
       ),
     );
@@ -259,7 +263,7 @@ class _BRLSmall extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final f = FinancialCalculatorService.formatBRL(value);
-    return Text(f, style: GoogleFonts.inter(fontSize: size, fontWeight: weight, color: color ?? context.colors.onSurface, fontFeatures: [FontFeature.tabularFigures()]));
+    return Text(f, style: GoogleFonts.inter(fontSize: size, fontWeight: weight, color: color ?? context.colors.onSurface, fontFeatures: const [FontFeature.tabularFigures()]));
   }
 }
 
@@ -272,8 +276,10 @@ class _ExpenseBreakdown extends ConsumerWidget {
     final goals = ref.watch(budgetGoalsMapProvider);
     final net = ref.watch(effectiveNetSalaryProvider);
     final l10n = AppLocalizations.of(context);
-    if (byCategory.isEmpty) return Card(child: Padding(padding: const EdgeInsets.all(24),
-      child: Column(children: [Icon(Icons.bar_chart, size: 48, color: Theme.of(context).colorScheme.outline), const SizedBox(height: 8), Text(l10n.translate('no_expenses'))])));
+    if (byCategory.isEmpty) {
+      return Card(child: Padding(padding: const EdgeInsets.all(24),
+        child: Column(children: [Icon(Icons.bar_chart, size: 48, color: Theme.of(context).colorScheme.outline), const SizedBox(height: 8), Text(l10n.translate('no_expenses'))])));
+    }
     final sorted = byCategory.entries.toList()..sort((a,b) => b.value.compareTo(a.value));
     return Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
@@ -286,10 +292,10 @@ class _ExpenseBreakdown extends ConsumerWidget {
         final cat=e.key; final actual=e.value; final goal=goals[cat]; final target=goal?.targetAmount??(net*0.1);
         final ratio = actual / target;
         final pct = math.min(ratio, 1.0);
-        final barColor = ratio >= 1.0 ? AppTheme.errorColor
+        final barColor = ratio >= 1.0 ? tokens.FarolColors.coral
             : ratio >= 0.90 ? const Color(0xFFFF6B35)
-            : ratio >= 0.75 ? AppTheme.secondaryColor
-            : AppTheme.tertiaryColor;
+            : ratio >= 0.75 ? tokens.FarolColors.beam
+            : tokens.FarolColors.tide;
         final labelColor = ratio >= 0.75 ? barColor : colors.onSurfaceSoft;
         String label; try { label = ExpenseCategory.fromDb(cat).localizedLabel(context); } catch (_) { label = cat; }
         return Padding(padding: const EdgeInsets.only(bottom: 14), child: Column(children: [
@@ -301,7 +307,7 @@ class _ExpenseBreakdown extends ConsumerWidget {
               ],
               Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: colors.onSurface)),
             ]),
-            Text('R\$ ${actual.toInt()} / R\$ ${target.toInt()}', style: TextStyle(fontSize: 11, color: labelColor, fontFeatures: [FontFeature.tabularFigures()])),
+            Text('R\$ ${actual.toInt()} / R\$ ${target.toInt()}', style: TextStyle(fontSize: 11, color: labelColor, fontFeatures: const [FontFeature.tabularFigures()])),
           ]),
           const SizedBox(height: 6),
           ClipRRect(borderRadius: BorderRadius.circular(3), child: LinearProgressIndicator(value: pct, minHeight: 6, backgroundColor: colors.surfaceLow, valueColor: AlwaysStoppedAnimation(barColor))),
@@ -332,10 +338,10 @@ class _MonthlyGoalCard extends ConsumerWidget {
       ])),
       const SizedBox(height: 12),
       Row(children: [
-        Expanded(child: ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: pct, minHeight: 8, backgroundColor: colors.secondaryContainer, valueColor: const AlwaysStoppedAnimation(AppTheme.secondaryColor)))),
+        Expanded(child: ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: pct, minHeight: 8, backgroundColor: colors.secondaryContainer, valueColor: const AlwaysStoppedAnimation(tokens.FarolColors.beam)))),
         const SizedBox(width: 10),
-        const Text('', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.secondaryColor)),
-        Text('${(pct*100).toInt()}%', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.secondaryColor)),
+        const Text('', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: tokens.FarolColors.beam)),
+        Text('${(pct*100).toInt()}%', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: tokens.FarolColors.beam)),
       ]),
     ])));
   }
@@ -351,9 +357,9 @@ class _AlertBanner extends ConsumerWidget {
     final top = alerts.first;
 
     final color = switch (top.level) {
-      AlertLevel.exceeded => AppTheme.errorColor,
+      AlertLevel.exceeded => tokens.FarolColors.coral,
       AlertLevel.critical => const Color(0xFFFF6B35),
-      AlertLevel.warning  => AppTheme.secondaryColor,
+      AlertLevel.warning  => tokens.FarolColors.beam,
     };
     final icon = switch (top.level) {
       AlertLevel.exceeded => Icons.error_outline,
@@ -386,6 +392,134 @@ class _AlertBanner extends ConsumerWidget {
               child: Text('+${alerts.length - 1}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color)),
             ),
           Icon(Icons.chevron_right, size: 16, color: color),
+        ]),
+      ),
+    );
+  }
+}
+
+class _PeriodBanner extends ConsumerWidget {
+  const _PeriodBanner();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final period = ref.watch(currentPeriodProvider);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+      decoration: BoxDecoration(
+        color: colors.surfaceLowest,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: colors.onSurfaceFaint.withOpacity(0.4)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.calendar_today_outlined,
+              size: 15, color: colors.onSurfaceSoft),
+          const SizedBox(width: 8),
+          Text(
+            'Período actual',
+            style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: colors.onSurfaceSoft),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            period.label,
+            style: GoogleFonts.manrope(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: colors.onSurface),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class _InstallmentsSummaryCard extends ConsumerWidget {
+  const _InstallmentsSummaryCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final installments = ref.watch(installmentsProvider).value ?? [];
+    const purple = Color(0xFF6B3FA0);
+
+    if (installments.isEmpty) return const SizedBox.shrink();
+
+    final totalMonthly = installments.fold(0.0, (s, i) => s + i.monthlyAmount);
+    final totalRemaining = installments.fold(0.0, (s, i) => s + i.remainingBalance);
+
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, '/installments'),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(20)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Row(children: [
+              Container(
+                width: 32, height: 32,
+                decoration: BoxDecoration(color: purple.withOpacity(0.12), borderRadius: BorderRadius.circular(10)),
+                child: const Center(child: Text('💳', style: TextStyle(fontSize: 15))),
+              ),
+              const SizedBox(width: 10),
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('Parcelas', style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w700, color: colors.onSurface)),
+                Text('${installments.length} ativa${installments.length == 1 ? '' : 's'}', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+              ]),
+            ]),
+            const Row(children: [
+              Text('Ver todas', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF6B3FA0))),
+              Icon(Icons.chevron_right, size: 14, color: Color(0xFF6B3FA0)),
+            ]),
+          ]),
+          const SizedBox(height: 14),
+          Row(children: [
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('MENSAL', style: TextStyle(fontSize: 9, letterSpacing: 1, fontWeight: FontWeight.w600, color: colors.onSurfaceFaint)),
+              const SizedBox(height: 3),
+              Text(FinancialCalculatorService.formatBRL(totalMonthly),
+                style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: purple,
+                  fontFeatures: const [FontFeature.tabularFigures()])),
+            ])),
+            Container(width: 1, height: 32, color: colors.surfaceLow),
+            Expanded(child: Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('SALDO RESTANTE', style: TextStyle(fontSize: 9, letterSpacing: 1, fontWeight: FontWeight.w600, color: colors.onSurfaceFaint)),
+                const SizedBox(height: 3),
+                Text(FinancialCalculatorService.formatBRL(totalRemaining),
+                  style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface,
+                    fontFeatures: const [FontFeature.tabularFigures()])),
+              ]),
+            )),
+          ]),
+          const SizedBox(height: 14),
+          ...installments.take(3).map((inst) => Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Expanded(child: Text(inst.description, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: colors.onSurface), overflow: TextOverflow.ellipsis)),
+                Text('${inst.currentInstallment}/${inst.numInstallments}', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+              ]),
+              const SizedBox(height: 4),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(3),
+                child: LinearProgressIndicator(
+                  value: inst.progressPercent,
+                  minHeight: 4,
+                  backgroundColor: purple.withOpacity(0.1),
+                  valueColor: const AlwaysStoppedAnimation(purple),
+                ),
+              ),
+            ]),
+          )),
         ]),
       ),
     );

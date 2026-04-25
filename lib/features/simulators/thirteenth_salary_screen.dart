@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
-import '../../core/theme/app_theme.dart';
+import '../../design/farol_colors.dart' as tokens;
 import '../../core/theme/farol_colors.dart';
 import '../../core/services/financial_calculator_service.dart';
 
@@ -129,10 +129,10 @@ class _InputCard extends StatelessWidget {
         const SizedBox(height: 4),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
-            activeTrackColor: AppTheme.primaryColor,
+            activeTrackColor: tokens.FarolColors.navy,
             inactiveTrackColor: colors.surfaceLow,
-            thumbColor: AppTheme.primaryColor,
-            overlayColor: AppTheme.primaryColor.withOpacity(0.12),
+            thumbColor: tokens.FarolColors.navy,
+            overlayColor: tokens.FarolColors.navy.withOpacity(0.12),
             trackHeight: 4,
             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
           ),
@@ -156,7 +156,7 @@ class _InputCard extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onCalculate,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryColor, foregroundColor: Colors.white,
+              backgroundColor: tokens.FarolColors.navy, foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               elevation: 0,
@@ -224,9 +224,9 @@ class _SummaryCard extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppTheme.primaryContainer, AppTheme.primaryColor],
+          colors: [Color(0xFF244A72), tokens.FarolColors.navy],
         ),
-        boxShadow: [BoxShadow(color: AppTheme.primaryColor.withOpacity(0.25), blurRadius: 20, offset: const Offset(0, 10))],
+        boxShadow: [BoxShadow(color: tokens.FarolColors.navy.withOpacity(0.25), blurRadius: 20, offset: const Offset(0, 10))],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
@@ -268,7 +268,7 @@ class _MiniStat extends StatelessWidget {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(label, style: TextStyle(fontSize: 9, letterSpacing: 1.2, fontWeight: FontWeight.w700, color: color.withOpacity(0.7))),
       const SizedBox(height: 2),
-      Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: color, fontFeatures: [FontFeature.tabularFigures()])),
+      Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: color, fontFeatures: const [FontFeature.tabularFigures()])),
     ]);
   }
 }
@@ -293,7 +293,7 @@ class _InstallmentsCard extends StatelessWidget {
           label: 'Adiantamento',
           sublabel: 'Fev–Nov • sem descontos',
           value: calc.firstInstallment,
-          color: AppTheme.tertiaryColor,
+          color: tokens.FarolColors.tide,
           isGross: true,
         ),
         const SizedBox(height: 12),
@@ -302,7 +302,7 @@ class _InstallmentsCard extends StatelessWidget {
           label: 'Saldo final',
           sublabel: 'Até 20/Dez • INSS + IRRF',
           value: calc.secondInstallment,
-          color: AppTheme.primaryColor,
+          color: tokens.FarolColors.navy,
           isGross: false,
         ),
       ]),
@@ -335,9 +335,9 @@ class _InstallmentRow extends StatelessWidget {
           Text(sublabel, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
         ])),
         Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-          Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: colors.onSurface, fontFeatures: [FontFeature.tabularFigures()])),
+          Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: colors.onSurface, fontFeatures: const [FontFeature.tabularFigures()])),
           if (isGross)
-            Text('sem IR/INSS', style: TextStyle(fontSize: 10, color: AppTheme.tertiaryColor, fontWeight: FontWeight.w600))
+            const Text('sem IR/INSS', style: TextStyle(fontSize: 10, color: tokens.FarolColors.tide, fontWeight: FontWeight.w600))
           else
             Text('líquido', style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, fontWeight: FontWeight.w600)),
         ]),
@@ -367,7 +367,7 @@ class _DeductionsCard extends StatelessWidget {
           icon: Icons.security_outlined,
           title: 'INSS',
           total: calc.inss,
-          color: AppTheme.secondaryColor,
+          color: tokens.FarolColors.beam,
           rows: calc.inssRows,
         ),
         const SizedBox(height: 12),
@@ -377,7 +377,7 @@ class _DeductionsCard extends StatelessWidget {
           icon: Icons.receipt_outlined,
           title: 'IRRF',
           total: calc.irrf,
-          color: AppTheme.errorColor,
+          color: tokens.FarolColors.coral,
           rows: calc.irrfRows,
         ),
 
@@ -390,7 +390,7 @@ class _DeductionsCard extends StatelessWidget {
               Icon(Icons.family_restroom_outlined, size: 18, color: colors.onSurfaceSoft),
               const SizedBox(width: 10),
               Expanded(child: Text('Dedução dependentes', style: TextStyle(fontSize: 13, color: colors.onSurface))),
-              Text('−${FinancialCalculatorService.formatBRL(calc.dependentDeduction)}', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurfaceSoft, fontFeatures: [FontFeature.tabularFigures()])),
+              Text('−${FinancialCalculatorService.formatBRL(calc.dependentDeduction)}', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurfaceSoft, fontFeatures: const [FontFeature.tabularFigures()])),
             ]),
           ),
         ],
@@ -400,7 +400,7 @@ class _DeductionsCard extends StatelessWidget {
         const SizedBox(height: 12),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text('Total descontado', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: colors.onSurface)),
-          Text('−${FinancialCalculatorService.formatBRL(calc.totalDeductions)}', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.errorColor, fontFeatures: [FontFeature.tabularFigures()])),
+          Text('−${FinancialCalculatorService.formatBRL(calc.totalDeductions)}', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: tokens.FarolColors.coral, fontFeatures: const [FontFeature.tabularFigures()])),
         ]),
         const SizedBox(height: 4),
         Align(alignment: Alignment.centerRight, child: Text('${calc.effectiveRate.toStringAsFixed(1)}% alíquota efetiva', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft))),
@@ -433,7 +433,7 @@ class _DeductionGroup extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             Expanded(child: Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: colors.onSurface))),
-            Text(FinancialCalculatorService.formatBRL(total), style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: color, fontFeatures: [FontFeature.tabularFigures()])),
+            Text(FinancialCalculatorService.formatBRL(total), style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: color, fontFeatures: const [FontFeature.tabularFigures()])),
           ]),
         ),
         if (rows.isNotEmpty) ...[
@@ -447,7 +447,7 @@ class _DeductionGroup extends StatelessWidget {
                 decoration: BoxDecoration(color: color.withOpacity(0.4), shape: BoxShape.circle),
               ),
               Expanded(child: Text(r.label, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft))),
-              Text(r.value, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.onSurfaceMuted, fontFeatures: [FontFeature.tabularFigures()])),
+              Text(r.value, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.onSurfaceMuted, fontFeatures: const [FontFeature.tabularFigures()])),
             ]),
           )),
           const SizedBox(height: 4),

@@ -5,8 +5,8 @@ import '../../core/models/investment.dart';
 import '../../core/models/enums.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/theme/farol_colors.dart';
+import '../../design/farol_colors.dart' as tokens;
 
 class InvestmentDetailScreen extends ConsumerWidget {
   final Investment investment;
@@ -28,12 +28,12 @@ class InvestmentDetailScreen extends ConsumerWidget {
       typeEmoji = '📋';
     }
 
-    final typeColor = AppTheme.getCategoryColor(inv.type);
+    final typeColor = tokens.FarolColors.getCategoryColor(inv.type);
     final returnPct = inv.totalInvested > 0
         ? (inv.returnAmount / inv.totalInvested * 100)
         : 0.0;
     final isPositive = returnPct >= 0;
-    final returnColor = isPositive ? AppTheme.tertiaryColor : AppTheme.errorColor;
+    final returnColor = isPositive ? tokens.FarolColors.tide : tokens.FarolColors.coral;
 
     return Scaffold(
       body: CustomScrollView(
@@ -52,7 +52,7 @@ class InvestmentDetailScreen extends ConsumerWidget {
             actions: [
               IconButton(
                 icon: const Icon(Icons.delete_outline, size: 22),
-                color: AppTheme.errorColor,
+                color: tokens.FarolColors.coral,
                 onPressed: () => _confirmDelete(context, ref),
               ),
               const SizedBox(width: 8),
@@ -112,7 +112,7 @@ class InvestmentDetailScreen extends ConsumerWidget {
                       ),
                     ]),
                     const SizedBox(height: 22),
-                    Text('SALDO ATUAL', style: const TextStyle(fontSize: 9, letterSpacing: 1.4, fontWeight: FontWeight.w700, color: Colors.white60)),
+                    const Text('SALDO ATUAL', style: TextStyle(fontSize: 9, letterSpacing: 1.4, fontWeight: FontWeight.w700, color: Colors.white60)),
                     const SizedBox(height: 4),
                     _BRLBig(value: inv.currentBalance, size: 38),
                     const SizedBox(height: 10),
@@ -210,7 +210,7 @@ class InvestmentDetailScreen extends ConsumerWidget {
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: AppTheme.errorColor),
+            style: TextButton.styleFrom(foregroundColor: tokens.FarolColors.coral),
             child: const Text('Excluir'),
           ),
         ],
@@ -267,7 +267,7 @@ class _ReturnBar extends StatelessWidget {
           Text('Evolução do capital', style: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w700, color: colors.onSurface)),
           Text(
             isPositive ? '+${((ratio - 1) * 100).toStringAsFixed(1)}%' : '${((ratio - 1) * 100).toStringAsFixed(1)}%',
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: isPositive ? AppTheme.tertiaryColor : AppTheme.errorColor),
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: isPositive ? tokens.FarolColors.tide : tokens.FarolColors.coral),
           ),
         ]),
         const SizedBox(height: 12),
@@ -294,8 +294,8 @@ class _ReturnBar extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: (ratio / (ratio > 1 ? ratio : 1.0)).clamp(0.0, 1.0),
                 minHeight: 8,
-                backgroundColor: (isPositive ? AppTheme.tertiaryColor : AppTheme.errorColor).withOpacity(0.12),
-                valueColor: AlwaysStoppedAnimation(isPositive ? AppTheme.tertiaryColor : AppTheme.errorColor),
+                backgroundColor: (isPositive ? tokens.FarolColors.tide : tokens.FarolColors.coral).withOpacity(0.12),
+                valueColor: AlwaysStoppedAnimation(isPositive ? tokens.FarolColors.tide : tokens.FarolColors.coral),
               ),
             ),
           ])),

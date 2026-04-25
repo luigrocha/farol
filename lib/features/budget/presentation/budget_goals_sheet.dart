@@ -5,7 +5,7 @@ import '../../../core/i18n/app_localizations.dart';
 import '../../../core/models/enums.dart';
 import '../../../core/models/budget_goal.dart';
 import '../../../core/providers/providers.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../../design/farol_colors.dart' as tokens;
 import '../../../core/theme/farol_colors.dart';
 import '../../../core/services/financial_calculator_service.dart';
 
@@ -92,6 +92,7 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final l10n = AppLocalizations.of(context);
     final monthExpensesByCategory = ref.watch(expensesByCategoryProvider);
     final effectiveSalary = ref.watch(effectiveNetSalaryProvider);
 
@@ -130,7 +131,7 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
                   child: const Icon(
                     Icons.category_outlined,
                     size: 20,
-                    color: AppTheme.primaryColor,
+                    color: tokens.FarolColors.navy,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -139,14 +140,14 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Category Budgets',
+                        l10n.translate('category_budgets'),
                         style: GoogleFonts.manrope(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       Text(
-                        'Set monthly spending limits per category',
+                        l10n.translate('set_monthly_spending_limits'),
                         style: TextStyle(
                           fontSize: 11,
                           color: colors.onSurfaceSoft,
@@ -180,7 +181,7 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
               child: ElevatedButton(
                 onPressed: _saving ? null : _save,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
+                  backgroundColor: tokens.FarolColors.navy,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
@@ -197,9 +198,9 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text(
-                        'Save Budget Goals',
-                        style: TextStyle(
+                    : Text(
+                        l10n.saveBudget,
+                        style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                         ),
@@ -229,6 +230,7 @@ class _BudgetCategoryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final l10n = AppLocalizations.of(context);
     final budgetAmount = double.tryParse(controller.text) ?? 0;
     final percentage = effectiveSalary > 0 ? (budgetAmount / effectiveSalary) * 100 : 0;
     final isOver = currentSpending > budgetAmount && budgetAmount > 0;
@@ -267,7 +269,7 @@ class _BudgetCategoryRow extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'Current: ${FinancialCalculatorService.formatBRL(currentSpending)}',
+                      '${l10n.translate('current_spending')}: ${FinancialCalculatorService.formatBRL(currentSpending)}',
                       style: TextStyle(
                         fontSize: 10,
                         color: colors.onSurfaceSoft,
@@ -299,7 +301,7 @@ class _BudgetCategoryRow extends StatelessWidget {
             controller: controller,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
-              hintText: 'Budget amount',
+              hintText: l10n.translate('budget_amount'),
               prefixText: 'R\$ ',
               prefixStyle: TextStyle(color: colors.onSurfaceSoft),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/i18n/app_localizations.dart';
 import '../../core/providers/providers.dart';
 import '../../core/models/enums.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/theme/farol_colors.dart';
+import '../../design/farol_colors.dart' as tokens;
 
 class AddInvestmentBottomSheet extends ConsumerStatefulWidget {
   const AddInvestmentBottomSheet({super.key});
@@ -38,9 +39,10 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final bottom = MediaQuery.of(context).viewInsets.bottom;
     final colors = context.colors;
-    final typeColor = AppTheme.getCategoryColor(_type.dbValue);
+    final typeColor = tokens.FarolColors.getCategoryColor(_type.dbValue);
 
     return Container(
       decoration: BoxDecoration(
@@ -55,17 +57,17 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
         const SizedBox(height: 16),
 
         // Header
-        Center(child: Text('Add Investment', style: Theme.of(context).textTheme.titleLarge)),
+        Center(child: Text(l10n.addInvestment, style: Theme.of(context).textTheme.titleLarge)),
         const SizedBox(height: 24),
 
         // Type selector — horizontal scroll
-        Text('Type', style: Theme.of(context).textTheme.labelLarge),
+        Text(l10n.translate('type'), style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 8),
         SizedBox(height: 48, child: ListView(
           scrollDirection: Axis.horizontal,
           children: InvestmentType.values.map((t) {
             final sel = _type == t;
-            final c = AppTheme.getCategoryColor(t.dbValue);
+            final c = tokens.FarolColors.getCategoryColor(t.dbValue);
             return GestureDetector(
               onTap: () => setState(() => _type = t),
               child: AnimatedContainer(
@@ -92,7 +94,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
         const SizedBox(height: 20),
 
         // Amount — big
-        Text('Amount invested', style: Theme.of(context).textTheme.labelLarge),
+        Text(l10n.amountInvested, style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 8),
         TextField(
           controller: _amountCtrl,
@@ -117,7 +119,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
             visualDensity: VisualDensity.compact,
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
-          Text('Current balance differs from invested', style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
+          Text(l10n.currentBalanceDiffers, style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
         ]),
         if (_balanceDiffers) ...[
           const SizedBox(height: 8),
@@ -125,7 +127,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
             controller: _balanceCtrl,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.,]'))],
-            decoration: const InputDecoration(labelText: 'Current balance', prefixText: 'R\$ '),
+            decoration: InputDecoration(labelText: l10n.translate('current_balance_input'), prefixText: 'R\$ '),
           ),
         ],
         const SizedBox(height: 16),
@@ -134,18 +136,18 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
         TextField(
           controller: _productCtrl,
           textCapitalization: TextCapitalization.words,
-          decoration: const InputDecoration(
-            labelText: 'Product name',
-            prefixIcon: Icon(Icons.label_outline),
+          decoration: InputDecoration(
+            labelText: l10n.translate('product_name'),
+            prefixIcon: const Icon(Icons.label_outline),
           ),
         ),
         const SizedBox(height: 12),
         TextField(
           controller: _institutionCtrl,
           textCapitalization: TextCapitalization.words,
-          decoration: const InputDecoration(
-            labelText: 'Institution / Broker',
-            prefixIcon: Icon(Icons.account_balance_outlined),
+          decoration: InputDecoration(
+            labelText: l10n.translate('institution'),
+            prefixIcon: const Icon(Icons.account_balance_outlined),
           ),
         ),
         const SizedBox(height: 12),
@@ -172,7 +174,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
         TextField(
           controller: _notesCtrl,
           decoration: InputDecoration(
-            labelText: 'Notes (optional)',
+            labelText: l10n.translate('notes_optional'),
             prefixIcon: Icon(Icons.notes, color: colors.onSurfaceMuted),
           ),
         ),
@@ -189,13 +191,14 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
             ),
             child: _saving
                 ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('SAVE', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                : Text(l10n.save.toUpperCase(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
           )),
       ])),
     );
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
     final productName = _productCtrl.text.trim();
     final institution = _institutionCtrl.text.trim();
     final totalInvested = _parseBRL(_amountCtrl.text);
@@ -204,19 +207,19 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
         : totalInvested;
 
     if (productName.isEmpty) {
-      _snack('Enter a product name');
+      _snack(l10n.translate('enter_product_name'));
       return;
     }
     if (institution.isEmpty) {
-      _snack('Enter the institution');
+      _snack(l10n.translate('enter_institution'));
       return;
     }
     if (totalInvested == null || totalInvested <= 0) {
-      _snack('Enter the invested amount');
+      _snack(l10n.translate('enter_invested_amount'));
       return;
     }
     if (_balanceDiffers && currentBalance == null) {
-      _snack('Enter a valid current balance');
+      _snack(l10n.translate('enter_valid_balance'));
       return;
     }
 
@@ -237,13 +240,13 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Investment added'), backgroundColor: Colors.green),
+          SnackBar(content: Text(l10n.investmentAdded), backgroundColor: Colors.green),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red.shade700),
+          SnackBar(content: Text('${l10n.translate('error')}: $e'), backgroundColor: Colors.red.shade700),
         );
       }
     } finally {
