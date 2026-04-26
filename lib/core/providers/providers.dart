@@ -60,6 +60,9 @@ final userSettingsProvider = FutureProvider<Map<String, String>>((ref) {
 final selectedMonthProvider = StateProvider<int>((ref) => DateTime.now().month);
 final selectedYearProvider = StateProvider<int>((ref) => DateTime.now().year);
 final searchQueryProvider = StateProvider<String>((ref) => '');
+// 'all' | 'cash' | 'swile' | any ExpenseCategory.dbValue
+final txPayTypeFilterProvider = StateProvider<String>((ref) => 'all');
+final txCategoryFilterProvider = StateProvider<String?>((ref) => null);
 
 final userPreferencesRepositoryProvider =
     Provider<UserPreferencesRepository>((ref) {
@@ -227,6 +230,22 @@ final swileExpensesProvider = Provider.autoDispose<double>((ref) {
       .fold(0.0, (sum, e) => sum + e.amount);
 });
 
+// Total for the currently active transaction filter
+final filteredTotalProvider = Provider.autoDispose<double>((ref) {
+  final filtered = ref.watch(filteredExpensesProvider);
+  return filtered.fold(0.0, (sum, e) => sum + e.amount);
+});
+
+// Category breakdown for the currently active filter
+final filteredByCategoryProvider = Provider.autoDispose<Map<String, double>>((ref) {
+  final filtered = ref.watch(filteredExpensesProvider);
+  final map = <String, double>{};
+  for (final e in filtered) {
+    map[e.category] = (map[e.category] ?? 0) + e.amount;
+  }
+  return map;
+});
+
 final swileTransactionsProvider = Provider.autoDispose<AsyncValue<List<Expense>>>((ref) {
   return ref.watch(_allExpensesStreamProvider).whenData(
     (all) {
@@ -272,11 +291,24 @@ final cashExpensesByCategoryProvider = Provider.autoDispose<Map<String, double>>
 final filteredExpensesProvider = Provider.autoDispose<List<Expense>>((ref) {
   final expenses = ref.watch(expensesProvider).value ?? [];
   final query = ref.watch(searchQueryProvider).toLowerCase();
-  if (query.isEmpty) return expenses;
+  final payTypeFilter = ref.watch(txPayTypeFilterProvider);
+  final categoryFilter = ref.watch(txCategoryFilterProvider);
+
   return expenses.where((e) {
-    return (e.storeDescription?.toLowerCase().contains(query) ?? false) ||
-        (e.subcategory?.toLowerCase().contains(query) ?? false) ||
-        e.category.toLowerCase().contains(query);
+    // pay-type chip filter
+    if (payTypeFilter == 'cash' && e.payType != 'Cash') return false;
+    if (payTypeFilter == 'swile' && e.payType != 'Swile') return false;
+
+    // category sub-filter
+    if (categoryFilter != null && e.category != categoryFilter) return false;
+
+    // search query
+    if (query.isNotEmpty) {
+      return (e.storeDescription?.toLowerCase().contains(query) ?? false) ||
+          (e.subcategory?.toLowerCase().contains(query) ?? false) ||
+          e.category.toLowerCase().contains(query);
+    }
+    return true;
   }).toList();
 });
 

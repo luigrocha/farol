@@ -253,7 +253,7 @@ class AppLocalizations {
     'es': {
       'app_name': 'Farol',
       'dashboard': 'Panel',
-      'transactions': 'gastos',
+      'transactions': 'Gastos',
       'analytics': 'Análisis',
       'investments': 'Inversiones',
       'settings': 'Ajustes',
@@ -396,7 +396,7 @@ class AppLocalizations {
       'concierge_support': 'Soporte Concierge',
       'corporate_benefits': 'Beneficios Corporativos',
       // Transactions & Benefits
-      'recent_transactions': 'gastos Recientes',
+      'recent_transactions': 'Gastos Recientes',
       'monthly_spending': 'Gastos Mensuales',
       'last_7_days': 'Últimos 7 días',
       'see_all': 'Ver Todo',
