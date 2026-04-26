@@ -12,6 +12,7 @@ import '../../core/i18n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/widgets/health_gauge.dart';
 import '../../core/models/budget_alert.dart';
+import '../../core/widgets/shimmer_box.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -107,7 +108,11 @@ class _NetWorthHero extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final snap = ref.watch(netWorthSnapshotProvider).value;
+    final snapAsync = ref.watch(netWorthSnapshotProvider);
+    if (snapAsync.isLoading) {
+      return const DashboardCardSkeleton(height: 140);
+    }
+    final snap = snapAsync.value;
     final nw = snap == null ? 0.0 : FinancialCalculatorService.calculateNetWorth(
       patrimonyTotal: snap.patrimonyTotal,
       fgtsBalance: snap.fgtsBalance, investmentsTotal: snap.investmentsTotal,
@@ -178,7 +183,12 @@ class _HealthGaugeCard extends ConsumerWidget {
     final colors = context.colors;
     final net=ref.watch(effectiveNetSalaryProvider); final cash=ref.watch(cashExpensesProvider);
     final byCategory=ref.watch(cashExpensesByCategoryProvider); final bal=ref.watch(cashRemainingProvider);
-    final snap=ref.watch(netWorthSnapshotProvider).value; final inst=ref.watch(installmentsProvider).value??[];
+    final snapAsync=ref.watch(netWorthSnapshotProvider);
+    final instAsync=ref.watch(installmentsProvider);
+    if (snapAsync.isLoading || instAsync.isLoading) {
+      return const DashboardCardSkeleton(height: 200);
+    }
+    final snap=snapAsync.value; final inst=instAsync.value??[];
     final housing=byCategory['HOUSING']??0; final instTotal=inst.fold(0.0,(s,i)=>s+i.monthlyAmount);
     final ef=snap?.emergencyFund??0;
     final score=FinancialCalculatorService.calculateHealthScore(netSalary:net,cashExpenses:cash,housingExpenses:housing,monthlyBalance:bal,emergencyFund:ef,avgMonthlyExpenses:cash,activeInstallmentsTotal:instTotal);
@@ -447,7 +457,9 @@ class _InstallmentsSummaryCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
-    final installments = ref.watch(installmentsProvider).value ?? [];
+    final instAsync = ref.watch(installmentsProvider);
+    if (instAsync.isLoading) return const DashboardCardSkeleton(height: 100);
+    final installments = instAsync.value ?? [];
     const purple = Color(0xFF6B3FA0);
 
     if (installments.isEmpty) return const SizedBox.shrink();

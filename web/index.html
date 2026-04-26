@@ -43,7 +43,6 @@
 <body>
   <script>
     window.addEventListener('load', function(ev) {
-      // Download main.dart.js
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
@@ -54,6 +53,13 @@
           });
         }
       });
+    });
+
+    // Force Flutter to repaint when tab becomes visible again (fixes gray canvas on return from background)
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) {
+        window.dispatchEvent(new Event('resize'));
+      }
     });
   </script>
 </body>
