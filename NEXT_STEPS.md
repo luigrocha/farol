@@ -8,34 +8,7 @@ Based on the analysis of the current state (April 25, 2026), here are the priori
 
 ## 🎯 Priority 1: Cleanup & Stabilization (Short Term)
 
-### 1.1 Feature Branch Audit
-**Status**: There are 11 feature branches that may be outdated  
-**Recommended action**:
-- Review each branch vs. `develop` to identify:
-  - ✅ Work in Progress (WIP) that can be merged
-  - ⚠️ Outdated code that needs rebasing
-  - ❌ Abandoned features that should be deleted
-
-**Critical branches to review**:
-```
-origin/feature/dark-mode              # Potential conflict with recent design system
-origin/feature/user-preferences-sync  # May affect Supabase integration
-origin/feature/recurring-fixed-expenses
-origin/feature/edit-delete-transaction
-origin/feature/messages-toast
-```
-
-**Useful commands**:
-```bash
-# View differences between feature and develop
-git diff develop..feature/dark-mode --stat
-
-# Check if rebase is needed
-git merge-base develop feature/dark-mode
-git log develop..feature/dark-mode --oneline
-```
-
-### 1.2 Test Verification
+### 1.1 Test Verification
 **Status**: Basic tests exist but coverage is limited  
 **Recommended action**:
 - Run full suite: `flutter test`
@@ -50,7 +23,7 @@ git log develop..feature/dark-mode --oneline
 - Integration tests for Supabase auth
 - Widget tests for new design system components
 
-### 1.3 Remove Code Duplication
+### 1.2 Remove Code Duplication
 **Status**: i18n recently integrated; potential duplication in features  
 **Recommended action**:
 - Search for remaining hardcoded strings
