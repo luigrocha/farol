@@ -14,7 +14,7 @@ echo "==> Build runner"
 $DART run build_runner build --delete-conflicting-outputs
 
 echo "==> Flutter build web (html renderer)"
-$FLUTTER build web --release --web-renderer html \
+$FLUTTER build web --release --no-wasm-dry-run \
   --dart-define=SUPABASE_URL=https://placeholder.supabase.co \
   --dart-define=SUPABASE_ANON_KEY=placeholder
 

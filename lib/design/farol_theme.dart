@@ -66,7 +66,7 @@ ThemeData _build({
     ),
     scaffoldBackgroundColor: surface,
     extensions: [ext],
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: surfaceLowest,
       elevation: 0,
       shape: RoundedRectangleBorder(
