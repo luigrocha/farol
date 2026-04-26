@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'enums.dart';
 
 enum AlertLevel { warning, critical, exceeded }
@@ -28,6 +29,14 @@ class BudgetAlert {
   String get categoryLabel {
     try {
       return ExpenseCategory.fromDb(category).label;
+    } catch (_) {
+      return category;
+    }
+  }
+
+  String localizedCategoryLabel(BuildContext context) {
+    try {
+      return ExpenseCategory.fromDb(category).localizedLabel(context);
     } catch (_) {
       return category;
     }

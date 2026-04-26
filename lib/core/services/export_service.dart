@@ -84,7 +84,7 @@ class ExportService {
   // PDF MONTHLY REPORT
   // ═══════════════════════════════════════════
 
-  Future<void> exportMonthlyReport(int month, int year, BudgetSettings? budget) async {
+  Future<void> exportMonthlyReport(int month, int year, BudgetSettings? budget, {String locale = 'pt'}) async {
     final expenses = await expenseRepo.getByRange(month, year, month, year);
     final incomes = await incomeRepo.getByRange(month, year, month, year);
     final installments = await installmentRepo.getActive();
@@ -100,6 +100,7 @@ class ExportService {
       budget: budget,
       netWorth: netWorth,
       goals: goals,
+      locale: locale,
     );
 
     const monthNames = [

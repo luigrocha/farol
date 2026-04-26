@@ -6,6 +6,8 @@ import '../models/income.dart';
 import '../models/card_installment.dart';
 import '../models/net_worth_snapshot.dart';
 import '../models/budget_goal.dart';
+import '../models/enums.dart';
+import '../i18n/app_localizations.dart';
 import '../../features/budget/domain/budget_settings.dart';
 import 'financial_calculator_service.dart';
 
@@ -21,32 +23,6 @@ class PdfReportService {
   static const _textDark = PdfColor(0.08, 0.08, 0.08);
   static const _textMuted = PdfColor(0.5, 0.5, 0.5);
 
-  static const _months = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
-  ];
-
-  static const _categoryLabels = {
-    'HOUSING': 'Vivienda',
-    'TRANSPORT': 'Transporte',
-    'FOOD_GROCERY': 'Alimentación',
-    'HEALTH': 'Salud',
-    'SUBSCRIPTIONS': 'Suscripciones',
-    'LEISURE': 'Ocio',
-    'EDUCATION': 'Educación',
-    'CARD_INSTALLMENTS': 'Cuotas',
-    'OTHER': 'Otros',
-  };
-
-  static const _incomeLabels = {
-    'NET_SALARY': 'Salario Neto',
-    'SWILE_MEAL': 'Swile Comida',
-    'SWILE_FOOD': 'Swile Alimentación',
-    'BONUS': 'Bono',
-    '13TH_SALARY': '13° Salario',
-    'OVERTIME': 'Horas Extra',
-    'OTHER': 'Otros',
-  };
 
   static Future<Uint8List> generate({
     required int month,
@@ -57,6 +33,7 @@ class PdfReportService {
     required BudgetSettings? budget,
     required NetWorthSnapshot? netWorth,
     required List<BudgetGoal> goals,
+    String locale = 'pt',
   }) async {
     final doc = pw.Document();
 
@@ -82,7 +59,7 @@ class PdfReportService {
       ..sort((a, b) => b.value.compareTo(a.value));
 
     final goalsMap = {for (final g in goals) g.category: g};
-    final monthName = _months[month - 1];
+    final monthName = AppLocalizations.monthsForLocale(locale)[month - 1];
     final generatedAt = DateTime.now();
 
     doc.addPage(pw.MultiPage(
@@ -98,7 +75,7 @@ class PdfReportService {
         pw.SizedBox(height: 8),
         sortedCats.isEmpty
             ? _emptyNote('Sin gastos en efectivo registrados')
-            : _categoryTable(sortedCats, netSalary, goalsMap),
+            : _categoryTable(sortedCats, netSalary, goalsMap, locale),
         if (swileExpenses > 0) ...[
           pw.SizedBox(height: 6),
           _noteText(
@@ -109,7 +86,7 @@ class PdfReportService {
         pw.SizedBox(height: 8),
         incomes.isEmpty
             ? _emptyNote('Sin ingresos registrados')
-            : _incomesTable(incomes),
+            : _incomesTable(incomes, locale),
         if (installments.isNotEmpty) ...[
           pw.SizedBox(height: 24),
           _sectionTitle('Parcelas Activas'),
@@ -233,12 +210,28 @@ class PdfReportService {
     );
   }
 
+  static String _catLabel(String dbValue, String locale) {
+    try {
+      return ExpenseCategory.fromDb(dbValue).labelForLocale(locale);
+    } catch (_) {
+      return dbValue;
+    }
+  }
+
+  static String _incomeLabel(String dbValue, String locale) {
+    try {
+      return IncomeType.fromDb(dbValue).labelForLocale(locale);
+    } catch (_) {
+      return dbValue;
+    }
+  }
+
   // ═══════════════════════════════════════════
   // CATEGORY TABLE
   // ═══════════════════════════════════════════
 
   static pw.Widget _categoryTable(
-      List<MapEntry<String, double>> cats, double netSalary, Map<String, BudgetGoal> goals) {
+      List<MapEntry<String, double>> cats, double netSalary, Map<String, BudgetGoal> goals, String locale) {
     return pw.Table(
       columnWidths: {
         0: const pw.FlexColumnWidth(3),
@@ -252,7 +245,7 @@ class PdfReportService {
           final i = entry.key;
           final cat = entry.value.key;
           final amount = entry.value.value;
-          final label = _categoryLabels[cat] ?? cat;
+          final label = _catLabel(cat, locale);
           final pctSalary = netSalary > 0 ? amount / netSalary * 100 : 0.0;
           final goal = goals[cat];
           final limit = goal?.targetAmount ?? (netSalary * 0.1);
@@ -286,7 +279,7 @@ class PdfReportService {
   // INCOMES TABLE
   // ═══════════════════════════════════════════
 
-  static pw.Widget _incomesTable(List<Income> incomes) {
+  static pw.Widget _incomesTable(List<Income> incomes, String locale) {
     final total = incomes.fold(0.0, (s, i) => s + i.amount);
     return pw.Table(
       columnWidths: {
@@ -302,7 +295,7 @@ class PdfReportService {
           return pw.TableRow(
             decoration: pw.BoxDecoration(color: i.isEven ? PdfColors.white : _surface),
             children: [
-              _cell(_incomeLabels[inc.incomeType] ?? inc.incomeType,
+              _cell(_incomeLabel(inc.incomeType, locale),
                   pw.TextStyle(font: pw.Font.helvetica(), fontSize: 9, color: _textDark)),
               _cell(FinancialCalculatorService.formatBRL(inc.amount),
                   pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 9, color: _textDark),

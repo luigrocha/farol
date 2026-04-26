@@ -22,6 +22,18 @@ enum IncomeType {
 
   static IncomeType fromDb(String value) =>
       IncomeType.values.firstWhere((e) => e.dbValue == value);
+
+  String labelForLocale(String languageCode) {
+    switch (this) {
+      case IncomeType.netSalary: return AppLocalizations.translateStatic(languageCode, 'income_net_salary');
+      case IncomeType.swileMeal: return AppLocalizations.translateStatic(languageCode, 'income_swile_meal');
+      case IncomeType.swileFood: return AppLocalizations.translateStatic(languageCode, 'income_swile_food');
+      case IncomeType.bonus: return AppLocalizations.translateStatic(languageCode, 'income_bonus');
+      case IncomeType.thirteenthSalary: return AppLocalizations.translateStatic(languageCode, 'income_13th');
+      case IncomeType.overtime: return AppLocalizations.translateStatic(languageCode, 'income_overtime');
+      case IncomeType.other: return AppLocalizations.translateStatic(languageCode, 'income_other');
+    }
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -58,6 +70,20 @@ enum ExpenseCategory {
       case ExpenseCategory.education: return l10n.translate('cat_edu');
       case ExpenseCategory.cardInstallments: return l10n.translate('cat_card');
       case ExpenseCategory.other: return l10n.translate('cat_other');
+    }
+  }
+
+  String labelForLocale(String languageCode) {
+    switch (this) {
+      case ExpenseCategory.housing: return AppLocalizations.translateStatic(languageCode, 'cat_housing');
+      case ExpenseCategory.transport: return AppLocalizations.translateStatic(languageCode, 'cat_transport');
+      case ExpenseCategory.foodGrocery: return AppLocalizations.translateStatic(languageCode, 'cat_food');
+      case ExpenseCategory.health: return AppLocalizations.translateStatic(languageCode, 'cat_health');
+      case ExpenseCategory.subscriptions: return AppLocalizations.translateStatic(languageCode, 'cat_subs');
+      case ExpenseCategory.leisure: return AppLocalizations.translateStatic(languageCode, 'cat_leisure');
+      case ExpenseCategory.education: return AppLocalizations.translateStatic(languageCode, 'cat_edu');
+      case ExpenseCategory.cardInstallments: return AppLocalizations.translateStatic(languageCode, 'cat_card');
+      case ExpenseCategory.other: return AppLocalizations.translateStatic(languageCode, 'cat_other');
     }
   }
 }

@@ -136,7 +136,7 @@ class PeriodBudgetScreen extends ConsumerWidget {
     final label = hasGoal ? 'Reset to goal amount?' : 'Delete budget?';
     final body = hasGoal
         ? 'This will remove the custom amount and revert to your goal (${FinancialCalculatorService.formatBRL(entry.goal!.targetAmount)}).'
-        : 'Remove budget for ${_catLabel(entry.category)}?';
+        : 'Remove budget for ${_catLabel(entry.category, context)}?';
     final confirm = hasGoal ? 'Reset' : 'Delete';
 
     final ok = await showDialog<bool>(
@@ -177,9 +177,9 @@ class PeriodBudgetScreen extends ConsumerWidget {
     }
   }
 
-  String _catLabel(String dbValue) {
+  String _catLabel(String dbValue, BuildContext context) {
     try {
-      return ExpenseCategory.fromDb(dbValue).label;
+      return ExpenseCategory.fromDb(dbValue).localizedLabel(context);
     } catch (_) {
       return dbValue;
     }
@@ -245,7 +245,7 @@ class _EntryCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        cat?.label ?? entry.category,
+                        cat?.localizedLabel(context) ?? entry.category,
                         style: GoogleFonts.manrope(
                             fontSize: 14, fontWeight: FontWeight.w600),
                       ),

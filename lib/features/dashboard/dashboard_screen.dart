@@ -390,7 +390,7 @@ class _AlertBanner extends ConsumerWidget {
           Icon(icon, size: 18, color: color),
           const SizedBox(width: 10),
           Expanded(child: Text(
-            '${top.emoji} ${top.categoryLabel}: ${top.percentageLabel} del presupuesto',
+            '${top.emoji} ${top.localizedCategoryLabel(context)}: ${top.percentageLabel} del presupuesto',
             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: color),
           )),
           if (alerts.length > 1)

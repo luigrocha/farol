@@ -74,6 +74,13 @@ class AppLocalizations {
       'cat_edu': 'Education',
       'cat_card': 'Card Installments',
       'cat_other': 'Other',
+      'income_net_salary': 'Net Salary',
+      'income_swile_meal': 'Swile Meal',
+      'income_swile_food': 'Swile Food',
+      'income_bonus': 'Bonus',
+      'income_13th': '13th Salary',
+      'income_overtime': 'Overtime',
+      'income_other': 'Other',
       'health_healthy': 'HEALTHY',
       'health_warning': 'WARNING',
       'health_critical': 'CRITICAL',
@@ -336,6 +343,13 @@ class AppLocalizations {
       'cat_edu': 'Educación',
       'cat_card': 'Cuotas de Tarjeta',
       'cat_other': 'Otros',
+      'income_net_salary': 'Salario Neto',
+      'income_swile_meal': 'Swile Comida',
+      'income_swile_food': 'Swile Alimentación',
+      'income_bonus': 'Bono',
+      'income_13th': '13° Salario',
+      'income_overtime': 'Horas Extra',
+      'income_other': 'Otros',
       'health_healthy': 'SALUDABLE',
       'health_warning': 'ADVERTENCIA',
       'health_critical': 'CRÍTICO',
@@ -600,6 +614,13 @@ class AppLocalizations {
       'cat_edu': 'Educação',
       'cat_card': 'Parcelas Cartão',
       'cat_other': 'Outros',
+      'income_net_salary': 'Salário Líquido',
+      'income_swile_meal': 'Swile Refeição',
+      'income_swile_food': 'Swile Alimentação',
+      'income_bonus': 'Bônus',
+      'income_13th': '13° Salário',
+      'income_overtime': 'Hora Extra',
+      'income_other': 'Outros',
       'health_healthy': 'SAUDÁVEL',
       'health_warning': 'ATENÇÃO',
       'health_critical': 'CRÍTICO',
@@ -805,6 +826,16 @@ class AppLocalizations {
     if (value is String) return value;
     return key;
   }
+
+  static String translateStatic(String languageCode, String key) {
+    final value = _localizedValues[languageCode]?[key];
+    if (value is String) return value;
+    return key;
+  }
+
+  static List<String> monthsForLocale(String languageCode) =>
+      (_localizedValues[languageCode]?['months'] as List<String>?) ??
+      (_localizedValues['en']!['months'] as List<String>);
 
   String get appName => translate('app_name');
   String get dashboard => translate('dashboard');
