@@ -102,7 +102,7 @@ class AppLocalizations {
       'pay_pix': 'PIX',
       'pay_credit': 'Credit',
       'pay_credit_inst': 'Credit (Installments)',
-      'pay_swile_meal': 'Swile Meal',
+      'pay_swile_meal': 'Swile Saldo Libre',
       'pay_swile_food': 'Swile Food',
       // Toast messages
       'net_worth_saved': 'Net worth saved!',
@@ -343,7 +343,7 @@ class AppLocalizations {
       'pay_pix': 'PIX',
       'pay_credit': 'Crédito',
       'pay_credit_inst': 'Crédito (Cuotas)',
-      'pay_swile_meal': 'Vale Comida',
+      'pay_swile_meal': 'Swile Saldo Libre',
       'pay_swile_food': 'Vale Alimento',
       // Toast messages
       'net_worth_saved': '¡Patrimonio guardado!',
@@ -586,7 +586,7 @@ class AppLocalizations {
       'pay_pix': 'PIX',
       'pay_credit': 'Crédito à Vista',
       'pay_credit_inst': 'Crédito Parcelado',
-      'pay_swile_meal': 'Swile Refeição',
+      'pay_swile_meal': 'Swile Saldo Livre',
       'pay_swile_food': 'Swile Alimentação',
       // Toast messages
       'net_worth_saved': 'Patrimônio salvo!',

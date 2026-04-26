@@ -227,6 +227,30 @@ final swileExpensesProvider = Provider.autoDispose<double>((ref) {
       .fold(0.0, (sum, e) => sum + e.amount);
 });
 
+final swileTransactionsProvider = Provider.autoDispose<AsyncValue<List<Expense>>>((ref) {
+  return ref.watch(_allExpensesStreamProvider).whenData(
+    (all) {
+      final swile = all.where((e) => e.payType == 'Swile').toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return swile;
+    },
+  );
+});
+
+final swileMealBalanceProvider = Provider.autoDispose<double>((ref) {
+  final incomes = ref.watch(incomesProvider).value ?? [];
+  return incomes
+      .where((i) => i.incomeType == 'SWILE_MEAL')
+      .fold(0.0, (s, i) => s + i.amount);
+});
+
+final swileFoodBalanceProvider = Provider.autoDispose<double>((ref) {
+  final incomes = ref.watch(incomesProvider).value ?? [];
+  return incomes
+      .where((i) => i.incomeType == 'SWILE_FOOD')
+      .fold(0.0, (s, i) => s + i.amount);
+});
+
 final expensesByCategoryProvider = Provider.autoDispose<Map<String, double>>((ref) {
   final expenses = ref.watch(expensesProvider).value ?? [];
   final map = <String, double>{};

@@ -8,7 +8,7 @@ import '../i18n/app_localizations.dart';
 // ═══════════════════════════════════════════
 enum IncomeType {
   netSalary('NET_SALARY', 'Net Salary', '💰'),
-  swileMeal('SWILE_MEAL', 'Swile Meal', '🍽️'),
+  swileMeal('SWILE_MEAL', 'Swile Saldo Livre', '🍽️'),
   swileFood('SWILE_FOOD', 'Swile Food', '🛒'),
   bonus('BONUS', 'Bonus', '🎉'),
   thirteenthSalary('13TH_SALARY', '13th Salary', '🎄'),
@@ -70,7 +70,7 @@ enum PaymentMethod {
   creditFull('CREDIT_FULL', 'Credit (Full)', '💳'),
   creditInstallment('CREDIT_INSTALLMENT', 'Credit (Installment)', '💳'),
   pix('PIX', 'PIX', '⚡'),
-  swileMeal('SWILE_MEAL', 'Swile Meal', '🍽️'),
+  swileMeal('SWILE_MEAL', 'Swile Saldo Livre', '🍽️'),
   swileFood('SWILE_FOOD', 'Swile Food', '🛒'),
   transfer('TRANSFER', 'Transfer', '🏦');
 
