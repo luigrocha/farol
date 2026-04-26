@@ -1,4 +1,4 @@
-# Miscellaneous
+# ─── Miscellaneous ───────────────────────────────────────────────────────────
 *.class
 *.log
 *.pyc
@@ -10,18 +10,17 @@
 .svn/
 migrate_working_dir/
 
-# IntelliJ related
+# ─── IDE ─────────────────────────────────────────────────────────────────────
+# IntelliJ / Android Studio
 *.iml
 *.ipr
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
+# VS Code (uncomment to ignore launch configs)
 #.vscode/
 
-# Flutter/Dart/Pub related
+# ─── Flutter / Dart / Pub ────────────────────────────────────────────────────
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
@@ -30,18 +29,72 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+pubspec.lock
 
-# Symbolication related
+# Generated Drift/build_runner files
+*.g.dart
+*.freezed.dart
+
+# Symbolication / obfuscation
 app.*.symbols
-
-# Obfuscation related
 app.*.map.json
 
-# Android Studio will place build artifacts here
+# ─── Platform build artifacts ────────────────────────────────────────────────
+# Android
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/.gradle/
+/android/local.properties
+/android/key.properties
+*.keystore
+*.jks
 
-# Environment variables
+# iOS / macOS
+/ios/Pods/
+/ios/Flutter/flutter_export_environment.sh
+/macos/Pods/
+*.xcworkspace
+xcuserdata/
+
+# Windows
+/windows/flutter/generated_plugin_registrant.cc
+/windows/flutter/generated_plugin_registrant.h
+/windows/flutter/generated_plugins.cmake
+
+# Linux
+/linux/flutter/generated_plugin_registrant.cc
+/linux/flutter/generated_plugin_registrant.h
+/linux/flutter/generated_plugins.cmake
+
+# Web
+/web/flutter_service_worker.js
+
+# ─── Secrets / Environment ───────────────────────────────────────────────────
 env.json
 .env
+.env.*
+!.env.example
+google-services.json
+GoogleService-Info.plist
+*.p8
+*.p12
+supabase/.env
+
+# ─── Database (Flyway / local SQLite) ────────────────────────────────────────
+database/flyway.conf
+*.db
+*.sqlite
+*.sqlite3
+
+# ─── Scripts ─────────────────────────────────────────────────────────────────
+scripts/*.log
+
+# ─── Logs ────────────────────────────────────────────────────────────────────
+flutter_*.log
+
+# ─── Temporary / misc ────────────────────────────────────────────────────────
+*.orig
+.vscode/settings.json
+devtools_options.yaml
+check_build.sh
