@@ -12,6 +12,8 @@ import '../auth/presentation/auth_providers.dart';
 import '../budget/domain/budget_settings.dart';
 import '../budget/presentation/budget_settings_sheet.dart';
 import '../budget/presentation/budget_goals_sheet.dart';
+import '../budget/presentation/rebalance_budget_sheet.dart';
+import '../budget/presentation/recommendation_card.dart';
 import '../net_worth/presentation/net_worth_settings_sheet.dart';
 import '../profile/presentation/profile_providers.dart';
 import 'salary_settings_sheet.dart';
@@ -663,6 +665,48 @@ class _BudgetSection extends ConsumerWidget {
         ),
       ),
       const SizedBox(height: 8),
+      if (ref.watch(budgetPercentageOverflowProvider)) ...[
+        Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.red.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 18),
+              const SizedBox(width: 10),
+              const Expanded(
+                child: Text(
+                  'Your budget allocations exceed 100%. Tap a category to adjust.',
+                  style: TextStyle(fontSize: 12, color: Colors.red, fontWeight: FontWeight.w500),
+                ),
+              ),
+              TextButton(
+                onPressed: () => showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (_) => const RebalanceBudgetSheet(),
+                ),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Text(
+                  'Rebalance',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+      const AiRecommendationSection(),
       GestureDetector(
         onTap: () => showModalBottomSheet(
           context: context,
@@ -672,16 +716,30 @@ class _BudgetSection extends ConsumerWidget {
         ),
         child: Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+          decoration: BoxDecoration(
+            color: colors.surfaceLowest,
+            borderRadius: BorderRadius.circular(16),
+            border: ref.watch(budgetPercentageOverflowProvider)
+                ? Border.all(color: Colors.red.withValues(alpha: 0.4), width: 1.5)
+                : null,
+          ),
           child: Row(children: [
             Container(
               width: 34,
               height: 34,
               decoration: BoxDecoration(
-                color: colors.iconTintBlue,
+                color: ref.watch(budgetPercentageOverflowProvider)
+                    ? Colors.red.withValues(alpha: 0.1)
+                    : colors.iconTintBlue,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.category_outlined, size: 18, color: tokens.FarolColors.navy),
+              child: Icon(
+                Icons.category_outlined,
+                size: 18,
+                color: ref.watch(budgetPercentageOverflowProvider)
+                    ? Colors.red
+                    : tokens.FarolColors.navy,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -693,8 +751,15 @@ class _BudgetSection extends ConsumerWidget {
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface),
                   ),
                   Text(
-                    AppLocalizations.of(context).translate('set_spending_limits'),
-                    style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
+                    ref.watch(budgetPercentageOverflowProvider)
+                        ? '${ref.watch(budgetCashPercentageTotalProvider).toStringAsFixed(1)}% allocated — over limit'
+                        : AppLocalizations.of(context).translate('set_spending_limits'),
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: ref.watch(budgetPercentageOverflowProvider)
+                          ? Colors.red
+                          : colors.onSurfaceSoft,
+                    ),
                   ),
                 ],
               ),

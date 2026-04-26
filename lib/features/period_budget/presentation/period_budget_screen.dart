@@ -106,6 +106,7 @@ class PeriodBudgetScreen extends ConsumerWidget {
           delegate: SliverChildBuilderDelegate(
             (_, i) => _EntryCard(
               entry: entries[i],
+              isSwileBacked: _isSwileBacked(entries[i].category),
               onTap: () => _openEdit(context, entries[i]),
               onAction: () => _handleAction(context, ref, entries[i]),
             ),
@@ -184,17 +185,27 @@ class PeriodBudgetScreen extends ConsumerWidget {
       return dbValue;
     }
   }
+
+  bool _isSwileBacked(String dbValue) {
+    try {
+      return ExpenseCategory.fromDb(dbValue).isSwile;
+    } catch (_) {
+      return false;
+    }
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _EntryCard extends StatelessWidget {
   final PeriodBudgetEntry entry;
+  final bool isSwileBacked;
   final VoidCallback onTap;
   final VoidCallback onAction;
 
   const _EntryCard({
     required this.entry,
+    required this.isSwileBacked,
     required this.onTap,
     required this.onAction,
   });
@@ -258,7 +269,25 @@ class _EntryCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (entry.isCustom)
+                if (isSwileBacked)
+                  Container(
+                    margin: const EdgeInsets.only(right: 6),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF00A86B).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text(
+                      'Swile',
+                      style: TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF00A86B),
+                      ),
+                    ),
+                  )
+                else if (entry.isCustom)
                   Container(
                     margin: const EdgeInsets.only(right: 6),
                     padding: const EdgeInsets.symmetric(
@@ -324,7 +353,9 @@ class _EntryCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'of ${FinancialCalculatorService.formatBRL(entry.amount)}',
+                  isSwileBacked
+                      ? 'of Swile balance'
+                      : 'of ${FinancialCalculatorService.formatBRL(entry.amount)}',
                   style: TextStyle(
                       fontSize: 11, color: colors.onSurfaceFaint),
                 ),

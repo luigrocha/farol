@@ -45,6 +45,7 @@ flutter test test/smoke_test.dart
 - **Hot Reload**: Works for UI changes only. Provider/database changes require full restart.
 - **Build Runner**: Auto-triggers on `flutter pub get`; manually rebuild with `dart run build_runner build` after modifying Drift schema or annotations.
 - **Database Migrations**: Drift handles auto-migrations on schema changes. For first setup, seed data loads from `lib/core/database/seed_data.dart`.
+- **CLAUDE_API_KEY**: Required for AI budget recommendations (`lib/core/services/budget_recommendation_service.dart`). Add to `env.json` (gitignored). See `env.json.example` for the key name.
 
 ## Architecture
 

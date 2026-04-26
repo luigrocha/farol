@@ -56,4 +56,38 @@ class BudgetGoalsRepository {
       onConflict: 'user_id,category',
     );
   }
+
+  /// Bulk-updates target_percentage (and derives target_amount from netSalary)
+  /// for multiple categories in a single Supabase upsert.
+  Future<void> updateAllPercentages(
+    Map<String, double> categoryToPercentage,
+    double netSalary,
+  ) async {
+    final userId = _userId;
+    if (userId == null) throw Exception('Not authenticated');
+
+    final current = await getAll();
+    final currentMap = {for (final g in current) g.category: g};
+
+    final rows = <Map<String, dynamic>>[];
+    for (final entry in categoryToPercentage.entries) {
+      final existing = currentMap[entry.key];
+      if (existing == null) continue;
+      rows.add({
+        'user_id': userId,
+        'category': entry.key,
+        'target_percentage': entry.value,
+        'target_amount': netSalary > 0
+            ? (entry.value / 100) * netSalary
+            : existing.targetAmount,
+        'type': existing.type,
+      });
+    }
+
+    if (rows.isNotEmpty) {
+      await _supabase
+          .from('budget_goals')
+          .upsert(rows, onConflict: 'user_id,category');
+    }
+  }
 }

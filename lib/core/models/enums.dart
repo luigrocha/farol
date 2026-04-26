@@ -58,6 +58,8 @@ enum ExpenseCategory {
   static ExpenseCategory fromDb(String value) =>
       ExpenseCategory.values.firstWhere((e) => e.dbValue == value);
 
+  bool get isSwile => swileCategories.contains(dbValue);
+
   String localizedLabel(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     switch (this) {
@@ -87,6 +89,9 @@ enum ExpenseCategory {
     }
   }
 }
+
+/// DB values of categories funded by Swile vouchers — excluded from cash budget pool.
+const Set<String> swileCategories = {'FOOD_GROCERY'};
 
 // ═══════════════════════════════════════════
 // Payment Method Enum
