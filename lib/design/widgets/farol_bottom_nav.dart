@@ -25,8 +25,8 @@ class FarolBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark
-        ? const Color(0xFF0E1117).withOpacity(0.85)
-        : Colors.white.withOpacity(0.85);
+        ? const Color(0xFF0E1117).withValues(alpha: 0.85)
+        : Colors.white.withValues(alpha: 0.85);
 
     return ClipRect(
       child: BackdropFilter(
@@ -38,8 +38,8 @@ class FarolBottomNav extends StatelessWidget {
             border: Border(
               top: BorderSide(
                 color: isDark
-                    ? Colors.white.withOpacity(0.07)
-                    : Colors.black.withOpacity(0.06),
+                    ? Colors.white.withValues(alpha: 0.07)
+                    : Colors.black.withValues(alpha: 0.06),
                 width: 0.5,
               ),
             ),
@@ -140,7 +140,7 @@ class _FabItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: tokens.FarolColors.beam.withOpacity(0.35),
+                    color: tokens.FarolColors.beam.withValues(alpha: 0.35),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),

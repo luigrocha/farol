@@ -152,7 +152,7 @@ dart run build_runner build --delete-conflicting-outputs
 flutter run
 
 # Run on web (Chrome)
-flutter run -d chrome --web-renderer=html
+flutter run -d chrome --dart-define-from-file=env.json
 ```
 
 ### First Launch

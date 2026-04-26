@@ -48,23 +48,21 @@ class AppTheme {
         onTertiary: Colors.white,
         error: errorColor,
         onError: Colors.white,
-        background: c.surface,
-        onBackground: c.onSurface,
-        surface: c.surfaceLowest,
+        surface: c.surface,
         onSurface: c.onSurface,
         outline: c.onSurfaceFaint,
       ),
       scaffoldBackgroundColor: c.surface,
       extensions: [c],
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: c.surfaceLowest,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
           side: BorderSide(
             color: isDark
-                ? Colors.white.withOpacity(0.06)
-                : primaryColor.withOpacity(0.05),
+                ? Colors.white.withValues(alpha: 0.06)
+                : primaryColor.withValues(alpha: 0.05),
             width: 1,
           ),
         ),
@@ -100,12 +98,12 @@ class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: isDark
-            ? c.surfaceLow.withOpacity(0.95)
-            : Colors.white.withOpacity(0.85),
+            ? c.surfaceLow.withValues(alpha: 0.95)
+            : Colors.white.withValues(alpha: 0.85),
         elevation: 0,
-        indicatorColor: primaryColor.withOpacity(isDark ? 0.2 : 0.1),
-        labelTextStyle: MaterialStateProperty.resolveWith((states) {
-          final isSelected = states.contains(MaterialState.selected);
+        indicatorColor: primaryColor.withValues(alpha: isDark ? 0.2 : 0.1),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          final isSelected = states.contains(WidgetState.selected);
           return TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w700,
@@ -113,9 +111,9 @@ class AppTheme {
             color: isSelected ? c.onSurface : c.onSurfaceFaint,
           );
         }),
-        iconTheme: MaterialStateProperty.resolveWith((states) {
+        iconTheme: WidgetStateProperty.resolveWith((states) {
           return IconThemeData(
-            color: states.contains(MaterialState.selected) ? c.onSurface : c.onSurfaceFaint,
+            color: states.contains(WidgetState.selected) ? c.onSurface : c.onSurfaceFaint,
             size: 24,
           );
         }),

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -41,7 +40,7 @@ class BrlText extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: prefixSize,
             fontWeight: FontWeight.w500,
-            color: baseColor.withOpacity(0.75),
+            color: baseColor.withValues(alpha: 0.75),
             fontFeatures: const [FontFeature.tabularFigures()],
           ),
         ),

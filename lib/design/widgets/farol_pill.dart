@@ -18,7 +18,7 @@ class FarolPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fg = labelColor ?? Theme.of(context).colorScheme.onSurface;
-    final bg = backgroundColor ?? fg.withOpacity(0.10);
+    final bg = backgroundColor ?? fg.withValues(alpha: 0.10);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

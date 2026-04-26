@@ -27,7 +27,9 @@ flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 
 # Run on device/simulator (hot reload supported for UI changes)
-flutter run -d chrome --web-renderer=html --dart-define-from-file=env.json
+# flutter run -d chrome --web-renderer=html --dart-define-from-file=env.json
+
+flutter run -d chrome --dart-define-from-file=env.json
 
 # Lint check (zero warnings/errors expected)
 flutter analyze

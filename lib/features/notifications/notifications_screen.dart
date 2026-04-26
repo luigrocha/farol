@@ -95,7 +95,7 @@ class _AlertCard extends StatelessWidget {
       _NotifCard(
         accent: color,
         icon: icon,
-        iconBg: color.withOpacity(0.1),
+        iconBg: color.withValues(alpha: 0.1),
         time: alert.emoji,
         title: '${alert.categoryLabel} — ${alert.percentageLabel}',
         body: bodyText,
@@ -112,7 +112,7 @@ class _EmptyState extends StatelessWidget {
     final colors = context.colors;
     return Center(
       child: Column(children: [
-        Icon(Icons.check_circle_outline, size: 48, color: tokens.FarolColors.tide.withOpacity(0.5)),
+        Icon(Icons.check_circle_outline, size: 48, color: tokens.FarolColors.tide.withValues(alpha: 0.5)),
         const SizedBox(height: 16),
         Text('Todo bajo control', style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700, color: colors.onSurface)),
         const SizedBox(height: 6),
@@ -132,7 +132,7 @@ class _CategoryLabel extends StatelessWidget {
       padding: const EdgeInsets.only(top: 24, bottom: 12),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(99)),
+        decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(99)),
         child: Text(label.toUpperCase(), style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1.2)),
       ),
     );
@@ -206,7 +206,7 @@ class _NotifCard extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: progressValue,
                     minHeight: 5,
-                    backgroundColor: (progressColor ?? tokens.FarolColors.beam).withOpacity(0.12),
+                    backgroundColor: (progressColor ?? tokens.FarolColors.beam).withValues(alpha: 0.12),
                     valueColor: AlwaysStoppedAnimation(progressColor ?? tokens.FarolColors.beam),
                   ),
                 ),

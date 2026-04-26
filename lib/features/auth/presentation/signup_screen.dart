@@ -75,7 +75,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: cs.background,
+       backgroundColor: cs.surface,
       body: AuthActionHandler(
         successMessage: l10n.translate('account_created_check_email'),
         child: SafeArea(

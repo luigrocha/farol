@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../core/i18n/app_localizations.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/clt_calculator_service.dart';
 import '../../core/services/financial_calculator_service.dart';
-import '../../design/farol_colors.dart' as tokens;
-import '../../core/i18n/app_localizations.dart';
-import '../../core/widgets/farol_snackbar.dart';
 import '../../core/theme/farol_colors.dart';
+import '../../core/widgets/farol_snackbar.dart';
+import '../../design/farol_colors.dart' as tokens;
 
 const _kGreen = tokens.FarolColors.beam;
 
@@ -133,7 +133,7 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                      color: _kGreen.withOpacity(0.12),
+                      color: _kGreen.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(10)),
                   child: const Icon(Icons.account_balance_outlined,
                       size: 20, color: _kGreen),
@@ -313,7 +313,7 @@ class _PreviewCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-              color: _kGreen.withOpacity(0.25),
+              color: _kGreen.withValues(alpha: 0.25),
               blurRadius: 14,
               offset: const Offset(0, 6)),
         ],
@@ -331,7 +331,7 @@ class _PreviewCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(20)),
             child: Text(
               '${result.effectiveRate.toStringAsFixed(1)}% alíquota efetiva',
@@ -364,7 +364,7 @@ class _PreviewCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8)),
             child: Row(children: [
               const Icon(Icons.info_outline, size: 12, color: Colors.white70),
@@ -399,7 +399,7 @@ class _Stat extends StatelessWidget {
                 fontSize: 9,
                 letterSpacing: 1.2,
                 fontWeight: FontWeight.w700,
-                color: color.withOpacity(0.8))),
+                color: color.withValues(alpha: 0.8))),
         const SizedBox(height: 2),
         Text(
           FinancialCalculatorService.formatBRL(value),
@@ -465,7 +465,7 @@ class _Btn extends StatelessWidget {
         height: 32,
         decoration: BoxDecoration(
             color: enabled
-                ? _kGreen.withOpacity(0.1)
+                ? _kGreen.withValues(alpha: 0.1)
                 : context.colors.surfaceLow,
             borderRadius: BorderRadius.circular(8)),
         child: Icon(icon,

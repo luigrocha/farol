@@ -76,7 +76,7 @@ class InvestmentDetailScreen extends ConsumerWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        typeColor.withOpacity(0.85),
+                        typeColor.withValues(alpha: 0.85),
                         typeColor,
                       ],
                     ),
@@ -86,7 +86,7 @@ class InvestmentDetailScreen extends ConsumerWidget {
                       Container(
                         width: 48, height: 48,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.18),
+                          color: Colors.white.withValues(alpha: 0.18),
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Center(child: Text(typeEmoji, style: const TextStyle(fontSize: 22))),
@@ -105,7 +105,7 @@ class InvestmentDetailScreen extends ConsumerWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
+                          color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -123,7 +123,7 @@ class InvestmentDetailScreen extends ConsumerWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.22),
+                          color: Colors.black.withValues(alpha: 0.22),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(mainAxisSize: MainAxisSize.min, children: [
@@ -272,8 +272,8 @@ class _ReturnBar extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: 1.0,
                 minHeight: 8,
-                backgroundColor: typeColor.withOpacity(0.12),
-                valueColor: AlwaysStoppedAnimation(typeColor.withOpacity(0.4)),
+                backgroundColor: typeColor.withValues(alpha: 0.12),
+                valueColor: AlwaysStoppedAnimation(typeColor.withValues(alpha: 0.4)),
               ),
             ),
           ])),
@@ -341,7 +341,7 @@ class _BRLBig extends StatelessWidget {
     return Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
       Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.48, fontWeight: FontWeight.w500, color: Colors.white70)),
       Text(intPart, style: GoogleFonts.manrope(fontSize: size, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -size * 0.028)),
-      Text(',$centsPart', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: FontWeight.w800, color: Colors.white.withOpacity(0.8))),
+      Text(',$centsPart', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: FontWeight.w800, color: Colors.white.withValues(alpha: 0.8))),
     ]);
   }
 }

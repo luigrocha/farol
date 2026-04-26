@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
@@ -145,7 +144,7 @@ class _MiniStat extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(child: Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: Colors.white.withOpacity(0.08), borderRadius: BorderRadius.circular(14), border: Border.all(color: Colors.white.withOpacity(0.08))),
+      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14), border: Border.all(color: Colors.white.withValues(alpha: 0.08))),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(label.toUpperCase(), style: const TextStyle(fontSize: 9, letterSpacing: 1, fontWeight: FontWeight.w600, color: Colors.white60)),
         const SizedBox(height: 4),
@@ -170,7 +169,7 @@ class _BRLBig extends ConsumerWidget {
     return Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
       Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.48, fontWeight: FontWeight.w500, color: c)),
       Text(f.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: weight, color: c, letterSpacing: -size * 0.028)),
-      Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: weight, color: c.withOpacity(0.85))),
+      Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: weight, color: c.withValues(alpha: 0.85))),
     ]);
   }
 }
@@ -383,9 +382,9 @@ class _AlertBanner extends ConsumerWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
+          color: color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withOpacity(0.25)),
+          border: Border.all(color: color.withValues(alpha: 0.25)),
         ),
         child: Row(children: [
           Icon(icon, size: 18, color: color),
@@ -398,7 +397,7 @@ class _AlertBanner extends ConsumerWidget {
             Container(
               margin: const EdgeInsets.only(right: 6),
               padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-              decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(99)),
+              decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(99)),
               child: Text('+${alerts.length - 1}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color)),
             ),
           Icon(Icons.chevron_right, size: 16, color: color),
@@ -422,7 +421,7 @@ class _PeriodBanner extends ConsumerWidget {
       decoration: BoxDecoration(
         color: colors.surfaceLowest,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: colors.onSurfaceFaint.withOpacity(0.4)),
+        border: Border.all(color: colors.onSurfaceFaint.withValues(alpha: 0.4)),
       ),
       child: Row(
         children: [
@@ -477,7 +476,7 @@ class _InstallmentsSummaryCard extends ConsumerWidget {
             Row(children: [
               Container(
                 width: 32, height: 32,
-                decoration: BoxDecoration(color: purple.withOpacity(0.12), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(color: purple.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
                 child: const Center(child: Text('💳', style: TextStyle(fontSize: 15))),
               ),
               const SizedBox(width: 10),
@@ -526,7 +525,7 @@ class _InstallmentsSummaryCard extends ConsumerWidget {
                 child: LinearProgressIndicator(
                   value: inst.progressPercent,
                   minHeight: 4,
-                  backgroundColor: purple.withOpacity(0.1),
+                  backgroundColor: purple.withValues(alpha: 0.1),
                   valueColor: const AlwaysStoppedAnimation(purple),
                 ),
               ),

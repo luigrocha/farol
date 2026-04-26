@@ -208,7 +208,7 @@ class _SubScoreRow extends StatelessWidget {
         Container(
           width: 36, height: 36,
           decoration: BoxDecoration(
-            color: tokens.FarolColors.navy.withOpacity(0.08),
+            color: tokens.FarolColors.navy.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, size: 18, color: tokens.FarolColors.navy),
@@ -221,7 +221,7 @@ class _SubScoreRow extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: badgeColor.withOpacity(0.12),
+            color: badgeColor.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
@@ -271,7 +271,7 @@ class _HistoryTile extends StatelessWidget {
         Container(
           width: 42, height: 42,
           decoration: BoxDecoration(
-            color: scoreColor.withOpacity(0.12),
+            color: scoreColor.withValues(alpha: 0.12),
             shape: BoxShape.circle,
           ),
           alignment: Alignment.center,

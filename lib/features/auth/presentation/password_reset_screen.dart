@@ -69,7 +69,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
     });
 
     return Scaffold(
-      backgroundColor: cs.background,
+       backgroundColor: cs.surface,
       body: AuthActionHandler(
         child: SafeArea(
           child: SingleChildScrollView(
@@ -85,7 +85,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
                     width: 64,
                     height: 64,
                     decoration: BoxDecoration(
-                      color: tokens.FarolColors.navy.withOpacity(0.08),
+                      color: tokens.FarolColors.navy.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Icon(

@@ -214,7 +214,7 @@ class _MetricCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Container(width: 30, height: 30, decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(8)),
+        Container(width: 30, height: 30, decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(8)),
           child: Icon(icon, size: 15, color: color)),
         const SizedBox(height: 8),
         Text(label, style: TextStyle(fontSize: 9, letterSpacing: 0.8, fontWeight: FontWeight.w700, color: colors.onSurfaceSoft)),
@@ -284,7 +284,7 @@ class _MonthlyTrendCard extends StatelessWidget {
             LineChartBarData(
               spots: expSpots, isCurved: true, color: tokens.FarolColors.beam, barWidth: 2.5,
               isStrokeCapRound: true, dotData: const FlDotData(show: false),
-              belowBarData: BarAreaData(show: true, gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [tokens.FarolColors.beam.withOpacity(0.2), tokens.FarolColors.beam.withOpacity(0)])),
+              belowBarData: BarAreaData(show: true, gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [tokens.FarolColors.beam.withValues(alpha: 0.2), tokens.FarolColors.beam.withValues(alpha: 0)])),
             ),
             if (hasIncome)
               LineChartBarData(
@@ -403,7 +403,7 @@ class _MonthlyBarsCard extends StatelessWidget {
                 curve: Curves.easeOut,
                 width: constraints.maxWidth * pct,
                 height: 22,
-                color: barColor.withOpacity(0.85),
+                color: barColor.withValues(alpha: 0.85),
               ),
             ]),
           ))),

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../../core/i18n/app_localizations.dart';
+import '../../core/models/enums.dart';
+import '../../core/models/investment.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/theme/farol_colors.dart';
-import '../../design/farol_colors.dart' as tokens;
-import '../../core/models/enums.dart';
 import '../../core/widgets/farol_charts.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../core/i18n/app_localizations.dart';
 import '../../core/widgets/farol_dialogs.dart';
 import '../../core/widgets/farol_snackbar.dart';
-import '../../core/models/investment.dart';
+import '../../design/farol_colors.dart' as tokens;
 import 'add_investment_bottom_sheet.dart';
 
 class InvestmentsScreen extends ConsumerWidget {
@@ -84,7 +84,7 @@ class _ConsolidatedHero extends ConsumerWidget {
           const SizedBox(width: 4),
           const Text('+12.4%', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFFFCD37D))),
           const SizedBox(width: 4),
-          Text('vs. último mes', style: TextStyle(fontSize: 13, color: Colors.white.withOpacity(0.5))),
+          Text('vs. último mes', style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.5))),
         ]),
         const SizedBox(height: 18),
         const Row(children: [
@@ -106,7 +106,7 @@ class _StatPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(child: Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(color: Colors.black.withOpacity(0.25), borderRadius: BorderRadius.circular(99)),
+      decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.25), borderRadius: BorderRadius.circular(99)),
       child: Column(children: [
         Text(label.toUpperCase(), style: const TextStyle(fontSize: 9, letterSpacing: 1, fontWeight: FontWeight.w600, color: Colors.white60)),
         const SizedBox(height: 2),
@@ -268,7 +268,7 @@ class _InvRow extends ConsumerWidget {
             Row(children: [
               Container(
                 width: 40, height: 40,
-                decoration: BoxDecoration(color: typeColor.withOpacity(0.12), borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(color: typeColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
                 child: Center(child: Text(
                   () { try { return InvestmentType.fromDb(inv.type).emoji; } catch (_) { return '📋'; } }(),
                   style: const TextStyle(fontSize: 18),
@@ -323,7 +323,7 @@ class _BRLBig extends StatelessWidget {
     return Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
       Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.48, fontWeight: FontWeight.w500, color: c)),
       Text(f.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: w, color: c, letterSpacing: -size * 0.028)),
-      Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: w, color: c.withOpacity(0.85))),
+      Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: w, color: c.withValues(alpha: 0.85))),
     ]);
   }
 }

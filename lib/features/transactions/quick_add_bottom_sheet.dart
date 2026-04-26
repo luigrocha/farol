@@ -136,9 +136,9 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
       onTap: () => setState(() { _category = c; _subcategory = null; }),
       child: AnimatedContainer(duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
-          color: sel ? color.withOpacity(0.15) : Theme.of(context).cardTheme.color,
+          color: sel ? color.withValues(alpha: 0.15) : Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: sel ? color : Theme.of(context).colorScheme.outline.withOpacity(0.3), width: sel ? 2 : 1)),
+          border: Border.all(color: sel ? color : Theme.of(context).colorScheme.outline.withValues(alpha: 0.3), width: sel ? 2 : 1)),
         child: Center(child: Text('${c.emoji} ${c.localizedLabel(context)}',
           style: TextStyle(fontSize: 11, fontWeight: sel ? FontWeight.w600 : FontWeight.w400, color: sel ? color : context.colors.onSurface),
           textAlign: TextAlign.center, overflow: TextOverflow.ellipsis))),

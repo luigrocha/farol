@@ -64,7 +64,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = ref.watch(authControllerProvider).isLoading;
 
     return Scaffold(
-      backgroundColor: cs.background,
+       backgroundColor: cs.surface,
       body: AuthActionHandler(
         successMessage: 'Welcome back!',
         child: SafeArea(
@@ -187,7 +187,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Row(children: [
                     Expanded(
                         child: Divider(
-                            color: tokens.FarolColors.navy.withOpacity(0.1))),
+                            color: tokens.FarolColors.navy.withValues(alpha: 0.1))),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Text(
@@ -202,7 +202,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     Expanded(
                         child: Divider(
-                            color: tokens.FarolColors.navy.withOpacity(0.1))),
+                            color: tokens.FarolColors.navy.withValues(alpha: 0.1))),
                   ]),
                   const SizedBox(height: 20),
 

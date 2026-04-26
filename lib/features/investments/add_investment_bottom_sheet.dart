@@ -76,7 +76,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
                 margin: const EdgeInsets.only(right: 8),
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
-                  color: sel ? c.withOpacity(0.12) : colors.surfaceLowest,
+                  color: sel ? c.withValues(alpha: 0.12) : colors.surfaceLowest,
                   borderRadius: BorderRadius.circular(99),
                   border: Border.all(color: sel ? c : colors.surfaceLowest, width: sel ? 1.5 : 1),
                 ),
@@ -107,7 +107,7 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
           decoration: InputDecoration(
             prefixText: 'R\$ ',
             hintText: '0,00',
-            prefixStyle: TextStyle(fontSize: 16, color: typeColor.withOpacity(0.6)),
+            prefixStyle: TextStyle(fontSize: 16, color: typeColor.withValues(alpha: 0.6)),
           ),
         ),
         const SizedBox(height: 4),

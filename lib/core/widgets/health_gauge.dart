@@ -92,7 +92,7 @@ class _GaugePainter extends CustomPainter {
       Rect.fromCircle(center: center, radius: radius),
       startAngle, sweepAngle, false,
       Paint()
-        ..color = color.withOpacity(0.15)
+        ..color = color.withValues(alpha: 0.15)
         ..style = PaintingStyle.stroke
         ..strokeWidth = strokeWidth * 1.5
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/models/card_installment.dart';
@@ -115,7 +114,7 @@ class _HeroPill extends StatelessWidget {
     return Expanded(child: Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.22),
+        color: Colors.black.withValues(alpha: 0.22),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -213,14 +212,14 @@ class _InstallmentTile extends ConsumerWidget {
           decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
           child: Column(children: [
             Row(children: [
-              Container(
-                width: 40, height: 40,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6B3FA0).withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Center(child: Text('💳', style: TextStyle(fontSize: 18))),
-              ),
+Container(
+                 width: 40, height: 40,
+                 decoration: BoxDecoration(
+                   color: const Color(0xFF6B3FA0).withValues(alpha: 0.12),
+                   borderRadius: BorderRadius.circular(12),
+                 ),
+                 child: const Center(child: Text('💳', style: TextStyle(fontSize: 18))),
+               ),
               const SizedBox(width: 14),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(inst.description, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface), overflow: TextOverflow.ellipsis),
@@ -254,7 +253,7 @@ class _InstallmentTile extends ConsumerWidget {
                 child: LinearProgressIndicator(
                   value: inst.progressPercent,
                   minHeight: 5,
-                  backgroundColor: const Color(0xFF6B3FA0).withOpacity(0.12),
+                  backgroundColor: const Color(0xFF6B3FA0).withValues(alpha: 0.12),
                   valueColor: const AlwaysStoppedAnimation(Color(0xFF6B3FA0)),
                 ),
               ),
@@ -282,7 +281,7 @@ class _ProgressBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: const Color(0xFF6B3FA0).withOpacity(0.1),
+        color: const Color(0xFF6B3FA0).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
@@ -325,7 +324,7 @@ class _DetailSheetState extends ConsumerState<_InstallmentDetailSheet> {
         // Header
         Row(children: [
           Container(width: 44, height: 44,
-            decoration: BoxDecoration(color: purple.withOpacity(0.12), borderRadius: BorderRadius.circular(14)),
+            decoration: BoxDecoration(color: purple.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(14)),
             child: const Center(child: Text('💳', style: TextStyle(fontSize: 20))),
           ),
           const SizedBox(width: 14),
@@ -343,7 +342,7 @@ class _DetailSheetState extends ConsumerState<_InstallmentDetailSheet> {
           child: LinearProgressIndicator(
             value: inst.progressPercent,
             minHeight: 8,
-            backgroundColor: purple.withOpacity(0.1),
+            backgroundColor: purple.withValues(alpha: 0.1),
             valueColor: const AlwaysStoppedAnimation(purple),
           ),
         ),
@@ -505,7 +504,7 @@ class _BRLBig extends StatelessWidget {
     return Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
       Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.48, fontWeight: FontWeight.w500, color: c)),
       Text(intPart, style: GoogleFonts.manrope(fontSize: size, fontWeight: w, color: c, letterSpacing: -size * 0.028)),
-      Text(',$centsPart', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: w, color: c.withOpacity(0.85))),
+      Text(',$centsPart', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: w, color: c.withValues(alpha: 0.85))),
     ]);
   }
 }

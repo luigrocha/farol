@@ -70,7 +70,7 @@ class FarolTrendChart extends StatelessWidget {
           belowBarData: BarAreaData(show: true, gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [color.withOpacity(0.2), color.withOpacity(0)],
+            colors: [color.withValues(alpha: 0.2), color.withValues(alpha: 0)],
           )),
         ),
       ],

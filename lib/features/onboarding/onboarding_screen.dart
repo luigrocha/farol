@@ -37,13 +37,13 @@ class OnboardingScreen extends ConsumerWidget {
               top: -80,
               left: -80,
               child: _Aurora(
-                  color: tokens.FarolColors.beam.withOpacity(0.22)),
+                  color: tokens.FarolColors.beam.withValues(alpha: 0.22)),
             ),
             Positioned(
               bottom: -100,
               right: -60,
               child: _Aurora(
-                  color: tokens.FarolColors.tide.withOpacity(0.14)),
+                  color: tokens.FarolColors.tide.withValues(alpha: 0.14)),
             ),
 
             // ── Content ──────────────────────────────────────────────
@@ -67,7 +67,7 @@ class OnboardingScreen extends ConsumerWidget {
                             borderRadius: BorderRadius.circular(14),
                             boxShadow: [
                               BoxShadow(
-                                color: tokens.FarolColors.beam.withOpacity(0.40),
+                                color: tokens.FarolColors.beam.withValues(alpha: 0.40),
                                 blurRadius: 24,
                                 offset: const Offset(0, 8),
                               ),
@@ -101,7 +101,7 @@ class OnboardingScreen extends ConsumerWidget {
                         fontSize: 11,
                         letterSpacing: 2.5,
                         fontWeight: FontWeight.w700,
-                        color: tokens.FarolColors.beam.withOpacity(0.85),
+                        color: tokens.FarolColors.beam.withValues(alpha: 0.85),
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -124,7 +124,7 @@ class OnboardingScreen extends ConsumerWidget {
                       l10n.translate('onboarding_subtitle'),
                       style: GoogleFonts.inter(
                         fontSize: 15,
-                        color: Colors.white.withOpacity(0.72),
+                        color: Colors.white.withValues(alpha: 0.72),
                         height: 1.55,
                       ),
                     ),
@@ -178,7 +178,7 @@ class OnboardingScreen extends ConsumerWidget {
                             Navigator.pushNamed(context, '/login'),
                         style: OutlinedButton.styleFrom(
                           side: BorderSide(
-                              color: Colors.white.withOpacity(0.20)),
+                              color: Colors.white.withValues(alpha: 0.20)),
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(18)),
@@ -251,9 +251,9 @@ class _FeatureRow extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: tokens.FarolColors.beam.withOpacity(0.15),
+            color: tokens.FarolColors.beam.withValues(alpha: 0.15),
             border: Border.all(
-                color: tokens.FarolColors.beam.withOpacity(0.22)),
+                color: tokens.FarolColors.beam.withValues(alpha: 0.22)),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, size: 18, color: tokens.FarolColors.beam),
@@ -264,7 +264,7 @@ class _FeatureRow extends StatelessWidget {
             text,
             style: GoogleFonts.inter(
               fontSize: 13,
-              color: Colors.white.withOpacity(0.88),
+              color: Colors.white.withValues(alpha: 0.88),
               height: 1.4,
             ),
           ),
@@ -287,7 +287,7 @@ class _Dot extends StatelessWidget {
       decoration: BoxDecoration(
         color: active
             ? tokens.FarolColors.beam
-            : Colors.white.withOpacity(0.28),
+            : Colors.white.withValues(alpha: 0.28),
         borderRadius: BorderRadius.circular(3),
       ),
     );

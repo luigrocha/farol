@@ -53,7 +53,7 @@ class FarolButton extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: tokens.FarolColors.beam,
               foregroundColor: tokens.FarolColors.navyDeep,
-              disabledBackgroundColor: tokens.FarolColors.beam.withOpacity(0.5),
+              disabledBackgroundColor: tokens.FarolColors.beam.withValues(alpha: 0.5),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
               elevation: 0,

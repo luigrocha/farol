@@ -548,7 +548,7 @@ class _SalarySection extends ConsumerWidget {
                 width: 34, height: 34,
                 decoration: BoxDecoration(
                   color: hasData
-                      ? tokens.FarolColors.beam.withOpacity(0.12)
+                      ? tokens.FarolColors.beam.withValues(alpha: 0.12)
                       : colors.iconTintBlue,
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -843,7 +843,7 @@ class _SimulatorsSection extends StatelessWidget {
             Container(
               width: 34, height: 34,
               decoration: BoxDecoration(
-                color: const Color(0xFF006D5B).withOpacity(0.12),
+                color: const Color(0xFF006D5B).withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Icon(Icons.account_balance_outlined, size: 18, color: Color(0xFF006D5B)),

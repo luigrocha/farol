@@ -120,7 +120,7 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
-                    color: tokens.FarolColors.navy.withOpacity(0.08),
+                    color: tokens.FarolColors.navy.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(children: [

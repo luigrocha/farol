@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/i18n/app_localizations.dart';
 import '../../design/farol_colors.dart' as tokens;
@@ -63,7 +62,7 @@ class SwileScreen extends ConsumerWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                      color: const Color(0xFFE84840).withOpacity(0.3),
+                      color: const Color(0xFFE84840).withValues(alpha: 0.3),
                       blurRadius: 20,
                       offset: const Offset(0, 10)),
                 ],
@@ -78,7 +77,7 @@ class SwileScreen extends ConsumerWidget {
                         height: 120,
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.white.withOpacity(0.1))),
+                            color: Colors.white.withValues(alpha: 0.1))),
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,12 +109,12 @@ class SwileScreen extends ConsumerWidget {
                           Text('•••• •••• •••• ••••',
                               style: GoogleFonts.manrope(
                                   fontSize: 11,
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.withValues(alpha: 0.9),
                                   letterSpacing: 2)),
                           Text(cardName.toUpperCase(),
                               style: TextStyle(
                                   fontSize: 11,
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.withValues(alpha: 0.9),
                                   fontWeight: FontWeight.w600)),
                         ],
                       ),
@@ -290,7 +289,7 @@ class _TxSwile extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-                color: const Color(0xFFF97366).withOpacity(0.15),
+                color: const Color(0xFFF97366).withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10)),
             child:
                 const Icon(Icons.restaurant, size: 16, color: Color(0xFFE84840)),
@@ -351,7 +350,7 @@ class _BRLBig extends StatelessWidget {
               style: GoogleFonts.manrope(
                   fontSize: size * 0.56,
                   fontWeight: FontWeight.w800,
-                  color: c.withOpacity(0.85))),
+                  color: c.withValues(alpha: 0.85))),
         ]);
   }
 }

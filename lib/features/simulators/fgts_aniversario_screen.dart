@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../core/theme/farol_colors.dart';
+
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
+import '../../core/theme/farol_colors.dart';
 
 const _kTeal = Color(0xFF006D5B);
 const _kTealLight = Color(0xFF007A67);
@@ -290,7 +290,7 @@ class _ResultCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-              color: _kTeal.withOpacity(0.3),
+              color: _kTeal.withValues(alpha: 0.3),
               blurRadius: 20,
               offset: const Offset(0, 10)),
         ],
@@ -302,7 +302,7 @@ class _ResultCard extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
+              color: Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
@@ -319,7 +319,7 @@ class _ResultCard extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20)),
             child: Text(monthsText,
                 style: const TextStyle(
@@ -437,10 +437,10 @@ class _BracketCard extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
-              color: isActive ? _kTeal.withOpacity(0.1) : Colors.transparent,
+              color: isActive ? _kTeal.withValues(alpha: 0.1) : Colors.transparent,
               borderRadius: BorderRadius.circular(10),
               border: isActive
-                  ? Border.all(color: _kTeal.withOpacity(0.3))
+                  ? Border.all(color: _kTeal.withValues(alpha: 0.3))
                   : null,
             ),
             child: Row(children: [
@@ -561,11 +561,11 @@ class _ProjectionCard extends StatelessWidget {
                 const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             decoration: BoxDecoration(
               color: isFirst
-                  ? _kTeal.withOpacity(0.07)
+                  ? _kTeal.withValues(alpha: 0.07)
                   : colors.surfaceLow,
               borderRadius: BorderRadius.circular(12),
               border: isFirst
-                  ? Border.all(color: _kTeal.withOpacity(0.2))
+                  ? Border.all(color: _kTeal.withValues(alpha: 0.2))
                   : null,
             ),
             child: Row(children: [
@@ -626,7 +626,7 @@ class _ProjectionCard extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: _kTeal.withOpacity(0.06),
+            color: _kTeal.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(children: [
@@ -662,7 +662,7 @@ class _TradeoffCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.surfaceLowest,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.orange.shade300.withOpacity(0.6)),
+        border: Border.all(color: Colors.orange.shade300.withValues(alpha: 0.6)),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
@@ -701,7 +701,7 @@ class _TradeoffCard extends StatelessWidget {
           padding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: Colors.orange.shade50.withOpacity(0.5),
+            color: Colors.orange.shade50.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -744,7 +744,7 @@ class _TradeoffRow extends StatelessWidget {
         width: 32,
         height: 32,
         decoration: BoxDecoration(
-          color: iconColor.withOpacity(0.1),
+          color: iconColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(icon, size: 16, color: iconColor),

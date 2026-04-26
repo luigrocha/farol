@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
-import '../../design/farol_colors.dart' as tokens;
-import '../../core/theme/farol_colors.dart';
+
 import '../../core/services/financial_calculator_service.dart';
+import '../../core/theme/farol_colors.dart';
+import '../../design/farol_colors.dart' as tokens;
 
 class ThirteenthSalaryScreen extends StatefulWidget {
   const ThirteenthSalaryScreen({super.key});
@@ -132,7 +132,7 @@ class _InputCard extends StatelessWidget {
             activeTrackColor: tokens.FarolColors.navy,
             inactiveTrackColor: colors.surfaceLow,
             thumbColor: tokens.FarolColors.navy,
-            overlayColor: tokens.FarolColors.navy.withOpacity(0.12),
+            overlayColor: tokens.FarolColors.navy.withValues(alpha: 0.12),
             trackHeight: 4,
             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
           ),
@@ -226,13 +226,13 @@ class _SummaryCard extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [Color(0xFF244A72), tokens.FarolColors.navy],
         ),
-        boxShadow: [BoxShadow(color: tokens.FarolColors.navy.withOpacity(0.25), blurRadius: 20, offset: const Offset(0, 10))],
+        boxShadow: [BoxShadow(color: tokens.FarolColors.navy.withValues(alpha: 0.25), blurRadius: 20, offset: const Offset(0, 10))],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(20)),
+            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20)),
             child: Text('13º SALÁRIO', style: GoogleFonts.manrope(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 1.2)),
           ),
         ]),
@@ -266,7 +266,7 @@ class _MiniStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label, style: TextStyle(fontSize: 9, letterSpacing: 1.2, fontWeight: FontWeight.w700, color: color.withOpacity(0.7))),
+      Text(label, style: TextStyle(fontSize: 9, letterSpacing: 1.2, fontWeight: FontWeight.w700, color: color.withValues(alpha: 0.7))),
       const SizedBox(height: 2),
       Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: color, fontFeatures: const [FontFeature.tabularFigures()])),
     ]);
@@ -326,7 +326,7 @@ class _InstallmentRow extends StatelessWidget {
       child: Row(children: [
         Container(
           width: 36, height: 36,
-          decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(10)),
+          decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
           child: Center(child: Text(number, style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w800, color: color))),
         ),
         const SizedBox(width: 12),
@@ -428,7 +428,7 @@ class _DeductionGroup extends StatelessWidget {
           child: Row(children: [
             Container(
               width: 32, height: 32,
-              decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(8)),
+              decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(8)),
               child: Icon(icon, size: 16, color: color),
             ),
             const SizedBox(width: 10),
@@ -444,7 +444,7 @@ class _DeductionGroup extends StatelessWidget {
               Container(
                 width: 6, height: 6,
                 margin: const EdgeInsets.only(right: 10),
-                decoration: BoxDecoration(color: color.withOpacity(0.4), shape: BoxShape.circle),
+                decoration: BoxDecoration(color: color.withValues(alpha: 0.4), shape: BoxShape.circle),
               ),
               Expanded(child: Text(r.label, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft))),
               Text(r.value, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.onSurfaceMuted, fontFeatures: const [FontFeature.tabularFigures()])),
@@ -475,9 +475,9 @@ class _BigBRL extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
       children: [
-        Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.44, fontWeight: FontWeight.w500, color: c.withOpacity(0.8))),
+        Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.44, fontWeight: FontWeight.w500, color: c.withValues(alpha: 0.8))),
         Text(integer.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: FontWeight.w800, color: c, letterSpacing: -size * 0.025)),
-        Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.52, fontWeight: FontWeight.w700, color: c.withOpacity(0.8))),
+        Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.52, fontWeight: FontWeight.w700, color: c.withValues(alpha: 0.8))),
       ],
     );
   }

@@ -217,8 +217,8 @@ class _EntryCard extends StatelessWidget {
 
     final bool hasBorder = entry.status != BudgetStatus.ok;
     final borderColor = entry.status == BudgetStatus.overspent
-        ? Colors.red.withOpacity(0.4)
-        : Colors.orange.withOpacity(0.4);
+        ? Colors.red.withValues(alpha: 0.4)
+        : Colors.orange.withValues(alpha: 0.4);
 
     return GestureDetector(
       onTap: onTap,
@@ -298,7 +298,7 @@ class _EntryCard extends StatelessWidget {
                 value: pct,
                 minHeight: 6,
                 backgroundColor:
-                    colors.onSurfaceFaint.withOpacity(0.2),
+                    colors.onSurfaceFaint.withValues(alpha: 0.2),
                 valueColor: AlwaysStoppedAnimation<Color>(progressColor),
               ),
             ),

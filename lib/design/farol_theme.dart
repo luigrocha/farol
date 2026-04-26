@@ -73,8 +73,8 @@ ThemeData _build({
         borderRadius: BorderRadius.circular(24),
         side: BorderSide(
           color: isDark
-              ? Colors.white.withOpacity(0.06)
-              : tokens.FarolColors.navy.withOpacity(0.05),
+              ? Colors.white.withValues(alpha: 0.06)
+              : tokens.FarolColors.navy.withValues(alpha: 0.05),
           width: 1,
         ),
       ),
@@ -122,10 +122,10 @@ ThemeData _build({
     ),
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: isDark
-          ? surfaceLow.withOpacity(0.95)
-          : Colors.white.withOpacity(0.85),
+          ? surfaceLow.withValues(alpha: 0.95)
+          : Colors.white.withValues(alpha: 0.85),
       elevation: 0,
-      indicatorColor: tokens.FarolColors.navy.withOpacity(isDark ? 0.2 : 0.1),
+      indicatorColor: tokens.FarolColors.navy.withValues(alpha: isDark ? 0.2 : 0.1),
       labelTextStyle: MaterialStateProperty.resolveWith((states) {
         final isSelected = states.contains(MaterialState.selected);
         return TextStyle(

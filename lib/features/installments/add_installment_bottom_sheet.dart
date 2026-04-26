@@ -238,9 +238,9 @@ class _PreviewCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF6B3FA0).withOpacity(0.06),
+        color: const Color(0xFF6B3FA0).withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF6B3FA0).withOpacity(0.2)),
+        border: Border.all(color: const Color(0xFF6B3FA0).withValues(alpha: 0.2)),
       ),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
         _PreviewStat(label: l10n.translate('total'), value: 'R\$ ${(monthly * numInstallments).toStringAsFixed(0)}', colors: colors),
@@ -286,7 +286,7 @@ class _StepButton extends StatelessWidget {
         width: 36, height: 36,
         decoration: BoxDecoration(
           color: onTap != null
-              ? const Color(0xFF6B3FA0).withOpacity(0.1)
+              ? const Color(0xFF6B3FA0).withValues(alpha: 0.1)
               : context.colors.surfaceLow,
           borderRadius: BorderRadius.circular(10),
         ),
