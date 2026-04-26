@@ -89,11 +89,11 @@
 
 ---
 
-### Categoría: Transacciones & Beneficios
+### Categoría: gastos & Beneficios
 
 | String EN | Ubicación | PT (Português) | ES (Español) |
 |-----------|-----------|---|---|
-| `Recent Transactions` | `swile_screen.dart:1` | Transações Recentes | Transacciones Recientes |
+| `Recent Transactions` | `swile_screen.dart:1` | Transações Recentes | gastos Recientes |
 | `Monthly Spending` | `swile_screen.dart:1` | Gastos Mensais | Gastos Mensuales |
 | `Last 7 days` | `swile_screen.dart:1` | Últimos 7 dias | Últimos 7 días |
 | `See all` | `swile_screen.dart:1` | Ver Tudo | Ver Todo |

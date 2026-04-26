@@ -50,7 +50,20 @@ class AppLocalizations {
       'no_expenses': 'No registered expenses',
       'no_net_worth': 'No net worth data',
       'score_desc': 'Score from 0 to 10',
-      'months': ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      'months': [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ],
       // Enums
       'cat_housing': 'Housing',
       'cat_transport': 'Transport',
@@ -78,7 +91,8 @@ class AppLocalizations {
       'missing': 'Missing',
       'to_reach_goal': 'to reach your savings goal this month.',
       'onboarding_title': 'Clarity for every dollar.',
-      'onboarding_subtitle': 'Your money on the right track. Financial planning that guides every decision with clarity.',
+      'onboarding_subtitle':
+          'Your money on the right track. Financial planning that guides every decision with clarity.',
       'onboarding_f1': 'Bank-grade security and integrated Pix',
       'onboarding_f2': 'AI that understands your salary and benefits',
       'onboarding_f3': 'Support in your language, 24/7',
@@ -136,7 +150,8 @@ class AppLocalizations {
       // Profile & Settings
       'edit_profile': 'Edit Profile',
       'appearance': 'Appearance',
-      'customize_interface': 'Customize your interface for maximum visual comfort.',
+      'customize_interface':
+          'Customize your interface for maximum visual comfort.',
       'concierge_support': 'Concierge Support',
       'corporate_benefits': 'Corporate Benefits',
       // Transactions & Benefits
@@ -164,7 +179,8 @@ class AppLocalizations {
       'financial_period': 'Financial Period',
       'period_start': 'Start of period',
       'day_of_each_month': 'Day of each month',
-      'select_period_start': 'Select the day your financial period begins (1-28):',
+      'select_period_start':
+          'Select the day your financial period begins (1-28):',
       'salary_configured': 'Salary Configured',
       'configure_salary': 'Configure Salary',
       'salary_calculated': 'Taxes automatically calculated',
@@ -180,11 +196,13 @@ class AppLocalizations {
       'enter_gross_salary': 'Please enter gross salary',
       'error': 'Error',
       // Signup & Other
-      'account_created_check_email': 'Account created! Check your email to continue.',
+      'account_created_check_email':
+          'Account created! Check your email to continue.',
       'create_your': 'Create your\n',
       'farol_account': 'Farol account.',
       'start_illuminating': 'Start illuminating your financial path today.',
-      'set_planned_income': 'Set your planned monthly income. The dashboard will track remaining amounts as you add transactions.',
+      'set_planned_income':
+          'Set your planned monthly income. The dashboard will track remaining amounts as you add transactions.',
       'passwords_dont_match': 'Passwords do not match',
       'create_account_arrow': 'Create account →',
       'already_have_account': 'Already have an account? ',
@@ -192,10 +210,12 @@ class AppLocalizations {
       'weak': 'Weak',
       'good': 'Good',
       'strong': 'Strong',
-      'we_sent_verification': 'We sent a verification link to your email. Please check it to continue.',
+      'we_sent_verification':
+          'We sent a verification link to your email. Please check it to continue.',
       'new_password_title_1': 'New\n',
       'new_password_title_2': 'password.',
-      'choose_strong_password': 'Choose a strong password to protect your account.',
+      'choose_strong_password':
+          'Choose a strong password to protect your account.',
       'new_password': 'New password',
       'min_8_chars': 'Minimum 8 characters',
       'confirm_new_password': 'Confirm new password',
@@ -233,7 +253,7 @@ class AppLocalizations {
     'es': {
       'app_name': 'Farol',
       'dashboard': 'Panel',
-      'transactions': 'Transacciones',
+      'transactions': 'gastos',
       'analytics': 'Análisis',
       'investments': 'Inversiones',
       'settings': 'Ajustes',
@@ -271,7 +291,20 @@ class AppLocalizations {
       'no_expenses': 'Sin gastos registrados',
       'no_net_worth': 'Sin datos de patrimonio',
       'score_desc': 'Puntaje de 0 a 10',
-      'months': ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+      'months': [
+        'Ene',
+        'Feb',
+        'Mar',
+        'Abr',
+        'May',
+        'Jun',
+        'Jul',
+        'Ago',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dic'
+      ],
       // Enums
       'cat_housing': 'Vivienda',
       'cat_transport': 'Transporte',
@@ -299,7 +332,8 @@ class AppLocalizations {
       'missing': 'Faltan',
       'to_reach_goal': 'para alcanzar tu meta de ahorro este mes.',
       'onboarding_title': 'Claridad para cada centavo.',
-      'onboarding_subtitle': 'Tu dinero en el rumbo correcto. Planificación financiera que guía cada decisión con claridad.',
+      'onboarding_subtitle':
+          'Tu dinero en el rumbo correcto. Planificación financiera que guía cada decisión con claridad.',
       'onboarding_f1': 'Seguridad bancaria y Pix integrado',
       'onboarding_f2': 'IA que entiende tu salario y beneficios',
       'onboarding_f3': 'Soporte en tu idioma, 24/7',
@@ -357,18 +391,20 @@ class AppLocalizations {
       // Profile & Settings
       'edit_profile': 'Editar Perfil',
       'appearance': 'Apariencia',
-      'customize_interface': 'Personaliza tu interfaz para máximo confort visual.',
+      'customize_interface':
+          'Personaliza tu interfaz para máximo confort visual.',
       'concierge_support': 'Soporte Concierge',
       'corporate_benefits': 'Beneficios Corporativos',
       // Transactions & Benefits
-      'recent_transactions': 'Transacciones Recientes',
+      'recent_transactions': 'gastos Recientes',
       'monthly_spending': 'Gastos Mensuales',
       'last_7_days': 'Últimos 7 días',
       'see_all': 'Ver Todo',
       // Login Extra
       'welcome': 'Bienvenido\n',
       'back': 'de vuelta.',
-      'login_subtitle': 'Inicia sesión y continúa iluminando tu camino financiero.',
+      'login_subtitle':
+          'Inicia sesión y continúa iluminando tu camino financiero.',
       'email': 'Correo',
       'password': 'Contraseña',
       'invalid_email': 'Correo inválido',
@@ -376,7 +412,7 @@ class AppLocalizations {
       'dont_have_account': '¿Aún no tienes cuenta? ',
       // Settings Extra
       'data_privacy': 'Datos y Privacidad',
-      'export_transactions': 'Exportar Transacciones',
+      'export_transactions': 'Exportar gastos',
       'income_statement': 'Estado de Resultados',
       'full_backup': 'Respaldo Completo',
       'monthly_report_pdf': 'Resumen Mensual PDF',
@@ -385,7 +421,8 @@ class AppLocalizations {
       'financial_period': 'Período financiero',
       'period_start': 'Inicio del período',
       'day_of_each_month': 'Día de cada mes',
-      'select_period_start': 'Selecciona el día en que comienza tu período (1–28):',
+      'select_period_start':
+          'Selecciona el día en que comienza tu período (1–28):',
       'salary_configured': 'Salario Configurado',
       'configure_salary': 'Configurar Salario',
       'salary_calculated': 'Impuestos calculados automáticamente',
@@ -401,11 +438,13 @@ class AppLocalizations {
       'enter_gross_salary': 'Ingrese el salario bruto',
       'error': 'Error',
       // Signup & Other
-      'account_created_check_email': '¡Cuenta creada! Revisa tu correo para continuar.',
+      'account_created_check_email':
+          '¡Cuenta creada! Revisa tu correo para continuar.',
       'create_your': 'Crea tu\n',
       'farol_account': 'cuenta Farol.',
       'start_illuminating': 'Empieza a iluminar tu camino financiero hoy.',
-      'set_planned_income': 'Establece tu ingreso mensual planeado. El dashboard rastreará los montos restantes a medida que agregues transacciones.',
+      'set_planned_income':
+          'Establece tu ingreso mensual planeado. El dashboard rastreará los montos restantes a medida que agregues gastos.',
       'passwords_dont_match': 'Las contraseñas no coinciden',
       'create_account_arrow': 'Crear cuenta →',
       'already_have_account': '¿Ya tienes una cuenta? ',
@@ -413,10 +452,12 @@ class AppLocalizations {
       'weak': 'Débil',
       'good': 'Buena',
       'strong': 'Fuerte',
-      'we_sent_verification': 'Enviamos un enlace de verificación a tu correo. Revísalo para continuar.',
+      'we_sent_verification':
+          'Enviamos un enlace de verificación a tu correo. Revísalo para continuar.',
       'new_password_title_1': 'Nueva\n',
       'new_password_title_2': 'contraseña.',
-      'choose_strong_password': 'Elige una contraseña fuerte para proteger tu cuenta.',
+      'choose_strong_password':
+          'Elige una contraseña fuerte para proteger tu cuenta.',
       'new_password': 'Nueva contraseña',
       'min_8_chars': 'Mínimo 8 caracteres',
       'confirm_new_password': 'Confirmar nueva contraseña',
@@ -430,7 +471,8 @@ class AppLocalizations {
       'enter_institution': 'Ingresa la institución',
       'enter_invested_amount': 'Ingresa el monto invertido',
       'enter_valid_balance': 'Ingresa un saldo actual válido',
-      'set_monthly_spending_limits': 'Establece límites de gasto mensual por categoría',
+      'set_monthly_spending_limits':
+          'Establece límites de gasto mensual por categoría',
       'current_spending': 'Actual',
       'budget_amount': 'Monto del presupuesto',
       'name': 'Nombre',
@@ -492,7 +534,20 @@ class AppLocalizations {
       'no_expenses': 'Sem gastos registrados',
       'no_net_worth': 'Sem dados de patrimônio',
       'score_desc': 'Pontuação de 0 a 10',
-      'months': ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+      'months': [
+        'Jan',
+        'Fev',
+        'Mar',
+        'Abr',
+        'Mai',
+        'Jun',
+        'Jul',
+        'Ago',
+        'Set',
+        'Out',
+        'Nov',
+        'Dez'
+      ],
       // Enums
       'cat_housing': 'Moradia',
       'cat_transport': 'Transporte',
@@ -520,7 +575,8 @@ class AppLocalizations {
       'missing': 'Faltam',
       'to_reach_goal': 'para atingir sua meta de economia este mês.',
       'onboarding_title': 'Clareza para cada real.',
-      'onboarding_subtitle': 'Seu dinheiro no rumo certo. Planejamento financeiro que guia cada decisão com clareza.',
+      'onboarding_subtitle':
+          'Seu dinheiro no rumo certo. Planejamento financeiro que guia cada decisão com clareza.',
       'onboarding_f1': 'Segurança bancária e Pix integrado',
       'onboarding_f2': 'IA que entende seu salário CLT e FGTS',
       'onboarding_f3': 'Suporte em português, 24/7',
@@ -567,7 +623,8 @@ class AppLocalizations {
       'amount_invested': 'Valor investido',
       'investment_added': 'Investimento adicionado!',
       'delete_investment': 'Excluir investimento?',
-      'no_investments_yet': 'Nenhum investimento ainda.\nToque + para adicionar um.',
+      'no_investments_yet':
+          'Nenhum investimento ainda.\nToque + para adicionar um.',
       'current_balance_differs': 'Saldo atual diferente do investido',
       'remove': 'Remover',
       // Budget
@@ -578,7 +635,8 @@ class AppLocalizations {
       // Profile & Settings
       'edit_profile': 'Editar Perfil',
       'appearance': 'Aparência',
-      'customize_interface': 'Personalize sua interface para o máximo conforto visual.',
+      'customize_interface':
+          'Personalize sua interface para o máximo conforto visual.',
       'concierge_support': 'Suporte Concierge',
       'corporate_benefits': 'Benefícios Corporativos',
       // Transactions & Benefits
@@ -622,11 +680,13 @@ class AppLocalizations {
       'enter_gross_salary': 'Informe o salário bruto',
       'error': 'Erro',
       // Signup & Other
-      'account_created_check_email': 'Conta criada! Verifique seu e-mail para continuar.',
+      'account_created_check_email':
+          'Conta criada! Verifique seu e-mail para continuar.',
       'create_your': 'Criar sua\n',
       'farol_account': 'conta Farol.',
       'start_illuminating': 'Comece a iluminar seu caminho financeiro hoje.',
-      'set_planned_income': 'Defina sua renda mensal planejada. O dashboard rastreará os valores restantes à medida que você adiciona transações.',
+      'set_planned_income':
+          'Defina sua renda mensal planejada. O dashboard rastreará os valores restantes à medida que você adiciona transações.',
       'passwords_dont_match': 'As senhas não coincidem',
       'create_account_arrow': 'Criar conta →',
       'already_have_account': 'Já tem uma conta? ',
@@ -634,10 +694,12 @@ class AppLocalizations {
       'weak': 'Fraca',
       'good': 'Boa',
       'strong': 'Forte',
-      'we_sent_verification': 'Enviamos um link de verificação para o seu e-mail. Verifique-o para continuar.',
+      'we_sent_verification':
+          'Enviamos um link de verificação para o seu e-mail. Verifique-o para continuar.',
       'new_password_title_1': 'Nova\n',
       'new_password_title_2': 'senha.',
-      'choose_strong_password': 'Escolha uma senha forte para proteger sua conta.',
+      'choose_strong_password':
+          'Escolha uma senha forte para proteger sua conta.',
       'new_password': 'Nova senha',
       'min_8_chars': 'Mínimo 8 caracteres',
       'confirm_new_password': 'Confirmar nova senha',
@@ -651,7 +713,8 @@ class AppLocalizations {
       'enter_institution': 'Informe a instituição',
       'enter_invested_amount': 'Informe o valor investido',
       'enter_valid_balance': 'Informe um saldo atual válido',
-      'set_monthly_spending_limits': 'Defina limites de gastos mensais por categoria',
+      'set_monthly_spending_limits':
+          'Defina limites de gastos mensais por categoria',
       'current_spending': 'Atual',
       'budget_amount': 'Valor do orçamento',
       'name': 'Nome',
@@ -707,8 +770,22 @@ class AppLocalizations {
   String get darkMode => translate('dark_mode');
   String get lightMode => translate('light_mode');
   String get systemMode => translate('system_mode');
-  List<String> get months => (_localizedValues[locale.languageCode]?['months'] as List<String>?) ?? 
-      ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  List<String> get months =>
+      (_localizedValues[locale.languageCode]?['months'] as List<String>?) ??
+      [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ];
 
   String get healthHealthy => translate('health_healthy');
   String get healthWarning => translate('health_warning');
@@ -786,7 +863,8 @@ class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const AppLocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) => ['en', 'es', 'pt'].contains(locale.languageCode);
+  bool isSupported(Locale locale) =>
+      ['en', 'es', 'pt'].contains(locale.languageCode);
 
   @override
   Future<AppLocalizations> load(Locale locale) async {
