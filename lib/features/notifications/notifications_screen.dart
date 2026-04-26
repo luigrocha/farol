@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/models/budget_alert.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
-import '../../core/theme/app_theme.dart';
+import '../../design/farol_colors.dart' as tokens;
 import '../../core/theme/farol_colors.dart';
 
 class NotificationsScreen extends ConsumerWidget {
@@ -34,19 +34,19 @@ class NotificationsScreen extends ConsumerWidget {
               const SizedBox(height: 40),
               _EmptyState(),
             ] else ...[
-              _buildAlertGroup(context, alerts, AlertLevel.exceeded, 'Límite superado', AppTheme.errorColor),
+              _buildAlertGroup(context, alerts, AlertLevel.exceeded, 'Límite superado', tokens.FarolColors.coral),
               _buildAlertGroup(context, alerts, AlertLevel.critical, 'Alerta crítica', const Color(0xFFFF6B35)),
-              _buildAlertGroup(context, alerts, AlertLevel.warning, 'Aviso', AppTheme.secondaryColor),
+              _buildAlertGroup(context, alerts, AlertLevel.warning, 'Aviso', tokens.FarolColors.beam),
             ],
 
-            const _CategoryLabel(label: 'Tips', color: AppTheme.tertiaryColor),
-            _NotifCard(
+            const _CategoryLabel(label: 'Tips', color: tokens.FarolColors.tide),
+            const _NotifCard(
               icon: Icons.lightbulb_outline,
-              iconBg: const Color(0xFFE8F5E9),
+              iconBg: Color(0xFFE8F5E9),
               time: '',
               title: 'Consejo del mes',
               body: 'Revisar tus presupuestos por categoría te ayuda a identificar patrones y tomar mejores decisiones financieras.',
-              accent: AppTheme.tertiaryColor,
+              accent: tokens.FarolColors.tide,
             ),
 
             const SizedBox(height: 40),
@@ -76,9 +76,9 @@ class _AlertCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = switch (alert.level) {
-      AlertLevel.exceeded => AppTheme.errorColor,
+      AlertLevel.exceeded => tokens.FarolColors.coral,
       AlertLevel.critical => const Color(0xFFFF6B35),
-      AlertLevel.warning  => AppTheme.secondaryColor,
+      AlertLevel.warning  => tokens.FarolColors.beam,
     };
     final icon = switch (alert.level) {
       AlertLevel.exceeded => Icons.error_outline,
@@ -112,7 +112,7 @@ class _EmptyState extends StatelessWidget {
     final colors = context.colors;
     return Center(
       child: Column(children: [
-        Icon(Icons.check_circle_outline, size: 48, color: AppTheme.tertiaryColor.withOpacity(0.5)),
+        Icon(Icons.check_circle_outline, size: 48, color: tokens.FarolColors.tide.withOpacity(0.5)),
         const SizedBox(height: 16),
         Text('Todo bajo control', style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700, color: colors.onSurface)),
         const SizedBox(height: 6),
@@ -206,8 +206,8 @@ class _NotifCard extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: progressValue,
                     minHeight: 5,
-                    backgroundColor: (progressColor ?? AppTheme.secondaryColor).withOpacity(0.12),
-                    valueColor: AlwaysStoppedAnimation(progressColor ?? AppTheme.secondaryColor),
+                    backgroundColor: (progressColor ?? tokens.FarolColors.beam).withOpacity(0.12),
+                    valueColor: AlwaysStoppedAnimation(progressColor ?? tokens.FarolColors.beam),
                   ),
                 ),
               ],

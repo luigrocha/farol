@@ -11,7 +11,6 @@ class _FakeExecutor extends QueryExecutor {
   @override
   SqlDialect get dialect => SqlDialect.sqlite;
 
-  @override
   bool get isSequential => true;
 
   @override

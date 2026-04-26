@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/i18n/app_localizations.dart';
+import '../../../core/widgets/farol_snackbar.dart';
 import '../../../core/providers/providers.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../../design/farol_colors.dart' as tokens;
 import '../../../core/theme/farol_colors.dart';
 import '../../../core/services/financial_calculator_service.dart';
 import '../domain/budget_settings.dart';
@@ -55,11 +56,11 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
       ));
       if (mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.budgetSaved), backgroundColor: Colors.green));
+        context.showSuccessSnackBar(l10n.budgetSaved);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.errorSaving}: $e'), backgroundColor: Colors.red));
+        context.showErrorSnackBar(e);
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -68,6 +69,7 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final colors = context.colors;
     final budget = ref.watch(budgetSettingsProvider).value;
     final total = budget?.totalBudget ?? 0;
@@ -83,28 +85,28 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
             Center(child: Container(width: 36, height: 4, decoration: BoxDecoration(color: colors.onSurfaceFaint, borderRadius: BorderRadius.circular(2)))),
             const SizedBox(height: 20),
             Row(children: [
-              Container(width: 38, height: 38, decoration: BoxDecoration(color: colors.iconTintBlue, borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.account_balance_wallet_outlined, size: 20, color: AppTheme.primaryColor)),
+              Container(width: 38, height: 38, decoration: BoxDecoration(color: colors.iconTintBlue, borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.account_balance_wallet_outlined, size: 20, color: tokens.FarolColors.navy)),
               const SizedBox(width: 12),
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Monthly Budget', style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700)),
+                Text(l10n.monthlyBudget, style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700)),
                 if (total > 0) Text('Total: ${FinancialCalculatorService.formatBRL(total)}', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
               ]),
             ]),
             const SizedBox(height: 6),
-            Text('Set your planned monthly income. The dashboard will track remaining amounts as you add transactions.', style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft, height: 1.5)),
+            Text(l10n.translate('set_planned_income'), style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft, height: 1.5)),
             const SizedBox(height: 20),
-            _AmountField(controller: _netSalaryController, label: 'Net Salary', hint: '9651.91', icon: Icons.account_balance_wallet),
+            _AmountField(controller: _netSalaryController, label: l10n.translate('net_salary'), hint: '9651.91', icon: Icons.account_balance_wallet),
             const SizedBox(height: 12),
-            _AmountField(controller: _swileMealController, label: 'Swile Meal', hint: '1400.00', icon: Icons.restaurant),
+            _AmountField(controller: _swileMealController, label: l10n.translate('pay_swile_meal'), hint: '1400.00', icon: Icons.restaurant),
             const SizedBox(height: 12),
-            _AmountField(controller: _swileFoodController, label: 'Swile Food', hint: '1031.00', icon: Icons.shopping_basket_outlined),
+            _AmountField(controller: _swileFoodController, label: l10n.translate('pay_swile_food'), hint: '1031.00', icon: Icons.shopping_basket_outlined),
             const SizedBox(height: 24),
             SizedBox(width: double.infinity, child: ElevatedButton(
               onPressed: _saving ? null : _save,
-              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation: 0),
+              style: ElevatedButton.styleFrom(backgroundColor: tokens.FarolColors.navy, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation: 0),
               child: _saving
                 ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('Save Budget', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                : Text(l10n.saveBudget, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
             )),
           ]),
         ),
@@ -135,7 +137,7 @@ class _AmountField extends StatelessWidget {
       validator: (v) {
         if (v == null || v.trim().isEmpty) return null;
         final val = double.tryParse(v.trim().replaceAll(',', '.'));
-        if (val == null || val < 0) return 'Enter a valid amount';
+        if (val == null || val < 0) return AppLocalizations.of(context).translate('invalid_amount');
         return null;
       },
     );

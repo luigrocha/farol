@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/i18n/app_localizations.dart';
+import '../../../core/widgets/farol_snackbar.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../../design/farol_colors.dart' as tokens;
 import '../../../core/theme/farol_colors.dart';
 
 class NetWorthSettingsSheet extends ConsumerStatefulWidget {
@@ -61,15 +62,11 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
       );
       if (mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.netWorthSaved), backgroundColor: Colors.green),
-        );
+        context.showSuccessSnackBar(l10n.netWorthSaved);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.errorSaving}: $e'), backgroundColor: Colors.red),
-        );
+        context.showErrorSnackBar(e);
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -107,7 +104,7 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
               Container(
                 width: 38, height: 38,
                 decoration: BoxDecoration(color: colors.iconTintBlue, borderRadius: BorderRadius.circular(10)),
-                child: const Icon(Icons.account_balance_outlined, size: 20, color: AppTheme.primaryColor),
+                child: const Icon(Icons.account_balance_outlined, size: 20, color: tokens.FarolColors.navy),
               ),
               const SizedBox(width: 12),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -123,14 +120,14 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withOpacity(0.08),
+                    color: tokens.FarolColors.navy.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(children: [
                     Text('Total estimado: ', style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
                     Text(
                       FinancialCalculatorService.formatBRL(_parse(_patrimonyCtrl) + _parse(_fgtsCtrl) + _parse(_investmentsCtrl) + _parse(_emergencyCtrl) - pending),
-                      style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.primaryColor),
+                      style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w700, color: tokens.FarolColors.navy),
                     ),
                   ]),
                 ),
@@ -165,7 +162,7 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
               child: ElevatedButton(
                 onPressed: _saving ? null : _save,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
+                  backgroundColor: tokens.FarolColors.navy,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),

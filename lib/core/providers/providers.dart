@@ -5,22 +5,29 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../database/app_database.dart' show AppDatabase;
 import '../models/income.dart';
 import '../models/expense.dart';
+import '../models/enums.dart';
 import '../models/card_installment.dart';
 import '../models/investment.dart';
 import '../models/net_worth_snapshot.dart';
 import '../models/budget_goal.dart';
+import '../models/financial_period.dart';
+import '../models/period_budget.dart';
 import '../repositories/income_repository.dart';
 import '../repositories/expense_repository.dart';
 import '../repositories/installment_repository.dart';
 import '../repositories/investment_repository.dart';
 import '../repositories/net_worth_repository.dart';
 import '../repositories/budget_goals_repository.dart';
+import '../repositories/period_budget_repository.dart';
 import '../repositories/user_preferences_repository.dart';
 import '../repositories/health_repository.dart';
+import '../repositories/salary_settings_repository.dart';
 import '../services/export_service.dart';
 import '../models/health_snapshot.dart';
 import '../models/budget_alert.dart';
+import '../models/salary_settings.dart';
 import '../services/financial_calculator_service.dart';
+import '../services/clt_calculator_service.dart';
 import '../../features/budget/data/budget_settings_repository.dart';
 import '../../features/budget/domain/budget_settings.dart';
 
@@ -274,6 +281,20 @@ final installmentsProvider = StreamProvider.autoDispose<List<CardInstallment>>((
   return ref.watch(installmentRepositoryProvider).watchActive();
 });
 
+final allInstallmentsProvider = StreamProvider.autoDispose<List<CardInstallment>>((ref) {
+  return ref.watch(installmentRepositoryProvider).watchAll();
+});
+
+final totalMonthlyInstallmentsProvider = Provider.autoDispose<double>((ref) {
+  final list = ref.watch(installmentsProvider).value ?? [];
+  return list.fold(0.0, (sum, i) => sum + i.monthlyAmount);
+});
+
+final totalRemainingInstallmentsProvider = Provider.autoDispose<double>((ref) {
+  final list = ref.watch(installmentsProvider).value ?? [];
+  return list.fold(0.0, (sum, i) => sum + i.remainingBalance);
+});
+
 // ═══════════════════════════════════════════
 // INVESTMENTS PROVIDERS
 // ═══════════════════════════════════════════
@@ -505,6 +526,125 @@ class FixedExpensePropagationNotifier extends AutoDisposeAsyncNotifier<int> {
 }
 
 // ═══════════════════════════════════════════
+// PERIOD BUDGET PROVIDERS
+// ═══════════════════════════════════════════
+
+final periodBudgetRepositoryProvider = Provider<PeriodBudgetRepository>((ref) {
+  return PeriodBudgetRepository(Supabase.instance.client);
+});
+
+/// The current financial period derived from the user's cutoff_day setting.
+final currentPeriodProvider = Provider<FinancialPeriod>((ref) {
+  final settings = ref.watch(budgetSettingsProvider).value;
+  return FinancialPeriod.current(settings?.cutoffDay ?? 1);
+});
+
+/// Raw budget rows for the current period. Invalidate this after upsert/delete.
+final _periodBudgetsRawProvider =
+    FutureProvider.autoDispose<List<PeriodBudget>>((ref) async {
+  final period = ref.watch(currentPeriodProvider);
+  return ref.watch(periodBudgetRepositoryProvider).getBudgets(period);
+});
+
+/// Merged view of budget goals (parents) + period overrides + live spending.
+///
+/// For each [BudgetGoal] the user has set:
+///   - Shows the goal amount by default.
+///   - If a [PeriodBudget] row exists for this period, uses its amount instead.
+///   - If that row has [isCustom] == true, a "Custom" badge appears in the UI.
+///
+/// Also includes any period budgets for categories that have no goal (pure custom).
+final periodBudgetEntriesProvider =
+    Provider.autoDispose<AsyncValue<List<PeriodBudgetEntry>>>((ref) {
+  final goalsMap = ref.watch(budgetGoalsMapProvider);
+  final overridesAsync = ref.watch(_periodBudgetsRawProvider);
+  final expensesAsync = ref.watch(_allExpensesStreamProvider);
+  final period = ref.watch(currentPeriodProvider);
+
+  return overridesAsync.whenData((overrides) {
+    final expenses = expensesAsync.value ?? [];
+
+    final spentByCategory = <String, double>{};
+    for (final e in expenses) {
+      if (e.payType == 'Swile') continue;
+      if (!period.contains(e.transactionDate)) continue;
+      spentByCategory[e.category] =
+          (spentByCategory[e.category] ?? 0) + e.amount;
+    }
+
+    final overrideMap = {for (final o in overrides) o.category: o};
+    final seen = <String>{};
+    final entries = <PeriodBudgetEntry>[];
+
+    // Goal-backed entries (shown even with no override row).
+    for (final cat in ExpenseCategory.values) {
+      final dbVal = cat.dbValue;
+      final goal = goalsMap[dbVal];
+      if (goal == null) continue;
+      seen.add(dbVal);
+      entries.add(PeriodBudgetEntry(
+        goal: goal,
+        override: overrideMap[dbVal],
+        spent: spentByCategory[dbVal] ?? 0,
+      ));
+    }
+
+    // Pure-custom entries (period budget with no matching goal).
+    for (final o in overrides) {
+      if (seen.contains(o.category)) continue;
+      entries.add(PeriodBudgetEntry(
+        goal: null,
+        override: o,
+        spent: spentByCategory[o.category] ?? 0,
+      ));
+    }
+
+    return entries;
+  });
+});
+
+/// Notifier for budget CRUD — invalidates [_periodBudgetsRawProvider] on change.
+final periodBudgetNotifierProvider =
+    AsyncNotifierProvider<PeriodBudgetNotifier, void>(PeriodBudgetNotifier.new);
+
+class PeriodBudgetNotifier extends AsyncNotifier<void> {
+  @override
+  Future<void> build() async {}
+
+  Future<void> upsert({
+    required String category,
+    required double amount,
+    bool isCustom = false,
+  }) async {
+    final period = ref.read(currentPeriodProvider);
+    await ref.read(periodBudgetRepositoryProvider).upsert(
+          category: category,
+          period: period,
+          amount: amount,
+          isCustom: isCustom,
+        );
+    ref.invalidate(_periodBudgetsRawProvider);
+  }
+
+  Future<void> delete(String id) async {
+    await ref.read(periodBudgetRepositoryProvider).delete(id);
+    ref.invalidate(_periodBudgetsRawProvider);
+  }
+
+  /// Copies all budgets from the previous period into the current one.
+  /// Returns the number of rows created (0 if already seeded).
+  Future<int> copyFromPreviousPeriod() async {
+    final current = ref.read(currentPeriodProvider);
+    final previous = current.previous;
+    final count = await ref
+        .read(periodBudgetRepositoryProvider)
+        .copyFromPeriod(from: previous, to: current);
+    if (count > 0) ref.invalidate(_periodBudgetsRawProvider);
+    return count;
+  }
+}
+
+// ═══════════════════════════════════════════
 // ANALYTICS RANGE PROVIDERS
 // ═══════════════════════════════════════════
 
@@ -574,3 +714,57 @@ final budgetAlertsProvider = Provider.autoDispose<List<BudgetAlert>>((ref) {
   alerts.sort((a, b) => b.percentage.compareTo(a.percentage));
   return alerts;
 });
+
+// ═══════════════════════════════════════════
+// SALARY SETTINGS (CLT 2026)
+// ═══════════════════════════════════════════
+
+final salarySettingsRepositoryProvider =
+    Provider<SalarySettingsRepository>((ref) =>
+        SalarySettingsRepository(Supabase.instance.client));
+
+final salarySettingsProvider =
+    AsyncNotifierProvider<SalarySettingsNotifier, SalarySettings?>(
+        SalarySettingsNotifier.new);
+
+class SalarySettingsNotifier extends AsyncNotifier<SalarySettings?> {
+  @override
+  Future<SalarySettings?> build() =>
+      ref.read(salarySettingsRepositoryProvider).fetch();
+
+  Future<void> save({
+    required double grossSalary,
+    int dependents = 0,
+    double otherDeductions = 0,
+    bool useSimplifiedDeduction = false,
+  }) async {
+    final result = CltCalculatorService.compute(
+      grossSalary: grossSalary,
+      dependents: dependents,
+      otherDeductions: otherDeductions,
+      useSimplifiedDeduction: useSimplifiedDeduction,
+    );
+    final settings = SalarySettings(
+      grossSalary: result.grossSalary,
+      inss: result.inss,
+      irrf: result.irrf,
+      netSalary: result.netSalary,
+      fgts: result.fgts,
+      dependents: dependents,
+      otherDeductions: otherDeductions,
+      useSimplifiedDeduction: useSimplifiedDeduction,
+    );
+    state = const AsyncLoading();
+    await ref.read(salarySettingsRepositoryProvider).upsert(settings);
+    state = AsyncData(settings);
+
+    // Keep budget_settings.net_salary in sync so effectiveNetSalaryProvider
+    // reflects the updated CLT net salary immediately.
+    final budgetNotifier = ref.read(budgetSettingsProvider.notifier);
+    final currentBudget = ref.read(budgetSettingsProvider).value;
+    final updatedBudget = (currentBudget ?? const BudgetSettings()).copyWith(
+      netSalary: result.netSalary,
+    );
+    await budgetNotifier.save(updatedBudget);
+  }
+}

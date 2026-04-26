@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'core/theme/app_theme.dart';
+import 'design/farol_colors.dart' as tokens;
 import 'core/theme/farol_colors.dart' show FarolColorsContext;
+import 'design/farol_theme.dart';
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/transactions/transactions_screen.dart';
 import 'features/analytics/analytics_screen.dart';
@@ -25,6 +26,9 @@ import 'features/auth/presentation/auth_providers.dart';
 import 'features/auth/domain/auth_state.dart';
 import 'features/health/health_screen.dart';
 import 'features/simulators/thirteenth_salary_screen.dart';
+import 'features/installments/installments_screen.dart';
+import 'features/simulators/fgts_aniversario_screen.dart';
+import 'features/period_budget/presentation/period_budget_screen.dart';
 
 final themeModeProvider =
     NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
@@ -108,8 +112,8 @@ class FarolApp extends ConsumerWidget {
     return MaterialApp(
       title: 'Farol',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: farolLightTheme,
+      darkTheme: farolDarkTheme,
       themeMode: themeMode,
       locale: locale,
       localizationsDelegates: const [
@@ -134,6 +138,8 @@ class FarolApp extends ConsumerWidget {
         '/notifications': (context) => const NotificationsScreen(),
         '/health': (context) => const HealthScreen(),
         '/thirteenth_salary': (context) => const ThirteenthSalaryScreen(),
+        '/installments': (context) => const InstallmentsScreen(),
+        '/fgts_aniversario': (context) => const FgtsAniversarioScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/investment_detail') {
@@ -166,6 +172,7 @@ class AppEntryPoint extends ConsumerWidget {
           const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (err, stack) {
         // Stream errors should be rare; surface them instead of silently hiding.
+        final l10n = AppLocalizations.of(context);
         return Scaffold(
           body: Center(
             child: Column(
@@ -173,12 +180,12 @@ class AppEntryPoint extends ConsumerWidget {
               children: [
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SizedBox(height: 16),
-                const Text('Something went wrong. Please restart the app.'),
+                Text(l10n.somethingWentWrong),
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: () =>
                       ref.invalidate(authStateProvider),
-                  child: const Text('Retry'),
+                  child: Text(l10n.retry),
                 ),
               ],
             ),
@@ -218,14 +225,14 @@ class VerificationScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.email_outlined,
-                  size: 80, color: AppTheme.primaryColor),
+                  size: 80, color: tokens.FarolColors.navy),
               const SizedBox(height: 24),
-              const Text('Verify your email',
-                  style: TextStyle(
+              Text(l10n.verifyEmail,
+                  style: const TextStyle(
                       fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
               Text(
-                'We sent a verification link to your email. Please check it to continue.',
+                l10n.translate('we_sent_verification'),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: context.colors.onSurfaceSoft),
               ),
@@ -243,13 +250,13 @@ class VerificationScreen extends ConsumerWidget {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.send),
-                label: const Text('Resend email'),
+                label: Text(l10n.resendEmail),
               ),
               const SizedBox(height: 12),
               TextButton(
                 onPressed: () =>
                     ref.read(authControllerProvider.notifier).signOut(),
-                child: const Text('Sign Out'),
+                child: Text(l10n.signOut),
               ),
             ],
           ),
@@ -273,6 +280,7 @@ class _MainShellState extends State<MainShell> {
     DashboardScreen(),
     TransactionsScreen(),
     AnalyticsScreen(),
+    PeriodBudgetScreen(),
     InvestmentsScreen(),
     SettingsScreen(),
   ];
@@ -304,6 +312,11 @@ class _MainShellState extends State<MainShell> {
             icon: const Icon(Icons.bar_chart_outlined),
             selectedIcon: const Icon(Icons.bar_chart),
             label: l10n.analytics,
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.pie_chart_outline),
+            selectedIcon: Icon(Icons.pie_chart),
+            label: 'Budget',
           ),
           NavigationDestination(
             icon: const Icon(Icons.trending_up_outlined),

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat)",
+      "Read(//tmp/**)",
+      "Bash(flutter analyze *)",
+      "Bash(flutter pub *)",
+      "Bash(grep -v \"^$\\\\|A new version\\\\|To update\\\\|flutter upgrade\\\\|└\\\\|┌\\\\|│\")"
+    ]
+  }
+}

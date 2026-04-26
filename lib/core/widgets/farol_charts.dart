@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:math' as math;
-import '../theme/app_theme.dart';
+import '../../design/farol_colors.dart' as tokens;
 import '../theme/farol_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -30,7 +30,7 @@ class FarolDonutChart extends StatelessWidget {
             sectionsSpace: 0,
             centerSpaceRadius: 70,
             sections: data.entries.map((e) => PieChartSectionData(
-              color: AppTheme.getCategoryColor(e.key),
+              color: tokens.FarolColors.getCategoryColor(e.key),
               value: e.value,
               radius: 18,
               showTitle: false,
@@ -51,7 +51,7 @@ class FarolTrendChart extends StatelessWidget {
   final List<double> points;
   final Color color;
 
-  const FarolTrendChart({super.key, required this.points, this.color = AppTheme.secondaryColor});
+  const FarolTrendChart({super.key, required this.points, this.color = tokens.FarolColors.beam});
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +112,7 @@ class _CandlePainter extends CustomPainter {
     for (int i = 0; i < data.length; i++) {
       final d = data[i];
       final up = d.close >= d.open;
-      final col = up ? AppTheme.secondaryColor : AppTheme.errorColor;
+      final col = up ? tokens.FarolColors.beam : tokens.FarolColors.coral;
       final x = i * cw + cw / 2;
       final yH = size.height - ((d.high - minVal) / range) * size.height;
       final yL = size.height - ((d.low - minVal) / range) * size.height;

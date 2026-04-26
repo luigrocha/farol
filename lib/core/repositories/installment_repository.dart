@@ -20,6 +20,16 @@ class InstallmentRepository {
             .toList());
   }
 
+  Stream<List<CardInstallment>> watchAll() {
+    final userId = _userId;
+    if (userId == null) return Stream.value([]);
+    return _supabase
+        .from('card_installments')
+        .stream(primaryKey: ['id'])
+        .eq('user_id', userId)
+        .map((rows) => rows.map(CardInstallment.fromJson).toList());
+  }
+
   Future<void> insert({
     required String description,
     required DateTime purchaseDate,
@@ -28,6 +38,7 @@ class InstallmentRepository {
     int currentInstallment = 1,
     required double monthlyAmount,
     String status = 'Active',
+    String? notes,
   }) async {
     final userId = _userId;
     if (userId == null) throw Exception('Not authenticated');
@@ -40,7 +51,39 @@ class InstallmentRepository {
       'current_installment': currentInstallment,
       'monthly_amount': monthlyAmount,
       'status': status,
+      if (notes != null) 'notes': notes,
     });
+  }
+
+  Future<void> advance(int id, int newCurrent, int numInstallments) async {
+    final newStatus = newCurrent >= numInstallments ? 'Settled' : 'Active';
+    await _supabase.from('card_installments').update({
+      'current_installment': newCurrent,
+      'status': newStatus,
+    }).eq('id', id);
+  }
+
+  Future<void> complete(int id) async {
+    await _supabase.from('card_installments').update({
+      'status': 'Settled',
+    }).eq('id', id);
+  }
+
+  Future<void> update(int id, {
+    String? description,
+    double? totalValue,
+    int? numInstallments,
+    double? monthlyAmount,
+    String? notes,
+  }) async {
+    final updates = <String, dynamic>{};
+    if (description != null) updates['description'] = description;
+    if (totalValue != null) updates['total_value'] = totalValue;
+    if (numInstallments != null) updates['num_installments'] = numInstallments;
+    if (monthlyAmount != null) updates['monthly_amount'] = monthlyAmount;
+    if (notes != null) updates['notes'] = notes;
+    if (updates.isEmpty) return;
+    await _supabase.from('card_installments').update(updates).eq('id', id);
   }
 
   Future<List<CardInstallment>> getActive() async {

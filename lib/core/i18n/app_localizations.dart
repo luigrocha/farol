@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AppLocalizations {
   final Locale locale;
@@ -109,6 +108,127 @@ class AppLocalizations {
       'cannot_undo': 'This action cannot be undone.',
       'transaction_deleted': 'Expense deleted',
       'transaction_updated': 'Expense updated!',
+      // Authentication
+      'sign_in': 'Sign In',
+      'sign_up': 'Sign Up',
+      'sign_out': 'Sign Out',
+      'forgot_password': 'Forgot password?',
+      'verify_email': 'Verify your email',
+      'resend_email': 'Resend email',
+      'set_new_password': 'Set New Password',
+      'update_password': 'Update Password',
+      'or_sign_in_with': 'Or sign in with',
+      'something_went_wrong': 'Something went wrong. Please restart the app.',
+      'retry': 'Retry',
+      // Investments
+      'add_investment': 'Add Investment',
+      'amount_invested': 'Amount invested',
+      'investment_added': 'Investment added',
+      'delete_investment': 'Delete investment?',
+      'no_investments_yet': 'No investments yet.\nTap + to add one.',
+      'current_balance_differs': 'Current balance differs from invested',
+      'remove': 'Remove',
+      // Budget
+      'monthly_budget': 'Monthly Budget',
+      'save_budget': 'Save Budget',
+      'could_not_load_budget': 'Could not load budget',
+      'could_not_load_net_worth': 'Could not load net worth',
+      // Profile & Settings
+      'edit_profile': 'Edit Profile',
+      'appearance': 'Appearance',
+      'customize_interface': 'Customize your interface for maximum visual comfort.',
+      'concierge_support': 'Concierge Support',
+      'corporate_benefits': 'Corporate Benefits',
+      // Transactions & Benefits
+      'recent_transactions': 'Recent Transactions',
+      'monthly_spending': 'Monthly Spending',
+      'last_7_days': 'Last 7 days',
+      'see_all': 'See all',
+      // Login Extra
+      'welcome': 'Welcome\n',
+      'back': 'back.',
+      'login_subtitle': 'Sign in and continue lighting your financial path.',
+      'email': 'Email',
+      'password': 'Password',
+      'invalid_email': 'Invalid email',
+      'min_6_chars': 'Minimum 6 characters',
+      'dont_have_account': 'Don\'t have an account? ',
+      // Settings Extra
+      'data_privacy': 'Data & Privacy',
+      'export_transactions': 'Export Transactions',
+      'income_statement': 'Income Statement',
+      'full_backup': 'Full Backup',
+      'monthly_report_pdf': 'Monthly Report PDF',
+      'category_budgets': 'Category Budgets',
+      'set_spending_limits': 'Set spending limits per category',
+      'financial_period': 'Financial Period',
+      'period_start': 'Start of period',
+      'day_of_each_month': 'Day of each month',
+      'select_period_start': 'Select the day your financial period begins (1-28):',
+      'salary_configured': 'Salary Configured',
+      'configure_salary': 'Configure Salary',
+      'salary_calculated': 'Taxes automatically calculated',
+      'net_worth_configured': 'Net Worth Configured',
+      'configure_net_worth': 'Configure Net Worth',
+      'net_worth_desc': 'Real Estate, Investments, etc.',
+      'chat_24_7': 'Chat 24/7',
+      'vip_call': 'VIP Call',
+      // Toasts
+      'settings_saved': 'Settings saved successfully',
+      'export_success': 'File exported successfully',
+      'salary_saved': 'Salary settings saved successfully',
+      'enter_gross_salary': 'Please enter gross salary',
+      'error': 'Error',
+      // Signup & Other
+      'account_created_check_email': 'Account created! Check your email to continue.',
+      'create_your': 'Create your\n',
+      'farol_account': 'Farol account.',
+      'start_illuminating': 'Start illuminating your financial path today.',
+      'set_planned_income': 'Set your planned monthly income. The dashboard will track remaining amounts as you add transactions.',
+      'passwords_dont_match': 'Passwords do not match',
+      'create_account_arrow': 'Create account →',
+      'already_have_account': 'Already have an account? ',
+      'very_weak': 'Very weak',
+      'weak': 'Weak',
+      'good': 'Good',
+      'strong': 'Strong',
+      'we_sent_verification': 'We sent a verification link to your email. Please check it to continue.',
+      'new_password_title_1': 'New\n',
+      'new_password_title_2': 'password.',
+      'choose_strong_password': 'Choose a strong password to protect your account.',
+      'new_password': 'New password',
+      'min_8_chars': 'Minimum 8 characters',
+      'confirm_new_password': 'Confirm new password',
+      'update_password_arrow': 'Update password →',
+      'type': 'Type',
+      'current_balance_input': 'Current balance',
+      'product_name': 'Product name',
+      'institution': 'Institution / Broker',
+      'notes_optional': 'Notes (optional)',
+      'enter_product_name': 'Enter a product name',
+      'enter_institution': 'Enter the institution',
+      'enter_invested_amount': 'Enter the invested amount',
+      'enter_valid_balance': 'Enter a valid current balance',
+      'set_monthly_spending_limits': 'Set monthly spending limits per category',
+      'current_spending': 'Current',
+      'budget_amount': 'Budget amount',
+      'name': 'Name',
+      'name_required': 'Name is required',
+      'avatar_optional': 'Avatar URL (optional)',
+      'new_installment': 'New Installment',
+      'description_required': 'Description *',
+      'desc_example': 'e.g. Laptop, Phone...',
+      'monthly_installment_amount': 'Monthly installment amount',
+      'num_installments': 'Number of installments',
+      'current_installment': 'Current installment',
+      'of': 'of',
+      'purchased_on': 'Purchased on',
+      'enter_description': 'Enter description',
+      'enter_installment_amount': 'Enter installment amount',
+      'installment_added': 'Installment added!',
+      'total': 'Total',
+      'remaining': 'Remaining',
+      'remaining_balance': 'Remaining balance',
     },
     'es': {
       'app_name': 'Farol',
@@ -209,6 +329,127 @@ class AppLocalizations {
       'cannot_undo': 'Esta acción no se puede deshacer.',
       'transaction_deleted': 'Gasto eliminado',
       'transaction_updated': '¡Gasto actualizado!',
+      // Authentication
+      'sign_in': 'Iniciar Sesión',
+      'sign_up': 'Registrarse',
+      'sign_out': 'Cerrar Sesión',
+      'forgot_password': '¿Olvidaste la contraseña?',
+      'verify_email': 'Verifica tu correo',
+      'resend_email': 'Reenviar correo',
+      'set_new_password': 'Establecer Nueva Contraseña',
+      'update_password': 'Actualizar Contraseña',
+      'or_sign_in_with': 'O inicia sesión con',
+      'something_went_wrong': 'Algo salió mal. Reinicia la app.',
+      'retry': 'Reintentar',
+      // Investments
+      'add_investment': 'Agregar Inversión',
+      'amount_invested': 'Monto invertido',
+      'investment_added': '¡Inversión agregada!',
+      'delete_investment': '¿Eliminar inversión?',
+      'no_investments_yet': 'Sin inversiones aún.\nToca + para agregar una.',
+      'current_balance_differs': 'El saldo actual difiere del invertido',
+      'remove': 'Eliminar',
+      // Budget
+      'monthly_budget': 'Presupuesto Mensual',
+      'save_budget': 'Guardar Presupuesto',
+      'could_not_load_budget': 'No se pudo cargar el presupuesto',
+      'could_not_load_net_worth': 'No se pudo cargar el patrimonio',
+      // Profile & Settings
+      'edit_profile': 'Editar Perfil',
+      'appearance': 'Apariencia',
+      'customize_interface': 'Personaliza tu interfaz para máximo confort visual.',
+      'concierge_support': 'Soporte Concierge',
+      'corporate_benefits': 'Beneficios Corporativos',
+      // Transactions & Benefits
+      'recent_transactions': 'Transacciones Recientes',
+      'monthly_spending': 'Gastos Mensuales',
+      'last_7_days': 'Últimos 7 días',
+      'see_all': 'Ver Todo',
+      // Login Extra
+      'welcome': 'Bienvenido\n',
+      'back': 'de vuelta.',
+      'login_subtitle': 'Inicia sesión y continúa iluminando tu camino financiero.',
+      'email': 'Correo',
+      'password': 'Contraseña',
+      'invalid_email': 'Correo inválido',
+      'min_6_chars': 'Mínimo 6 caracteres',
+      'dont_have_account': '¿Aún no tienes cuenta? ',
+      // Settings Extra
+      'data_privacy': 'Datos y Privacidad',
+      'export_transactions': 'Exportar Transacciones',
+      'income_statement': 'Estado de Resultados',
+      'full_backup': 'Respaldo Completo',
+      'monthly_report_pdf': 'Resumen Mensual PDF',
+      'category_budgets': 'Presupuestos por Categoría',
+      'set_spending_limits': 'Establece límites de gasto',
+      'financial_period': 'Período financiero',
+      'period_start': 'Inicio del período',
+      'day_of_each_month': 'Día de cada mes',
+      'select_period_start': 'Selecciona el día en que comienza tu período (1–28):',
+      'salary_configured': 'Salario Configurado',
+      'configure_salary': 'Configurar Salario',
+      'salary_calculated': 'Impuestos calculados automáticamente',
+      'net_worth_configured': 'Patrimonio Configurado',
+      'configure_net_worth': 'Configurar Patrimonio',
+      'net_worth_desc': 'Inmuebles, Inversiones, etc.',
+      'chat_24_7': 'Chat 24/7',
+      'vip_call': 'Llamada VIP',
+      // Toasts
+      'settings_saved': 'Configuración guardada exitosamente',
+      'export_success': 'Archivo exportado con éxito',
+      'salary_saved': 'Configuración de salario guardada',
+      'enter_gross_salary': 'Ingrese el salario bruto',
+      'error': 'Error',
+      // Signup & Other
+      'account_created_check_email': '¡Cuenta creada! Revisa tu correo para continuar.',
+      'create_your': 'Crea tu\n',
+      'farol_account': 'cuenta Farol.',
+      'start_illuminating': 'Empieza a iluminar tu camino financiero hoy.',
+      'set_planned_income': 'Establece tu ingreso mensual planeado. El dashboard rastreará los montos restantes a medida que agregues transacciones.',
+      'passwords_dont_match': 'Las contraseñas no coinciden',
+      'create_account_arrow': 'Crear cuenta →',
+      'already_have_account': '¿Ya tienes una cuenta? ',
+      'very_weak': 'Muy débil',
+      'weak': 'Débil',
+      'good': 'Buena',
+      'strong': 'Fuerte',
+      'we_sent_verification': 'Enviamos un enlace de verificación a tu correo. Revísalo para continuar.',
+      'new_password_title_1': 'Nueva\n',
+      'new_password_title_2': 'contraseña.',
+      'choose_strong_password': 'Elige una contraseña fuerte para proteger tu cuenta.',
+      'new_password': 'Nueva contraseña',
+      'min_8_chars': 'Mínimo 8 caracteres',
+      'confirm_new_password': 'Confirmar nueva contraseña',
+      'update_password_arrow': 'Actualizar contraseña →',
+      'type': 'Tipo',
+      'current_balance_input': 'Saldo actual',
+      'product_name': 'Nombre del producto',
+      'institution': 'Institución / Broker',
+      'notes_optional': 'Notas (opcional)',
+      'enter_product_name': 'Ingresa el nombre del producto',
+      'enter_institution': 'Ingresa la institución',
+      'enter_invested_amount': 'Ingresa el monto invertido',
+      'enter_valid_balance': 'Ingresa un saldo actual válido',
+      'set_monthly_spending_limits': 'Establece límites de gasto mensual por categoría',
+      'current_spending': 'Actual',
+      'budget_amount': 'Monto del presupuesto',
+      'name': 'Nombre',
+      'name_required': 'El nombre es obligatorio',
+      'avatar_optional': 'URL de Avatar (opcional)',
+      'new_installment': 'Nueva Cuota',
+      'description_required': 'Descripción *',
+      'desc_example': 'ej: Portátil, Celular...',
+      'monthly_installment_amount': 'Monto mensual de la cuota',
+      'num_installments': 'Número de cuotas',
+      'current_installment': 'Cuota actual',
+      'of': 'de',
+      'purchased_on': 'Comprado el',
+      'enter_description': 'Ingresa la descripción',
+      'enter_installment_amount': 'Ingresa el monto de la cuota',
+      'installment_added': '¡Cuota agregada!',
+      'total': 'Total',
+      'remaining': 'Restan',
+      'remaining_balance': 'Saldo restante',
     },
     'pt': {
       'app_name': 'Farol',
@@ -309,6 +550,127 @@ class AppLocalizations {
       'cannot_undo': 'Esta ação não pode ser desfeita.',
       'transaction_deleted': 'Despesa excluída',
       'transaction_updated': 'Despesa atualizada!',
+      // Authentication
+      'sign_in': 'Fazer Login',
+      'sign_up': 'Criar Conta',
+      'sign_out': 'Sair',
+      'forgot_password': 'Esqueceu a senha?',
+      'verify_email': 'Verifique seu e-mail',
+      'resend_email': 'Reenviar e-mail',
+      'set_new_password': 'Definir Nova Senha',
+      'update_password': 'Atualizar Senha',
+      'or_sign_in_with': 'Ou faça login com',
+      'something_went_wrong': 'Algo deu errado. Reinicie o app.',
+      'retry': 'Tentar Novamente',
+      // Investments
+      'add_investment': 'Adicionar Investimento',
+      'amount_invested': 'Valor investido',
+      'investment_added': 'Investimento adicionado!',
+      'delete_investment': 'Excluir investimento?',
+      'no_investments_yet': 'Nenhum investimento ainda.\nToque + para adicionar um.',
+      'current_balance_differs': 'Saldo atual diferente do investido',
+      'remove': 'Remover',
+      // Budget
+      'monthly_budget': 'Orçamento Mensal',
+      'save_budget': 'Salvar Orçamento',
+      'could_not_load_budget': 'Não foi possível carregar o orçamento',
+      'could_not_load_net_worth': 'Não foi possível carregar o patrimônio',
+      // Profile & Settings
+      'edit_profile': 'Editar Perfil',
+      'appearance': 'Aparência',
+      'customize_interface': 'Personalize sua interface para o máximo conforto visual.',
+      'concierge_support': 'Suporte Concierge',
+      'corporate_benefits': 'Benefícios Corporativos',
+      // Transactions & Benefits
+      'recent_transactions': 'Transações Recentes',
+      'monthly_spending': 'Gastos Mensais',
+      'last_7_days': 'Últimos 7 dias',
+      'see_all': 'Ver Tudo',
+      // Login Extra
+      'welcome': 'Bem-vindo\n',
+      'back': 'de volta.',
+      'login_subtitle': 'Entre e continue iluminando seu caminho financeiro.',
+      'email': 'E-mail',
+      'password': 'Senha',
+      'invalid_email': 'E-mail inválido',
+      'min_6_chars': 'Mínimo 6 caracteres',
+      'dont_have_account': 'Ainda não tem conta? ',
+      // Settings Extra
+      'data_privacy': 'Dados e Privacidade',
+      'export_transactions': 'Exportar Transações',
+      'income_statement': 'Demonstrativo de Resultados',
+      'full_backup': 'Backup Completo',
+      'monthly_report_pdf': 'Relatório Mensal PDF',
+      'category_budgets': 'Orçamentos por Categoria',
+      'set_spending_limits': 'Defina limites de gastos',
+      'financial_period': 'Período financeiro',
+      'period_start': 'Início do período',
+      'day_of_each_month': 'Dia de cada mês',
+      'select_period_start': 'Selecione o dia que inicia seu período (1-28):',
+      'salary_configured': 'Salário Configurado',
+      'configure_salary': 'Configurar Salário',
+      'salary_calculated': 'Impostos calculados automaticamente',
+      'net_worth_configured': 'Patrimônio Configurado',
+      'configure_net_worth': 'Configurar Patrimônio',
+      'net_worth_desc': 'Imóveis, Investimentos, FGTS...',
+      'chat_24_7': 'Chat 24/7',
+      'vip_call': 'Chamada VIP',
+      // Toasts
+      'settings_saved': 'Configurações salvas com sucesso',
+      'export_success': 'Arquivo exportado com sucesso',
+      'salary_saved': 'Configuração de salário salva',
+      'enter_gross_salary': 'Informe o salário bruto',
+      'error': 'Erro',
+      // Signup & Other
+      'account_created_check_email': 'Conta criada! Verifique seu e-mail para continuar.',
+      'create_your': 'Criar sua\n',
+      'farol_account': 'conta Farol.',
+      'start_illuminating': 'Comece a iluminar seu caminho financeiro hoje.',
+      'set_planned_income': 'Defina sua renda mensal planejada. O dashboard rastreará os valores restantes à medida que você adiciona transações.',
+      'passwords_dont_match': 'As senhas não coincidem',
+      'create_account_arrow': 'Criar conta →',
+      'already_have_account': 'Já tem uma conta? ',
+      'very_weak': 'Muito fraca',
+      'weak': 'Fraca',
+      'good': 'Boa',
+      'strong': 'Forte',
+      'we_sent_verification': 'Enviamos um link de verificação para o seu e-mail. Verifique-o para continuar.',
+      'new_password_title_1': 'Nova\n',
+      'new_password_title_2': 'senha.',
+      'choose_strong_password': 'Escolha uma senha forte para proteger sua conta.',
+      'new_password': 'Nova senha',
+      'min_8_chars': 'Mínimo 8 caracteres',
+      'confirm_new_password': 'Confirmar nova senha',
+      'update_password_arrow': 'Atualizar senha →',
+      'type': 'Tipo',
+      'current_balance_input': 'Saldo atual',
+      'product_name': 'Nome do produto',
+      'institution': 'Instituição / Corretora',
+      'notes_optional': 'Notas (opcional)',
+      'enter_product_name': 'Informe o nome do produto',
+      'enter_institution': 'Informe a instituição',
+      'enter_invested_amount': 'Informe o valor investido',
+      'enter_valid_balance': 'Informe um saldo atual válido',
+      'set_monthly_spending_limits': 'Defina limites de gastos mensais por categoria',
+      'current_spending': 'Atual',
+      'budget_amount': 'Valor do orçamento',
+      'name': 'Nome',
+      'name_required': 'O nome é obrigatório',
+      'avatar_optional': 'URL do Avatar (opcional)',
+      'new_installment': 'Nova Parcela',
+      'description_required': 'Descrição *',
+      'desc_example': 'ex: Notebook, Celular…',
+      'monthly_installment_amount': 'Valor da parcela mensal',
+      'num_installments': 'Número de parcelas',
+      'current_installment': 'Parcela atual',
+      'of': 'de',
+      'purchased_on': 'Compra em',
+      'enter_description': 'Informe a descrição',
+      'enter_installment_amount': 'Informe o valor da parcela',
+      'installment_added': 'Parcela adicionada!',
+      'total': 'Total',
+      'remaining': 'Restam',
+      'remaining_balance': 'Saldo restante',
     },
   };
 
@@ -373,6 +735,51 @@ class AppLocalizations {
   String get cannotUndo => translate('cannot_undo');
   String get transactionDeleted => translate('transaction_deleted');
   String get transactionUpdated => translate('transaction_updated');
+
+  // Authentication
+  String get signIn => translate('sign_in');
+  String get signUp => translate('sign_up');
+  String get signOut => translate('sign_out');
+  String get forgotPassword => translate('forgot_password');
+  String get verifyEmail => translate('verify_email');
+  String get resendEmail => translate('resend_email');
+  String get setNewPassword => translate('set_new_password');
+  String get updatePassword => translate('update_password');
+  String get orSignInWith => translate('or_sign_in_with');
+  String get somethingWentWrong => translate('something_went_wrong');
+  String get retry => translate('retry');
+
+  // Investments
+  String get addInvestment => translate('add_investment');
+  String get amountInvested => translate('amount_invested');
+  String get investmentAdded => translate('investment_added');
+  String get deleteInvestment => translate('delete_investment');
+  String get noInvestmentsYet => translate('no_investments_yet');
+  String get currentBalanceDiffers => translate('current_balance_differs');
+  String get remove => translate('remove');
+
+  // Budget
+  String get monthlyBudget => translate('monthly_budget');
+  String get saveBudget => translate('save_budget');
+  String get couldNotLoadBudget => translate('could_not_load_budget');
+  String get couldNotLoadNetWorth => translate('could_not_load_net_worth');
+
+  // Profile & Settings
+  String get editProfile => translate('edit_profile');
+  String get appearance => translate('appearance');
+  String get customizeInterface => translate('customize_interface');
+  String get conciergeSupport => translate('concierge_support');
+  String get corporateBenefits => translate('corporate_benefits');
+
+  // Transactions & Benefits
+  String get recentTransactions => translate('recent_transactions');
+  String get monthlySpending => translate('monthly_spending');
+  String get last7Days => translate('last_7_days');
+  String get seeAll => translate('see_all');
+}
+
+extension AppLocalizationsContext on BuildContext {
+  AppLocalizations get l10n => AppLocalizations.of(this);
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

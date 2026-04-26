@@ -25,31 +25,31 @@ class SeedData {
 
   Future<void> _seedIncome() async {
     // April 2025 Income
-    await db.insertIncome(IncomesCompanion(
-      month: const Value(4),
-      year: const Value(2025),
-      incomeType: const Value('NET_SALARY'),
-      amount: const Value(9651.91),
-      isNet: const Value(true),
-      notes: const Value('CLT net salary'),
+    await db.insertIncome(const IncomesCompanion(
+      month: Value(4),
+      year: Value(2025),
+      incomeType: Value('NET_SALARY'),
+      amount: Value(9651.91),
+      isNet: Value(true),
+      notes: Value('CLT net salary'),
     ));
 
-    await db.insertIncome(IncomesCompanion(
-      month: const Value(4),
-      year: const Value(2025),
-      incomeType: const Value('SWILE_MEAL'),
-      amount: const Value(1400.00),
-      isNet: const Value(true),
-      notes: const Value('Swile Meal'),
+    await db.insertIncome(const IncomesCompanion(
+      month: Value(4),
+      year: Value(2025),
+      incomeType: Value('SWILE_MEAL'),
+      amount: Value(1400.00),
+      isNet: Value(true),
+      notes: Value('Swile Meal'),
     ));
 
-    await db.insertIncome(IncomesCompanion(
-      month: const Value(4),
-      year: const Value(2025),
-      incomeType: const Value('SWILE_FOOD'),
-      amount: const Value(1031.00),
-      isNet: const Value(true),
-      notes: const Value('Swile Food'),
+    await db.insertIncome(const IncomesCompanion(
+      month: Value(4),
+      year: Value(2025),
+      incomeType: Value('SWILE_FOOD'),
+      amount: Value(1031.00),
+      isNet: Value(true),
+      notes: Value('Swile Food'),
     ));
   }
 
@@ -112,13 +112,13 @@ class SeedData {
   }
 
   Future<void> _seedNetWorthSnapshot() async {
-    await db.insertSnapshot(NetWorthSnapshotsCompanion(
-      month: const Value(4),
-      year: const Value(2025),
-      fgtsBalance: const Value(19888.00),
-      investmentsTotal: const Value(0.0),
-      emergencyFund: const Value(0.0),
-      pendingInstallments: const Value(7549.70), // 10 remaining × 754.97
+    await db.insertSnapshot(const NetWorthSnapshotsCompanion(
+      month: Value(4),
+      year: Value(2025),
+      fgtsBalance: Value(19888.00),
+      investmentsTotal: Value(0.0),
+      emergencyFund: Value(0.0),
+      pendingInstallments: Value(7549.70), // 10 remaining × 754.97
     ));
   }
 

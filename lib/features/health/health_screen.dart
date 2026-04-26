@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
-import '../../core/theme/app_theme.dart';
+import '../../design/farol_colors.dart' as tokens;
 import '../../core/theme/farol_colors.dart';
 import '../../core/widgets/health_gauge.dart';
 import '../../core/models/health_snapshot.dart';
@@ -77,7 +77,7 @@ class HealthScreen extends ConsumerWidget {
                     gradient: const LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [AppTheme.primaryContainer, AppTheme.primaryColor],
+                      colors: [Color(0xFF244A72), tokens.FarolColors.navy],
                     ),
                   ),
                   child: Column(children: [
@@ -190,9 +190,9 @@ class _SubScoreRow extends StatelessWidget {
     final colors = context.colors;
     final Color badgeColor;
     if (earned == maxPoints && earned > 0) {
-      badgeColor = AppTheme.healthGreen;
+      badgeColor = tokens.FarolColors.tide;
     } else if (earned > 0) {
-      badgeColor = AppTheme.healthAmber;
+      badgeColor = tokens.FarolColors.beam;
     } else {
       badgeColor = colors.onSurfaceFaint;
     }
@@ -208,10 +208,10 @@ class _SubScoreRow extends StatelessWidget {
         Container(
           width: 36, height: 36,
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withOpacity(0.08),
+            color: tokens.FarolColors.navy.withOpacity(0.08),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, size: 18, color: AppTheme.primaryColor),
+          child: Icon(icon, size: 18, color: tokens.FarolColors.navy),
         ),
         const SizedBox(width: 12),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -243,11 +243,11 @@ class _HistoryTile extends StatelessWidget {
     final colors = context.colors;
     final Color scoreColor;
     if (snapshot.score >= 7) {
-      scoreColor = AppTheme.healthGreen;
+      scoreColor = tokens.FarolColors.tide;
     } else if (snapshot.score >= 4) {
-      scoreColor = AppTheme.healthAmber;
+      scoreColor = tokens.FarolColors.beam;
     } else {
-      scoreColor = AppTheme.healthRed;
+      scoreColor = tokens.FarolColors.coral;
     }
 
     return Container(
