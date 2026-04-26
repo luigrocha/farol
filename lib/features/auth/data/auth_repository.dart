@@ -10,7 +10,7 @@ abstract class AuthRepository {
   AppUser? get currentUser;
 
   Future<AppUser> signInWithEmail(String email, String password);
-  Future<AppUser> signUpWithEmail(String email, String password);
+  Future<AppUser> signUpWithEmail(String email, String password, {String? fullName, String? cpf});
   Future<AppUser> signInWithGoogle();
   Future<AppUser> signInWithApple();
 
@@ -62,11 +62,15 @@ class SupabaseAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<AppUser> signUpWithEmail(String email, String password) async {
+  Future<AppUser> signUpWithEmail(String email, String password, {String? fullName, String? cpf}) async {
     try {
       final response = await _supabase.auth.signUp(
         email: email,
         password: password,
+        data: {
+          if (fullName != null && fullName.isNotEmpty) 'full_name': fullName,
+          if (cpf != null && cpf.isNotEmpty) 'cpf': cpf,
+        },
       );
       if (response.user == null) throw Exception('User is null after sign up');
       return AppUser.fromSupabase(response.user!);

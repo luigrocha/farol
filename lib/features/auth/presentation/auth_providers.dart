@@ -27,10 +27,10 @@ class AuthNotifier extends AsyncNotifier<void> {
         () => ref.read(authRepositoryProvider).signInWithEmail(email, password));
   }
 
-  Future<void> signUpWithEmail(String email, String password) async {
+  Future<void> signUpWithEmail(String email, String password, {String? fullName, String? cpf}) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-        () => ref.read(authRepositoryProvider).signUpWithEmail(email, password));
+        () => ref.read(authRepositoryProvider).signUpWithEmail(email, password, fullName: fullName, cpf: cpf));
   }
 
   Future<void> signInWithGoogle() async {

@@ -22,17 +22,23 @@ class SignUpScreen extends ConsumerStatefulWidget {
 class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _emailRegex =
       RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$');
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _cpfController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   int _passwordStrength = 0; // 0–4
+  bool _acceptedTerms = false;
+  bool _termsError = false;
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
+    _cpfController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -48,12 +54,17 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   }
 
   void _submit() {
-    if (_formKey.currentState!.validate()) {
-      ref.read(authControllerProvider.notifier).signUpWithEmail(
-            _emailController.text.trim(),
-            _passwordController.text.trim(),
-          );
+    final formValid = _formKey.currentState!.validate();
+    if (!_acceptedTerms) {
+      setState(() => _termsError = true);
     }
+    if (!formValid || !_acceptedTerms) return;
+    ref.read(authControllerProvider.notifier).signUpWithEmail(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+          fullName: _nameController.text.trim(),
+          cpf: _cpfController.text.trim().replaceAll(RegExp(r'[.\-]'), ''),
+        );
   }
 
   @override
@@ -122,6 +133,21 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   ),
                   const SizedBox(height: 32),
 
+                  // ── Nome completo ────────────────────────────────────
+                  TextFormField(
+                    controller: _nameController,
+                    keyboardType: TextInputType.name,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: InputDecoration(
+                      labelText: l10n.translate('full_name'),
+                      prefixIcon: const Icon(Icons.person_outline_rounded),
+                    ),
+                    validator: (v) => (v?.trim().isNotEmpty ?? false)
+                        ? null
+                        : l10n.translate('full_name_required'),
+                  ),
+                  const SizedBox(height: 12),
+
                   // ── Email ────────────────────────────────────────────
                   TextFormField(
                     controller: _emailController,
@@ -158,6 +184,23 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
                   // ── Strength meter ───────────────────────────────────
                   _StrengthMeter(strength: _passwordStrength),
+                  const SizedBox(height: 16),
+
+                  // ── CPF (opcional) ───────────────────────────────────
+                  TextFormField(
+                    controller: _cpfController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: l10n.translate('cpf_optional'),
+                      prefixIcon: const Icon(Icons.badge_outlined),
+                      suffixIcon: Tooltip(
+                        message: 'CPF é armazenado com segurança e não é compartilhado',
+                        child: Icon(Icons.lock_outline_rounded,
+                            size: 18, color: colors.onSurfaceSoft),
+                      ),
+                    ),
+                    // no validator — campo opcional
+                  ),
                   const SizedBox(height: 12),
 
                   // ── Confirm password ─────────────────────────────────
@@ -179,7 +222,18 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         ? null
                         : l10n.translate('passwords_dont_match'),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 20),
+
+                  // ── Termos ───────────────────────────────────────────
+                  _TermsCheckbox(
+                    accepted: _acceptedTerms,
+                    hasError: _termsError,
+                    onChanged: (v) => setState(() {
+                      _acceptedTerms = v ?? false;
+                      if (_acceptedTerms) _termsError = false;
+                    }),
+                  ),
+                  const SizedBox(height: 20),
 
                   // ── CTA ──────────────────────────────────────────────
                   SizedBox(
@@ -228,7 +282,73 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   }
 }
 
-// ── Widgets locais ────────────────────────────────────────────────────────────
+// ── Widgets locais ───────────────────────────────────────────────────────────
+
+class _TermsCheckbox extends StatelessWidget {
+  final bool accepted;
+  final bool hasError;
+  final ValueChanged<bool?> onChanged;
+  const _TermsCheckbox(
+      {required this.accepted,
+      required this.hasError,
+      required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 24,
+              height: 24,
+              child: Checkbox(
+                value: accepted,
+                onChanged: onChanged,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text.rich(
+                TextSpan(children: [
+                  TextSpan(
+                    text: l10n.translate('terms_accept'),
+                    style: GoogleFonts.inter(
+                        fontSize: 13, color: colors.onSurfaceSoft),
+                  ),
+                  TextSpan(
+                    text: l10n.translate('terms_link'),
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: tokens.FarolColors.navy,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ]),
+              ),
+            ),
+          ],
+        ),
+        if (hasError)
+          Padding(
+            padding: const EdgeInsets.only(top: 4, left: 34),
+            child: Text(
+              l10n.translate('terms_required'),
+              style: GoogleFonts.inter(
+                  fontSize: 11,
+                  color: Theme.of(context).colorScheme.error),
+            ),
+          ),
+      ],
+    );
+  }
+}
 
 class _StrengthMeter extends StatelessWidget {
   final int strength; // 0–4
