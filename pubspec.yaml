@@ -18,6 +18,7 @@ dependencies:
   # Database
   drift: ^2.14.1
   sqlite3_flutter_libs: ^0.5.18
+  sqlite3: ^2.4.0
   path_provider: ^2.1.2
   path: ^1.8.3
 
@@ -46,6 +47,23 @@ dev_dependencies:
   drift_dev: ^2.14.1
   build_runner: ^2.4.8
   shared_preferences: ^2.2.3
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  image_path: "assets/icon/icon.png"
+  android: true
+  ios: true
+  macos:
+    generate: true
+    image_path: "assets/icon/icon.png"
+  windows:
+    generate: true
+    image_path: "assets/icon/icon.png"
+  web:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    background_color: "#1a3a5c"
+    theme_color: "#1a3a5c"
 
 flutter:
   uses-material-design: true
