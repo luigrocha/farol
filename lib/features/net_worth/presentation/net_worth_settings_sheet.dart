@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/i18n/app_localizations.dart';
+import '../../../core/widgets/farol_snackbar.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';
 import '../../../design/farol_colors.dart' as tokens;
@@ -61,15 +62,11 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
       );
       if (mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.netWorthSaved), backgroundColor: Colors.green),
-        );
+        context.showSuccessSnackBar(l10n.netWorthSaved);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.errorSaving}: $e'), backgroundColor: Colors.red),
-        );
+        context.showErrorSnackBar(e);
       }
     } finally {
       if (mounted) setState(() => _saving = false);

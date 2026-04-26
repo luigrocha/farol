@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/i18n/app_localizations.dart';
+import '../../../core/widgets/farol_snackbar.dart';
 import '../../../core/models/enums.dart';
 import '../../../core/models/budget_goal.dart';
 import '../../../core/providers/providers.dart';
@@ -74,15 +75,11 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
 
       if (mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.budgetGoalsSaved), backgroundColor: Colors.green),
-        );
+        context.showSuccessSnackBar(l10n.budgetGoalsSaved);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.errorSaving}: $e'), backgroundColor: Colors.red),
-        );
+        context.showErrorSnackBar(e);
       }
     } finally {
       if (mounted) setState(() => _saving = false);

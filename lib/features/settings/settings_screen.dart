@@ -7,6 +7,7 @@ import '../../core/services/financial_calculator_service.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../core/i18n/app_localizations.dart';
+import '../../core/widgets/farol_snackbar.dart';
 import '../auth/presentation/auth_providers.dart';
 import '../budget/domain/budget_settings.dart';
 import '../budget/presentation/budget_settings_sheet.dart';
@@ -57,7 +58,7 @@ class SettingsScreen extends ConsumerWidget {
               Center(child: TextButton.icon(
                 onPressed: () => ref.read(authControllerProvider.notifier).signOut(),
                 icon: const Icon(Icons.logout, color: tokens.FarolColors.coral, size: 16),
-                label: Text(l10n.translate('logout'), style: const TextStyle(color: tokens.FarolColors.coral, fontWeight: FontWeight.w600)),
+                label: Text(l10n.signOut, style: const TextStyle(color: tokens.FarolColors.coral, fontWeight: FontWeight.w600)),
               )),
               const SizedBox(height: 40),
             ]))),
@@ -175,18 +176,11 @@ class _CutoffDaySheetState extends ConsumerState<_CutoffDaySheet> {
       await ref.read(budgetSettingsProvider.notifier).save(current.copyWith(cutoffDay: _selected));
       if (mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).translate('settings_saved')),
-            backgroundColor: tokens.FarolColors.beam,
-          ),
-        );
+        context.showSuccessSnackBar(AppLocalizations.of(context).translate('settings_saved'));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-        );
+        context.showErrorSnackBar(e);
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -424,18 +418,11 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
     try {
       await fn();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).translate('export_success')),
-            backgroundColor: tokens.FarolColors.beam,
-          ),
-        );
+        context.showSuccessSnackBar(AppLocalizations.of(context).translate('export_success'));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red.shade700),
-        );
+        context.showErrorSnackBar(e);
       }
     } finally {
       if (mounted) setState(() => _loading = _ExportTask.none);

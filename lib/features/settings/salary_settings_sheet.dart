@@ -8,6 +8,7 @@ import '../../core/services/clt_calculator_service.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../core/i18n/app_localizations.dart';
+import '../../core/widgets/farol_snackbar.dart';
 import '../../core/theme/farol_colors.dart';
 
 const _kGreen = tokens.FarolColors.beam;
@@ -56,9 +57,7 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
   Future<void> _save() async {
     final gross = _parse(_grossCtrl.text);
     if (gross <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).translate('enter_gross_salary'))),
-      );
+      context.showSuccessSnackBar(AppLocalizations.of(context).translate('enter_gross_salary'));
       return;
     }
     setState(() => _saving = true);
@@ -72,20 +71,11 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
       HapticFeedback.mediumImpact();
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).translate('salary_saved')),
-            backgroundColor: _kGreen,
-          ),
-        );
+        context.showSuccessSnackBar(AppLocalizations.of(context).translate('salary_saved'));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('${AppLocalizations.of(context).translate('error') ?? "Error"}: $e'),
-              backgroundColor: tokens.FarolColors.coral),
-        );
+        context.showErrorSnackBar(e);
       }
     } finally {
       if (mounted) setState(() => _saving = false);

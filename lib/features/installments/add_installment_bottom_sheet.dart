@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/providers.dart';
 import '../../core/i18n/app_localizations.dart';
 import '../../core/theme/farol_colors.dart';
+import '../../core/widgets/farol_snackbar.dart';
 
 class AddInstallmentBottomSheet extends ConsumerStatefulWidget {
   const AddInstallmentBottomSheet({super.key});
@@ -209,23 +210,18 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
       HapticFeedback.mediumImpact();
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.translate('installment_added')), backgroundColor: _purple),
-        );
+        context.showSuccessSnackBar(l10n.translate('installment_added'));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.translate('error')}: $e'), backgroundColor: Colors.red.shade700),
-        );
+        context.showErrorSnackBar(e);
       }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
   }
 
-  void _snack(String msg) =>
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  void _snack(String msg) => context.showSuccessSnackBar(msg);
 }
 
 class _PreviewCard extends StatelessWidget {

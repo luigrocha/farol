@@ -1,4 +1,4 @@
-# 🎯 Executive Recommendations - Farol
+# Executive Recommendations - Farol
 
 ## Current Project Status ✨
 

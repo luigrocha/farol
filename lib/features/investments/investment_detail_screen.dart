@@ -6,6 +6,9 @@ import '../../core/models/enums.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/theme/farol_colors.dart';
+import '../../core/i18n/app_localizations.dart';
+import '../../core/widgets/farol_dialogs.dart';
+import '../../core/widgets/farol_snackbar.dart';
 import '../../design/farol_colors.dart' as tokens;
 
 class InvestmentDetailScreen extends ConsumerWidget {
@@ -201,30 +204,19 @@ class InvestmentDetailScreen extends ConsumerWidget {
   }
 
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Excluir investimento?'),
-        content: Text('Remover "${investment.productName}"? Esta ação não pode ser desfeita.'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: tokens.FarolColors.coral),
-            child: const Text('Excluir'),
-          ),
-        ],
-      ),
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await showConfirmDeleteDialog(
+      context,
+      title: l10n.deleteInvestment,
+      body: 'Remove "${investment.productName}"? ${l10n.cannotUndo}',
     );
-    if (confirmed == true && context.mounted) {
+    if (confirmed && context.mounted) {
       try {
         await ref.read(investmentRepositoryProvider).delete(investment.id);
         if (context.mounted) Navigator.pop(context);
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erro: $e'), backgroundColor: Colors.red.shade700),
-          );
+          context.showErrorSnackBar(e);
         }
       }
     }

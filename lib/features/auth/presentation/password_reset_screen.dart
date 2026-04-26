@@ -9,6 +9,7 @@ import '../../../core/theme/farol_colors.dart';
 import '../../../design/farol_colors.dart' as tokens;
 import '../../../design/widgets/farol_button.dart';
 import '../../../core/i18n/app_localizations.dart';
+import '../../../core/widgets/farol_snackbar.dart';
 import 'auth_providers.dart';
 import 'widgets/auth_buttons.dart';
 
@@ -61,9 +62,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
 
     ref.listen<AsyncValue<void>>(authControllerProvider, (_, state) {
       if (state.hasError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(state.error.toString())),
-        );
+        context.showErrorSnackBar(state.error!);
       }
       // On success the authStateProvider stream transitions to AppAuthAuthenticated,
       // and AppEntryPoint navigates to MainShell automatically.

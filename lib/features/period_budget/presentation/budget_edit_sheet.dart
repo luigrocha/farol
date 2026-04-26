@@ -6,6 +6,8 @@ import '../../../core/models/period_budget.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';
 import '../../../core/theme/farol_colors.dart';
+import '../../../core/i18n/app_localizations.dart';
+import '../../../core/widgets/farol_snackbar.dart';
 import '../../../design/farol_colors.dart' as tokens;
 
 class BudgetEditSheet extends ConsumerStatefulWidget {
@@ -59,9 +61,7 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
   Future<void> _save() async {
     final amount = _parseAmount();
     if (amount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a valid amount')),
-      );
+      context.showSuccessSnackBar(AppLocalizations.of(context).invalidAmount);
       return;
     }
 
@@ -79,11 +79,7 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('Error saving: $e'),
-              backgroundColor: Colors.red),
-        );
+        context.showErrorSnackBar(e);
       }
     } finally {
       if (mounted) setState(() => _saving = false);

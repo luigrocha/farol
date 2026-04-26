@@ -6,6 +6,8 @@ import '../../core/models/enums.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../core/i18n/app_localizations.dart';
+import '../../core/widgets/farol_dialogs.dart';
+import '../../core/widgets/farol_snackbar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:ui';
 import 'quick_add_bottom_sheet.dart';
@@ -204,36 +206,20 @@ class _TxRow extends ConsumerWidget {
           Text(l10n.delete, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
         ]),
       ),
-      confirmDismiss: (_) async {
-        return await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(l10n.confirmDelete),
-            content: Text(l10n.cannotUndo),
-            actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
-                child: Text(l10n.delete),
-              ),
-            ],
-          ),
-        ) ?? false;
-      },
+      confirmDismiss: (_) async => showConfirmDeleteDialog(
+        context,
+        title: l10n.confirmDelete,
+        body: l10n.cannotUndo,
+      ),
       onDismissed: (_) async {
         try {
           await ref.read(expenseRepositoryProvider).delete(expense.id as int);
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.transactionDeleted)),
-            );
+            context.showSuccessSnackBar(l10n.transactionDeleted);
           }
         } catch (e) {
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${l10n.errorSaving}: $e'), backgroundColor: Colors.red.shade700),
-            );
+            context.showErrorSnackBar(e);
           }
         }
       },

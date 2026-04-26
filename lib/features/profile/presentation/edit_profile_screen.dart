@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/i18n/app_localizations.dart';
+import '../../../core/widgets/farol_snackbar.dart';
 import '../../../design/farol_colors.dart' as tokens;
 import '../../../core/theme/farol_colors.dart';
 import 'profile_providers.dart';
@@ -57,9 +58,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
     ref.listen<AsyncValue<void>>(profileControllerProvider, (_, state) {
       if (state.hasError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(state.error.toString()), backgroundColor: tokens.FarolColors.coral),
-        );
+        context.showErrorSnackBar(state.error!);
       }
     });
 
