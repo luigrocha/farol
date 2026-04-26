@@ -95,6 +95,7 @@ class SupabaseAuthRepository implements AuthRepository {
         throw Exception('No ID token received from Google Sign-In');
       }
 
+      // ignore: experimental_member_use
       final response = await _supabase.auth.signInWithIdToken(
         provider: OAuthProvider.google,
         idToken: idToken,
@@ -125,6 +126,7 @@ class SupabaseAuthRepository implements AuthRepository {
         throw Exception('No identity token received from Apple Sign-In');
       }
 
+      // ignore: experimental_member_use
       final response = await _supabase.auth.signInWithIdToken(
         provider: OAuthProvider.apple,
         idToken: identityToken,

@@ -886,7 +886,7 @@ class _PrivacyToggleRow extends ConsumerWidget {
         Switch(
           value: isPrivate,
           onChanged: (_) => ref.read(privacyModeProvider.notifier).toggle(),
-          activeColor: tokens.FarolColors.navy,
+          activeThumbColor: tokens.FarolColors.navy,
         ),
       ]),
     );

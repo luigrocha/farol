@@ -224,7 +224,7 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
                       style: TextStyle(
                           fontSize: 11, color: colors.onSurfaceSoft)),
                   value: _useSimplified,
-                  activeColor: _kGreen,
+                  activeThumbColor: _kGreen,
                   onChanged: (v) {
                     setState(() => _useSimplified = v);
                     _recompute();

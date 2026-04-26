@@ -89,8 +89,8 @@ class SwileScreen extends ConsumerWidget {
                               letterSpacing: 1,
                               color: Colors.white)),
                       const SizedBox(height: 28),
-                      Text('SALDO DISPONÍVEL',
-                          style: const TextStyle(
+                      const Text('SALDO DISPONÍVEL',
+                          style: TextStyle(
                               fontSize: 10,
                               letterSpacing: 1.5,
                               fontWeight: FontWeight.w700,
@@ -158,8 +158,8 @@ class SwileScreen extends ConsumerWidget {
               loading: () => Column(
                 children: List.generate(
                     3,
-                    (_) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
+                    (_) => const Padding(
+                          padding: EdgeInsets.only(bottom: 8),
                           child: ShimmerBox(
                               width: double.infinity, height: 68, borderRadius: 16),
                         )),

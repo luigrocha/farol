@@ -286,7 +286,7 @@ class _ReturnBar extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: (ratio / (ratio > 1 ? ratio : 1.0)).clamp(0.0, 1.0),
                 minHeight: 8,
-                backgroundColor: (isPositive ? tokens.FarolColors.tide : tokens.FarolColors.coral).withOpacity(0.12),
+                backgroundColor: (isPositive ? tokens.FarolColors.tide : tokens.FarolColors.coral).withValues(alpha: 0.12),
                 valueColor: AlwaysStoppedAnimation(isPositive ? tokens.FarolColors.tide : tokens.FarolColors.coral),
               ),
             ),

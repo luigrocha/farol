@@ -58,8 +58,6 @@ ThemeData _build({
       onTertiary: Colors.white,
       error: tokens.FarolColors.coral,
       onError: Colors.white,
-      background: surface,
-      onBackground: onSurface,
       surface: surfaceLowest,
       onSurface: onSurface,
       outline: onSurfaceFaint,
@@ -126,8 +124,8 @@ ThemeData _build({
           : Colors.white.withValues(alpha: 0.85),
       elevation: 0,
       indicatorColor: tokens.FarolColors.navy.withValues(alpha: isDark ? 0.2 : 0.1),
-      labelTextStyle: MaterialStateProperty.resolveWith((states) {
-        final isSelected = states.contains(MaterialState.selected);
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        final isSelected = states.contains(WidgetState.selected);
         return TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w700,
@@ -135,9 +133,9 @@ ThemeData _build({
           color: isSelected ? onSurface : onSurfaceFaint,
         );
       }),
-      iconTheme: MaterialStateProperty.resolveWith((states) {
+      iconTheme: WidgetStateProperty.resolveWith((states) {
         return IconThemeData(
-          color: states.contains(MaterialState.selected)
+          color: states.contains(WidgetState.selected)
               ? onSurface
               : onSurfaceFaint,
           size: 24,

@@ -1,10 +1,14 @@
-import 'dart:html' as html;
+import 'dart:js_interop';
+import 'package:web/web.dart' as web;
 
 void downloadOnWeb(List<int> bytes, String filename, String mimeType) {
-  final blob = html.Blob([bytes], mimeType);
-  final url = html.Url.createObjectUrlFromBlob(blob);
-  html.AnchorElement(href: url)
+  final jsBytes = bytes.map((b) => b.toJS).toList().toJS;
+  final blob = web.Blob(jsBytes, web.BlobPropertyBag(type: mimeType));
+  final url = web.URL.createObjectURL(blob);
+  final anchor = web.document.createElement('a') as web.HTMLAnchorElement
+    ..href = url
     ..setAttribute('download', filename)
     ..click();
-  html.Url.revokeObjectUrl(url);
+  web.URL.revokeObjectURL(url);
+  anchor.remove();
 }
