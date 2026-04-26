@@ -7,6 +7,7 @@ import '../../core/models/expense.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../core/i18n/app_localizations.dart';
+import '../../core/widgets/farol_snackbar.dart';
 
 class EditExpenseBottomSheet extends ConsumerStatefulWidget {
   final Expense expense;
@@ -179,7 +180,7 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
     final amountStr = _amountCtrl.text.replaceAll('.', '').replaceAll(',', '.');
     final amount = double.tryParse(amountStr);
     if (amount == null || amount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.invalidAmount)));
+      context.showSuccessSnackBar(l10n.invalidAmount);
       return;
     }
 
@@ -208,15 +209,11 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
       HapticFeedback.mediumImpact();
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.transactionUpdated), backgroundColor: Colors.green),
-        );
+        context.showSuccessSnackBar(l10n.transactionUpdated);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.errorSaving}: $e'), backgroundColor: Colors.red.shade700),
-        );
+        context.showErrorSnackBar(e);
       }
     }
   }

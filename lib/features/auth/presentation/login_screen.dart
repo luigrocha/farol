@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/i18n/app_localizations.dart';
+import '../../../core/widgets/farol_snackbar.dart';
 import '../../../core/theme/farol_colors.dart';
 import '../../../design/farol_colors.dart' as tokens;
 import '../../../design/widgets/farol_button.dart';
@@ -49,13 +50,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final email = _emailController.text.trim();
     if (email.isNotEmpty) {
       ref.read(authControllerProvider.notifier).sendPasswordResetEmail(email);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.recoveryEmailSent)),
-      );
+      context.showSuccessSnackBar(l10n.recoveryEmailSent);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.emailRequired)),
-      );
+      context.showSuccessSnackBar(l10n.emailRequired);
     }
   }
 

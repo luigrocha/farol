@@ -778,6 +778,10 @@ class AppLocalizations {
   String get seeAll => translate('see_all');
 }
 
+extension AppLocalizationsContext on BuildContext {
+  AppLocalizations get l10n => AppLocalizations.of(this);
+}
+
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const AppLocalizationsDelegate();
 

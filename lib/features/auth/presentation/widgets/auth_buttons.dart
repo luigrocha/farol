@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../auth_providers.dart';
+import '../../../../core/widgets/farol_snackbar.dart';
 
 /// A helper widget to handle authentication actions.
 /// Can be used inside existing Stitch-based UIs.
@@ -18,12 +19,7 @@ class AuthActionHandler extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen<AsyncValue<void>>(authControllerProvider, (previous, current) {
       if (current.hasError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(current.error.toString()),
-            backgroundColor: Colors.red.shade700,
-          ),
-        );
+        context.showErrorSnackBar(current.error!);
         return;
       }
 
@@ -31,12 +27,7 @@ class AuthActionHandler extends ConsumerWidget {
       if (previous?.isLoading == true && current.hasValue) {
         final msg = successMessage;
         if (msg != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(msg),
-              backgroundColor: Colors.green.shade700,
-            ),
-          );
+          context.showSuccessSnackBar(msg);
         }
         // Clear the auth stack and let AppEntryPoint route to the right screen
         Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);

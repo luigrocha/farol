@@ -9,6 +9,8 @@ import '../../core/models/enums.dart';
 import '../../core/widgets/farol_charts.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/i18n/app_localizations.dart';
+import '../../core/widgets/farol_dialogs.dart';
+import '../../core/widgets/farol_snackbar.dart';
 import '../../core/models/investment.dart';
 import 'add_investment_bottom_sheet.dart';
 
@@ -239,32 +241,20 @@ class _InvRow extends ConsumerWidget {
           Text('Delete', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
         ]),
       ),
-      confirmDismiss: (_) async => await showDialog<bool>(
-        context: context,
-        builder: (ctx) {
-          final contextL10n = AppLocalizations.of(ctx);
-          return AlertDialog(
-            title: Text(contextL10n.deleteInvestment),
-            content: Text('Remove "${inv.productName}"? This cannot be undone.'),
-            actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
-                child: const Text('Delete'),
-              ),
-            ],
-          );
-        },
-      ) ?? false,
+      confirmDismiss: (_) async {
+        final l10n = AppLocalizations.of(context);
+        return showConfirmDeleteDialog(
+          context,
+          title: l10n.deleteInvestment,
+          body: 'Remove "${inv.productName}"? ${l10n.cannotUndo}',
+        );
+      },
       onDismissed: (_) async {
         try {
           await ref.read(investmentRepositoryProvider).delete(inv.id);
         } catch (e) {
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red.shade700),
-            );
+            context.showErrorSnackBar(e);
           }
         }
       },

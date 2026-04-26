@@ -9,6 +9,9 @@ import '../../core/services/financial_calculator_service.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../core/theme/farol_colors.dart';
 import 'add_installment_bottom_sheet.dart';
+import '../../core/i18n/app_localizations.dart';
+import '../../core/widgets/farol_dialogs.dart';
+import '../../core/widgets/farol_snackbar.dart';
 
 class InstallmentsScreen extends ConsumerWidget {
   const InstallmentsScreen({super.key});
@@ -185,29 +188,20 @@ class _InstallmentTile extends ConsumerWidget {
           Text('Excluir', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
         ]),
       ),
-      confirmDismiss: (_) async => await showDialog<bool>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text('Excluir parcela?'),
-          content: Text('Remover "${inst.description}"? Esta ação não pode ser desfeita.'),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Excluir'),
-            ),
-          ],
-        ),
-      ) ?? false,
+      confirmDismiss: (_) async {
+        final l10n = AppLocalizations.of(context);
+        return showConfirmDeleteDialog(
+          context,
+          title: l10n.installments,
+          body: 'Remove "${inst.description}"? ${l10n.cannotUndo}',
+        );
+      },
       onDismissed: (_) async {
         try {
           await ref.read(installmentRepositoryProvider).delete(inst.id);
         } catch (e) {
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Erro: $e'), backgroundColor: Colors.red.shade700),
-            );
+            context.showErrorSnackBar(e);
           }
         }
       },
@@ -439,18 +433,13 @@ class _DetailSheetState extends ConsumerState<_InstallmentDetailSheet> {
       HapticFeedback.mediumImpact();
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(newCurrent >= inst.numInstallments
-              ? '🎉 "${inst.description}" concluída!'
-              : '✅ ${newCurrent}ª parcela registrada'), // ignore: unnecessary_brace_in_string_interps
-          backgroundColor: const Color(0xFF6B3FA0),
-        ));
+        context.showSuccessSnackBar(newCurrent >= inst.numInstallments
+            ? '🎉 "${inst.description}" concluída!'
+            : '✅ ${newCurrent}ª parcela registrada'); // ignore: unnecessary_brace_in_string_interps
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro: $e'), backgroundColor: Colors.red.shade700),
-        );
+        context.showErrorSnackBar(e);
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -458,30 +447,19 @@ class _DetailSheetState extends ConsumerState<_InstallmentDetailSheet> {
   }
 
   Future<void> _confirmDelete(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Excluir parcela?'),
-        content: Text('Remover "${widget.inst.description}"? Esta ação não pode ser desfeita.'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Excluir'),
-          ),
-        ],
-      ),
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await showConfirmDeleteDialog(
+      context,
+      title: l10n.installments,
+      body: 'Remove "${widget.inst.description}"? ${l10n.cannotUndo}',
     );
-    if (confirmed == true && context.mounted) {
+    if (confirmed && context.mounted) {
       try {
         await ref.read(installmentRepositoryProvider).delete(widget.inst.id);
         if (context.mounted) Navigator.pop(context);
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erro: $e'), backgroundColor: Colors.red.shade700),
-          );
+          context.showErrorSnackBar(e);
         }
       }
     }

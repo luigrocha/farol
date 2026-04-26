@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/i18n/app_localizations.dart';
+import '../../core/widgets/farol_snackbar.dart';
 import '../../core/providers/providers.dart';
 import '../../core/models/enums.dart';
 import '../../core/theme/farol_colors.dart';
@@ -239,21 +240,16 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
       HapticFeedback.mediumImpact();
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.investmentAdded), backgroundColor: Colors.green),
-        );
+        context.showSuccessSnackBar(l10n.investmentAdded);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.translate('error')}: $e'), backgroundColor: Colors.red.shade700),
-        );
+        context.showErrorSnackBar(e);
       }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
   }
 
-  void _snack(String msg) =>
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  void _snack(String msg) => context.showSuccessSnackBar(msg);
 }
