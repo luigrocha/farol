@@ -256,6 +256,20 @@ class AppLocalizations {
       'total': 'Total',
       'remaining': 'Remaining',
       'remaining_balance': 'Remaining balance',
+      // Settings – hardcoded strings
+      'could_not_load_salary': 'Could not load salary settings',
+      'lbl_gross': 'Gross',
+      'lbl_net': 'Net',
+      'per_month': '/ month',
+      'tap_configure_budgets': 'Tap to configure your income budgets',
+      'salary': 'Salary',
+      'simulators': 'Simulators',
+      'simulator_13th': '13th Salary Simulator',
+      'simulator_13th_desc': 'Calculate installments, INSS and IRRF',
+      'simulator_fgts': 'FGTS Anniversary Withdrawal',
+      'simulator_fgts_desc': 'Simulate annual withdrawal and 3-year projection',
+      'hide_values': 'Hide values',
+      'hide_values_desc': 'Masks amounts throughout the app',
     },
     'es': {
       'app_name': 'Farol',
@@ -506,6 +520,20 @@ class AppLocalizations {
       'total': 'Total',
       'remaining': 'Restan',
       'remaining_balance': 'Saldo restante',
+      // Settings – hardcoded strings
+      'could_not_load_salary': 'No se pudo cargar la configuración de salario',
+      'lbl_gross': 'Bruto',
+      'lbl_net': 'Neto',
+      'per_month': '/ mes',
+      'tap_configure_budgets': 'Toca para configurar tus presupuestos',
+      'salary': 'Salario',
+      'simulators': 'Simuladores',
+      'simulator_13th': 'Simulador 13° Salario',
+      'simulator_13th_desc': 'Calcula cuotas, INSS e IRRF',
+      'simulator_fgts': 'Retiro Aniversario FGTS',
+      'simulator_fgts_desc': 'Simula el retiro anual y proyección 3 años',
+      'hide_values': 'Ocultar valores',
+      'hide_values_desc': 'Enmascara montos en toda la app',
     },
     'pt': {
       'app_name': 'Farol',
@@ -755,6 +783,20 @@ class AppLocalizations {
       'total': 'Total',
       'remaining': 'Restam',
       'remaining_balance': 'Saldo restante',
+      // Settings – hardcoded strings
+      'could_not_load_salary': 'Não foi possível carregar as configurações de salário',
+      'lbl_gross': 'Bruto',
+      'lbl_net': 'Líquido',
+      'per_month': '/ mês',
+      'tap_configure_budgets': 'Toque para configurar seus orçamentos',
+      'salary': 'Salário',
+      'simulators': 'Simuladores',
+      'simulator_13th': 'Simulador 13º Salário',
+      'simulator_13th_desc': 'Calcule parcelas, INSS e IRRF',
+      'simulator_fgts': 'Saque Aniversário FGTS',
+      'simulator_fgts_desc': 'Simule o saque anual e projeção 3 anos',
+      'hide_values': 'Ocultar valores',
+      'hide_values_desc': 'Oculta os valores em todo o app',
     },
   };
 
@@ -874,6 +916,21 @@ class AppLocalizations {
   String get monthlySpending => translate('monthly_spending');
   String get last7Days => translate('last_7_days');
   String get seeAll => translate('see_all');
+
+  // Settings
+  String get couldNotLoadSalary => translate('could_not_load_salary');
+  String get lblGross => translate('lbl_gross');
+  String get lblNet => translate('lbl_net');
+  String get perMonth => translate('per_month');
+  String get tapConfigureBudgets => translate('tap_configure_budgets');
+  String get salary => translate('salary');
+  String get simulators => translate('simulators');
+  String get simulator13th => translate('simulator_13th');
+  String get simulator13thDesc => translate('simulator_13th_desc');
+  String get simulatorFgts => translate('simulator_fgts');
+  String get simulatorFgtsDesc => translate('simulator_fgts_desc');
+  String get hideValues => translate('hide_values');
+  String get hideValuesDesc => translate('hide_values_desc');
 }
 
 extension AppLocalizationsContext on BuildContext {

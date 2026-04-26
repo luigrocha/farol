@@ -540,7 +540,7 @@ class _SalarySection extends ConsumerWidget {
                   height: 20,
                   width: 20,
                   child: CircularProgressIndicator(strokeWidth: 2))),
-          error: (_, __) => const Text('Could not load salary settings'),
+          error: (_, __) => Text(l10n.couldNotLoadSalary),
           data: (salary) {
             final hasData = salary != null && salary.grossSalary > 0;
             return Row(children: [
@@ -576,7 +576,7 @@ class _SalarySection extends ConsumerWidget {
                   ),
                   Text(
                     hasData
-                        ? 'Bruto: ${FinancialCalculatorService.formatBRL(salary.grossSalary)} · Líquido: ${FinancialCalculatorService.formatBRL(salary.netSalary)}'
+                        ? '${l10n.lblGross}: ${FinancialCalculatorService.formatBRL(salary.grossSalary)} · ${l10n.lblNet}: ${FinancialCalculatorService.formatBRL(salary.netSalary)}'
                         : l10n.translate('salary_calculated'),
                     style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
                   ),
@@ -618,7 +618,7 @@ class _BudgetSection extends ConsumerWidget {
           decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
           child: budgetAsync.when(
             loading: () => const Center(child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))),
-            error: (_, __) => const Text('Could not load budget'),
+            error: (_, __) => Text(AppLocalizations.of(context).couldNotLoadBudget),
             data: (budget) {
               final hasData = budget != null && budget.totalBudget > 0;
               return Row(children: [
@@ -642,16 +642,16 @@ class _BudgetSection extends ConsumerWidget {
                   ),
                   Text(
                     hasData
-                        ? '${FinancialCalculatorService.formatBRL(budget.totalBudget)} / month'
-                        : 'Tap to configure your income budgets',
+                        ? '${FinancialCalculatorService.formatBRL(budget.totalBudget)} ${AppLocalizations.of(context).perMonth}'
+                        : AppLocalizations.of(context).tapConfigureBudgets,
                     style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
                   ),
                   if (hasData) ...[
                     const SizedBox(height: 6),
                     Row(children: [
-                      _BudgetChip(label: 'Salary', value: budget.netSalary),
+                      _BudgetChip(label: AppLocalizations.of(context).salary, value: budget.netSalary),
                       const SizedBox(width: 6),
-                      _BudgetChip(label: 'Swile', value: budget.swileTotal),
+                      _BudgetChip(label: AppLocalizations.of(context).translate('swile'), value: budget.swileTotal),
                     ]),
                   ],
                 ])),
@@ -752,7 +752,7 @@ class _NetWorthSection extends ConsumerWidget {
           decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
           child: snapAsync.when(
             loading: () => const Center(child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))),
-            error: (_, __) => const Text('Could not load net worth'),
+            error: (_, __) => Text(AppLocalizations.of(context).couldNotLoadNetWorth),
             data: (snap) {
               final hasData = snap != null && (snap.fgtsBalance + snap.investmentsTotal + snap.emergencyFund + snap.patrimonyTotal) > 0;
               final total = hasData
@@ -785,8 +785,8 @@ class _NetWorthSection extends ConsumerWidget {
                   ),
                   Text(
                     hasData
-                        ? 'Total: ${FinancialCalculatorService.formatBRL(total)}'
-                        : 'FGTS, Imóveis, Inversiones...',
+                        ? '${AppLocalizations.of(context).translate("total")}: ${FinancialCalculatorService.formatBRL(total)}'
+                        : AppLocalizations.of(context).translate('net_worth_desc'),
                     style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
                   ),
                 ])),
@@ -810,7 +810,7 @@ class _SimulatorsSection extends StatelessWidget {
       Row(children: [
         Icon(Icons.calculate_outlined, size: 16, color: colors.onSurfaceMuted),
         const SizedBox(width: 8),
-        Text('Simuladores', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
+        Text(AppLocalizations.of(context).simulators, style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
       ]),
       const SizedBox(height: 12),
       GestureDetector(
@@ -826,8 +826,8 @@ class _SimulatorsSection extends StatelessWidget {
             ),
             const SizedBox(width: 14),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Simulador 13º Salário', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-              Text('Calcule parcelas, INSS e IRRF', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+              Text(AppLocalizations.of(context).simulator13th, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
+              Text(AppLocalizations.of(context).simulator13thDesc, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
             ])),
             Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
           ]),
@@ -850,8 +850,8 @@ class _SimulatorsSection extends StatelessWidget {
             ),
             const SizedBox(width: 14),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Saque Aniversário FGTS', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-              Text('Simule o retiro anual e projeção 3 anos', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+              Text(AppLocalizations.of(context).simulatorFgts, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
+              Text(AppLocalizations.of(context).simulatorFgtsDesc, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
             ])),
             Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
           ]),
@@ -880,8 +880,8 @@ class _PrivacyToggleRow extends ConsumerWidget {
         ),
         const SizedBox(width: 14),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Ocultar valores', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-          Text('Enmascara montos en toda la app', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+          Text(AppLocalizations.of(context).hideValues, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
+          Text(AppLocalizations.of(context).hideValuesDesc, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
         ])),
         Switch(
           value: isPrivate,
