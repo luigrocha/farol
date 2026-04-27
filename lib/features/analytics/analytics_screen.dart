@@ -4,7 +4,6 @@ import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../design/farol_colors.dart' as tokens;
-import '../../core/models/enums.dart';
 import '../../core/models/expense.dart';
 import '../../core/models/income.dart';
 import '../../core/i18n/app_localizations.dart';

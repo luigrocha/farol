@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../core/models/enums.dart';
 import '../../../core/models/period_budget.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';

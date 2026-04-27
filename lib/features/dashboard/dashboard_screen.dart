@@ -5,7 +5,6 @@ import '../../core/services/financial_calculator_service.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../core/theme/farol_colors.dart';
 import 'dart:math' as math;
-import '../../core/models/enums.dart';
 import '../transactions/quick_add_bottom_sheet.dart';
 import '../../core/i18n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
