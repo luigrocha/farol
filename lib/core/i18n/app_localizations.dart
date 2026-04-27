@@ -281,6 +281,51 @@ class AppLocalizations {
       'simulator_fgts_desc': 'Simulate annual withdrawal and 3-year projection',
       'hide_values': 'Hide values',
       'hide_values_desc': 'Masks amounts throughout the app',
+      // ── Categories Management ──
+      'categories': 'Categories',
+      'manage_categories': 'Manage your expense categories',
+      'no_categories_found': 'No categories found',
+      'add_first_category': 'Add your first category',
+      'add_category': 'Add Category',
+      'edit_category': 'Edit Category',
+      'new_category': 'New Category',
+      'category_name': 'Category name',
+      'category_emoji': 'Emoji',
+      'category_emoji_hint': 'e.g. 🏠',
+      'category_name_hint': 'e.g. Rent',
+      'swile_category': 'Swile Category',
+      'swile_category_desc': 'Used for meal/food vouchers',
+      'category_updated': 'Category updated',
+      'category_added': 'Category added',
+      'category_deleted': 'Category deleted',
+      'delete_category': 'Delete category?',
+      'delete_category_desc': 'This will not delete existing expenses, but the category will be removed from active categories.',
+      'required': 'Required',
+      // ── Budget Rebalance ──
+      'rebalance_budget': 'Rebalance Budget',
+      'rebalance_subtitle': 'Adjust percentages to reach exactly 100%',
+      'normalize': 'Normalize',
+      'preview_changes': 'Preview changes',
+      'budget_rebalanced': 'Budget rebalanced successfully',
+      'over_limit': 'Over by %s%% — adjust first',
+      'under_limit': 'Under by %s%% — adjust first',
+      // ── Period Budget ──
+      'period_budget': 'Period Budget',
+      'copy_from_previous': 'Copy from previous period',
+      'no_budgets_period': 'No budgets for this period',
+      'budgets_hint': 'Add budget goals in Settings to see defaults here',
+      'reset_to_goal': 'Reset to goal amount?',
+      'reset_to_goal_desc': 'This will remove the custom amount and revert to your goal.',
+      'remove_budget': 'Remove budget for %s?',
+      'reset': 'Reset',
+      'edit_budget': 'Edit Budget',
+      'new_budget': 'New Budget',
+      'copied_budgets': 'Copied %d budget(s) from previous period',
+      'no_budgets_to_copy': 'No new budgets to copy',
+      'spent': 'Spent',
+      'left': 'Left',
+      'over': 'Over',
+      'goal': 'Goal',
     },
     'es': {
       'app_name': 'Farol',
@@ -556,6 +601,51 @@ class AppLocalizations {
       'simulator_fgts_desc': 'Simula el retiro anual y proyección 3 años',
       'hide_values': 'Ocultar valores',
       'hide_values_desc': 'Enmascara montos en toda la app',
+      // ── Categories Management ──
+      'categories': 'Categorías',
+      'manage_categories': 'Gestiona tus categorías de gastos',
+      'no_categories_found': 'No se encontraron categorías',
+      'add_first_category': 'Agregar tu primera categoría',
+      'add_category': 'Agregar Categoría',
+      'edit_category': 'Editar Categoría',
+      'new_category': 'Nueva Categoría',
+      'category_name': 'Nombre de la categoría',
+      'category_emoji': 'Emoji',
+      'category_emoji_hint': 'ej. 🏠',
+      'category_name_hint': 'ej. Alquiler',
+      'swile_category': 'Categoría Swile',
+      'swile_category_desc': 'Usada para vales de comida/restaurante',
+      'category_updated': 'Categoría actualizada',
+      'category_added': 'Categoría agregada',
+      'category_deleted': 'Categoría eliminada',
+      'delete_category': '¿Eliminar categoría?',
+      'delete_category_desc': 'No eliminará gastos existentes, pero la categoría dejará de aparecer en tus categorías activas.',
+      'required': 'Requerido',
+      // ── Budget Rebalance ──
+      'rebalance_budget': 'Rebalancear Presupuesto',
+      'rebalance_subtitle': 'Ajusta los porcentajes para llegar al 100%',
+      'normalize': 'Normalizar',
+      'preview_changes': 'Vista previa de cambios',
+      'budget_rebalanced': 'Presupuesto rebalanceado exitosamente',
+      'over_limit': 'Excedido por %s%% — ajusta primero',
+      'under_limit': 'Faltan %s%% — ajusta primero',
+      // ── Period Budget ──
+      'period_budget': 'Presupuesto de Período',
+      'copy_from_previous': 'Copiar del período anterior',
+      'no_budgets_period': 'Sin presupuestos para este período',
+      'budgets_hint': 'Agrega metas en Ajustes para ver los valores aquí',
+      'reset_to_goal': '¿Restablecer al monto de la meta?',
+      'reset_to_goal_desc': 'Esto eliminará el monto personalizado y volverá a tu meta.',
+      'remove_budget': '¿Eliminar presupuesto de %s?',
+      'reset': 'Restablecer',
+      'edit_budget': 'Editar Presupuesto',
+      'new_budget': 'Nuevo Presupuesto',
+      'copied_budgets': 'Se copiaron %d presupuesto(s) del período anterior',
+      'no_budgets_to_copy': 'No hay presupuestos nuevos para copiar',
+      'spent': 'Gastado',
+      'left': 'Restan',
+      'over': 'Excedido',
+      'goal': 'Meta',
     },
     'pt': {
       'app_name': 'Farol',
@@ -830,6 +920,51 @@ class AppLocalizations {
       'simulator_fgts_desc': 'Simule o saque anual e projeção 3 anos',
       'hide_values': 'Ocultar valores',
       'hide_values_desc': 'Oculta os valores em todo o app',
+      // ── Categories Management ──
+      'categories': 'Categorias',
+      'manage_categories': 'Gerencie suas categorias de despesas',
+      'no_categories_found': 'Nenhuma categoria encontrada',
+      'add_first_category': 'Adicionar primeira categoria',
+      'add_category': 'Adicionar Categoria',
+      'edit_category': 'Editar Categoria',
+      'new_category': 'Nova Categoria',
+      'category_name': 'Nome da categoria',
+      'category_emoji': 'Emoji',
+      'category_emoji_hint': 'ex. 🏠',
+      'category_name_hint': 'ex. Aluguel',
+      'swile_category': 'Categoria Swile',
+      'swile_category_desc': 'Usada para vale-refeição/alimentação',
+      'category_updated': 'Categoria atualizada',
+      'category_added': 'Categoria adicionada',
+      'category_deleted': 'Categoria excluída',
+      'delete_category': 'Excluir categoria?',
+      'delete_category_desc': 'Os gastos existentes não serão excluídos, mas a categoria deixará de aparecer nas categorias ativas.',
+      'required': 'Obrigatório',
+      // ── Budget Rebalance ──
+      'rebalance_budget': 'Rebalancear Orçamento',
+      'rebalance_subtitle': 'Ajuste os percentuais para chegar a 100%',
+      'normalize': 'Normalizar',
+      'preview_changes': 'Pré-visualizar alterações',
+      'budget_rebalanced': 'Orçamento rebalanceado com sucesso',
+      'over_limit': 'Excedido em %s%% — ajuste primeiro',
+      'under_limit': 'Faltam %s%% — ajuste primeiro',
+      // ── Period Budget ──
+      'period_budget': 'Orçamento do Período',
+      'copy_from_previous': 'Copiar do período anterior',
+      'no_budgets_period': 'Sem orçamentos para este período',
+      'budgets_hint': 'Adicione metas em Configurações para ver os valores aqui',
+      'reset_to_goal': 'Redefinir para o valor da meta?',
+      'reset_to_goal_desc': 'Isso removerá o valor personalizado e voltará à sua meta.',
+      'remove_budget': 'Remover orçamento de %s?',
+      'reset': 'Redefinir',
+      'edit_budget': 'Editar Orçamento',
+      'new_budget': 'Novo Orçamento',
+      'copied_budgets': '%d orçamento(s) copiado(s) do período anterior',
+      'no_budgets_to_copy': 'Nenhum orçamento novo para copiar',
+      'spent': 'Gasto',
+      'left': 'Restam',
+      'over': 'Excedido',
+      'goal': 'Meta',
     },
   };
 
@@ -974,6 +1109,49 @@ class AppLocalizations {
   String get simulatorFgtsDesc => translate('simulator_fgts_desc');
   String get hideValues => translate('hide_values');
   String get hideValuesDesc => translate('hide_values_desc');
+
+  // ── Categories Management ──
+  String get categories => translate('categories');
+  String get manageCategories => translate('manage_categories');
+  String get noCategoriesFound => translate('no_categories_found');
+  String get addFirstCategory => translate('add_first_category');
+  String get addCategory => translate('add_category');
+  String get editCategory => translate('edit_category');
+  String get newCategory => translate('new_category');
+  String get categoryName => translate('category_name');
+  String get categoryEmoji => translate('category_emoji');
+  String get categoryEmojiHint => translate('category_emoji_hint');
+  String get categoryNameHint => translate('category_name_hint');
+  String get swileCategory => translate('swile_category');
+  String get swileCategoryDesc => translate('swile_category_desc');
+  String get categoryUpdated => translate('category_updated');
+  String get categoryAdded => translate('category_added');
+  String get categoryDeleted => translate('category_deleted');
+  String get deleteCategory => translate('delete_category');
+  String get deleteCategoryDesc => translate('delete_category_desc');
+  String get required => translate('required');
+
+  // ── Budget Rebalance ──
+  String get rebalanceBudget => translate('rebalance_budget');
+  String get rebalanceSubtitle => translate('rebalance_subtitle');
+  String get normalize => translate('normalize');
+  String get previewChanges => translate('preview_changes');
+  String get budgetRebalanced => translate('budget_rebalanced');
+
+  // ── Period Budget ──
+  String get periodBudget => translate('period_budget');
+  String get copyFromPrevious => translate('copy_from_previous');
+  String get noBudgetsPeriod => translate('no_budgets_period');
+  String get budgetsHint => translate('budgets_hint');
+  String get resetToGoal => translate('reset_to_goal');
+  String get resetToGoalDesc => translate('reset_to_goal_desc');
+  String get reset => translate('reset');
+  String get editBudget => translate('edit_budget');
+  String get newBudget => translate('new_budget');
+  String get spent => translate('spent');
+  String get left => translate('left');
+  String get over => translate('over');
+  String get goal => translate('goal');
 }
 
 extension AppLocalizationsContext on BuildContext {

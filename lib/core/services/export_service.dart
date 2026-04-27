@@ -10,6 +10,7 @@ import '../repositories/installment_repository.dart';
 import '../repositories/investment_repository.dart';
 import '../repositories/net_worth_repository.dart';
 import '../repositories/budget_goals_repository.dart';
+import '../repositories/category_repository.dart';
 import '../../features/budget/domain/budget_settings.dart';
 import 'export_web_stub.dart' if (dart.library.js_interop) 'export_web.dart';
 import 'pdf_report_service.dart';
@@ -21,6 +22,7 @@ class ExportService {
   final InvestmentRepository investmentRepo;
   final NetWorthRepository netWorthRepo;
   final BudgetGoalsRepository budgetGoalsRepo;
+  final CategoryRepository categoryRepo;
 
   const ExportService({
     required this.expenseRepo,
@@ -29,6 +31,7 @@ class ExportService {
     required this.investmentRepo,
     required this.netWorthRepo,
     required this.budgetGoalsRepo,
+    required this.categoryRepo,
   });
 
   // ═══════════════════════════════════════════
@@ -90,6 +93,8 @@ class ExportService {
     final installments = await installmentRepo.getActive();
     final netWorth = await netWorthRepo.getByMonth(month, year);
     final goals = await budgetGoalsRepo.getAll();
+    final allCategories = await categoryRepo.getAll();
+    final categoriesMap = {for (final c in allCategories) c.dbValue: c.name};
 
     final bytes = await PdfReportService.generate(
       month: month,
@@ -101,6 +106,7 @@ class ExportService {
       netWorth: netWorth,
       goals: goals,
       locale: locale,
+      categoryNames: categoriesMap,
     );
 
     const monthNames = [

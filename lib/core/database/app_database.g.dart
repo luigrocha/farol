@@ -3061,6 +3061,372 @@ class UserSettingsCompanion extends UpdateCompanion<UserSetting> {
   }
 }
 
+class $CategoryTableTable extends CategoryTable
+    with TableInfo<$CategoryTableTable, CategoryTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CategoryTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _dbValueMeta =
+      const VerificationMeta('dbValue');
+  @override
+  late final GeneratedColumn<String> dbValue = GeneratedColumn<String>(
+      'db_value', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _emojiMeta = const VerificationMeta('emoji');
+  @override
+  late final GeneratedColumn<String> emoji = GeneratedColumn<String>(
+      'emoji', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _isSwileMeta =
+      const VerificationMeta('isSwile');
+  @override
+  late final GeneratedColumn<bool> isSwile = GeneratedColumn<bool>(
+      'is_swile', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_swile" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _isSystemMeta =
+      const VerificationMeta('isSystem');
+  @override
+  late final GeneratedColumn<bool> isSystem = GeneratedColumn<bool>(
+      'is_system', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_system" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _orderIndexMeta =
+      const VerificationMeta('orderIndex');
+  @override
+  late final GeneratedColumn<int> orderIndex = GeneratedColumn<int>(
+      'order_index', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, dbValue, name, emoji, isSwile, isSystem, orderIndex];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'category_table';
+  @override
+  VerificationContext validateIntegrity(Insertable<CategoryTableData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('db_value')) {
+      context.handle(_dbValueMeta,
+          dbValue.isAcceptableOrUnknown(data['db_value']!, _dbValueMeta));
+    } else if (isInserting) {
+      context.missing(_dbValueMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('emoji')) {
+      context.handle(
+          _emojiMeta, emoji.isAcceptableOrUnknown(data['emoji']!, _emojiMeta));
+    } else if (isInserting) {
+      context.missing(_emojiMeta);
+    }
+    if (data.containsKey('is_swile')) {
+      context.handle(_isSwileMeta,
+          isSwile.isAcceptableOrUnknown(data['is_swile']!, _isSwileMeta));
+    }
+    if (data.containsKey('is_system')) {
+      context.handle(_isSystemMeta,
+          isSystem.isAcceptableOrUnknown(data['is_system']!, _isSystemMeta));
+    }
+    if (data.containsKey('order_index')) {
+      context.handle(
+          _orderIndexMeta,
+          orderIndex.isAcceptableOrUnknown(
+              data['order_index']!, _orderIndexMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CategoryTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CategoryTableData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      dbValue: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}db_value'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      emoji: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}emoji'])!,
+      isSwile: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_swile'])!,
+      isSystem: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_system'])!,
+      orderIndex: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}order_index'])!,
+    );
+  }
+
+  @override
+  $CategoryTableTable createAlias(String alias) {
+    return $CategoryTableTable(attachedDatabase, alias);
+  }
+}
+
+class CategoryTableData extends DataClass
+    implements Insertable<CategoryTableData> {
+  final int id;
+  final String dbValue;
+  final String name;
+  final String emoji;
+  final bool isSwile;
+  final bool isSystem;
+  final int orderIndex;
+  const CategoryTableData(
+      {required this.id,
+      required this.dbValue,
+      required this.name,
+      required this.emoji,
+      required this.isSwile,
+      required this.isSystem,
+      required this.orderIndex});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['db_value'] = Variable<String>(dbValue);
+    map['name'] = Variable<String>(name);
+    map['emoji'] = Variable<String>(emoji);
+    map['is_swile'] = Variable<bool>(isSwile);
+    map['is_system'] = Variable<bool>(isSystem);
+    map['order_index'] = Variable<int>(orderIndex);
+    return map;
+  }
+
+  CategoryTableCompanion toCompanion(bool nullToAbsent) {
+    return CategoryTableCompanion(
+      id: Value(id),
+      dbValue: Value(dbValue),
+      name: Value(name),
+      emoji: Value(emoji),
+      isSwile: Value(isSwile),
+      isSystem: Value(isSystem),
+      orderIndex: Value(orderIndex),
+    );
+  }
+
+  factory CategoryTableData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CategoryTableData(
+      id: serializer.fromJson<int>(json['id']),
+      dbValue: serializer.fromJson<String>(json['dbValue']),
+      name: serializer.fromJson<String>(json['name']),
+      emoji: serializer.fromJson<String>(json['emoji']),
+      isSwile: serializer.fromJson<bool>(json['isSwile']),
+      isSystem: serializer.fromJson<bool>(json['isSystem']),
+      orderIndex: serializer.fromJson<int>(json['orderIndex']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'dbValue': serializer.toJson<String>(dbValue),
+      'name': serializer.toJson<String>(name),
+      'emoji': serializer.toJson<String>(emoji),
+      'isSwile': serializer.toJson<bool>(isSwile),
+      'isSystem': serializer.toJson<bool>(isSystem),
+      'orderIndex': serializer.toJson<int>(orderIndex),
+    };
+  }
+
+  CategoryTableData copyWith(
+          {int? id,
+          String? dbValue,
+          String? name,
+          String? emoji,
+          bool? isSwile,
+          bool? isSystem,
+          int? orderIndex}) =>
+      CategoryTableData(
+        id: id ?? this.id,
+        dbValue: dbValue ?? this.dbValue,
+        name: name ?? this.name,
+        emoji: emoji ?? this.emoji,
+        isSwile: isSwile ?? this.isSwile,
+        isSystem: isSystem ?? this.isSystem,
+        orderIndex: orderIndex ?? this.orderIndex,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('CategoryTableData(')
+          ..write('id: $id, ')
+          ..write('dbValue: $dbValue, ')
+          ..write('name: $name, ')
+          ..write('emoji: $emoji, ')
+          ..write('isSwile: $isSwile, ')
+          ..write('isSystem: $isSystem, ')
+          ..write('orderIndex: $orderIndex')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, dbValue, name, emoji, isSwile, isSystem, orderIndex);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CategoryTableData &&
+          other.id == this.id &&
+          other.dbValue == this.dbValue &&
+          other.name == this.name &&
+          other.emoji == this.emoji &&
+          other.isSwile == this.isSwile &&
+          other.isSystem == this.isSystem &&
+          other.orderIndex == this.orderIndex);
+}
+
+class CategoryTableCompanion extends UpdateCompanion<CategoryTableData> {
+  final Value<int> id;
+  final Value<String> dbValue;
+  final Value<String> name;
+  final Value<String> emoji;
+  final Value<bool> isSwile;
+  final Value<bool> isSystem;
+  final Value<int> orderIndex;
+  const CategoryTableCompanion({
+    this.id = const Value.absent(),
+    this.dbValue = const Value.absent(),
+    this.name = const Value.absent(),
+    this.emoji = const Value.absent(),
+    this.isSwile = const Value.absent(),
+    this.isSystem = const Value.absent(),
+    this.orderIndex = const Value.absent(),
+  });
+  CategoryTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String dbValue,
+    required String name,
+    required String emoji,
+    this.isSwile = const Value.absent(),
+    this.isSystem = const Value.absent(),
+    this.orderIndex = const Value.absent(),
+  })  : dbValue = Value(dbValue),
+        name = Value(name),
+        emoji = Value(emoji);
+  static Insertable<CategoryTableData> custom({
+    Expression<int>? id,
+    Expression<String>? dbValue,
+    Expression<String>? name,
+    Expression<String>? emoji,
+    Expression<bool>? isSwile,
+    Expression<bool>? isSystem,
+    Expression<int>? orderIndex,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (dbValue != null) 'db_value': dbValue,
+      if (name != null) 'name': name,
+      if (emoji != null) 'emoji': emoji,
+      if (isSwile != null) 'is_swile': isSwile,
+      if (isSystem != null) 'is_system': isSystem,
+      if (orderIndex != null) 'order_index': orderIndex,
+    });
+  }
+
+  CategoryTableCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? dbValue,
+      Value<String>? name,
+      Value<String>? emoji,
+      Value<bool>? isSwile,
+      Value<bool>? isSystem,
+      Value<int>? orderIndex}) {
+    return CategoryTableCompanion(
+      id: id ?? this.id,
+      dbValue: dbValue ?? this.dbValue,
+      name: name ?? this.name,
+      emoji: emoji ?? this.emoji,
+      isSwile: isSwile ?? this.isSwile,
+      isSystem: isSystem ?? this.isSystem,
+      orderIndex: orderIndex ?? this.orderIndex,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (dbValue.present) {
+      map['db_value'] = Variable<String>(dbValue.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (emoji.present) {
+      map['emoji'] = Variable<String>(emoji.value);
+    }
+    if (isSwile.present) {
+      map['is_swile'] = Variable<bool>(isSwile.value);
+    }
+    if (isSystem.present) {
+      map['is_system'] = Variable<bool>(isSystem.value);
+    }
+    if (orderIndex.present) {
+      map['order_index'] = Variable<int>(orderIndex.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CategoryTableCompanion(')
+          ..write('id: $id, ')
+          ..write('dbValue: $dbValue, ')
+          ..write('name: $name, ')
+          ..write('emoji: $emoji, ')
+          ..write('isSwile: $isSwile, ')
+          ..write('isSystem: $isSystem, ')
+          ..write('orderIndex: $orderIndex')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   late final $IncomesTable incomes = $IncomesTable(this);
@@ -3072,6 +3438,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $NetWorthSnapshotsTable(this);
   late final $BudgetGoalsTable budgetGoals = $BudgetGoalsTable(this);
   late final $UserSettingsTable userSettings = $UserSettingsTable(this);
+  late final $CategoryTableTable categoryTable = $CategoryTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3083,6 +3450,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         investments,
         netWorthSnapshots,
         budgetGoals,
-        userSettings
+        userSettings,
+        categoryTable
       ];
 }

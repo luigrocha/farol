@@ -283,6 +283,7 @@ class _ExpenseBreakdown extends ConsumerWidget {
     final colors = context.colors;
     final byCategory = ref.watch(cashExpensesByCategoryProvider);
     final goals = ref.watch(budgetGoalsMapProvider);
+    final catsMap = ref.watch(categoriesMapProvider);
     final net = ref.watch(effectiveNetSalaryProvider);
     final l10n = AppLocalizations.of(context);
     if (byCategory.isEmpty) {
@@ -298,7 +299,7 @@ class _ExpenseBreakdown extends ConsumerWidget {
       ]),
       const SizedBox(height: 14),
       ...sorted.map((e) {
-        final cat=e.key; final actual=e.value; final goal=goals[cat]; final target=goal?.targetAmount??(net*0.1);
+        final catDbValue=e.key; final actual=e.value; final goal=goals[catDbValue]; final target=goal?.targetAmount??(net*0.1);
         final ratio = actual / target;
         final pct = math.min(ratio, 1.0);
         final barColor = ratio >= 1.0 ? tokens.FarolColors.coral
@@ -306,7 +307,11 @@ class _ExpenseBreakdown extends ConsumerWidget {
             : ratio >= 0.75 ? tokens.FarolColors.beam
             : tokens.FarolColors.tide;
         final labelColor = ratio >= 0.75 ? barColor : colors.onSurfaceSoft;
-        String label; try { label = ExpenseCategory.fromDb(cat).localizedLabel(context); } catch (_) { label = cat; }
+        
+        final catModel = catsMap[catDbValue];
+        final label = catModel?.name ?? catDbValue;
+        final emoji = catModel?.emoji ?? '💰';
+
         return Padding(padding: const EdgeInsets.only(bottom: 14), child: Column(children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Row(children: [
@@ -314,7 +319,7 @@ class _ExpenseBreakdown extends ConsumerWidget {
                 Icon(ratio >= 1.0 ? Icons.error_outline : Icons.warning_amber_outlined, size: 13, color: barColor),
                 const SizedBox(width: 4),
               ],
-              Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: colors.onSurface)),
+              Text('$emoji $label', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: colors.onSurface)),
             ]),
             Text('R\$ ${actual.toInt()} / R\$ ${target.toInt()}', style: TextStyle(fontSize: 11, color: labelColor, fontFeatures: const [FontFeature.tabularFigures()])),
           ]),
@@ -364,6 +369,7 @@ class _AlertBanner extends ConsumerWidget {
     final alerts = ref.watch(budgetAlertsProvider);
     if (alerts.isEmpty) return const SizedBox.shrink();
     final top = alerts.first;
+    final catsMap = ref.watch(categoriesMapProvider);
 
     final color = switch (top.level) {
       AlertLevel.exceeded => tokens.FarolColors.coral,
@@ -375,6 +381,10 @@ class _AlertBanner extends ConsumerWidget {
       AlertLevel.critical => Icons.warning_amber_outlined,
       AlertLevel.warning  => Icons.info_outline,
     };
+
+    final catModel = catsMap[top.category];
+    final label = catModel?.name ?? top.category;
+    final emoji = catModel?.emoji ?? '📊';
 
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, '/notifications'),
@@ -390,7 +400,7 @@ class _AlertBanner extends ConsumerWidget {
           Icon(icon, size: 18, color: color),
           const SizedBox(width: 10),
           Expanded(child: Text(
-            '${top.emoji} ${top.localizedCategoryLabel(context)}: ${top.percentageLabel} del presupuesto',
+            '$emoji $label: ${top.percentageLabel} del presupuesto',
             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: color),
           )),
           if (alerts.length > 1)

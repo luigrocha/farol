@@ -5,6 +5,7 @@ import '../../../core/models/enums.dart';
 import '../../../core/providers/providers.dart';
 import '../../../design/farol_colors.dart' as tokens;
 import '../../../core/theme/farol_colors.dart';
+import '../../../core/i18n/app_localizations.dart';
 import '../../../core/services/financial_calculator_service.dart';
 
 class RebalanceBudgetSheet extends ConsumerStatefulWidget {
@@ -22,21 +23,25 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
   final _controllers = <String, TextEditingController>{};
   final _percentages = <String, double>{};
   final _originalPercentages = <String, double>{};
-  final _orderedCategories = <String>[];
+  final _orderedCategoryIds = <String>[];
   bool _saving = false;
+  bool _initialized = false;
 
-  @override
-  void initState() {
-    super.initState();
+  void _initializeOnce() {
+    if (_initialized) return;
     final goals = ref.read(budgetGoalsProvider).value ?? [];
-    // preserve declaration order from ExpenseCategory enum
+    final catsMap = ref.read(categoriesMapProvider);
+    
+    // Sort goals by category orderIndex if available, or keep as is
     final goalMap = {for (final g in goals) g.category: g};
-    for (final cat in ExpenseCategory.values) {
-      final dbVal = cat.dbValue;
-      if (swileCategories.contains(dbVal)) continue;
-      final goal = goalMap[dbVal];
-      if (goal == null) continue;
-      _orderedCategories.add(dbVal);
+    
+    // We only rebalance non-swile categories for now (as per original logic)
+    for (final goal in goals) {
+      final dbVal = goal.category;
+      final cat = catsMap[dbVal];
+      if (cat == null || cat.isSwile) continue;
+      
+      _orderedCategoryIds.add(dbVal);
       final pct = widget.initialPercentages?[dbVal] ?? goal.targetPercentage;
       _percentages[dbVal] = pct;
       _originalPercentages[dbVal] = goal.targetPercentage;
@@ -46,6 +51,7 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
       ctrl.addListener(() => _onTextChanged(dbVal, ctrl.text));
       _controllers[dbVal] = ctrl;
     }
+    _initialized = true;
   }
 
   @override
@@ -108,8 +114,8 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
       if (mounted) {
         navigator.pop();
         messenger.showSnackBar(
-          const SnackBar(
-            content: Text('Budget rebalanced successfully'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context).budgetRebalanced),
             backgroundColor: Colors.green,
           ),
         );
@@ -126,6 +132,7 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
   }
 
   Future<bool?> _showPreview(BuildContext context) async {
+    final catsMap = ref.read(categoriesMapProvider);
     final changed = <String, ({double oldPct, double newPct})>{};
     for (final cat in _percentages.keys) {
       final oldPct = _originalPercentages[cat] ?? 0.0;
@@ -140,14 +147,14 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(
-          'Preview changes',
+          AppLocalizations.of(ctx).previewChanges,
           style: GoogleFonts.manrope(fontWeight: FontWeight.w700),
         ),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: changed.entries.map((e) {
-              final cat = _resolveCategory(e.key);
+              final cat = catsMap[e.key];
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(
@@ -159,7 +166,7 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        cat?.localizedLabel(ctx) ?? e.key,
+                        cat?.name ?? e.key,
                         style: const TextStyle(fontSize: 13),
                       ),
                     ),
@@ -192,12 +199,12 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(ctx).cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text(
-              'Apply',
+            child: Text(
+              AppLocalizations.of(ctx).save,
               style: TextStyle(
                 color: tokens.FarolColors.navy,
                 fontWeight: FontWeight.w700,
@@ -209,17 +216,12 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
     );
   }
 
-  ExpenseCategory? _resolveCategory(String dbValue) {
-    try {
-      return ExpenseCategory.fromDb(dbValue);
-    } catch (_) {
-      return null;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    _initializeOnce();
+    final l10n = AppLocalizations.of(context);
     final colors = context.colors;
+    final catsMap = ref.watch(categoriesMapProvider);
     final total = _total;
     final isOver = total > 100.5;
     final totalColor = isOver
@@ -276,14 +278,14 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Rebalance Budget',
+                        l10n.rebalanceBudget,
                         style: GoogleFonts.manrope(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       Text(
-                        'Adjust percentages to reach exactly 100%',
+                        l10n.rebalanceSubtitle,
                         style: TextStyle(
                           fontSize: 11,
                           color: colors.onSurfaceSoft,
@@ -319,9 +321,9 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
                   TextButton.icon(
                     onPressed: _normalize,
                     icon: const Icon(Icons.auto_fix_high, size: 14),
-                    label: const Text(
-                      'Normalize',
-                      style: TextStyle(fontSize: 12),
+                    label: Text(
+                      l10n.normalize,
+                      style: const TextStyle(fontSize: 12),
                     ),
                     style: TextButton.styleFrom(
                       foregroundColor: tokens.FarolColors.navy,
@@ -339,14 +341,15 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
             Flexible(
               child: SingleChildScrollView(
                 child: Column(
-                  children: _orderedCategories.map((cat) {
-                    final category = _resolveCategory(cat);
+                  children: _orderedCategoryIds.map((dbVal) {
+                    final cat = catsMap[dbVal];
                     return _RebalanceRow(
-                      category: category,
-                      dbValue: cat,
-                      controller: _controllers[cat]!,
-                      onDecrement: () => _step(cat, -0.5),
-                      onIncrement: () => _step(cat, 0.5),
+                      categoryName: cat?.name ?? dbVal,
+                      emoji: cat?.emoji ?? '💰',
+                      dbValue: dbVal,
+                      controller: _controllers[dbVal]!,
+                      onDecrement: () => _step(dbVal, -0.5),
+                      onIncrement: () => _step(dbVal, 0.5),
                       colors: colors,
                     );
                   }).toList(),
@@ -381,10 +384,10 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
                       )
                     : Text(
                         _canSave
-                            ? 'Save'
+                            ? l10n.save
                             : total > 100.5
-                                ? 'Over by ${(total - 100.0).toStringAsFixed(1)}% — adjust first'
-                                : 'Under by ${(100.0 - total).toStringAsFixed(1)}% — adjust first',
+                                ? '${l10n.translate('rebalance_budget')} — ${(total - 100.0).toStringAsFixed(1)}% Over'
+                                : '${l10n.translate('rebalance_budget')} — ${(100.0 - total).toStringAsFixed(1)}% Under',
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
@@ -402,7 +405,8 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
 // ─── Row widget ───────────────────────────────────────────────────────────────
 
 class _RebalanceRow extends StatelessWidget {
-  final ExpenseCategory? category;
+  final String categoryName;
+  final String emoji;
   final String dbValue;
   final TextEditingController controller;
   final VoidCallback onDecrement;
@@ -410,7 +414,8 @@ class _RebalanceRow extends StatelessWidget {
   final FarolColors colors;
 
   const _RebalanceRow({
-    required this.category,
+    required this.categoryName,
+    required this.emoji,
     required this.dbValue,
     required this.controller,
     required this.onDecrement,
@@ -431,13 +436,13 @@ class _RebalanceRow extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            category?.emoji ?? '💰',
+            emoji,
             style: const TextStyle(fontSize: 18),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              category?.localizedLabel(context) ?? dbValue,
+              categoryName,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,

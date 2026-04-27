@@ -1,9 +1,9 @@
+import 'package:farol/core/models/category.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/i18n/app_localizations.dart';
 import '../../../core/widgets/farol_snackbar.dart';
-import '../../../core/models/enums.dart';
 import '../../../core/models/budget_goal.dart';
 import '../../../core/providers/providers.dart';
 import '../../../design/farol_colors.dart' as tokens;
@@ -21,12 +21,12 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
   final _controllers = <String, TextEditingController>{};
   bool _saving = false;
   double _totalPct = 0.0;
+  bool _initialized = false;
 
-  @override
-  void initState() {
-    super.initState();
+  void _initControllers(List<Category> categories) {
+    if (_initialized) return;
     final goalsMap = ref.read(budgetGoalsMapProvider);
-    for (final cat in ExpenseCategory.values) {
+    for (final cat in categories) {
       final dbValue = cat.dbValue;
       final goal = goalsMap[dbValue];
       final ctrl = TextEditingController(
@@ -35,6 +35,7 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
       ctrl.addListener(_onAmountChanged);
       _controllers[dbValue] = ctrl;
     }
+    _initialized = true;
     WidgetsBinding.instance.addPostFrameCallback((_) => _onAmountChanged());
   }
 
@@ -48,9 +49,10 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
   }
 
   void _onAmountChanged() {
+    final categories = ref.read(categoriesStreamProvider).value ?? [];
     final salary = ref.read(effectiveNetSalaryProvider);
     double total = 0.0;
-    for (final cat in ExpenseCategory.values) {
+    for (final cat in categories) {
       if (cat.isSwile) continue;
       final text = _controllers[cat.dbValue]?.text ?? '';
       final amount = _parse(text);
@@ -67,12 +69,13 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
   Future<void> _save() async {
     if (_totalPct > 100) return;
 
+    final categories = ref.read(categoriesStreamProvider).value ?? [];
     final l10n = AppLocalizations.of(context);
     setState(() => _saving = true);
     try {
       final effectiveSalary = ref.read(effectiveNetSalaryProvider);
 
-      for (final cat in ExpenseCategory.values) {
+      for (final cat in categories) {
         final dbValue = cat.dbValue;
         final amountText = _controllers[dbValue]?.text ?? '';
         if (amountText.isEmpty) continue;
@@ -114,196 +117,205 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final l10n = AppLocalizations.of(context);
+    final categoriesAsync = ref.watch(categoriesStreamProvider);
     final monthExpensesByCategory = ref.watch(expensesByCategoryProvider);
     final effectiveSalary = ref.watch(effectiveNetSalaryProvider);
     final swileBalance = ref.watch(effectiveSwileProvider);
     final remaining = (100.0 - _totalPct).clamp(0.0, 100.0);
     final isOver = _totalPct > 100;
 
-    final cashCats =
-        ExpenseCategory.values.where((c) => !c.isSwile).toList();
-    final swileCats =
-        ExpenseCategory.values.where((c) => c.isSwile).toList();
+    return categoriesAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, _) => Center(child: Text('Error: $err')),
+      data: (categories) {
+        _initControllers(categories);
+        
+        final cashCats = categories.where((c) => !c.isSwile).toList();
+        final swileCats = categories.where((c) => c.isSwile).toList();
 
-    return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
-        decoration: BoxDecoration(
-          color: colors.surfaceLowest,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: colors.onSurfaceFaint,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
+        return Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+            decoration: BoxDecoration(
+              color: colors.surfaceLowest,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             ),
-            const SizedBox(height: 20),
-            Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    color: colors.iconTintBlue,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(
-                    Icons.category_outlined,
-                    size: 20,
-                    color: tokens.FarolColors.navy,
+                Center(
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: colors.onSurfaceFaint,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.translate('category_budgets'),
-                        style: GoogleFonts.manrope(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                        ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: colors.iconTintBlue,
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      Text(
-                        l10n.translate('set_monthly_spending_limits'),
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: colors.onSurfaceSoft,
-                        ),
+                      child: const Icon(
+                        Icons.category_outlined,
+                        size: 20,
+                        color: tokens.FarolColors.navy,
                       ),
-                    ],
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.translate('category_budgets'),
+                            style: GoogleFonts.manrope(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Text(
+                            l10n.translate('set_monthly_spending_limits'),
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: colors.onSurfaceSoft,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // ── Cash Budget section ───────────────────────────
+                        _SectionHeader(
+                          label: l10n.translate('cash_budget'),
+                          icon: Icons.account_balance_wallet_outlined,
+                          color: tokens.FarolColors.navy,
+                        ),
+                        const SizedBox(height: 10),
+                        _PercentageBar(
+                          totalPct: _totalPct,
+                          remaining: remaining,
+                          isOver: isOver,
+                        ),
+                        if (isOver) ...[
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withValues(alpha: 0.08),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: Colors.red.withValues(alpha: 0.3)),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.error_outline,
+                                    color: Colors.red, size: 16),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Adjusting this would exceed your 100% budget limit. '
+                                    'Free up ${(_totalPct - 100).toStringAsFixed(1)}% first.',
+                                    style: const TextStyle(
+                                        fontSize: 12, color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 12),
+                        for (final cat in cashCats)
+                          _BudgetCategoryRow(
+                            category: cat,
+                            controller: _controllers[cat.dbValue]!,
+                            currentSpending:
+                                monthExpensesByCategory[cat.dbValue] ?? 0,
+                            effectiveSalary: effectiveSalary,
+                            isSwile: false,
+                            swileBalance: 0,
+                          ),
+                        // ── Swile Budget section ──────────────────────────
+                        if (swileCats.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          _SectionHeader(
+                            label: l10n.translate('swile_budget'),
+                            icon: Icons.restaurant_outlined,
+                            color: const Color(0xFF00A86B),
+                          ),
+                          const SizedBox(height: 4),
+                          _SwileBalanceBadge(balance: swileBalance),
+                          const SizedBox(height: 12),
+                          for (final cat in swileCats)
+                            _BudgetCategoryRow(
+                              category: cat,
+                              controller: _controllers[cat.dbValue]!,
+                              currentSpending:
+                                  monthExpensesByCategory[cat.dbValue] ?? 0,
+                              effectiveSalary: effectiveSalary,
+                              isSwile: true,
+                              swileBalance: swileBalance,
+                            ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: (_saving || isOver) ? null : _save,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          isOver ? Colors.grey : tokens.FarolColors.navy,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: _saving
+                        ? const SizedBox(
+                            height: 18,
+                            width: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            l10n.saveBudget,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            Flexible(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // ── Cash Budget section ───────────────────────────
-                    _SectionHeader(
-                      label: l10n.translate('cash_budget'),
-                      icon: Icons.account_balance_wallet_outlined,
-                      color: tokens.FarolColors.navy,
-                    ),
-                    const SizedBox(height: 10),
-                    _PercentageBar(
-                      totalPct: _totalPct,
-                      remaining: remaining,
-                      isOver: isOver,
-                    ),
-                    if (isOver) ...[
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withValues(alpha: 0.08),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                              color: Colors.red.withValues(alpha: 0.3)),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.error_outline,
-                                color: Colors.red, size: 16),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'Adjusting this would exceed your 100% budget limit. '
-                                'Free up ${(_totalPct - 100).toStringAsFixed(1)}% first.',
-                                style: const TextStyle(
-                                    fontSize: 12, color: Colors.red),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 12),
-                    for (final cat in cashCats)
-                      _BudgetCategoryRow(
-                        category: cat,
-                        controller: _controllers[cat.dbValue]!,
-                        currentSpending:
-                            monthExpensesByCategory[cat.dbValue] ?? 0,
-                        effectiveSalary: effectiveSalary,
-                        isSwile: false,
-                        swileBalance: 0,
-                      ),
-                    // ── Swile Budget section ──────────────────────────
-                    const SizedBox(height: 8),
-                    _SectionHeader(
-                      label: l10n.translate('swile_budget'),
-                      icon: Icons.restaurant_outlined,
-                      color: const Color(0xFF00A86B),
-                    ),
-                    const SizedBox(height: 4),
-                    _SwileBalanceBadge(balance: swileBalance),
-                    const SizedBox(height: 12),
-                    for (final cat in swileCats)
-                      _BudgetCategoryRow(
-                        category: cat,
-                        controller: _controllers[cat.dbValue]!,
-                        currentSpending:
-                            monthExpensesByCategory[cat.dbValue] ?? 0,
-                        effectiveSalary: effectiveSalary,
-                        isSwile: true,
-                        swileBalance: swileBalance,
-                      ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: (_saving || isOver) ? null : _save,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      isOver ? Colors.grey : tokens.FarolColors.navy,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  elevation: 0,
-                ),
-                child: _saving
-                    ? const SizedBox(
-                        height: 18,
-                        width: 18,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : Text(
-                        l10n.saveBudget,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -451,7 +463,7 @@ class _PercentageBar extends StatelessWidget {
 // ─── Category row ─────────────────────────────────────────────────────────────
 
 class _BudgetCategoryRow extends StatelessWidget {
-  final ExpenseCategory category;
+  final Category category;
   final TextEditingController controller;
   final double currentSpending;
   final double effectiveSalary;
@@ -543,7 +555,7 @@ class _BudgetCategoryRow extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      category.localizedLabel(context),
+                      category.name,
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,

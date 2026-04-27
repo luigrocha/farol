@@ -69,12 +69,17 @@ class NotificationsScreen extends ConsumerWidget {
   }
 }
 
-class _AlertCard extends StatelessWidget {
+class _AlertCard extends ConsumerWidget {
   final BudgetAlert alert;
   const _AlertCard({required this.alert});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final catsMap = ref.watch(categoriesMapProvider);
+    final catModel = catsMap[alert.category];
+    final label = catModel?.name ?? alert.category;
+    final emoji = catModel?.emoji ?? '📊';
+
     final color = switch (alert.level) {
       AlertLevel.exceeded => tokens.FarolColors.coral,
       AlertLevel.critical => const Color(0xFFFF6B35),
@@ -86,9 +91,9 @@ class _AlertCard extends StatelessWidget {
       AlertLevel.warning  => Icons.info_outline,
     };
     final bodyText = switch (alert.level) {
-      AlertLevel.exceeded => 'Superaste el límite de ${FinancialCalculatorService.formatBRL(alert.limit)} en ${alert.localizedCategoryLabel(context)}. Gastado: ${FinancialCalculatorService.formatBRL(alert.spent)}.',
-      AlertLevel.critical => 'Llevas el ${alert.percentageLabel} del presupuesto de ${alert.localizedCategoryLabel(context)} (${FinancialCalculatorService.formatBRL(alert.spent)} de ${FinancialCalculatorService.formatBRL(alert.limit)}).',
-      AlertLevel.warning  => 'Ya usaste el ${alert.percentageLabel} del presupuesto de ${alert.localizedCategoryLabel(context)}. Quedan ${FinancialCalculatorService.formatBRL(alert.limit - alert.spent)}.',
+      AlertLevel.exceeded => 'Superaste el límite de ${FinancialCalculatorService.formatBRL(alert.limit)} en $label. Gastado: ${FinancialCalculatorService.formatBRL(alert.spent)}.',
+      AlertLevel.critical => 'Llevas el ${alert.percentageLabel} del presupuesto de $label (${FinancialCalculatorService.formatBRL(alert.spent)} de ${FinancialCalculatorService.formatBRL(alert.limit)}).',
+      AlertLevel.warning  => 'Ya usaste el ${alert.percentageLabel} del presupuesto de $label. Quedan ${FinancialCalculatorService.formatBRL(alert.limit - alert.spent)}.',
     };
 
     return Column(children: [
@@ -96,8 +101,8 @@ class _AlertCard extends StatelessWidget {
         accent: color,
         icon: icon,
         iconBg: color.withValues(alpha: 0.1),
-        time: alert.emoji,
-        title: '${alert.localizedCategoryLabel(context)} — ${alert.percentageLabel}',
+        time: emoji,
+        title: '$label — ${alert.percentageLabel}',
         body: bodyText,
         progressValue: alert.percentage.clamp(0.0, 1.0),
         progressColor: color,

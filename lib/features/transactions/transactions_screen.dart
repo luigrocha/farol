@@ -203,6 +203,7 @@ class _FilterChips extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final payFilter = ref.watch(txPayTypeFilterProvider);
     final catFilter = ref.watch(txCategoryFilterProvider);
+    final categories = ref.watch(categoriesStreamProvider).value ?? [];
 
     const payChips = [
       ('all', 'Todas'),
@@ -239,16 +240,16 @@ class _FilterChips extends ConsumerWidget {
             ],
           ),
         ),
-        if (showCategories)
+        if (showCategories && categories.isNotEmpty)
           SizedBox(
             height: 44,
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
               scrollDirection: Axis.horizontal,
-              children: ExpenseCategory.values.map((cat) {
+              children: categories.map((cat) {
                 final active = catFilter == cat.dbValue;
                 return _Chip(
-                  label: '${cat.emoji} ${cat.localizedLabel(context)}',
+                  label: '${cat.emoji} ${cat.name}',
                   active: active,
                   small: true,
                   onTap: () {
@@ -306,6 +307,7 @@ class _TotalMonthlyHero extends ConsumerWidget {
     final total = ref.watch(filteredTotalProvider);
     final byCategory = ref.watch(filteredByCategoryProvider);
     final payFilter = ref.watch(txPayTypeFilterProvider);
+    final catsMap = ref.watch(categoriesMapProvider);
     final sorted = byCategory.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
 
     String label = 'TOTAL MENSUAL';
@@ -331,12 +333,8 @@ class _TotalMonthlyHero extends ConsumerWidget {
         _BRLBig(value: total, size: 32, color: Colors.white),
         const SizedBox(height: 18),
         ...sorted.take(3).map((e) {
-          String catLabel;
-          try {
-            catLabel = ExpenseCategory.fromDb(e.key).localizedLabel(context);
-          } catch (_) {
-            catLabel = e.key;
-          }
+          final cat = catsMap[e.key];
+          final catLabel = cat?.name ?? e.key;
           final pct = total > 0 ? (e.value / total) : 0.0;
           return _HeroBar(
               label: catLabel,
@@ -415,12 +413,12 @@ class _TxRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final colors = context.colors;
-    String catLabel;
-    try {
-      catLabel = ExpenseCategory.fromDb(expense.category as String).localizedLabel(context);
-    } catch (_) {
-      catLabel = expense.category as String;
-    }
+    final catsMap = ref.watch(categoriesMapProvider);
+    
+    final dbCat = expense.category as String;
+    final cat = catsMap[dbCat];
+    final catLabel = cat?.name ?? dbCat;
+    final catEmoji = cat?.emoji ?? '💰';
 
     final txDate = expense.transactionDate as DateTime;
     final timeLabel =
@@ -473,10 +471,11 @@ class _TxRow extends ConsumerWidget {
                     : colors.surfaceLow,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                isSwile ? Icons.restaurant : Icons.shopping_bag_outlined,
-                size: 18,
-                color: isSwile ? const Color(0xFFE84840) : colors.onSurfaceMuted,
+              child: Center(
+                child: Text(
+                  catEmoji,
+                  style: const TextStyle(fontSize: 18),
+                ),
               ),
             ),
             const SizedBox(width: 14),

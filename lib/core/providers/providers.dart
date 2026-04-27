@@ -31,6 +31,8 @@ import '../services/clt_calculator_service.dart';
 import '../services/budget_recommendation_service.dart';
 import '../../features/budget/data/budget_settings_repository.dart';
 import '../../features/budget/domain/budget_settings.dart';
+import '../models/category.dart';
+import '../repositories/category_repository.dart';
 
 // ═══════════════════════════════════════════
 // LOCAL-DEVICE PROVIDERS (Drift)
@@ -153,6 +155,10 @@ final budgetGoalsRepositoryProvider = Provider<BudgetGoalsRepository>((ref) {
   return BudgetGoalsRepository(Supabase.instance.client);
 });
 
+final categoryRepositoryProvider = Provider<CategoryRepository>((ref) {
+  return CategoryRepository(Supabase.instance.client);
+});
+
 // ═══════════════════════════════════════════
 // RAW SUPABASE STREAM PROVIDERS
 // One stream per table – stable, not tied to month/year.
@@ -165,6 +171,15 @@ final _allIncomesStreamProvider = StreamProvider.autoDispose<List<Income>>((ref)
 
 final _allExpensesStreamProvider = StreamProvider.autoDispose<List<Expense>>((ref) {
   return ref.watch(expenseRepositoryProvider).watchAll();
+});
+
+final categoriesStreamProvider = StreamProvider.autoDispose<List<Category>>((ref) {
+  return ref.watch(categoryRepositoryProvider).watchAll();
+});
+
+final categoriesMapProvider = Provider.autoDispose<Map<String, Category>>((ref) {
+  final cats = ref.watch(categoriesStreamProvider).value ?? [];
+  return {for (var c in cats) c.dbValue: c};
 });
 
 // ═══════════════════════════════════════════
@@ -473,6 +488,38 @@ class BudgetGoalsNotifier extends AsyncNotifier<void> {
   }
 }
 
+final categoryNotifierProvider = AsyncNotifierProvider<CategoryNotifier, void>(() {
+  return CategoryNotifier();
+});
+
+class CategoryNotifier extends AsyncNotifier<void> {
+  @override
+  Future<void> build() async {
+    // Seed categories if empty when the provider is initialized
+    await ref.read(categoryRepositoryProvider).seedInitialCategories();
+  }
+
+  Future<void> add(Category category) async {
+    await ref.read(categoryRepositoryProvider).insert(category);
+    ref.invalidate(categoriesStreamProvider);
+  }
+
+  Future<void> save(Category category) async {
+    await ref.read(categoryRepositoryProvider).update(category);
+    ref.invalidate(categoriesStreamProvider);
+  }
+
+  Future<void> delete(int id) async {
+    await ref.read(categoryRepositoryProvider).delete(id);
+    ref.invalidate(categoriesStreamProvider);
+  }
+
+  Future<void> reorder(List<Category> categories) async {
+    await ref.read(categoryRepositoryProvider).reorder(categories);
+    ref.invalidate(categoriesStreamProvider);
+  }
+}
+
 /// Net salary: uses budget if configured, falls back to actual income records.
 final effectiveNetSalaryProvider = Provider.autoDispose<double>((ref) {
   final budget = ref.watch(budgetSettingsProvider).value;
@@ -537,13 +584,14 @@ class NetWorthNotifier extends AsyncNotifier<void> {
 // ═══════════════════════════════════════════
 
 final exportServiceProvider = Provider<ExportService>((ref) => ExportService(
-  expenseRepo: ref.watch(expenseRepositoryProvider),
-  incomeRepo: ref.watch(incomeRepositoryProvider),
-  installmentRepo: ref.watch(installmentRepositoryProvider),
-  investmentRepo: ref.watch(investmentRepositoryProvider),
-  netWorthRepo: ref.watch(netWorthRepositoryProvider),
-  budgetGoalsRepo: ref.watch(budgetGoalsRepositoryProvider),
-));
+      expenseRepo: ref.watch(expenseRepositoryProvider),
+      incomeRepo: ref.watch(incomeRepositoryProvider),
+      installmentRepo: ref.watch(installmentRepositoryProvider),
+      investmentRepo: ref.watch(investmentRepositoryProvider),
+      netWorthRepo: ref.watch(netWorthRepositoryProvider),
+      budgetGoalsRepo: ref.watch(budgetGoalsRepositoryProvider),
+      categoryRepo: ref.watch(categoryRepositoryProvider),
+    ));
 
 // ═══════════════════════════════════════════
 // HEALTH PROVIDERS

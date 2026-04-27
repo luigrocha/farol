@@ -146,13 +146,13 @@ String _shortMonth(String key, AppLocalizations l10n) {
 
 // ─── Summary Cards ────────────────────────────────────────────────────────────
 
-class _SummaryCards extends StatelessWidget {
+class _SummaryCards extends ConsumerWidget {
   final List<Expense> expenses;
   final AnalyticsRange range;
   const _SummaryCards({required this.expenses, required this.range});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final cash = expenses.where((e) => e.payType == 'Cash').toList();
     final total = cash.fold(0.0, (s, e) => s + e.amount);
     final months = switch (range) {
@@ -162,7 +162,8 @@ class _SummaryCards extends StatelessWidget {
     };
     final avg = months > 0 ? total / months : 0.0;
     final byCat = _byCategory(expenses);
-    final topCat = byCat.isEmpty ? null : byCat.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+    final topCatDbValue = byCat.isEmpty ? null : byCat.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+    final catsMap = ref.watch(categoriesMapProvider);
 
     return Row(children: [
       Expanded(child: _MetricCard(
@@ -178,25 +179,22 @@ class _SummaryCards extends StatelessWidget {
         icon: Icons.calendar_month_outlined,
         color: tokens.FarolColors.beam,
       )),
-      if (topCat != null) ...[
+      if (topCatDbValue != null) ...[
         const SizedBox(width: 10),
-        Expanded(child: _MetricCard(
-          label: 'TOP CAT.',
-          value: _emojiFor(topCat),
-          subvalue: _labelFor(topCat, context),
-          icon: Icons.star_outline,
-          color: tokens.FarolColors.getCategoryColor(topCat),
-        )),
+        Builder(builder: (context) {
+          final cat = catsMap[topCatDbValue];
+          final emoji = cat?.emoji ?? '📦';
+          final label = cat?.name ?? topCatDbValue;
+          return Expanded(child: _MetricCard(
+            label: 'TOP CAT.',
+            value: emoji,
+            subvalue: label,
+            icon: Icons.star_outline,
+            color: tokens.FarolColors.getCategoryColor(topCatDbValue),
+          ));
+        }),
       ],
     ]);
-  }
-
-  static String _emojiFor(String db) {
-    try { return ExpenseCategory.fromDb(db).emoji; } catch (_) { return '📦'; }
-  }
-
-  static String _labelFor(String db, BuildContext context) {
-    try { return ExpenseCategory.fromDb(db).localizedLabel(context); } catch (_) { return db; }
   }
 }
 
@@ -311,16 +309,17 @@ class _Legend extends StatelessWidget {
 
 // ─── Category Breakdown ───────────────────────────────────────────────────────
 
-class _CategoryBreakdown extends StatelessWidget {
+class _CategoryBreakdown extends ConsumerWidget {
   final List<Expense> expenses;
   const _CategoryBreakdown({required this.expenses});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final byCat = _byCategory(expenses);
     final total = byCat.values.fold(0.0, (a, b) => a + b);
     final sorted = byCat.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    final catsMap = ref.watch(categoriesMapProvider);
     if (sorted.isEmpty) return const SizedBox.shrink();
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -330,7 +329,8 @@ class _CategoryBreakdown extends StatelessWidget {
         _DonutChart(data: byCat, total: total),
         const SizedBox(width: 16),
         Expanded(child: Column(children: sorted.take(5).map((e) {
-          String label; try { label = ExpenseCategory.fromDb(e.key).localizedLabel(context); } catch (_) { label = e.key; }
+          final cat = catsMap[e.key];
+          final label = cat?.name ?? e.key;
           final pct = total > 0 ? e.value / total : 0.0;
           return Padding(padding: const EdgeInsets.only(bottom: 8), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [

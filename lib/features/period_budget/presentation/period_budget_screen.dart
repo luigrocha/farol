@@ -106,7 +106,7 @@ class PeriodBudgetScreen extends ConsumerWidget {
           delegate: SliverChildBuilderDelegate(
             (_, i) => _EntryCard(
               entry: entries[i],
-              isSwileBacked: _isSwileBacked(entries[i].category),
+              isSwileBacked: _isSwileBacked(entries[i].category, ref),
               onTap: () => _openEdit(context, entries[i]),
               onAction: () => _handleAction(context, ref, entries[i]),
             ),
@@ -137,7 +137,7 @@ class PeriodBudgetScreen extends ConsumerWidget {
     final label = hasGoal ? 'Reset to goal amount?' : 'Delete budget?';
     final body = hasGoal
         ? 'This will remove the custom amount and revert to your goal (${FinancialCalculatorService.formatBRL(entry.goal!.targetAmount)}).'
-        : 'Remove budget for ${_catLabel(entry.category, context)}?';
+        : 'Remove budget for ${_catLabel(entry.category, ref)}?';
     final confirm = hasGoal ? 'Reset' : 'Delete';
 
     final ok = await showDialog<bool>(
@@ -178,26 +178,20 @@ class PeriodBudgetScreen extends ConsumerWidget {
     }
   }
 
-  String _catLabel(String dbValue, BuildContext context) {
-    try {
-      return ExpenseCategory.fromDb(dbValue).localizedLabel(context);
-    } catch (_) {
-      return dbValue;
-    }
+  String _catLabel(String dbValue, WidgetRef ref) {
+    final catsMap = ref.read(categoriesMapProvider);
+    return catsMap[dbValue]?.name ?? dbValue;
   }
 
-  bool _isSwileBacked(String dbValue) {
-    try {
-      return ExpenseCategory.fromDb(dbValue).isSwile;
-    } catch (_) {
-      return false;
-    }
+  bool _isSwileBacked(String dbValue, WidgetRef ref) {
+    final catsMap = ref.read(categoriesMapProvider);
+    return catsMap[dbValue]?.isSwile ?? false;
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _EntryCard extends StatelessWidget {
+class _EntryCard extends ConsumerWidget {
   final PeriodBudgetEntry entry;
   final bool isSwileBacked;
   final VoidCallback onTap;
@@ -211,9 +205,11 @@ class _EntryCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
-    final cat = _resolveCategory(entry.category);
+    final catsMap = ref.watch(categoriesMapProvider);
+    final cat = catsMap[entry.category];
+    
     final pct = entry.percentage.clamp(0.0, 1.0);
 
     final Color progressColor;
@@ -256,7 +252,7 @@ class _EntryCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        cat?.localizedLabel(context) ?? entry.category,
+                        cat?.name ?? entry.category,
                         style: GoogleFonts.manrope(
                             fontSize: 14, fontWeight: FontWeight.w600),
                       ),
@@ -365,13 +361,5 @@ class _EntryCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  ExpenseCategory? _resolveCategory(String dbValue) {
-    try {
-      return ExpenseCategory.fromDb(dbValue);
-    } catch (_) {
-      return null;
-    }
   }
 }

@@ -21,7 +21,7 @@ class BudgetEditSheet extends ConsumerStatefulWidget {
 }
 
 class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
-  late ExpenseCategory _selectedCategory;
+  String? _selectedCategory;
   late final TextEditingController _amountCtrl;
   bool _saving = false;
 
@@ -30,13 +30,11 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
     super.initState();
     final entry = widget.entry;
     if (entry != null) {
-      _selectedCategory =
-          _catFromDb(entry.category) ?? ExpenseCategory.values.first;
+      _selectedCategory = entry.category;
       _amountCtrl = TextEditingController(
         text: entry.amount.toStringAsFixed(2),
       );
     } else {
-      _selectedCategory = ExpenseCategory.values.first;
       _amountCtrl = TextEditingController();
     }
   }
@@ -45,14 +43,6 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
   void dispose() {
     _amountCtrl.dispose();
     super.dispose();
-  }
-
-  ExpenseCategory? _catFromDb(String dbValue) {
-    try {
-      return ExpenseCategory.fromDb(dbValue);
-    } catch (_) {
-      return null;
-    }
   }
 
   double _parseAmount() =>
@@ -65,6 +55,8 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
       return;
     }
 
+    if (_selectedCategory == null) return;
+
     // isCustom = true when the amount differs from the parent goal.
     final goalAmount = widget.entry?.goalAmount;
     final isCustom = goalAmount == null || amount != goalAmount;
@@ -72,7 +64,7 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
     setState(() => _saving = true);
     try {
       await ref.read(periodBudgetNotifierProvider.notifier).upsert(
-            category: _selectedCategory.dbValue,
+            category: _selectedCategory!,
             amount: amount,
             isCustom: isCustom,
           );
@@ -90,9 +82,17 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final period = ref.watch(currentPeriodProvider);
+    final categories = ref.watch(categoriesStreamProvider).value ?? [];
+    final catsMap = ref.watch(categoriesMapProvider);
+    
     final entry = widget.entry;
     final isEdit = entry != null;
     final goalAmount = entry?.goalAmount;
+
+    // Default selection if not set
+    if (_selectedCategory == null && categories.isNotEmpty) {
+      _selectedCategory = categories.first.dbValue;
+    }
 
     return Padding(
       padding:
@@ -167,25 +167,25 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
                 border: Border.all(color: colors.onSurfaceFaint),
               ),
               child: DropdownButtonHideUnderline(
-                child: DropdownButton<ExpenseCategory>(
+                child: DropdownButton<String>(
                   value: _selectedCategory,
                   isExpanded: true,
                   // Lock category when editing an existing entry.
                   onChanged: isEdit
                       ? null
-                      : (cat) {
-                          if (cat != null) {
-                            setState(() => _selectedCategory = cat);
+                      : (dbVal) {
+                          if (dbVal != null) {
+                            setState(() => _selectedCategory = dbVal);
                           }
                         },
-                  items: ExpenseCategory.values
+                  items: categories
                       .map((cat) => DropdownMenuItem(
-                            value: cat,
+                            value: cat.dbValue,
                             child: Row(children: [
                               Text(cat.emoji,
                                   style: const TextStyle(fontSize: 18)),
                               const SizedBox(width: 10),
-                              Text(cat.label,
+                              Text(cat.name,
                                   style: const TextStyle(fontSize: 14)),
                             ]),
                           ))

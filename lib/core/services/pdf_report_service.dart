@@ -33,6 +33,7 @@ class PdfReportService {
     required BudgetSettings? budget,
     required NetWorthSnapshot? netWorth,
     required List<BudgetGoal> goals,
+    Map<String, String> categoryNames = const {},
     String locale = 'pt',
   }) async {
     final doc = pw.Document();
@@ -75,7 +76,7 @@ class PdfReportService {
         pw.SizedBox(height: 8),
         sortedCats.isEmpty
             ? _emptyNote('Sin gastos en efectivo registrados')
-            : _categoryTable(sortedCats, netSalary, goalsMap, locale),
+            : _categoryTable(sortedCats, netSalary, goalsMap, locale, categoryNames),
         if (swileExpenses > 0) ...[
           pw.SizedBox(height: 6),
           _noteText(
@@ -210,7 +211,10 @@ class PdfReportService {
     );
   }
 
-  static String _catLabel(String dbValue, String locale) {
+  static String _catLabel(String dbValue, String locale, Map<String, String> categoryNames) {
+    if (categoryNames.containsKey(dbValue)) {
+      return categoryNames[dbValue]!;
+    }
     try {
       return ExpenseCategory.fromDb(dbValue).labelForLocale(locale);
     } catch (_) {
@@ -231,7 +235,7 @@ class PdfReportService {
   // ═══════════════════════════════════════════
 
   static pw.Widget _categoryTable(
-      List<MapEntry<String, double>> cats, double netSalary, Map<String, BudgetGoal> goals, String locale) {
+      List<MapEntry<String, double>> cats, double netSalary, Map<String, BudgetGoal> goals, String locale, Map<String, String> categoryNames) {
     return pw.Table(
       columnWidths: {
         0: const pw.FlexColumnWidth(3),
@@ -245,7 +249,7 @@ class PdfReportService {
           final i = entry.key;
           final cat = entry.value.key;
           final amount = entry.value.value;
-          final label = _catLabel(cat, locale);
+          final label = _catLabel(cat, locale, categoryNames);
           final pctSalary = netSalary > 0 ? amount / netSalary * 100 : 0.0;
           final goal = goals[cat];
           final limit = goal?.targetAmount ?? (netSalary * 0.1);

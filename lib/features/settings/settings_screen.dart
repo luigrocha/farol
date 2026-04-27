@@ -17,6 +17,7 @@ import '../budget/presentation/recommendation_card.dart';
 import '../net_worth/presentation/net_worth_settings_sheet.dart';
 import '../profile/presentation/profile_providers.dart';
 import 'salary_settings_sheet.dart';
+import 'categories_management_screen.dart';
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -859,6 +860,55 @@ class _NetWorthSection extends ConsumerWidget {
                 Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
               ]);
             },
+          ),
+        ),
+      ),
+      const SizedBox(height: 12),
+      GestureDetector(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const CategoriesManagementScreen()),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colors.surfaceLowest,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 34, height: 34,
+                decoration: BoxDecoration(
+                  color: tokens.FarolColors.beam.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.category_outlined,
+                  size: 18,
+                  color: tokens.FarolColors.beam,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context).categories,
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: colors.onSurface),
+                    ),
+                    Text(
+                      AppLocalizations.of(context).manageCategories,
+                      style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
+            ],
           ),
         ),
       ),

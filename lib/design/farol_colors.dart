@@ -32,6 +32,9 @@ class FarolColors {
       case 'FOOD_GROCERY':  return tide;
       case 'HEALTH':        return coral;
       case 'LEISURE':       return const Color(0xFF8FA3B8);
+      case 'SUBSCRIPTIONS': return const Color(0xFF6B4EAF);
+      case 'EDUCATION':     return const Color(0xFF9E6B3A);
+      case 'CARD_INSTALLMENTS': return const Color(0xFFB94F82);
       case 'TESOURO_SELIC': return navy;
       case 'CDB':           return const Color(0xFF6B4EAF);
       case 'LCI_LCA':       return tide;
@@ -40,7 +43,15 @@ class FarolColors {
       case 'STOCKS_INTL':   return const Color(0xFF1A6BAA);
       case 'PENSION':       return const Color(0xFF9E6B3A);
       case 'SAVINGS':       return const Color(0xFFB94F82);
-      default:              return const Color(0xFF6B7280);
+      default:
+        // Deterministic color for custom categories
+        final colors = [
+          navy, beam, tide, coral,
+          const Color(0xFF8FA3B8), const Color(0xFF6B4EAF),
+          const Color(0xFF9E6B3A), const Color(0xFFB94F82),
+          const Color(0xFF0D6E6E), const Color(0xFF1A6BAA),
+        ];
+        return colors[category.hashCode.abs() % colors.length];
     }
   }
 

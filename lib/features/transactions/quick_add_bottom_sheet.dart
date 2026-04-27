@@ -1,3 +1,4 @@
+import 'package:farol/core/models/category.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,22 +19,22 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
   final _amountCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
   final _installmentsCtrl = TextEditingController(text: '2');
-  ExpenseCategory _category = ExpenseCategory.foodGrocery;
+  String _categoryDbValue = 'FOOD_GROCERY';
   PaymentMethod _method = PaymentMethod.pix;
   bool _isFixed = false;
   DateTime _date = DateTime.now();
   String? _subcategory;
 
   static const _subcategories = {
-    ExpenseCategory.housing: ['Rent', 'Condo Fee', 'Electricity', 'Water', 'Gas', 'Internet', 'Property Tax', 'Maintenance'],
-    ExpenseCategory.transport: ['Uber', 'Subway/Bus', 'Fuel', 'Parking', 'Maintenance'],
-    ExpenseCategory.foodGrocery: ['Supermarket', 'Restaurant', 'Delivery', 'Bakery', 'Farmers Market'],
-    ExpenseCategory.health: ['Pharmacy', 'Doctor', 'Health Plan', 'Lab Tests', 'Gym'],
-    ExpenseCategory.subscriptions: ['Streaming', 'Apps', 'Mobile Phone', 'Gym', 'Other'],
-    ExpenseCategory.leisure: ['Cinema', 'Travel', 'Bars', 'Games', 'Hobbies'],
-    ExpenseCategory.education: ['Course', 'Books', 'Certification', 'Materials'],
-    ExpenseCategory.cardInstallments: ['Installment Purchase'],
-    ExpenseCategory.other: ['Gift', 'Donation', 'Unexpected', 'Other'],
+    'HOUSING': ['Rent', 'Condo Fee', 'Electricity', 'Water', 'Gas', 'Internet', 'Property Tax', 'Maintenance'],
+    'TRANSPORT': ['Uber', 'Subway/Bus', 'Fuel', 'Parking', 'Maintenance'],
+    'FOOD_GROCERY': ['Supermarket', 'Restaurant', 'Delivery', 'Bakery', 'Farmers Market'],
+    'HEALTH': ['Pharmacy', 'Doctor', 'Health Plan', 'Lab Tests', 'Gym'],
+    'SUBSCRIPTIONS': ['Streaming', 'Apps', 'Mobile Phone', 'Gym', 'Other'],
+    'LEISURE': ['Cinema', 'Travel', 'Bars', 'Games', 'Hobbies'],
+    'EDUCATION': ['Course', 'Books', 'Certification', 'Materials'],
+    'CARD_INSTALLMENTS': ['Installment Purchase'],
+    'OTHER': ['Gift', 'Donation', 'Unexpected', 'Other'],
   };
 
   @override
@@ -43,6 +44,8 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final bottom = MediaQuery.of(context).viewInsets.bottom;
+    final categoriesAsync = ref.watch(categoriesStreamProvider);
+
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
@@ -66,16 +69,28 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
         // 2. Category grid
         Align(alignment: Alignment.centerLeft, child: Text(l10n.category, style: Theme.of(context).textTheme.labelLarge)),
         const SizedBox(height: 8),
-        GridView.count(crossAxisCount: 3, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: 2.5, mainAxisSpacing: 8, crossAxisSpacing: 8,
-          children: ExpenseCategory.values.map((c) => _catChip(c, context)).toList()),
+        categoriesAsync.when(
+          loading: () => const SizedBox(height: 100, child: Center(child: CircularProgressIndicator())),
+          error: (_, __) => Text(l10n.translate('error_loading')),
+          data: (categories) {
+            return GridView.count(
+              crossAxisCount: 3, 
+              shrinkWrap: true, 
+              physics: const NeverScrollableScrollPhysics(),
+              childAspectRatio: 2.5, 
+              mainAxisSpacing: 8, 
+              crossAxisSpacing: 8,
+              children: categories.map((c) => _catChip(c, context)).toList(),
+            );
+          },
+        ),
         const SizedBox(height: 16),
 
         // 3. Subcategory chips
-        if (_subcategories[_category] != null) ...[
+        if (_subcategories[_categoryDbValue] != null) ...[
           Align(alignment: Alignment.centerLeft, child: Text(l10n.translate('subcategory'), style: Theme.of(context).textTheme.labelLarge)),
           const SizedBox(height: 8),
-          Wrap(spacing: 8, runSpacing: 4, children: _subcategories[_category]!.map((s) =>
+          Wrap(spacing: 8, runSpacing: 4, children: _subcategories[_categoryDbValue]!.map((s) =>
             ChoiceChip(label: Text(s, style: const TextStyle(fontSize: 12)), selected: _subcategory==s,
               onSelected: (v) => setState(() => _subcategory = v ? s : null))).toList()),
           const SizedBox(height: 16),
@@ -129,17 +144,17 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
     );
   }
 
-  Widget _catChip(ExpenseCategory c, BuildContext context) {
-    final sel = _category == c;
+  Widget _catChip(Category c, BuildContext context) {
+    final sel = _categoryDbValue == c.dbValue;
     final color = tokens.FarolColors.getCategoryColor(c.dbValue);
     return GestureDetector(
-      onTap: () => setState(() { _category = c; _subcategory = null; }),
+      onTap: () => setState(() { _categoryDbValue = c.dbValue; _subcategory = null; }),
       child: AnimatedContainer(duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
           color: sel ? color.withValues(alpha: 0.15) : Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: sel ? color : Theme.of(context).colorScheme.outline.withValues(alpha: 0.3), width: sel ? 2 : 1)),
-        child: Center(child: Text('${c.emoji} ${c.localizedLabel(context)}',
+        child: Center(child: Text('${c.emoji} ${c.name}',
           style: TextStyle(fontSize: 11, fontWeight: sel ? FontWeight.w600 : FontWeight.w400, color: sel ? color : context.colors.onSurface),
           textAlign: TextAlign.center, overflow: TextOverflow.ellipsis))),
     );
@@ -158,7 +173,12 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
     final numInst = _method == PaymentMethod.creditInstallment
         ? int.tryParse(_installmentsCtrl.text) ?? 1
         : 1;
-    final desc = _descCtrl.text.isEmpty ? _subcategory ?? _category.label : _descCtrl.text;
+
+    final categories = ref.read(categoriesStreamProvider).value ?? [];
+    final currentCat = categories.firstWhere((c) => c.dbValue == _categoryDbValue, 
+        orElse: () => categories.isNotEmpty ? categories.first : Category(dbValue: 'OTHER', name: 'Other', emoji: '📋'));
+    
+    final desc = _descCtrl.text.isEmpty ? _subcategory ?? currentCat.name : _descCtrl.text;
 
     try {
       await ref.read(expenseRepositoryProvider).insert(
@@ -166,8 +186,8 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
         month: _date.month,
         year: _date.year,
         payType: payType,
-        category: _category.dbValue,
-        subcategory: _subcategory ?? _category.label,
+        category: _categoryDbValue,
+        subcategory: _subcategory ?? currentCat.name,
         amount: amount,
         paymentMethod: _method.dbValue,
         installments: numInst,

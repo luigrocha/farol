@@ -119,6 +119,19 @@ class UserSettings extends Table {
 }
 
 // ═══════════════════════════════════════════
+// TABLE: CategoryTable
+// ═══════════════════════════════════════════
+class CategoryTable extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get dbValue => text().unique()();
+  TextColumn get name => text()();
+  TextColumn get emoji => text()();
+  BoolColumn get isSwile => boolean().withDefault(const Constant(false))();
+  BoolColumn get isSystem => boolean().withDefault(const Constant(false))();
+  IntColumn get orderIndex => integer().withDefault(const Constant(0))();
+}
+
+// ═══════════════════════════════════════════
 // DATABASE
 // ═══════════════════════════════════════════
 @DriftDatabase(tables: [
@@ -129,6 +142,7 @@ class UserSettings extends Table {
   NetWorthSnapshots,
   BudgetGoals,
   UserSettings,
+  CategoryTable,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(openConnection());
@@ -136,7 +150,31 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (m) => m.createAll(),
+        onUpgrade: (m, from, to) async {
+          if (from == 1) {
+            await m.createTable(categoryTable);
+            // Seed initial categories
+            await batch((batch) {
+              batch.insertAll(categoryTable, [
+                CategoryTableCompanion.insert(dbValue: 'HOUSING', name: 'Housing', emoji: '🏠', isSystem: const Value(true), orderIndex: const Value(0)),
+                CategoryTableCompanion.insert(dbValue: 'TRANSPORT', name: 'Transport', emoji: '🚗', isSystem: const Value(true), orderIndex: const Value(1)),
+                CategoryTableCompanion.insert(dbValue: 'FOOD_GROCERY', name: 'Food/Grocery', emoji: '🛒', isSwile: const Value(true), isSystem: const Value(true), orderIndex: const Value(2)),
+                CategoryTableCompanion.insert(dbValue: 'HEALTH', name: 'Health', emoji: '🏥', isSystem: const Value(true), orderIndex: const Value(3)),
+                CategoryTableCompanion.insert(dbValue: 'SUBSCRIPTIONS', name: 'Subscriptions', emoji: '📱', isSystem: const Value(true), orderIndex: const Value(4)),
+                CategoryTableCompanion.insert(dbValue: 'LEISURE', name: 'Leisure', emoji: '🎮', isSystem: const Value(true), orderIndex: const Value(5)),
+                CategoryTableCompanion.insert(dbValue: 'EDUCATION', name: 'Education', emoji: '📚', isSystem: const Value(true), orderIndex: const Value(6)),
+                CategoryTableCompanion.insert(dbValue: 'CARD_INSTALLMENTS', name: 'Card Installments', emoji: '💳', isSystem: const Value(true), orderIndex: const Value(7)),
+                CategoryTableCompanion.insert(dbValue: 'OTHER', name: 'Other', emoji: '📋', isSystem: const Value(true), orderIndex: const Value(8)),
+              ]);
+            });
+          }
+        },
+      );
 
   // ═══════════════════════════════════════════
   // INCOME DAOs
