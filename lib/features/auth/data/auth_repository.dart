@@ -12,7 +12,7 @@ abstract class AuthRepository {
   Future<AppUser> signInWithEmail(String email, String password);
   Future<AppUser> signUpWithEmail(String email, String password, {String? fullName, String? cpf});
   Future<AppUser> signInWithGoogle();
-  Future<AppUser> signInWithApple();
+  Future<void> signInWithApple();
 
   Future<void> resendVerificationEmail();
   Future<void> sendPasswordResetEmail(String email);
@@ -112,7 +112,19 @@ class SupabaseAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<AppUser> signInWithApple() async {
+  Future<void> signInWithApple() async {
+    if (kIsWeb) {
+      try {
+        // sign_in_with_apple doesn't support web; use Supabase OAuth redirect instead.
+        // Session arrives via authStateChanges after Apple redirects back.
+        // ignore: experimental_member_use
+        await _supabase.auth.signInWithOAuth(OAuthProvider.apple);
+      } on AuthException catch (e) {
+        throw _mapException(e);
+      }
+      return;
+    }
+
     try {
       final appleCredential = await SignInWithApple.getAppleIDCredential(
         scopes: [
@@ -127,13 +139,10 @@ class SupabaseAuthRepository implements AuthRepository {
       }
 
       // ignore: experimental_member_use
-      final response = await _supabase.auth.signInWithIdToken(
+      await _supabase.auth.signInWithIdToken(
         provider: OAuthProvider.apple,
         idToken: identityToken,
       );
-
-      if (response.user == null) throw Exception('User is null after Apple sign in');
-      return AppUser.fromSupabase(response.user!);
     } on AuthException catch (e) {
       throw _mapException(e);
     } catch (e) {
