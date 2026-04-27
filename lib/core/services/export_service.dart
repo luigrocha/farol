@@ -11,7 +11,7 @@ import '../repositories/investment_repository.dart';
 import '../repositories/net_worth_repository.dart';
 import '../repositories/budget_goals_repository.dart';
 import '../../features/budget/domain/budget_settings.dart';
-import 'export_web_stub.dart' if (dart.library.html) 'export_web.dart';
+import 'export_web_stub.dart' if (dart.library.js_interop) 'export_web.dart';
 import 'pdf_report_service.dart';
 
 class ExportService {
