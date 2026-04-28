@@ -93,6 +93,9 @@ void main() async {
     await Supabase.initialize(
       url: hasValidCredentials ? supabaseUrl : 'http://localhost:54321',
       anonKey: hasValidCredentials ? supabaseAnonKey : 'local-dev-placeholder',
+      authOptions: const FlutterAuthClientOptions(
+        authFlowType: AuthFlowType.pkce,
+      ),
     );
   } catch (e) {
     debugPrint('[Farol] Supabase init skipped: $e');

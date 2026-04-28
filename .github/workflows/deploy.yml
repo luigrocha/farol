@@ -35,6 +35,7 @@ jobs:
             --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
             --dart-define=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
             --dart-define=GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
+            --dart-define=OAUTH_REDIRECT_URL=${{ secrets.OAUTH_REDIRECT_URL }}
 
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -5,6 +5,8 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../domain/app_user.dart';
 import '../domain/auth_state.dart';
 
+const _kWebRedirectUrl = String.fromEnvironment('OAUTH_REDIRECT_URL');
+
 abstract class AuthRepository {
   Stream<AppAuthState> get authStateChanges;
   AppUser? get currentUser;
@@ -82,13 +84,25 @@ class SupabaseAuthRepository implements AuthRepository {
   @override
   Future<AppUser> signInWithGoogle() async {
     try {
+      if (kIsWeb) {
+        // ignore: experimental_member_use
+        await _supabase.auth.signInWithOAuth(
+          OAuthProvider.google,
+          redirectTo: _kWebRedirectUrl,
+        );
+        // Redirect in progress — session arrives via authStateChanges after redirect.
+        // This line is unreachable on the redirect path; the type system requires it.
+        return AppUser.fromSupabase(
+          _supabase.auth.currentUser ?? (throw Exception('Google Sign-In redirect initiated')),
+        );
+      }
+
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) throw Exception('Sign in cancelled by user');
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
       final idToken = googleAuth.idToken;
-      // accessToken is optional for Supabase when idToken is present
       final accessToken = googleAuth.accessToken;
 
       if (idToken == null) {
@@ -118,7 +132,10 @@ class SupabaseAuthRepository implements AuthRepository {
         // sign_in_with_apple doesn't support web; use Supabase OAuth redirect instead.
         // Session arrives via authStateChanges after Apple redirects back.
         // ignore: experimental_member_use
-        await _supabase.auth.signInWithOAuth(OAuthProvider.apple);
+        await _supabase.auth.signInWithOAuth(
+          OAuthProvider.apple,
+          redirectTo: _kWebRedirectUrl,
+        );
       } on AuthException catch (e) {
         throw _mapException(e);
       }

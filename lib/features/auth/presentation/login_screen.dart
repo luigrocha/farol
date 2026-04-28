@@ -220,17 +220,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Expanded(
-                      child: _SocialBtn(
-                        icon: Icons.apple,
-                        label: 'Apple',
-                        onPressed: isLoading
-                            ? null
-                            : () => ref
-                                .read(authControllerProvider.notifier)
-                                .signInWithApple(),
-                      ),
-                    ),
+                    // Expanded(
+                    //   child: _SocialBtn(
+                    //     icon: Icons.apple,
+                    //     label: 'Apple',
+                    //     onPressed: isLoading
+                    //         ? null
+                    //         : () => ref
+                    //             .read(authControllerProvider.notifier)
+                    //             .signInWithApple(),
+                    //   ),
+                    // ),
                   ]),
                   const SizedBox(height: 32),
 
