@@ -48,6 +48,7 @@ class AppLocalizations {
       'swile_remaining': 'Swile Remaining',
       'expense_by_cat': 'Expenses by Category',
       'no_expenses': 'No registered expenses',
+      'no_expenses_hint': 'Add an expense to see your spending breakdown.',
       'no_net_worth': 'No net worth data',
       'score_desc': 'Score from 0 to 10',
       'months': [
@@ -366,6 +367,7 @@ class AppLocalizations {
       'swile_remaining': 'Swile Disponible',
       'expense_by_cat': 'Gastos por Categoría',
       'no_expenses': 'Sin gastos registrados',
+      'no_expenses_hint': 'Agrega un gasto para ver el desglose de tus gastos.',
       'no_net_worth': 'Sin datos de patrimonio',
       'score_desc': 'Puntaje de 0 a 10',
       'months': [
@@ -686,6 +688,7 @@ class AppLocalizations {
       'swile_remaining': 'Swile Disponível',
       'expense_by_cat': 'Gastos por Categoria',
       'no_expenses': 'Sem gastos registrados',
+      'no_expenses_hint': 'Adicione um gasto para ver o detalhamento dos seus gastos.',
       'no_net_worth': 'Sem dados de patrimônio',
       'score_desc': 'Pontuação de 0 a 10',
       'months': [

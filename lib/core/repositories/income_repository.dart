@@ -9,12 +9,24 @@ class IncomeRepository {
 
   Stream<List<Income>> watchAll() {
     final userId = _userId;
-    if (userId == null) return Stream.value([]);
-    return _supabase
-        .from('incomes')
-        .stream(primaryKey: ['id'])
-        .eq('user_id', userId)
-        .map((rows) => rows.map(Income.fromJson).toList());
+    if (userId != null) {
+      return _supabase
+          .from('incomes')
+          .stream(primaryKey: ['id'])
+          .eq('user_id', userId)
+          .map((rows) => rows.map(Income.fromJson).toList());
+    }
+    return _supabase.auth.onAuthStateChange
+        .where((e) => e.session != null)
+        .take(1)
+        .asyncExpand((e) {
+          final uid = e.session!.user.id;
+          return _supabase
+              .from('incomes')
+              .stream(primaryKey: ['id'])
+              .eq('user_id', uid)
+              .map((rows) => rows.map(Income.fromJson).toList());
+        });
   }
 
   Future<List<Income>> getAll() async {

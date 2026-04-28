@@ -10,13 +10,27 @@ class ExpenseRepository {
 
   Stream<List<Expense>> watchAll() {
     final userId = _userId;
-    if (userId == null) return Stream.value([]);
-    return _supabase
-        .from('expenses')
-        .stream(primaryKey: ['id'])
-        .eq('user_id', userId)
-        .order('transaction_date', ascending: false)
-        .map((rows) => rows.map(Expense.fromJson).toList());
+    if (userId != null) {
+      return _supabase
+          .from('expenses')
+          .stream(primaryKey: ['id'])
+          .eq('user_id', userId)
+          .order('transaction_date', ascending: false)
+          .map((rows) => rows.map(Expense.fromJson).toList());
+    }
+    // userId null at call time: wait for sign-in then open the real stream
+    return _supabase.auth.onAuthStateChange
+        .where((e) => e.session != null)
+        .take(1)
+        .asyncExpand((e) {
+          final uid = e.session!.user.id;
+          return _supabase
+              .from('expenses')
+              .stream(primaryKey: ['id'])
+              .eq('user_id', uid)
+              .order('transaction_date', ascending: false)
+              .map((rows) => rows.map(Expense.fromJson).toList());
+        });
   }
 
   Future<List<Expense>> getAll() async {

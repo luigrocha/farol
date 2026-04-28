@@ -286,8 +286,35 @@ class _ExpenseBreakdown extends ConsumerWidget {
     final net = ref.watch(effectiveNetSalaryProvider);
     final l10n = AppLocalizations.of(context);
     if (byCategory.isEmpty) {
-      return Card(child: Padding(padding: const EdgeInsets.all(24),
-        child: Column(children: [Icon(Icons.bar_chart, size: 48, color: Theme.of(context).colorScheme.outline), const SizedBox(height: 8), Text(l10n.translate('no_expenses'))])));
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: colors.surfaceLow,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.receipt_long_outlined, size: 32, color: colors.onSurfaceSoft),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                l10n.translate('no_expenses'),
+                style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                l10n.translate('no_expenses_hint'),
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft),
+              ),
+            ],
+          ),
+        ),
+      );
     }
     final sorted = byCategory.entries.toList()..sort((a,b) => b.value.compareTo(a.value));
     return Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
