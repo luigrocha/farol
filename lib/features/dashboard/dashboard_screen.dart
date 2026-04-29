@@ -106,32 +106,70 @@ class _NetWorthHero extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final snapAsync = ref.watch(netWorthSnapshotProvider);
-    if (snapAsync.isLoading) {
-      return const DashboardCardSkeleton(height: 140);
-    }
-    final snap = snapAsync.value;
-    final nw = snap == null ? 0.0 : FinancialCalculatorService.calculateNetWorth(
-      patrimonyTotal: snap.patrimonyTotal,
-      fgtsBalance: snap.fgtsBalance, investmentsTotal: snap.investmentsTotal,
-      emergencyFund: snap.emergencyFund, pendingInstallments: snap.pendingInstallments);
-    return Container(
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF244A72), tokens.FarolColors.navy]),
-      ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(l10n.netWorth.toUpperCase(), style: const TextStyle(fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: Colors.white60)),
-        const SizedBox(height: 6),
-        _BRLBig(value: nw, size: 36, color: Colors.white),
-        const SizedBox(height: 16),
-        Row(children: [
-          _MiniStat(label: 'Invertido', value: snap?.investmentsTotal ?? 0, color: Colors.white),
-          const SizedBox(width: 10),
-          _MiniStat(label: 'Líquido FGTS', value: (snap?.fgtsBalance ?? 0) + (snap?.emergencyFund ?? 0), color: tokens.FarolColors.beam),
+
+    // Use live account balances when available; fall back to manual snapshot.
+    final accountsReady = ref.watch(accountsProvider).value?.isNotEmpty ?? false;
+    final nw = accountsReady
+        ? ref.watch(enhancedNetWorthProvider)
+        : (() {
+            final snapAsync = ref.watch(netWorthSnapshotProvider);
+            if (snapAsync.isLoading) return null;
+            final snap = snapAsync.value;
+            if (snap == null) return 0.0;
+            return FinancialCalculatorService.calculateNetWorth(
+              patrimonyTotal: snap.patrimonyTotal,
+              fgtsBalance: snap.fgtsBalance,
+              investmentsTotal: snap.investmentsTotal,
+              emergencyFund: snap.emergencyFund,
+              pendingInstallments: snap.pendingInstallments,
+            );
+          })();
+
+    if (nw == null) return const DashboardCardSkeleton(height: 140);
+
+    final banks = ref.watch(liquidAccountsTotalProvider);
+    final investments = accountsReady
+        ? ref.watch(totalInvestmentBalanceProvider)
+        : (ref.watch(netWorthSnapshotProvider).value?.investmentsTotal ?? 0.0);
+    final fgts = accountsReady
+        ? ref.watch(fgtsBalanceFromAccountsProvider)
+        : ((ref.watch(netWorthSnapshotProvider).value?.fgtsBalance ?? 0.0) +
+           (ref.watch(netWorthSnapshotProvider).value?.emergencyFund ?? 0.0));
+
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, '/patrimonio'),
+      child: Container(
+        padding: const EdgeInsets.all(22),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF244A72), tokens.FarolColors.navy],
+          ),
+        ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            Expanded(
+              child: Text(l10n.netWorth.toUpperCase(),
+                  style: const TextStyle(fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: Colors.white60)),
+            ),
+            const Icon(Icons.chevron_right, size: 14, color: Colors.white30),
+          ]),
+          const SizedBox(height: 6),
+          _BRLBig(value: nw, size: 36, color: Colors.white),
+          const SizedBox(height: 16),
+          Row(children: [
+            if (accountsReady) ...[
+              _MiniStat(label: 'Contas', value: banks, color: Colors.white),
+              const SizedBox(width: 10),
+            ],
+            _MiniStat(label: 'Invertido', value: investments, color: Colors.white),
+            const SizedBox(width: 10),
+            _MiniStat(label: 'FGTS', value: fgts, color: tokens.FarolColors.beam),
+          ]),
         ]),
-      ]),
+      ),
     );
   }
 }

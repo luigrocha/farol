@@ -804,7 +804,11 @@ class HealthAutoSaveNotifier extends AutoDisposeAsyncNotifier<void> {
     final inst = ref.watch(installmentsProvider).value ?? [];
     final housing = byCategory['HOUSING'] ?? 0;
     final instTotal = inst.fold(0.0, (s, i) => s + i.monthlyAmount);
-    final ef = snap?.emergencyFund ?? 0;
+    // Prefer live account balances over the manual snapshot field.
+    final accountsExist = ref.watch(accountsProvider).value?.isNotEmpty ?? false;
+    final ef = accountsExist
+        ? ref.watch(liquidAccountsTotalProvider)
+        : (snap?.emergencyFund ?? 0);
     final efMonths = cash > 0 ? ef / cash : 0.0;
     final score = FinancialCalculatorService.calculateHealthScore(
       netSalary: net,

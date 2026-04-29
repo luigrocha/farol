@@ -29,6 +29,7 @@ import 'features/simulators/thirteenth_salary_screen.dart';
 import 'features/installments/installments_screen.dart';
 import 'features/simulators/fgts_aniversario_screen.dart';
 import 'features/period_budget/presentation/period_budget_screen.dart';
+import 'features/net_worth/presentation/patrimonio_screen.dart';
 
 final themeModeProvider =
     NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
@@ -142,6 +143,7 @@ class FarolApp extends ConsumerWidget {
         '/thirteenth_salary': (context) => const ThirteenthSalaryScreen(),
         '/installments': (context) => const InstallmentsScreen(),
         '/fgts_aniversario': (context) => const FgtsAniversarioScreen(),
+        '/patrimonio': (context) => const PatrimonioScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/investment_detail') {
