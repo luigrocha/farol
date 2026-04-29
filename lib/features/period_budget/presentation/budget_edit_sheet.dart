@@ -82,7 +82,6 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
     final colors = context.colors;
     final period = ref.watch(currentPeriodProvider);
     final categories = ref.watch(categoriesStreamProvider).value ?? [];
-    final catsMap = ref.watch(categoriesMapProvider);
     
     final entry = widget.entry;
     final isEdit = entry != null;

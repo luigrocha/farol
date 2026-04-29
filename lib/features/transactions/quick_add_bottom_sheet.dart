@@ -176,7 +176,7 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
 
     final categories = ref.read(categoriesStreamProvider).value ?? [];
     final currentCat = categories.firstWhere((c) => c.dbValue == _categoryDbValue, 
-        orElse: () => categories.isNotEmpty ? categories.first : Category(dbValue: 'OTHER', name: 'Other', emoji: '📋'));
+        orElse: () => categories.isNotEmpty ? categories.first : const Category(dbValue: 'OTHER', name: 'Other', emoji: '📋'));
     
     final desc = _descCtrl.text.isEmpty ? _subcategory ?? currentCat.name : _descCtrl.text;
 

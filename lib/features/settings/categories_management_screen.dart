@@ -301,8 +301,6 @@ class _CategoryDialogState extends ConsumerState<_CategoryDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-
     final l10n = AppLocalizations.of(context);
 
     return AlertDialog(

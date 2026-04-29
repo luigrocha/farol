@@ -143,12 +143,12 @@ class _PeriodBalanceHero extends ConsumerWidget {
           ),
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            const Expanded(
+          const Row(children: [
+            Expanded(
               child: Text('BALANCE DEL PERÍODO',
                 style: TextStyle(fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: Colors.white60)),
             ),
-            const Icon(Icons.chevron_right, size: 14, color: Colors.white30),
+            Icon(Icons.chevron_right, size: 14, color: Colors.white30),
           ]),
           const SizedBox(height: 6),
           _BRLBig(value: balance, size: 36, color: Colors.white),

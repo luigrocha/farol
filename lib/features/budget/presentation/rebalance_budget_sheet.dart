@@ -31,9 +31,6 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
     final goals = ref.read(budgetGoalsProvider).value ?? [];
     final catsMap = ref.read(categoriesMapProvider);
     
-    // Sort goals by category orderIndex if available, or keep as is
-    final goalMap = {for (final g in goals) g.category: g};
-    
     // We only rebalance non-swile categories for now (as per original logic)
     for (final goal in goals) {
       final dbVal = goal.category;
@@ -101,6 +98,7 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
   Future<void> _trySave(BuildContext context) async {
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context);
 
     final confirmed = await _showPreview(context);
     if (confirmed != true || !mounted) return;
@@ -114,7 +112,7 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
         navigator.pop();
         messenger.showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context).budgetRebalanced),
+            content: Text(l10n.budgetRebalanced),
             backgroundColor: Colors.green,
           ),
         );
@@ -204,7 +202,7 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
               AppLocalizations.of(ctx).save,
-              style: TextStyle(
+              style: const TextStyle(
                 color: tokens.FarolColors.navy,
                 fontWeight: FontWeight.w700,
               ),
