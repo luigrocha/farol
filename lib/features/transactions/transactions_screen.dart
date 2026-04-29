@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/models/enums.dart';
+import '../../core/models/income.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/theme/farol_colors.dart';
@@ -19,8 +22,25 @@ class TransactionsScreen extends ConsumerStatefulWidget {
   ConsumerState<TransactionsScreen> createState() => _TransactionsScreenState();
 }
 
-class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
+class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
   bool _showCategories = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  bool get _onExpensesTab => _tabController.index == 0;
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +51,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     ref.watch(fixedExpensePropagationProvider);
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
+      body: NestedScrollView(
+        headerSliverBuilder: (context, _) => [
           SliverAppBar(
             floating: true,
             title: Row(children: [
@@ -44,45 +64,70 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
               ),
             ]),
             actions: const [Icon(Icons.calendar_today, size: 22), SizedBox(width: 20)],
-          ),
-          SliverToBoxAdapter(
-            child: Column(children: [
-              const _SearchBar(),
-              _FilterChips(
-                showCategories: _showCategories,
-                onToggleCategories: (v) => setState(() => _showCategories = v),
-              ),
-              const _TotalMonthlyHero(),
-              const SizedBox(height: 16),
-            ]),
-          ),
-          if (filteredAsync.isLoading)
-            const SliverFillRemaining(child: Center(child: CircularProgressIndicator()))
-          else if (filteredAsync.hasError)
-            SliverFillRemaining(child: Center(child: Text('Erro: ${filteredAsync.error}')))
-          else if (filteredExpenses.isEmpty)
-            const SliverFillRemaining(child: Center(child: Text('Nenhum gasto encontrado')))
-          else ...[
-            SliverList(
-              delegate: SliverChildBuilderDelegate((ctx, i) {
-                final grouped = _groupExpensesByDay(filteredExpenses);
-                final date = grouped.keys.elementAt(i);
-                final dayExpenses = grouped[date]!;
-                return Column(children: [
-                  _DaySeparator(date: date, total: dayExpenses.fold(0.0, (s, e) => s + e.amount)),
-                  ...dayExpenses.map((e) => _TxRow(expense: e)),
-                ]);
-              }, childCount: _groupExpensesByDay(filteredExpenses).length),
+            bottom: TabBar(
+              controller: _tabController,
+              tabs: const [
+                Tab(text: 'Gastos'),
+                Tab(text: 'Ingresos'),
+              ],
+              labelStyle: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w700),
+              unselectedLabelStyle: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w500),
+              indicatorColor: tokens.FarolColors.beam,
+              labelColor: tokens.FarolColors.navy,
             ),
-          ],
-          const SliverToBoxAdapter(child: SizedBox(height: 80)),
+          ),
         ],
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            // ── Tab 0: Gastos ──
+            CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Column(children: [
+                    const _SearchBar(),
+                    _FilterChips(
+                      showCategories: _showCategories,
+                      onToggleCategories: (v) => setState(() => _showCategories = v),
+                    ),
+                    const _TotalMonthlyHero(),
+                    const SizedBox(height: 16),
+                  ]),
+                ),
+                if (filteredAsync.isLoading)
+                  const SliverFillRemaining(child: Center(child: CircularProgressIndicator()))
+                else if (filteredAsync.hasError)
+                  SliverFillRemaining(child: Center(child: Text('Erro: ${filteredAsync.error}')))
+                else if (filteredExpenses.isEmpty)
+                  const SliverFillRemaining(child: Center(child: Text('Nenhum gasto encontrado')))
+                else ...[
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate((ctx, i) {
+                      final grouped = _groupExpensesByDay(filteredExpenses);
+                      final date = grouped.keys.elementAt(i);
+                      final dayExpenses = grouped[date]!;
+                      return Column(children: [
+                        _DaySeparator(date: date, total: dayExpenses.fold(0.0, (s, e) => s + e.amount)),
+                        ...dayExpenses.map((e) => _TxRow(expense: e)),
+                      ]);
+                    }, childCount: _groupExpensesByDay(filteredExpenses).length),
+                  ),
+                ],
+                const SliverToBoxAdapter(child: SizedBox(height: 80)),
+              ],
+            ),
+            // ── Tab 1: Ingresos ──
+            const _IncomeTab(),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showModalBottomSheet(
           context: context,
           isScrollControlled: true,
-          builder: (_) => const QuickAddBottomSheet(),
+          builder: (_) => _onExpensesTab
+              ? const QuickAddBottomSheet()
+              : const _AddIncomeSheet(),
         ),
         backgroundColor: tokens.FarolColors.beam,
         child: const Icon(Icons.add, color: tokens.FarolColors.navy),
@@ -96,10 +141,271 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
       final date = e.transactionDate as DateTime;
       grouped.putIfAbsent(DateTime(date.year, date.month, date.day), () => []).add(e);
     }
-    final sorted = Map.fromEntries(
+    return Map.fromEntries(
       grouped.entries.toList()..sort((a, b) => b.key.compareTo(a.key)),
     );
-    return sorted;
+  }
+}
+
+// ─────────────────────────────────────────
+// Income Tab
+// ─────────────────────────────────────────
+class _IncomeTab extends ConsumerWidget {
+  const _IncomeTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final incomesAsync = ref.watch(incomesProvider);
+    final total = ref.watch(totalIncomeProvider);
+    final colors = context.colors;
+
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Container(
+            margin: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+            padding: const EdgeInsets.all(22),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(22),
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [tokens.FarolColors.tide, Color(0xFF0F5C37)],
+              ),
+            ),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text('TOTAL INGRESOS',
+                  style: TextStyle(fontSize: 10, letterSpacing: 1.8, fontWeight: FontWeight.w700, color: Colors.white60)),
+              const SizedBox(height: 6),
+              _BRLBig(value: total, size: 32, color: Colors.white),
+            ]),
+          ),
+        ),
+        incomesAsync.when(
+          loading: () => const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
+          error: (e, _) => SliverFillRemaining(child: Center(child: Text('Erro: $e'))),
+          data: (incomes) {
+            if (incomes.isEmpty) {
+              return SliverFillRemaining(
+                child: Center(
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    Icon(Icons.account_balance_wallet_outlined, size: 56, color: colors.onSurfaceFaint),
+                    const SizedBox(height: 12),
+                    Text('Nenhum ingresso neste mês',
+                        style: GoogleFonts.manrope(fontSize: 15, color: colors.onSurfaceSoft)),
+                    const SizedBox(height: 6),
+                    Text('Toca + para registrar salário, bonus, etc.',
+                        style: TextStyle(fontSize: 12, color: colors.onSurfaceFaint)),
+                  ]),
+                ),
+              );
+            }
+            return SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (_, i) => _IncomeRow(income: incomes[i]),
+                childCount: incomes.length,
+              ),
+            );
+          },
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 80)),
+      ],
+    );
+  }
+}
+
+class _IncomeRow extends ConsumerWidget {
+  final Income income;
+  const _IncomeRow({required this.income});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final type = IncomeType.fromDb(income.incomeType);
+    final l10n = AppLocalizations.of(context);
+
+    return Dismissible(
+      key: ValueKey(income.id),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        margin: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+        decoration: BoxDecoration(color: Colors.red.shade700, borderRadius: BorderRadius.circular(16)),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Icon(Icons.delete_outline, color: Colors.white, size: 22),
+          const SizedBox(height: 4),
+          Text(l10n.delete, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
+        ]),
+      ),
+      confirmDismiss: (_) async => showConfirmDeleteDialog(context, title: l10n.confirmDelete, body: l10n.cannotUndo),
+      onDismissed: (_) async {
+        try {
+          await ref.read(incomeNotifierProvider.notifier).delete(income.id);
+          if (context.mounted) context.showSuccessSnackBar(l10n.transactionDeleted);
+        } catch (e) {
+          if (context.mounted) context.showErrorSnackBar(e);
+        }
+      },
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+        child: Row(children: [
+          Container(
+            width: 38, height: 38,
+            decoration: BoxDecoration(
+              color: tokens.FarolColors.tide.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: Center(child: Text(type.emoji, style: const TextStyle(fontSize: 18))),
+          ),
+          const SizedBox(width: 14),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(type.label,
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
+            if (income.notes != null && income.notes!.isNotEmpty)
+              Text(income.notes!,
+                  style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
+                  maxLines: 1, overflow: TextOverflow.ellipsis),
+          ])),
+          Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+            _BRLSmall(value: income.amount, size: 15, weight: FontWeight.w700, color: tokens.FarolColors.tide),
+            Text(income.isNet ? 'Líquido' : 'Bruto',
+                style: TextStyle(fontSize: 11, color: colors.onSurfaceFaint)),
+          ]),
+        ]),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────
+// Add Income Sheet
+// ─────────────────────────────────────────
+class _AddIncomeSheet extends ConsumerStatefulWidget {
+  const _AddIncomeSheet();
+
+  @override
+  ConsumerState<_AddIncomeSheet> createState() => _AddIncomeSheetState();
+}
+
+class _AddIncomeSheetState extends ConsumerState<_AddIncomeSheet> {
+  IncomeType _type = IncomeType.netSalary;
+  final _amountController = TextEditingController();
+  final _notesController = TextEditingController();
+  bool _isNet = true;
+  bool _saving = false;
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    final amount = double.tryParse(_amountController.text.replaceAll(',', '.'));
+    if (amount == null || amount <= 0) return;
+    setState(() => _saving = true);
+    try {
+      final month = ref.read(selectedMonthProvider);
+      final year = ref.read(selectedYearProvider);
+      await ref.read(incomeNotifierProvider.notifier).insert(
+            month: month,
+            year: year,
+            incomeType: _type.dbValue,
+            amount: amount,
+            isNet: _isNet,
+            notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+          );
+      if (mounted) Navigator.pop(context);
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('Novo Ingresso',
+                style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700, color: colors.onSurface)),
+            const SizedBox(height: 20),
+            // Type selector
+            Text('Tipo', style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
+            const SizedBox(height: 6),
+            SizedBox(
+              height: 44,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: IncomeType.values.map((t) {
+                  final active = _type == t;
+                  return GestureDetector(
+                    onTap: () => setState(() => _type = t),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 150),
+                      margin: const EdgeInsets.only(right: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: active ? tokens.FarolColors.tide : colors.surfaceLow,
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                      child: Text('${t.emoji} ${t.label}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: active ? Colors.white : colors.onSurface,
+                          )),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _amountController,
+              autofocus: true,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))],
+              decoration: const InputDecoration(labelText: 'Valor', prefixText: 'R\$ '),
+            ),
+            const SizedBox(height: 12),
+            // Net / Gross toggle
+            Row(children: [
+              Expanded(child: Text('Valor líquido (ya descontado INSS/IRRF)',
+                  style: TextStyle(fontSize: 13, color: colors.onSurfaceMuted))),
+              Switch(
+                value: _isNet,
+                onChanged: (v) => setState(() => _isNet = v),
+                activeThumbColor: tokens.FarolColors.tide,
+              ),
+            ]),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _notesController,
+              decoration: const InputDecoration(labelText: 'Observación (opcional)'),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                style: FilledButton.styleFrom(backgroundColor: tokens.FarolColors.tide),
+                onPressed: _saving ? null : _save,
+                child: _saving
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    : const Text('Guardar ingresso'),
+              ),
+            ),
+          ]),
+        ),
+      ),
+    );
   }
 }
 

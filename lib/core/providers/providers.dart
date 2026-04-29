@@ -847,6 +847,42 @@ class FixedExpensePropagationNotifier extends AutoDisposeAsyncNotifier<int> {
 }
 
 // ═══════════════════════════════════════════
+// INCOME MUTATION NOTIFIER
+// ═══════════════════════════════════════════
+
+final incomeNotifierProvider =
+    AsyncNotifierProvider<IncomeNotifier, void>(IncomeNotifier.new);
+
+class IncomeNotifier extends AsyncNotifier<void> {
+  @override
+  Future<void> build() async {}
+
+  Future<void> insert({
+    required int month,
+    required int year,
+    required String incomeType,
+    required double amount,
+    bool isNet = true,
+    String? notes,
+  }) async {
+    await ref.read(incomeRepositoryProvider).insert(
+          month: month,
+          year: year,
+          incomeType: incomeType,
+          amount: amount,
+          isNet: isNet,
+          notes: notes,
+        );
+    ref.invalidate(_allIncomesStreamProvider);
+  }
+
+  Future<void> delete(int id) async {
+    await ref.read(incomeRepositoryProvider).delete(id);
+    ref.invalidate(_allIncomesStreamProvider);
+  }
+}
+
+// ═══════════════════════════════════════════
 // PERIOD BUDGET PROVIDERS
 // ═══════════════════════════════════════════
 
