@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../main.dart';
 import '../../core/providers/providers.dart';
+import '../../core/models/financial_period.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../design/farol_colors.dart' as tokens;
@@ -114,17 +115,10 @@ class _PeriodSettingsRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
-    final period = ref.watch(currentPeriodProvider);
-    final settings = ref.watch(budgetSettingsProvider).value;
-    final cutoffDay = settings?.cutoffDay ?? 1;
+    final period = ref.watch(selectedPeriodProvider);
 
     return GestureDetector(
-      onTap: () => showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (_) => _CutoffDaySheet(currentDay: cutoffDay),
-      ),
+      onTap: () => _showPeriodPicker(context, ref),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
@@ -151,6 +145,21 @@ class _PeriodSettingsRow extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _showPeriodPicker(BuildContext context, WidgetRef ref) async {
+    final current = ref.read(selectedPeriodProvider);
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+      initialDateRange: DateTimeRange(start: current.start, end: current.end),
+    );
+    if (picked != null) {
+      ref.read(selectedPeriodProvider.notifier).setPeriod(
+        FinancialPeriod(start: picked.start, end: picked.end),
+      );
+    }
   }
 }
 
