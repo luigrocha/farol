@@ -16,6 +16,8 @@ import '../budget/presentation/budget_goals_sheet.dart';
 import '../budget/presentation/rebalance_budget_sheet.dart';
 import '../budget/presentation/recommendation_card.dart';
 import '../net_worth/presentation/net_worth_settings_sheet.dart';
+import '../net_worth/presentation/patrimonio_screen.dart';
+import '../accounts/presentation/accounts_screen.dart';
 import '../profile/presentation/profile_providers.dart';
 import 'salary_settings_sheet.dart';
 import 'categories_management_screen.dart';
@@ -870,6 +872,55 @@ class _NetWorthSection extends ConsumerWidget {
               ]);
             },
           ),
+        ),
+      ),
+      const SizedBox(height: 12),
+      GestureDetector(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const AccountsScreen()),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+          child: Row(children: [
+            Container(
+              width: 34, height: 34,
+              decoration: BoxDecoration(color: colors.iconTintBlue, borderRadius: BorderRadius.circular(10)),
+              child: Icon(Icons.account_balance_outlined, size: 18, color: colors.onSurface),
+            ),
+            const SizedBox(width: 14),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('Contas Bancárias', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
+              Text('Gerencie suas contas e transferências', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+            ])),
+            Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
+          ]),
+        ),
+      ),
+      const SizedBox(height: 12),
+      GestureDetector(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const PatrimonioScreen()),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+          child: Row(children: [
+            Container(
+              width: 34, height: 34,
+              decoration: BoxDecoration(
+                color: tokens.FarolColors.navy.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.pie_chart_outline, size: 18, color: tokens.FarolColors.navy),
+            ),
+            const SizedBox(width: 14),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('Patrimônio', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
+              Text('Visão consolidada do seu patrimônio', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+            ])),
+            Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
+          ]),
         ),
       ),
       const SizedBox(height: 12),

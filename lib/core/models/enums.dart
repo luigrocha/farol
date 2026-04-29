@@ -169,6 +169,26 @@ enum InvestmentType {
 }
 
 // ═══════════════════════════════════════════
+// Account Type Enum
+// ═══════════════════════════════════════════
+enum AccountType {
+  checking('CHECKING', 'Conta Corrente', '🏦'),
+  savings('SAVINGS', 'Poupança', '🐷'),
+  investment('INVESTMENT', 'Conta Investimento', '📈'),
+  fgts('FGTS', 'FGTS', '🏛️');
+
+  final String dbValue;
+  final String label;
+  final String emoji;
+  const AccountType(this.dbValue, this.label, this.emoji);
+
+  static AccountType fromDb(String value) =>
+      AccountType.values.firstWhere((e) => e.dbValue == value);
+
+  bool get isLiquid => this != AccountType.fgts;
+}
+
+// ═══════════════════════════════════════════
 // Installment Status Enum
 // ═══════════════════════════════════════════
 enum InstallmentStatus {

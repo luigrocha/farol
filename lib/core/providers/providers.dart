@@ -9,6 +9,10 @@ import '../models/enums.dart';
 import '../models/card_installment.dart';
 import '../models/investment.dart';
 import '../models/net_worth_snapshot.dart';
+import '../models/account.dart';
+import '../models/account_transfer.dart';
+import '../repositories/account_repository.dart';
+import '../repositories/account_transfer_repository.dart';
 import '../models/budget_goal.dart';
 import '../models/financial_period.dart';
 import '../models/period_budget.dart';
@@ -440,6 +444,178 @@ final netWorthSnapshotProvider = FutureProvider.autoDispose<NetWorthSnapshot?>((
   final year = ref.watch(selectedYearProvider);
   return ref.watch(netWorthRepositoryProvider).getByMonth(month, year);
 });
+
+// ═══════════════════════════════════════════
+// ACCOUNTS REPOSITORY PROVIDERS
+// ═══════════════════════════════════════════
+
+final accountRepositoryProvider = Provider<AccountRepository>((ref) {
+  return AccountRepository(Supabase.instance.client);
+});
+
+final accountTransferRepositoryProvider = Provider<AccountTransferRepository>((ref) {
+  return AccountTransferRepository(Supabase.instance.client);
+});
+
+// ═══════════════════════════════════════════
+// ACCOUNTS PROVIDERS
+// ═══════════════════════════════════════════
+
+final _allAccountsStreamProvider = StreamProvider.autoDispose<List<Account>>((ref) {
+  return ref.watch(accountRepositoryProvider).watchAll();
+});
+
+final accountsProvider = Provider.autoDispose<AsyncValue<List<Account>>>((ref) {
+  return ref.watch(_allAccountsStreamProvider).whenData(
+    (all) => all.where((a) => a.isActive).toList(),
+  );
+});
+
+final liquidAccountsProvider = Provider.autoDispose<AsyncValue<List<Account>>>((ref) {
+  return ref.watch(_allAccountsStreamProvider).whenData(
+    (all) => all.where((a) => a.isActive && a.accountType.isLiquid).toList(),
+  );
+});
+
+final fgtsAccountProvider = Provider.autoDispose<Account?>((ref) {
+  final all = ref.watch(_allAccountsStreamProvider).value ?? [];
+  try {
+    return all.firstWhere((a) => a.type == AccountType.fgts.dbValue && a.isActive);
+  } catch (_) {
+    return null;
+  }
+});
+
+final liquidAccountsTotalProvider = Provider.autoDispose<double>((ref) {
+  final accounts = ref.watch(liquidAccountsProvider).value ?? [];
+  return accounts.fold(0.0, (sum, a) => sum + a.currentBalance);
+});
+
+final fgtsBalanceFromAccountsProvider = Provider.autoDispose<double>((ref) {
+  return ref.watch(fgtsAccountProvider)?.currentBalance ?? 0.0;
+});
+
+// ═══════════════════════════════════════════
+// ACCOUNT TRANSFERS PROVIDERS
+// ═══════════════════════════════════════════
+
+final _allTransfersStreamProvider = StreamProvider.autoDispose<List<AccountTransfer>>((ref) {
+  return ref.watch(accountTransferRepositoryProvider).watchAll();
+});
+
+final periodTransfersProvider = Provider.autoDispose<AsyncValue<List<AccountTransfer>>>((ref) {
+  final month = ref.watch(selectedMonthProvider);
+  final year = ref.watch(selectedYearProvider);
+  return ref.watch(_allTransfersStreamProvider).whenData(
+    (all) => all
+        .where((t) => t.transferDate.month == month && t.transferDate.year == year)
+        .toList(),
+  );
+});
+
+// ═══════════════════════════════════════════
+// ENHANCED NET WORTH PROVIDERS
+// ═══════════════════════════════════════════
+
+final enhancedNetWorthProvider = Provider.autoDispose<double>((ref) {
+  final liquidTotal = ref.watch(liquidAccountsTotalProvider);
+  final fgtsTotal = ref.watch(fgtsBalanceFromAccountsProvider);
+  final investmentsTotal = ref.watch(totalInvestmentBalanceProvider);
+  final snap = ref.watch(netWorthSnapshotProvider).value;
+  final patrimonyTotal = snap?.patrimonyTotal ?? 0.0;
+  final pendingInstallments = ref.watch(totalRemainingInstallmentsProvider);
+  return liquidTotal + fgtsTotal + investmentsTotal + patrimonyTotal - pendingInstallments;
+});
+
+final assetAllocationProvider = Provider.autoDispose<({
+  double banks,
+  double investments,
+  double fgts,
+  double patrimony,
+})>((ref) {
+  return (
+    banks: ref.watch(liquidAccountsTotalProvider),
+    investments: ref.watch(totalInvestmentBalanceProvider),
+    fgts: ref.watch(fgtsBalanceFromAccountsProvider),
+    patrimony: ref.watch(netWorthSnapshotProvider).value?.patrimonyTotal ?? 0.0,
+  );
+});
+
+// ═══════════════════════════════════════════
+// ACCOUNT MUTATION NOTIFIERS
+// ═══════════════════════════════════════════
+
+final accountNotifierProvider =
+    AsyncNotifierProvider<AccountNotifier, void>(AccountNotifier.new);
+
+class AccountNotifier extends AsyncNotifier<void> {
+  @override
+  Future<void> build() async {}
+
+  Future<void> insert({
+    required String name,
+    required String institution,
+    required String type,
+    double initialBalance = 0,
+    String? notes,
+  }) async {
+    await ref.read(accountRepositoryProvider).insert(
+          name: name,
+          institution: institution,
+          type: type,
+          initialBalance: initialBalance,
+          notes: notes,
+        );
+    ref.invalidate(_allAccountsStreamProvider);
+  }
+
+  Future<void> updateBalance(int id, double balance) async {
+    await ref.read(accountRepositoryProvider).updateBalance(id, balance);
+    ref.invalidate(_allAccountsStreamProvider);
+  }
+
+  Future<void> updateAccount(int id, {String? name, String? institution, String? notes, bool? isActive}) async {
+    await ref.read(accountRepositoryProvider).update(
+          id,
+          name: name,
+          institution: institution,
+          notes: notes,
+          isActive: isActive,
+        );
+    ref.invalidate(_allAccountsStreamProvider);
+  }
+
+  Future<void> delete(int id) async {
+    await ref.read(accountRepositoryProvider).delete(id);
+    ref.invalidate(_allAccountsStreamProvider);
+  }
+}
+
+final transferNotifierProvider =
+    AsyncNotifierProvider<TransferNotifier, void>(TransferNotifier.new);
+
+class TransferNotifier extends AsyncNotifier<void> {
+  @override
+  Future<void> build() async {}
+
+  Future<void> transfer({
+    required int fromAccountId,
+    required int toAccountId,
+    required double amount,
+    required DateTime date,
+    String? description,
+  }) async {
+    await ref.read(accountTransferRepositoryProvider).transfer(
+          fromAccountId: fromAccountId,
+          toAccountId: toAccountId,
+          amount: amount,
+          date: date,
+          description: description,
+        );
+    ref.invalidate(_allAccountsStreamProvider);
+    ref.invalidate(_allTransfersStreamProvider);
+  }
+}
 
 // ═══════════════════════════════════════════
 // BUDGET SETTINGS PROVIDERS
