@@ -21,6 +21,19 @@ class NetWorthRepository {
     return NetWorthSnapshot.fromJson(data);
   }
 
+  Future<List<NetWorthSnapshot>> getHistory({int? limit}) async {
+    final userId = _userId;
+    if (userId == null) return [];
+    var query = _supabase
+        .from('net_worth_snapshots')
+        .select()
+        .eq('user_id', userId)
+        .order('year', ascending: true)
+        .order('month', ascending: true);
+    final data = limit != null ? await query.limit(limit) : await query;
+    return data.map((r) => NetWorthSnapshot.fromJson(r)).toList();
+  }
+
   Future<void> upsert({
     required int month,
     required int year,

@@ -70,7 +70,7 @@ class DashboardScreen extends ConsumerWidget {
               const _AlertBanner(),
               const _PeriodBanner(),
               const SizedBox(height: 12),
-              const _NetWorthHero(),
+              const _PeriodBalanceHero(),
               const SizedBox(height: 12),
               const _HealthGaugeCard(),
               const SizedBox(height: 12),
@@ -101,83 +101,6 @@ class DashboardScreen extends ConsumerWidget {
   }
 }
 
-class _NetWorthHero extends ConsumerWidget {
-  const _NetWorthHero();
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-
-    // Always watch all providers unconditionally (Riverpod requirement).
-    final accountsReady = ref.watch(accountsProvider).value?.isNotEmpty ?? false;
-    final enhancedNw = ref.watch(enhancedNetWorthProvider);
-    final snapAsync = ref.watch(netWorthSnapshotProvider);
-    final snap = snapAsync.value;
-    final banks = ref.watch(liquidAccountsTotalProvider);
-    final investmentsLive = ref.watch(totalInvestmentBalanceProvider);
-    final fgtsLive = ref.watch(fgtsBalanceFromAccountsProvider);
-
-    // Resolve net worth value based on data source.
-    final double? nw;
-    if (accountsReady) {
-      nw = enhancedNw;
-    } else if (snapAsync.isLoading) {
-      nw = null;
-    } else if (snap == null) {
-      nw = 0.0;
-    } else {
-      nw = FinancialCalculatorService.calculateNetWorth(
-        patrimonyTotal: snap.patrimonyTotal,
-        fgtsBalance: snap.fgtsBalance,
-        investmentsTotal: snap.investmentsTotal,
-        emergencyFund: snap.emergencyFund,
-        pendingInstallments: snap.pendingInstallments,
-      );
-    }
-
-    if (nw == null) return const DashboardCardSkeleton(height: 140);
-
-    final investments = accountsReady ? investmentsLive : (snap?.investmentsTotal ?? 0.0);
-    final fgts = accountsReady
-        ? fgtsLive
-        : ((snap?.fgtsBalance ?? 0.0) + (snap?.emergencyFund ?? 0.0));
-
-    return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, '/patrimonio'),
-      child: Container(
-        padding: const EdgeInsets.all(22),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF244A72), tokens.FarolColors.navy],
-          ),
-        ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Expanded(
-              child: Text(l10n.netWorth.toUpperCase(),
-                  style: const TextStyle(fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: Colors.white60)),
-            ),
-            const Icon(Icons.chevron_right, size: 14, color: Colors.white30),
-          ]),
-          const SizedBox(height: 6),
-          _BRLBig(value: nw, size: 36, color: Colors.white),
-          const SizedBox(height: 16),
-          Row(children: [
-            if (accountsReady) ...[
-              _MiniStat(label: 'Contas', value: banks, color: Colors.white),
-              const SizedBox(width: 10),
-            ],
-            _MiniStat(label: 'Invertido', value: investments, color: Colors.white),
-            const SizedBox(width: 10),
-            _MiniStat(label: 'FGTS', value: fgts, color: tokens.FarolColors.beam),
-          ]),
-        ]),
-      ),
-    );
-  }
-}
 
 class _MiniStat extends StatelessWidget {
   final String label; final double value; final Color color;
@@ -193,6 +116,51 @@ class _MiniStat extends StatelessWidget {
         _BRLBig(value: value, size: 16, color: color, weight: FontWeight.w700),
       ]),
     ));
+  }
+}
+
+class _PeriodBalanceHero extends ConsumerWidget {
+  const _PeriodBalanceHero();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final income = ref.watch(totalIncomeProvider);
+    final expenses = ref.watch(cashExpensesProvider);
+    final balance = ref.watch(monthlyBalanceProvider);
+    final isPositive = balance >= 0;
+
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, '/patrimonio'),
+      child: Container(
+        padding: const EdgeInsets.all(22),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isPositive
+                ? [const Color(0xFF1A4A3A), const Color(0xFF0D2B23)]
+                : [const Color(0xFF4A2A1A), const Color(0xFF2B150D)],
+          ),
+        ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            const Expanded(
+              child: Text('BALANCE DEL PERÍODO',
+                style: TextStyle(fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: Colors.white60)),
+            ),
+            const Icon(Icons.chevron_right, size: 14, color: Colors.white30),
+          ]),
+          const SizedBox(height: 6),
+          _BRLBig(value: balance, size: 36, color: Colors.white),
+          const SizedBox(height: 16),
+          Row(children: [
+            _MiniStat(label: 'Receitas', value: income, color: Colors.white),
+            const SizedBox(width: 10),
+            _MiniStat(label: 'Despesas', value: expenses, color: tokens.FarolColors.coral),
+          ]),
+        ]),
+      ),
+    );
   }
 }
 

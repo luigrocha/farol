@@ -453,6 +453,21 @@ final netWorthSnapshotProvider = FutureProvider.autoDispose<NetWorthSnapshot?>((
   return ref.watch(netWorthRepositoryProvider).getByMonth(month, year);
 });
 
+enum NetWorthFilter { sixMonths, oneYear, allTime }
+
+final netWorthFilterProvider = StateProvider<NetWorthFilter>((ref) => NetWorthFilter.sixMonths);
+
+final netWorthHistoryProvider = FutureProvider.autoDispose<List<NetWorthSnapshot>>((ref) async {
+  final filter = ref.watch(netWorthFilterProvider);
+  final repo = ref.watch(netWorthRepositoryProvider);
+  final limit = switch (filter) {
+    NetWorthFilter.sixMonths => 6,
+    NetWorthFilter.oneYear => 12,
+    NetWorthFilter.allTime => null,
+  };
+  return repo.getHistory(limit: limit);
+});
+
 // ═══════════════════════════════════════════
 // ACCOUNTS REPOSITORY PROVIDERS
 // ═══════════════════════════════════════════
