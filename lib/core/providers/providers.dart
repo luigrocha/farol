@@ -678,10 +678,21 @@ final currentPeriodProvider = Provider<FinancialPeriod>((ref) {
   return FinancialPeriod.current(settings?.cutoffDay ?? 1);
 });
 
-/// Raw budget rows for the current period. Invalidate this after upsert/delete.
+class _SelectedPeriodNotifier extends StateNotifier<FinancialPeriod> {
+  _SelectedPeriodNotifier(super.initial);
+  void setPeriod(FinancialPeriod period) => state = period;
+}
+
+/// User-selected financial period (editable). Initialized from currentPeriodProvider.
+final selectedPeriodProvider = StateNotifierProvider<_SelectedPeriodNotifier, FinancialPeriod>((ref) {
+  final defaultPeriod = ref.watch(currentPeriodProvider);
+  return _SelectedPeriodNotifier(defaultPeriod);
+});
+
+/// Raw budget rows for the selected period. Invalidate this after upsert/delete.
 final _periodBudgetsRawProvider =
     FutureProvider.autoDispose<List<PeriodBudget>>((ref) async {
-  final period = ref.watch(currentPeriodProvider);
+  final period = ref.watch(selectedPeriodProvider);
   return ref.watch(periodBudgetRepositoryProvider).getBudgets(period);
 });
 
@@ -698,7 +709,7 @@ final periodBudgetEntriesProvider =
   final goalsMap = ref.watch(budgetGoalsMapProvider);
   final overridesAsync = ref.watch(_periodBudgetsRawProvider);
   final expensesAsync = ref.watch(_allExpensesStreamProvider);
-  final period = ref.watch(currentPeriodProvider);
+  final period = ref.watch(selectedPeriodProvider);
 
   return overridesAsync.whenData((overrides) {
     final expenses = expensesAsync.value ?? [];

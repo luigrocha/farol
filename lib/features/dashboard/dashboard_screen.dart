@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/providers.dart';
+import '../../core/models/financial_period.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../core/theme/farol_colors.dart';
@@ -449,7 +450,7 @@ class _PeriodBanner extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
-    final period = ref.watch(currentPeriodProvider);
+    final period = ref.watch(selectedPeriodProvider);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -465,23 +466,50 @@ class _PeriodBanner extends ConsumerWidget {
               size: 15, color: colors.onSurfaceSoft),
           const SizedBox(width: 8),
           Text(
-            'Período actual',
+            'Período',
             style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
                 color: colors.onSurfaceSoft),
           ),
           const SizedBox(width: 6),
-          Text(
-            period.label,
-            style: GoogleFonts.manrope(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: colors.onSurface),
+          Expanded(
+            child: Text(
+              period.label,
+              style: GoogleFonts.manrope(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface),
+            ),
+          ),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 32,
+            height: 32,
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              icon: Icon(Icons.edit_outlined, size: 16, color: colors.onSurfaceSoft),
+              onPressed: () => _showPeriodPicker(context, ref),
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _showPeriodPicker(BuildContext context, WidgetRef ref) async {
+    final current = ref.read(selectedPeriodProvider);
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+      initialDateRange: DateTimeRange(start: current.start, end: current.end),
+    );
+    if (picked != null) {
+      ref.read(selectedPeriodProvider.notifier).setPeriod(
+        FinancialPeriod(start: picked.start, end: picked.end),
+      );
+    }
   }
 }
 

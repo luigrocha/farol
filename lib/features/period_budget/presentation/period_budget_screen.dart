@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/models/period_budget.dart';
+import '../../../core/models/financial_period.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';
 import '../../../core/theme/farol_colors.dart';
@@ -14,7 +15,7 @@ class PeriodBudgetScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
-    final period = ref.watch(currentPeriodProvider);
+    final period = ref.watch(selectedPeriodProvider);
     final entriesAsync = ref.watch(periodBudgetEntriesProvider);
 
     return Scaffold(
@@ -39,6 +40,11 @@ class PeriodBudgetScreen extends ConsumerWidget {
               ],
             ),
             actions: [
+              IconButton(
+                icon: const Icon(Icons.edit_outlined, size: 20),
+                tooltip: 'Edit period',
+                onPressed: () => _showPeriodPicker(context, ref),
+              ),
               IconButton(
                 icon: const Icon(Icons.copy_outlined, size: 20),
                 tooltip: 'Copy from previous period',
@@ -174,6 +180,21 @@ class PeriodBudgetScreen extends ConsumerWidget {
             : 'No new budgets to copy'),
         backgroundColor: count > 0 ? Colors.green : Colors.grey,
       ));
+    }
+  }
+
+  Future<void> _showPeriodPicker(BuildContext context, WidgetRef ref) async {
+    final current = ref.read(selectedPeriodProvider);
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+      initialDateRange: DateTimeRange(start: current.start, end: current.end),
+    );
+    if (picked != null) {
+      ref.read(selectedPeriodProvider.notifier).setPeriod(
+        FinancialPeriod(start: picked.start, end: picked.end),
+      );
     }
   }
 
