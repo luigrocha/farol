@@ -38,15 +38,16 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
   @override
   ThemeMode build() {
     Future.microtask(() async {
-      final db = ref.read(databaseProvider);
-      // Apply local cache immediately, then reconcile with the shared remote fetch.
-      final local = await db.getSetting('theme_mode');
-      if (local != null) state = _fromString(local);
-      final remote = await ref.read(remotePreferencesProvider.future);
-      if (remote.themeMode != null && remote.themeMode != local) {
-        state = _fromString(remote.themeMode!);
-        await db.setSetting('theme_mode', remote.themeMode!);
-      }
+      try {
+        final db = ref.read(databaseProvider);
+        final local = await db.getSetting('theme_mode');
+        if (local != null) state = _fromString(local);
+        final remote = await ref.read(remotePreferencesProvider.future);
+        if (remote.themeMode != null && remote.themeMode != local) {
+          state = _fromString(remote.themeMode!);
+          await db.setSetting('theme_mode', remote.themeMode!);
+        }
+      } catch (_) {}
     });
     return ThemeMode.system;
   }

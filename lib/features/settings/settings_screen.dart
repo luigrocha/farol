@@ -157,6 +157,7 @@ class _PeriodSettingsRow extends ConsumerWidget {
       lastDate: DateTime(2030),
       initialDateRange: DateTimeRange(start: current.start, end: current.end),
     );
+    if (!context.mounted) return;
     if (picked != null) {
       ref.read(selectedPeriodProvider.notifier).setPeriod(
         FinancialPeriod(start: picked.start, end: picked.end),

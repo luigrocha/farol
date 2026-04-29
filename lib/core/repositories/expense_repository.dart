@@ -44,10 +44,13 @@ class ExpenseRepository {
       int startMonth, int startYear, int endMonth, int endYear) async {
     final userId = _userId;
     if (userId == null) return [];
+    // Push year range filter to Supabase; trim edge months in Dart.
     final data = await _supabase
         .from('expenses')
         .select()
-        .eq('user_id', userId);
+        .eq('user_id', userId)
+        .gte('year', startYear)
+        .lte('year', endYear);
     return data
         .map((r) => Expense.fromJson(r))
         .where((e) => _inRange(e.month, e.year, startMonth, startYear, endMonth, endYear))

@@ -206,8 +206,9 @@ class _BRLBig extends ConsumerWidget {
     if (isPrivate) {
       return Text('••••••', style: GoogleFonts.manrope(fontSize: size, fontWeight: weight, color: c));
     }
-    final f = FinancialCalculatorService.formatBRL(value).split(',')[0];
-    final cents = FinancialCalculatorService.formatBRL(value).split(',')[1];
+    final parts = FinancialCalculatorService.formatBRL(value).split(',');
+    final f = parts[0];
+    final cents = parts.length > 1 ? parts[1] : '00';
     return Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
       Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.48, fontWeight: FontWeight.w500, color: c)),
       Text(f.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: weight, color: c, letterSpacing: -size * 0.028)),

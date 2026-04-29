@@ -87,15 +87,16 @@ class LocaleNotifier extends Notifier<Locale> {
   @override
   Locale build() {
     Future.microtask(() async {
-      final db = ref.read(databaseProvider);
-      // Try local cache first for instant response, then reconcile with remote.
-      final local = await db.getSetting('locale');
-      if (local != null) state = Locale(local);
-      final remote = await ref.read(remotePreferencesProvider.future);
-      if (remote.locale != null && remote.locale != local) {
-        state = Locale(remote.locale!);
-        await db.setSetting('locale', remote.locale!);
-      }
+      try {
+        final db = ref.read(databaseProvider);
+        final local = await db.getSetting('locale');
+        if (local != null) state = Locale(local);
+        final remote = await ref.read(remotePreferencesProvider.future);
+        if (remote.locale != null && remote.locale != local) {
+          state = Locale(remote.locale!);
+          await db.setSetting('locale', remote.locale!);
+        }
+      } catch (_) {}
     });
     return const Locale('es');
   }
@@ -115,15 +116,16 @@ class PrivacyModeNotifier extends Notifier<bool> {
   @override
   bool build() {
     Future.microtask(() async {
-      final db = ref.read(databaseProvider);
-      // Apply local value immediately, then sync with remote (single shared fetch).
-      final local = await db.getSetting('privacy_mode');
-      if (local != null) state = local == 'true';
-      final remote = await ref.read(remotePreferencesProvider.future);
-      if (remote.privacyMode != null) {
-        state = remote.privacyMode!;
-        await db.setSetting('privacy_mode', state.toString());
-      }
+      try {
+        final db = ref.read(databaseProvider);
+        final local = await db.getSetting('privacy_mode');
+        if (local != null) state = local == 'true';
+        final remote = await ref.read(remotePreferencesProvider.future);
+        if (remote.privacyMode != null) {
+          state = remote.privacyMode!;
+          await db.setSetting('privacy_mode', state.toString());
+        }
+      } catch (_) {}
     });
     return false;
   }
@@ -793,21 +795,31 @@ final healthAutoSaveProvider =
 class HealthAutoSaveNotifier extends AutoDisposeAsyncNotifier<void> {
   @override
   Future<void> build() async {
-    final month = ref.watch(selectedMonthProvider);
-    final year = ref.watch(selectedYearProvider);
-    final net = ref.watch(effectiveNetSalaryProvider);
+    // React only to the triggers that signal "data is ready"; read everything
+    // else with ref.read inside _save() to avoid cascading rebuilds.
+    ref.listen(selectedMonthProvider, (_, __) => _save());
+    ref.listen(selectedYearProvider, (_, __) => _save());
+    ref.listen(cashExpensesProvider, (_, next) {
+      if (next > 0) _save();
+    });
+  }
+
+  Future<void> _save() async {
+    final month = ref.read(selectedMonthProvider);
+    final year = ref.read(selectedYearProvider);
+    final net = ref.read(effectiveNetSalaryProvider);
     if (net <= 0) return;
-    final cash = ref.watch(cashExpensesProvider);
-    final byCategory = ref.watch(cashExpensesByCategoryProvider);
-    final balance = ref.watch(cashRemainingProvider);
-    final snap = ref.watch(netWorthSnapshotProvider).value;
-    final inst = ref.watch(installmentsProvider).value ?? [];
+    final cash = ref.read(cashExpensesProvider);
+    if (cash <= 0) return;
+    final byCategory = ref.read(cashExpensesByCategoryProvider);
+    final balance = ref.read(cashRemainingProvider);
+    final snap = ref.read(netWorthSnapshotProvider).value;
+    final inst = ref.read(installmentsProvider).value ?? [];
     final housing = byCategory['HOUSING'] ?? 0;
     final instTotal = inst.fold(0.0, (s, i) => s + i.monthlyAmount);
-    // Prefer live account balances over the manual snapshot field.
-    final accountsExist = ref.watch(accountsProvider).value?.isNotEmpty ?? false;
+    final accountsExist = ref.read(accountsProvider).value?.isNotEmpty ?? false;
     final ef = accountsExist
-        ? ref.watch(liquidAccountsTotalProvider)
+        ? ref.read(liquidAccountsTotalProvider)
         : (snap?.emergencyFund ?? 0);
     final efMonths = cash > 0 ? ef / cash : 0.0;
     final score = FinancialCalculatorService.calculateHealthScore(
@@ -819,17 +831,19 @@ class HealthAutoSaveNotifier extends AutoDisposeAsyncNotifier<void> {
       avgMonthlyExpenses: cash,
       activeInstallmentsTotal: instTotal,
     );
-    await ref.read(healthRepositoryProvider).upsert(
-      month: month,
-      year: year,
-      score: score,
-      savingsRate: (net - cash) / net * 100,
-      housingRate: housing / net * 100,
-      monthlyBalance: balance,
-      emergencyFundMonths: efMonths,
-      installmentsRate: instTotal / net * 100,
-      netSalary: net,
-    );
+    try {
+      await ref.read(healthRepositoryProvider).upsert(
+        month: month,
+        year: year,
+        score: score,
+        savingsRate: (net - cash) / net * 100,
+        housingRate: housing / net * 100,
+        monthlyBalance: balance,
+        emergencyFundMonths: efMonths,
+        installmentsRate: instTotal / net * 100,
+        netSalary: net,
+      );
+    } catch (_) {}
   }
 }
 
@@ -907,7 +921,7 @@ class _SelectedPeriodNotifier extends StateNotifier<FinancialPeriod> {
 
 /// User-selected financial period (editable). Initialized from currentPeriodProvider.
 final selectedPeriodProvider = StateNotifierProvider<_SelectedPeriodNotifier, FinancialPeriod>((ref) {
-  final defaultPeriod = ref.watch(currentPeriodProvider);
+  final defaultPeriod = ref.read(currentPeriodProvider);
   return _SelectedPeriodNotifier(defaultPeriod);
 });
 

@@ -40,10 +40,13 @@ class IncomeRepository {
       int startMonth, int startYear, int endMonth, int endYear) async {
     final userId = _userId;
     if (userId == null) return [];
+    // Push year range filter to Supabase; trim edge months in Dart.
     final data = await _supabase
         .from('incomes')
         .select()
-        .eq('user_id', userId);
+        .eq('user_id', userId)
+        .gte('year', startYear)
+        .lte('year', endYear);
     return data
         .map((r) => Income.fromJson(r))
         .where((i) => _inRange(i.month, i.year, startMonth, startYear, endMonth, endYear))

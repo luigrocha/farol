@@ -875,8 +875,9 @@ class _BRLBig extends StatelessWidget {
   Widget build(BuildContext context) {
     const w = FontWeight.w800;
     final c = color ?? context.colors.onSurface;
-    final f = FinancialCalculatorService.formatBRL(value).split(',')[0];
-    final cents = FinancialCalculatorService.formatBRL(value).split(',')[1];
+    final parts = FinancialCalculatorService.formatBRL(value).split(',');
+    final f = parts[0];
+    final cents = parts.length > 1 ? parts[1] : '00';
     return Row(
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
