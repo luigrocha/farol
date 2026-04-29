@@ -38,15 +38,14 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
   ThemeMode build() {
     Future.microtask(() async {
       final db = ref.read(databaseProvider);
-      final remote =
-          await ref.read(userPreferencesRepositoryProvider).fetch();
-      if (remote.themeMode != null) {
-        state = _fromString(remote.themeMode!);
-        await db.setSetting('theme_mode', remote.themeMode!);
-        return;
-      }
+      // Apply local cache immediately, then reconcile with the shared remote fetch.
       final local = await db.getSetting('theme_mode');
       if (local != null) state = _fromString(local);
+      final remote = await ref.read(remotePreferencesProvider.future);
+      if (remote.themeMode != null && remote.themeMode != local) {
+        state = _fromString(remote.themeMode!);
+        await db.setSetting('theme_mode', remote.themeMode!);
+      }
     });
     return ThemeMode.system;
   }
@@ -278,6 +277,17 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
   int _currentIndex = 0;
+  // Tracks which screens have been visited so they are only built once.
+  final Set<int> _visited = {0};
+
+  static const _screenBuilders = [
+    DashboardScreen.new,
+    TransactionsScreen.new,
+    AnalyticsScreen.new,
+    PeriodBudgetScreen.new,
+    InvestmentsScreen.new,
+    SettingsScreen.new,
+  ];
 
   @override
   void initState() {
@@ -298,27 +308,27 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
     }
   }
 
-  final _screens = const [
-    DashboardScreen(),
-    TransactionsScreen(),
-    AnalyticsScreen(),
-    PeriodBudgetScreen(),
-    InvestmentsScreen(),
-    SettingsScreen(),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
+      body: Stack(
+        children: List.generate(_screenBuilders.length, (i) {
+          // Only build screens that have been visited at least once.
+          if (!_visited.contains(i)) return const SizedBox.shrink();
+          return Offstage(
+            offstage: i != _currentIndex,
+            child: _screenBuilders[i](),
+          );
+        }),
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
-        onDestinationSelected: (i) => setState(() => _currentIndex = i),
+        onDestinationSelected: (i) => setState(() {
+          _currentIndex = i;
+          _visited.add(i);
+        }),
         destinations: [
           NavigationDestination(
             icon: const Icon(Icons.home_outlined),

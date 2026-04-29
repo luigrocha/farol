@@ -76,6 +76,11 @@ final userPreferencesRepositoryProvider =
   return UserPreferencesRepository(Supabase.instance.client);
 });
 
+// Single fetch shared by locale, theme and privacy — avoids 3 separate Supabase round-trips.
+final remotePreferencesProvider = FutureProvider<({String? locale, String? themeMode, bool? privacyMode})>((ref) {
+  return ref.read(userPreferencesRepositoryProvider).fetch();
+});
+
 final localeProvider = NotifierProvider<LocaleNotifier, Locale>(LocaleNotifier.new);
 
 class LocaleNotifier extends Notifier<Locale> {
@@ -83,14 +88,14 @@ class LocaleNotifier extends Notifier<Locale> {
   Locale build() {
     Future.microtask(() async {
       final db = ref.read(databaseProvider);
-      final remote = await ref.read(userPreferencesRepositoryProvider).fetch();
-      if (remote.locale != null) {
-        state = Locale(remote.locale!);
-        await db.setSetting('locale', remote.locale!);
-        return;
-      }
+      // Try local cache first for instant response, then reconcile with remote.
       final local = await db.getSetting('locale');
       if (local != null) state = Locale(local);
+      final remote = await ref.read(remotePreferencesProvider.future);
+      if (remote.locale != null && remote.locale != local) {
+        state = Locale(remote.locale!);
+        await db.setSetting('locale', remote.locale!);
+      }
     });
     return const Locale('es');
   }
@@ -111,9 +116,10 @@ class PrivacyModeNotifier extends Notifier<bool> {
   bool build() {
     Future.microtask(() async {
       final db = ref.read(databaseProvider);
+      // Apply local value immediately, then sync with remote (single shared fetch).
       final local = await db.getSetting('privacy_mode');
       if (local != null) state = local == 'true';
-      final remote = await ref.read(userPreferencesRepositoryProvider).fetch();
+      final remote = await ref.read(remotePreferencesProvider.future);
       if (remote.privacyMode != null) {
         state = remote.privacyMode!;
         await db.setSetting('privacy_mode', state.toString());
