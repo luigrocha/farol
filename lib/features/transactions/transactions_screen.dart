@@ -102,15 +102,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                   const SliverFillRemaining(child: Center(child: Text('Nenhum gasto encontrado')))
                 else ...[
                   SliverList(
-                    delegate: SliverChildBuilderDelegate((ctx, i) {
-                      final grouped = _groupExpensesByDay(filteredExpenses);
-                      final date = grouped.keys.elementAt(i);
-                      final dayExpenses = grouped[date]!;
-                      return Column(children: [
-                        _DaySeparator(date: date, total: dayExpenses.fold(0.0, (s, e) => s + e.amount)),
-                        ...dayExpenses.map((e) => _TxRow(expense: e)),
-                      ]);
-                    }, childCount: _groupExpensesByDay(filteredExpenses).length),
+                    delegate: _buildExpenseDelegate(filteredExpenses),
                   ),
                 ],
                 const SliverToBoxAdapter(child: SizedBox(height: 80)),
@@ -132,6 +124,25 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         backgroundColor: tokens.FarolColors.beam,
         child: const Icon(Icons.add, color: tokens.FarolColors.navy),
       ),
+    );
+  }
+
+  // Groups expenses once and builds the delegate from the same map instance,
+  // preventing the RangeError that occurs when the list changes between the
+  // childCount call and the builder call.
+  SliverChildBuilderDelegate _buildExpenseDelegate(List<dynamic> expenses) {
+    final grouped = _groupExpensesByDay(expenses);
+    final dates = grouped.keys.toList();
+    return SliverChildBuilderDelegate(
+      (ctx, i) {
+        final date = dates[i];
+        final dayExpenses = grouped[date]!;
+        return Column(children: [
+          _DaySeparator(date: date, total: dayExpenses.fold(0.0, (s, e) => s + e.amount)),
+          ...dayExpenses.map((e) => _TxRow(expense: e)),
+        ]);
+      },
+      childCount: dates.length,
     );
   }
 

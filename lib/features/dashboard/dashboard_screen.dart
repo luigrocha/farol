@@ -107,34 +107,39 @@ class _NetWorthHero extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
 
-    // Use live account balances when available; fall back to manual snapshot.
+    // Always watch all providers unconditionally (Riverpod requirement).
     final accountsReady = ref.watch(accountsProvider).value?.isNotEmpty ?? false;
-    final nw = accountsReady
-        ? ref.watch(enhancedNetWorthProvider)
-        : (() {
-            final snapAsync = ref.watch(netWorthSnapshotProvider);
-            if (snapAsync.isLoading) return null;
-            final snap = snapAsync.value;
-            if (snap == null) return 0.0;
-            return FinancialCalculatorService.calculateNetWorth(
-              patrimonyTotal: snap.patrimonyTotal,
-              fgtsBalance: snap.fgtsBalance,
-              investmentsTotal: snap.investmentsTotal,
-              emergencyFund: snap.emergencyFund,
-              pendingInstallments: snap.pendingInstallments,
-            );
-          })();
+    final enhancedNw = ref.watch(enhancedNetWorthProvider);
+    final snapAsync = ref.watch(netWorthSnapshotProvider);
+    final snap = snapAsync.value;
+    final banks = ref.watch(liquidAccountsTotalProvider);
+    final investmentsLive = ref.watch(totalInvestmentBalanceProvider);
+    final fgtsLive = ref.watch(fgtsBalanceFromAccountsProvider);
+
+    // Resolve net worth value based on data source.
+    final double? nw;
+    if (accountsReady) {
+      nw = enhancedNw;
+    } else if (snapAsync.isLoading) {
+      nw = null;
+    } else if (snap == null) {
+      nw = 0.0;
+    } else {
+      nw = FinancialCalculatorService.calculateNetWorth(
+        patrimonyTotal: snap.patrimonyTotal,
+        fgtsBalance: snap.fgtsBalance,
+        investmentsTotal: snap.investmentsTotal,
+        emergencyFund: snap.emergencyFund,
+        pendingInstallments: snap.pendingInstallments,
+      );
+    }
 
     if (nw == null) return const DashboardCardSkeleton(height: 140);
 
-    final banks = ref.watch(liquidAccountsTotalProvider);
-    final investments = accountsReady
-        ? ref.watch(totalInvestmentBalanceProvider)
-        : (ref.watch(netWorthSnapshotProvider).value?.investmentsTotal ?? 0.0);
+    final investments = accountsReady ? investmentsLive : (snap?.investmentsTotal ?? 0.0);
     final fgts = accountsReady
-        ? ref.watch(fgtsBalanceFromAccountsProvider)
-        : ((ref.watch(netWorthSnapshotProvider).value?.fgtsBalance ?? 0.0) +
-           (ref.watch(netWorthSnapshotProvider).value?.emergencyFund ?? 0.0));
+        ? fgtsLive
+        : ((snap?.fgtsBalance ?? 0.0) + (snap?.emergencyFund ?? 0.0));
 
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, '/patrimonio'),
