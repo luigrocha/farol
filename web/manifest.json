@@ -1,6 +1,6 @@
 {
-    "name": "financas_clt",
-    "short_name": "financas_clt",
+    "name": "farol",
+    "short_name": "farol",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#1a3a5c",

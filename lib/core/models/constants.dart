@@ -54,6 +54,12 @@ class AppConstants {
   };
 
   // ═══════════════════════════════════════════
+  // Tax Constants (2025)
+  // ═══════════════════════════════════════════
+  static const double inssMax = 951.62;
+  static const double dependentDeduction = 189.59;
+
+  // ═══════════════════════════════════════════
   // UI Constants
   // ═══════════════════════════════════════════
   static const String appName = 'Farol';

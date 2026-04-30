@@ -29,7 +29,8 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
-pubspec.lock
+
+
 
 # Generated Drift/build_runner files
 *.g.dart
@@ -98,3 +99,6 @@ flutter_*.log
 .vscode/settings.json
 devtools_options.yaml
 check_build.sh
+session-ses_223d.md
+pubspec.lock
+

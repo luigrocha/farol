@@ -173,4 +173,85 @@ class CltCalculatorService {
 
   static double _round(double v) =>
       (v * 100).roundToDouble() / 100;
+
+    // ── Rescisão (Termination) ─────────────────────────────────────────────────
+ 
+   static RescissionResult computeRescission({
+     required double grossSalary,
+     required DateTime startDate,
+     required DateTime endDate,
+     required double fgtsBalance,
+     required bool isUnjustifiedDismissal, // Demissão sem justa causa
+     required bool workedNoticePeriod, // Aviso prévio trabalhado
+     int unusedVacationDays = 0,
+   }) {
+     final yearsWorked = endDate.year - startDate.year;
+     
+     // 1. Saldo de Salário (Days worked in last month)
+     final daysInMonth = DateTime(endDate.year, endDate.month + 1, 0).day;
+     final salaryBalance = _round((grossSalary / daysInMonth) * endDate.day);
+ 
+     // 2. 13º Proporcional
+     // Rule: worked 15+ days in a month counts as a full month
+     int thirteenthMonths = endDate.month;
+     if (endDate.day < 15) thirteenthMonths--;
+     final proportional13th = _round((grossSalary / 12) * thirteenthMonths);
+ 
+     // 3. Férias Proporcionais + 1/3
+     // Simplified: months since last anniversary or start
+     final monthsForVacation = ((endDate.year * 12 + endDate.month) - (startDate.year * 12 + startDate.month)) % 12;
+     final proportionalVacation = _round((grossSalary / 12) * monthsForVacation);
+     final unusedVacationPay = _round((grossSalary / 30) * unusedVacationDays);
+     final totalVacation = proportionalVacation + unusedVacationPay;
+     final vacationThird = _round(totalVacation / 3);
+ 
+     // 4. Aviso Prévio (Indenizado)
+     double noticePeriodPay = 0;
+     if (isUnjustifiedDismissal && !workedNoticePeriod) {
+       // 30 days + 3 days per year worked (capped at 90 days)
+       final extraDays = (yearsWorked * 3).clamp(0, 60);
+       noticePeriodPay = _round((grossSalary / 30) * (30 + extraDays));
+     }
+ 
+     // 5. FGTS Multa (40%)
+     double fgtsFine = 0;
+     if (isUnjustifiedDismissal) {
+       fgtsFine = _round(fgtsBalance * 0.40);
+     }
+ 
+     final totalGross = salaryBalance + proportional13th + totalVacation + vacationThird + noticePeriodPay + fgtsFine;
+ 
+     return RescissionResult(
+       salaryBalance: salaryBalance,
+       proportional13th: proportional13th,
+       proportionalVacation: proportionalVacation,
+       unusedVacationPay: unusedVacationPay,
+       vacationThird: vacationThird,
+       noticePeriodPay: noticePeriodPay,
+       fgtsFine: fgtsFine,
+       totalToReceive: totalGross,
+     );
+   }
+}
+
+class RescissionResult {
+  final double salaryBalance;
+  final double proportional13th;
+  final double proportionalVacation;
+  final double unusedVacationPay;
+  final double vacationThird;
+  final double noticePeriodPay;
+  final double fgtsFine;
+  final double totalToReceive;
+
+  const RescissionResult({
+    required this.salaryBalance,
+    required this.proportional13th,
+    required this.proportionalVacation,
+    required this.unusedVacationPay,
+    required this.vacationThird,
+    required this.noticePeriodPay,
+    required this.fgtsFine,
+    required this.totalToReceive,
+  });
 }

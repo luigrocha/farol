@@ -280,8 +280,32 @@ class AppLocalizations {
       'simulator_13th_desc': 'Calculate installments, INSS and IRRF',
       'simulator_fgts': 'FGTS Anniversary Withdrawal',
       'simulator_fgts_desc': 'Simulate annual withdrawal and 3-year projection',
-      'hide_values': 'Hide values',
-      'hide_values_desc': 'Masks amounts throughout the app',
+       'simulator_rescission': 'CLT Rescission',
+       'simulator_rescission_desc': 'Calculate your termination rights (Notice, 13th, Vacations)',
+       'rescission_title': 'Rescission Simulator',
+       'rescission_input_title': 'CONTRACT DATA',
+       'rescission_gross_salary': 'Monthly Gross Salary',
+       'rescission_fgts_balance': 'FGTS Balance for Fine',
+       'rescission_start_date': 'Start Date',
+       'rescission_end_date': 'End Date',
+       'rescission_unjustified': 'Dismissal without cause',
+       'rescission_notice_period': 'Worked notice period',
+       'rescission_unused_vacation': 'Unused vacation days',
+       'rescission_calculate': 'Calculate Rescission',
+       'rescission_total_receive_gross': 'TOTAL GROSS TO RECEIVE',
+       'rescission_disclaimer': '*Gross values. INSS and IRRF deductions may apply to salary balance and 13th.',
+       'rescission_breakdown_title': 'BREAKDOWN',
+       'rescission_salary_balance': 'Salary Balance',
+       'rescission_proportional_13th': 'Proportional 13th',
+       'rescission_proportional_vacation': 'Proportional Vacation',
+       'rescission_unused_vacation_pay': 'Unused Vacations',
+       'rescission_vacation_third': '1/3 Vacation Bonus',
+       'rescission_notice_period_indemnified': 'Indemnified Notice Period',
+       'rescission_fgts_fine': 'FGTS Fine (40%)',
+       'hide_values': 'Hide values',
+
+
+
       // ── Categories Management ──
       'categories': 'Categories',
       'manage_categories': 'Manage your expense categories',
@@ -331,7 +355,7 @@ class AppLocalizations {
     'es': {
       'app_name': 'Farol',
       'dashboard': 'Panel',
-      'transactions': 'Gastos',
+      'transactions': 'Movimientos',
       'analytics': 'Análisis',
       'investments': 'Inversiones',
       'settings': 'Ajustes',
@@ -367,7 +391,7 @@ class AppLocalizations {
       'swile_remaining': 'Swile Disponible',
       'expense_by_cat': 'Gastos por Categoría',
       'no_expenses': 'Sin gastos registrados',
-      'no_expenses_hint': 'Agrega un gasto para ver el desglose de tus gastos.',
+      'no_expenses_hint': 'Agrega un gasto para ver el desglose de tus movimientos.',
       'no_net_worth': 'Sin datos de patrimonio',
       'score_desc': 'Puntaje de 0 a 10',
       'months': [
@@ -498,7 +522,7 @@ class AppLocalizations {
       'dont_have_account': '¿Aún no tienes cuenta? ',
       // Settings Extra
       'data_privacy': 'Datos y Privacidad',
-      'export_transactions': 'Exportar gastos',
+      'export_transactions': 'Exportar movimientos',
       'income_statement': 'Estado de Resultados',
       'full_backup': 'Respaldo Completo',
       'monthly_report_pdf': 'Resumen Mensual PDF',
@@ -530,7 +554,7 @@ class AppLocalizations {
       'farol_account': 'cuenta Farol.',
       'start_illuminating': 'Empieza a iluminar tu camino financiero hoy.',
       'set_planned_income':
-          'Establece tu ingreso mensual planeado. El dashboard rastreará los montos restantes a medida que agregues gastos.',
+          'Establece tu ingreso mensual planeado. El dashboard rastreará los montos restantes a medida que agregues movimientos.',
       'passwords_dont_match': 'Las contraseñas no coinciden',
       'create_account_arrow': 'Crear cuenta →',
       'already_have_account': '¿Ya tienes una cuenta? ',
@@ -600,8 +624,31 @@ class AppLocalizations {
       'simulator_13th': 'Simulador 13° Salario',
       'simulator_13th_desc': 'Calcula cuotas, INSS e IRRF',
       'simulator_fgts': 'Retiro Aniversario FGTS',
-      'simulator_fgts_desc': 'Simula el retiro anual y proyección 3 años',
-      'hide_values': 'Ocultar valores',
+       'simulator_fgts_desc': 'Simula el retiro anual y proyección 3 años',
+       'simulator_rescission': 'Rescisión CLT',
+       'simulator_rescission_desc': 'Calcula tus derechos al salir del empleo (Aviso, 13º, Vacaciones)',
+       'rescission_title': 'Simulador de Rescisión',
+       'rescission_input_title': 'DATOS DEL CONTRATO',
+       'rescission_gross_salary': 'Salario Bruto Mensual',
+       'rescission_fgts_balance': 'Saldo FGTS para Multa',
+       'rescission_start_date': 'Fecha de Inicio',
+       'rescission_end_date': 'Fecha de Salida',
+       'rescission_unjustified': 'Despido sin causa',
+       'rescission_notice_period': 'Aviso previo trabajado',
+       'rescission_unused_vacation': 'Días de vacaciones vencidos',
+       'rescission_calculate': 'Calcular Rescisión',
+       'rescission_total_receive_gross': 'TOTAL BRUTO A RECIBIR',
+       'rescission_disclaimer': '*Valores brutos. Pueden aplicarse deducciones de INSS e IRRF sobre el saldo de salario y 13º.',
+       'rescission_breakdown_title': 'DETALLES',
+       'rescission_salary_balance': 'Saldo de Salario',
+       'rescission_proportional_13th': '13º Proporcional',
+       'rescission_proportional_vacation': 'Vacaciones Proporcionales',
+       'rescission_unused_vacation_pay': 'Vacaciones Vencidas',
+       'rescission_vacation_third': '1/3 de Vacaciones',
+       'rescission_notice_period_indemnified': 'Aviso Previo Indemnizado',
+       'rescission_fgts_fine': 'Multa FGTS (40%)',
+       'hide_values': 'Ocultar valores',
+
       'hide_values_desc': 'Enmascara montos en toda la app',
       // ── Categories Management ──
       'categories': 'Categorías',
@@ -688,7 +735,7 @@ class AppLocalizations {
       'swile_remaining': 'Swile Disponível',
       'expense_by_cat': 'Gastos por Categoria',
       'no_expenses': 'Sem gastos registrados',
-      'no_expenses_hint': 'Adicione um gasto para ver o detalhamento dos seus gastos.',
+      'no_expenses_hint': 'Adicione um gasto para ver o detalhamento dos seus movimentos.',
       'no_net_worth': 'Sem dados de patrimônio',
       'score_desc': 'Pontuação de 0 a 10',
       'months': [
@@ -921,6 +968,8 @@ class AppLocalizations {
       'simulator_13th_desc': 'Calcule parcelas, INSS e IRRF',
       'simulator_fgts': 'Saque Aniversário FGTS',
       'simulator_fgts_desc': 'Simule o saque anual e projeção 3 anos',
+      'simulator_rescission': 'Rescisão CLT',
+      'simulator_rescission_desc': 'Calcule seus direitos ao sair do emprego (Aviso, 13º, Férias)',
       'hide_values': 'Ocultar valores',
       'hide_values_desc': 'Oculta os valores em todo o app',
       // ── Categories Management ──
@@ -1108,6 +1157,8 @@ class AppLocalizations {
   String get simulators => translate('simulators');
   String get simulator13th => translate('simulator_13th');
   String get simulator13thDesc => translate('simulator_13th_desc');
+  String get simulatorRescission => translate('simulator_rescission');
+  String get simulatorRescissionDesc => translate('simulator_rescission_desc');
   String get simulatorFgts => translate('simulator_fgts');
   String get simulatorFgtsDesc => translate('simulator_fgts_desc');
   String get hideValues => translate('hide_values');

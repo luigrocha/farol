@@ -28,6 +28,7 @@ import 'features/health/health_screen.dart';
 import 'features/simulators/thirteenth_salary_screen.dart';
 import 'features/installments/installments_screen.dart';
 import 'features/simulators/fgts_aniversario_screen.dart';
+import 'features/simulators/rescission_simulator_screen.dart';
 import 'features/period_budget/presentation/period_budget_screen.dart';
 import 'features/net_worth/presentation/patrimonio_screen.dart';
 
@@ -144,6 +145,7 @@ class FarolApp extends ConsumerWidget {
         '/thirteenth_salary': (context) => const ThirteenthSalaryScreen(),
         '/installments': (context) => const InstallmentsScreen(),
         '/fgts_aniversario': (context) => const FgtsAniversarioScreen(),
+        '/rescission_simulator': (context) => const RescissionSimulatorScreen(),
         '/patrimonio': (context) => const PatrimonioScreen(),
       },
       onGenerateRoute: (settings) {

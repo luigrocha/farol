@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/services/financial_calculator_service.dart';
+import '../../core/models/constants.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../design/farol_colors.dart' as tokens;
 
@@ -146,7 +147,8 @@ class _InputCard extends StatelessWidget {
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('Dependentes', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-            Text('Redução IRRF: ${FinancialCalculatorService.formatBRL(_kDepDeduction * dependents)}', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+             Text('Redução IRRF: ${FinancialCalculatorService.formatBRL(AppConstants.dependentDeduction * dependents)}', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+
           ]),
           _Counter(value: dependents, min: 0, max: 10, label: '$dependents', onChanged: onDependentsChanged),
         ]),
@@ -485,13 +487,6 @@ class _BigBRL extends StatelessWidget {
 
 // ─── Calculation logic ─────────────────────────────────────────────────────
 
-const double _kDepDeduction = 189.59;
-
-class _Row {
-  final String label, value;
-  const _Row(this.label, this.value);
-}
-
 class _Calc {
   final double proportional13th;
   final double inss;
@@ -522,87 +517,33 @@ class _Calc {
   factory _Calc.compute({required double gross, required int months, required int dependents}) {
     final base = gross * months / 12;
 
-    // ── INSS 2025 (progressive table) ──
-    // Brackets: [limit, rate]
-    const inssTable = <(double, double)>[
-      (1518.00, 0.075),
-      (2793.88, 0.09),
-      (4190.83, 0.12),
-      (8157.41, 0.14),
-    ];
-    const inssMax = 951.62;
-
-    double inss = 0;
-    double prev = 0;
-    final inssRows = <_Row>[];
-    for (final (limit, rate) in inssTable) {
-      if (base > prev) {
-        final taxable = (base < limit ? base : limit) - prev;
-        final contrib = taxable * rate;
-        inss += contrib;
-        if (contrib > 0) {
-          inssRows.add(_Row(
-            'Até ${FinancialCalculatorService.formatBRL(limit)} (${(rate * 100).toStringAsFixed(1)}%)',
-            FinancialCalculatorService.formatBRL(contrib),
-          ));
-        }
-        prev = limit;
-      }
-    }
-    if (inss > inssMax) {
-      inssRows.clear();
-      inssRows.add(_Row('Teto máximo INSS', FinancialCalculatorService.formatBRL(inssMax)));
-      inss = inssMax;
-    }
-
-    // ── IRRF 2025 (base = 13th - INSS - dependents) ──
-    final depDeduction = dependents * _kDepDeduction;
-    final irrfBase = (base - inss - depDeduction).clamp(0.0, double.infinity);
-
-    // Brackets: [limit, rate, deduction]
-    const irrfTable = <(double, double, double)>[
-      (2259.20, 0.0,   0.0),
-      (2826.65, 0.075, 169.44),
-      (3751.05, 0.15,  381.44),
-      (4664.68, 0.225, 662.77),
-      (double.infinity, 0.275, 896.00),
-    ];
-
-    double irrf = 0;
-    final irrfRows = <_Row>[];
-    for (final (limit, rate, ded) in irrfTable) {
-      if (irrfBase <= limit) {
-        irrf = (irrfBase * rate - ded).clamp(0.0, double.infinity);
-        if (irrf > 0) {
-          irrfRows.add(_Row(
-            'Base ${FinancialCalculatorService.formatBRL(irrfBase)} × ${(rate * 100).toStringAsFixed(1)}%',
-            FinancialCalculatorService.formatBRL(irrf),
-          ));
-        } else {
-          irrfRows.add(_Row('Base ${FinancialCalculatorService.formatBRL(irrfBase)}', 'Isento'));
-        }
-        break;
-      }
-    }
+    final inssResult = FinancialCalculatorService.calculateINSS(base);
+    final irrfResult = FinancialCalculatorService.calculateIRRF(base, dependents);
 
     final firstInstallment = base / 2;
-    final secondInstallment = base / 2 - inss - irrf;
+    final secondInstallment = base / 2 - inssResult.total - irrfResult.total;
     final totalNet = firstInstallment + secondInstallment;
-    final totalDeductions = inss + irrf;
+    final totalDeductions = inssResult.total + irrfResult.total;
     final effectiveRate = base > 0 ? (totalDeductions / base) * 100 : 0.0;
 
     return _Calc(
       proportional13th: base,
-      inss: inss,
-      irrf: irrf,
-      dependentDeduction: depDeduction,
+      inss: inssResult.total,
+      irrf: irrfResult.total,
+      dependentDeduction: dependents * AppConstants.dependentDeduction,
       firstInstallment: firstInstallment,
       secondInstallment: secondInstallment,
       totalNet: totalNet,
       totalDeductions: totalDeductions,
       effectiveRate: effectiveRate,
-      inssRows: inssRows,
-      irrfRows: irrfRows,
+      inssRows: inssResult.rows.map((r) => _Row(label: r.label, value: r.value)).toList(),
+      irrfRows: irrfResult.rows.map((r) => _Row(label: r.label, value: r.value)).toList(),
     );
   }
+}
+
+class _Row {
+  final String label;
+  final String value;
+  const _Row({required this.label, required this.value});
 }

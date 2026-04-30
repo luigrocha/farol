@@ -1,4 +1,5 @@
 import '../models/constants.dart';
+import '../models/tax_calculation_result.dart';
 
 /// Financial calculation service implementing all business logic rules.
 class FinancialCalculatorService {
@@ -180,6 +181,169 @@ class FinancialCalculatorService {
   }
 
   // ═══════════════════════════════════════════
+  // TAX CALCULATIONS (2025)
+  // ═══════════════════════════════════════════
+
+  static TaxCalculationResult calculateINSS(double gross) {
+    const inssTable = <(double, double)>[
+      (1518.00, 0.075),
+      (2793.88, 0.09),
+      (4190.83, 0.12),
+      (8157.41, 0.14),
+    ];
+    const inssMax = AppConstants.inssMax;
+
+    double inss = 0;
+    double prev = 0;
+    final rows = <TaxBreakdownRow>[];
+
+    for (final (limit, rate) in inssTable) {
+      if (gross > prev) {
+        final taxable = (gross < limit ? gross : limit) - prev;
+        final contrib = taxable * rate;
+        inss += contrib;
+        if (contrib > 0) {
+          rows.add(TaxBreakdownRow(
+            label: 'Até ${formatBRL(limit)} (${(rate * 100).toStringAsFixed(1)}%)',
+            value: formatBRL(contrib),
+          ));
+        }
+        prev = limit;
+      }
+    }
+
+    if (inss > inssMax) {
+      rows.clear();
+      rows.add(TaxBreakdownRow(label: 'Teto máximo INSS', value: formatBRL(inssMax)));
+      inss = inssMax;
+    }
+
+    return TaxCalculationResult(total: inss, rows: rows);
+  }
+
+  static TaxCalculationResult calculateIRRF(double taxableBase, int dependents) {
+    final depDeduction = dependents * AppConstants.dependentDeduction;
+    final base = (taxableBase - depDeduction).clamp(0.0, double.infinity);
+
+    const irrfTable = <(double, double, double)>[
+      (2259.20, 0.0,   0.0),
+      (2826.65, 0.075, 169.44),
+      (3751.05, 0.15,  381.44),
+      (4664.68, 0.225, 662.77),
+      (double.infinity, 0.275, 896.00),
+    ];
+
+    double irrf = 0;
+    final rows = <TaxBreakdownRow>[];
+
+    for (final (limit, rate, ded) in irrfTable) {
+      if (base <= limit) {
+        irrf = (base * rate - ded).clamp(0.0, double.infinity);
+        if (irrf > 0) {
+          rows.add(TaxBreakdownRow(
+            label: 'Base ${formatBRL(base)} × ${(rate * 100).toStringAsFixed(1)}%',
+            value: formatBRL(irrf),
+          ));
+        } else {
+          rows.add(TaxBreakdownRow(label: 'Base ${formatBRL(base)}', value: 'Isento'));
+        }
+        break;
+      }
+    }
+
+    return TaxCalculationResult(total: irrf, rows: rows);
+  }
+
+  // ═══════════════════════════════════════════
+  // RESCISSION SIMULATOR
+  // ═══════════════════════════════════════════
+
+  static double calculateFgtsFine(double fgtsBalance) {
+    return fgtsBalance * 0.40;
+  }
+
+  static RescissionResult calculateRescission({
+    required double grossSalary,
+    required int monthsWorkedInYear,
+    required double unusedVacationPay,
+    required double fgtsBalance,
+  }) {
+    final proportional13th = (grossSalary / 12) * monthsWorkedInYear;
+    final fgtsFine = calculateFgtsFine(fgtsBalance);
+    final totalNet = proportional13th + unusedVacationPay + fgtsFine;
+
+    return RescissionResult(
+      proportional13th: proportional13th,
+      unusedVacationPay: unusedVacationPay,
+      fgtsFine: fgtsFine,
+      totalNet: totalNet,
+    );
+  }
+
+  static FgtsAniversarioResult calculateFgtsAniversario({
+    required double currentBalance,
+    required double grossSalary,
+    required int birthMonth,
+  }) {
+    final now = DateTime.now();
+    final months0 = (birthMonth - now.month + 12) % 12;
+    final monthly = grossSalary * AppConstants.fgtsRate;
+
+    double grow(double bal, int mo) => bal + monthly * mo;
+
+    final bal1 = grow(currentBalance, months0);
+    final br1 = _bracketOf(bal1);
+    final w1 = bal1 * br1.rate + br1.bonus;
+    final after1 = bal1 - w1;
+
+    final bal2 = grow(after1, 12);
+    final br2 = _bracketOf(bal2);
+    final w2 = bal2 * br2.rate + br2.bonus;
+    final after2 = bal2 - w2;
+
+    final bal3 = grow(after2, 12);
+    final br3 = _bracketOf(bal3);
+    final w3 = bal3 * br3.rate + br3.bonus;
+
+    return FgtsAniversarioResult(
+      currentBalance: currentBalance,
+      grossSalary: grossSalary,
+      birthMonth: birthMonth,
+      monthsUntilBirthday: months0,
+      projectedBalance: bal1,
+      withdrawalAmount: w1,
+      withdrawalRate: br1.rate,
+      withdrawalBonus: br1.bonus,
+      balanceAfterWithdrawal: after1,
+      bracketIndex: br1.idx,
+      projections: [
+        FgtsYearProjection(
+            year: now.year, balance: bal1, withdrawal: w1, afterBalance: after1),
+        FgtsYearProjection(
+            year: now.year + 1,
+            balance: bal2,
+            withdrawal: w2,
+            afterBalance: after2),
+        FgtsYearProjection(
+            year: now.year + 2,
+            balance: bal3,
+            withdrawal: w3,
+            afterBalance: bal3 - w3),
+      ],
+    );
+  }
+
+  static ({double rate, double bonus, int idx}) _bracketOf(double balance) {
+    if (balance <= 500) return (rate: 0.50, bonus: 0.0, idx: 0);
+    if (balance <= 1000) return (rate: 0.40, bonus: 50.0, idx: 1);
+    if (balance <= 5000) return (rate: 0.30, bonus: 80.0, idx: 2);
+    if (balance <= 10000) return (rate: 0.20, bonus: 100.0, idx: 3);
+    if (balance <= 15000) return (rate: 0.15, bonus: 100.0, idx: 4);
+    if (balance <= 20000) return (rate: 0.10, bonus: 100.0, idx: 5);
+    return (rate: 0.05, bonus: 100.0, idx: 6);
+  }
+
+  // ═══════════════════════════════════════════
   // FORMAT HELPERS
   // ═══════════════════════════════════════════
   static String formatBRL(double value) {
@@ -199,4 +363,59 @@ class FinancialCalculatorService {
     final sign = value < 0 ? '-' : '';
     return '${sign}R\$ $buffer,$decPart';
   }
+}
+
+class FgtsAniversarioResult {
+  final double currentBalance;
+  final double grossSalary;
+  final int birthMonth;
+  final int monthsUntilBirthday;
+  final double projectedBalance;
+  final double withdrawalAmount;
+  final double withdrawalRate;
+  final double withdrawalBonus;
+  final double balanceAfterWithdrawal;
+  final int bracketIndex;
+  final List<FgtsYearProjection> projections;
+
+  const FgtsAniversarioResult({
+    required this.currentBalance,
+    required this.grossSalary,
+    required this.birthMonth,
+    required this.monthsUntilBirthday,
+    required this.projectedBalance,
+    required this.withdrawalAmount,
+    required this.withdrawalRate,
+    required this.withdrawalBonus,
+    required this.balanceAfterWithdrawal,
+    required this.bracketIndex,
+    required this.projections,
+  });
+}
+
+class FgtsYearProjection {
+  final int year;
+  final double balance;
+  final double withdrawal;
+  final double afterBalance;
+  const FgtsYearProjection({
+    required this.year,
+    required this.balance,
+    required this.withdrawal,
+    required this.afterBalance,
+  });
+}
+
+class RescissionResult {
+  final double proportional13th;
+  final double unusedVacationPay;
+  final double fgtsFine;
+  final double totalNet;
+
+  const RescissionResult({
+    required this.proportional13th,
+    required this.unusedVacationPay,
+    required this.fgtsFine,
+    required this.totalNet,
+  });
 }

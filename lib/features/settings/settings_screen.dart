@@ -1010,31 +1010,53 @@ class _SimulatorsSection extends StatelessWidget {
           ]),
         ),
       ),
-      const SizedBox(height: 10),
-      GestureDetector(
-        onTap: () => Navigator.of(context).pushNamed('/fgts_aniversario'),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
-          child: Row(children: [
-            Container(
-              width: 34, height: 34,
-              decoration: BoxDecoration(
-                color: const Color(0xFF006D5B).withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(10),
+       const SizedBox(height: 10),
+        GestureDetector(
+          onTap: () => Navigator.of(context).pushNamed('/fgts_aniversario'),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+            child: Row(children: [
+              Container(
+                width: 34, height: 34,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF006D5B).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.account_balance_outlined, size: 18, color: Color(0xFF006D5B)),
               ),
-              child: const Icon(Icons.account_balance_outlined, size: 18, color: Color(0xFF006D5B)),
-            ),
-            const SizedBox(width: 14),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(AppLocalizations.of(context).simulatorFgts, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-              Text(AppLocalizations.of(context).simulatorFgtsDesc, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
-            ])),
-            Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
-          ]),
+              const SizedBox(width: 14),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(AppLocalizations.of(context).simulatorFgts, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
+                Text(AppLocalizations.of(context).simulatorFgtsDesc, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+              ])),
+              Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
+            ]),
+          ),
         ),
-      ),
-    ]);
+        const SizedBox(height: 10),
+        GestureDetector(
+          onTap: () => Navigator.of(context).pushNamed('/rescission_simulator'),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+            child: Row(children: [
+              Container(
+                width: 34, height: 34,
+                decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: BorderRadius.circular(10)),
+                child: const Icon(Icons.assignment_outlined, size: 18, color: tokens.FarolColors.beam),
+              ),
+              const SizedBox(width: 14),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(AppLocalizations.of(context).simulatorRescission, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
+                Text(AppLocalizations.of(context).simulatorRescissionDesc, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+              ])),
+              Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
+            ]),
+          ),
+        ),
+      ],
+    );
   }
 }
 
