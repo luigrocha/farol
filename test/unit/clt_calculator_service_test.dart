@@ -6,8 +6,8 @@ void main() {
     test('should calculate correctly for standard unjustified dismissal', () {
       final startDate = DateTime(2024, 1, 1);
       final endDate = DateTime(2024, 6, 30);
-      final grossSalary = 3000.0;
-      final fgtsBalance = 1500.0;
+      const grossSalary = 3000.0;
+      const fgtsBalance = 1500.0;
 
       final result = CltCalculatorService.computeRescission(
         grossSalary: grossSalary,
@@ -18,9 +18,6 @@ void main() {
         workedNoticePeriod: false,
         unusedVacationDays: 0,
       );
-
-      print('Proportional 13th: ${result.proportional13th}');
-      print('Proportional Vacation: ${result.proportionalVacation}');
 
       // 1. Saldo de Salário: (3000/30) * 30 = 3000
       // 2. 13º Proporcional: 6 months (Jan-Jun). 3000 / 12 * 6 = 1500
