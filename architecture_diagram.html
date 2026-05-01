@@ -58,7 +58,6 @@
         <p>A comprehensive view of the system architecture, from high-level concepts to granular components.</p>
     </div>
 
-    <!-- HIGH LEVEL SECTION -->
     <div class="section">
         <h2>1. High-Level Perspective</h2>
         <pre class="mermaid">
@@ -77,14 +76,12 @@ graph TD
 
     EXT[<b>Cloud Services</b><br/>Supabase Auth & Sync]
 
-    %% Main Data Flow
     UI -->|User Actions| STATE
     STATE -->|Watches| REPO
     STATE -->|Uses| DOMAIN
     REPO -->|CRUD Operations| DB
     REPO -->|Authentication| EXT
     
-    %% Reactive Loop
     DB -.->|Reactive Stream| REPO
     REPO -.->|State Updates| STATE
     STATE -.->|UI Rebuild| UI
@@ -96,7 +93,6 @@ graph TD
         </pre>
     </div>
 
-    <!-- DETAILED SECTION -->
     <div class="section">
         <h2>2. Detailed Component Map</h2>
         <pre class="mermaid">
@@ -128,7 +124,6 @@ graph TD
             FCS[FinancialCalculator]
             CCS[CltCalculator]
             EXS[Export/PDF Service]
-            BRS[BudgetRecommendation]
         end
     end
 
@@ -147,7 +142,6 @@ graph TD
         end
     end
 
-    %% Interactions
     Screens -->|Action| Providers
     Providers -->|Reactive Calc| Services
     Providers -->|Request| Repositories
