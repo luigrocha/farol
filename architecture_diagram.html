@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farol Architecture Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'forest',
+            flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
+        });
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            padding: 40px;
+            background-color: #f8fafc;
+            color: #1e293b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header { text-align: center; margin-bottom: 40px; width: 100%; max-width: 1200px; }
+        h1 { font-weight: 800; letter-spacing: -0.025em; margin-bottom: 8px; color: #0f172a; }
+        p { color: #64748b; font-size: 1.1rem; }
+        
+        .section {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            max-width: 1300px;
+            margin-bottom: 50px;
+        }
+        h2 { border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 30px; color: #334155; }
+        
+        .legend {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 0.85rem;
+            color: #475569;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+        .legend-item { display: flex; align-items: center; gap: 8px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Farol Architecture Dashboard</h1>
+        <p>A comprehensive view of the system architecture, from high-level concepts to granular components.</p>
+    </div>
+
+    <!-- HIGH LEVEL SECTION -->
+    <div class="section">
+        <h2>1. High-Level Perspective</h2>
+        <pre class="mermaid">
+graph TD
+    UI[<b>Presentation Layer</b><br/>Flutter Widgets & Design System]
+    
+    subgraph Reactive_Core [Reactive Business Logic]
+        STATE[<b>State Management</b><br/>Riverpod Providers]
+        DOMAIN[<b>Domain Logic</b><br/>Financial & CLT Calculators]
+    end
+
+    subgraph Data_Engine [Data Persistence]
+        REPO[<b>Repository Layer</b><br/>Data Abstraction]
+        DB[(<b>Local Database</b><br/>SQLite via Drift)]
+    end
+
+    EXT[<b>Cloud Services</b><br/>Supabase Auth & Sync]
+
+    %% Main Data Flow
+    UI -->|User Actions| STATE
+    STATE -->|Watches| REPO
+    STATE -->|Uses| DOMAIN
+    REPO -->|CRUD Operations| DB
+    REPO -->|Authentication| EXT
+    
+    %% Reactive Loop
+    DB -.->|Reactive Stream| REPO
+    REPO -.->|State Updates| STATE
+    STATE -.->|UI Rebuild| UI
+
+    style UI fill:#f1f5f9,stroke:#64748b
+    style Reactive_Core fill:#f0fdfa,stroke:#0d9488
+    style Data_Engine fill:#fff7ed,stroke:#ea580c
+    style EXT fill:#f8fafc,stroke:#94a3b8
+        </pre>
+    </div>
+
+    <!-- DETAILED SECTION -->
+    <div class="section">
+        <h2>2. Detailed Component Map</h2>
+        <pre class="mermaid">
+graph TD
+    subgraph "Presentation (UI/UX)"
+        direction TB
+        subgraph Screens
+            DASH[DashboardScreen]
+            TRANS[TransactionsScreen]
+            SIM[Simulators: 13th, Rescission]
+            HEA[Health Score]
+            INV[Investments]
+        end
+        subgraph Components
+            DSW[Design System Widgets]
+            COREW[Charts, Gauges, Pickers]
+        end
+    end
+
+    subgraph "Logic (Riverpod & Services)"
+        direction TB
+        subgraph Providers
+            AUTH_P[authStateProvider]
+            BUD_P[budgetSettingsProvider]
+            PER_P[selectedPeriodProvider]
+            ALERTS[budgetAlertsProvider]
+        end
+        subgraph Services
+            FCS[FinancialCalculator]
+            CCS[CltCalculator]
+            EXS[Export/PDF Service]
+            BRS[BudgetRecommendation]
+        end
+    end
+
+    subgraph "Data (Persistence)"
+        direction TB
+        subgraph Repositories
+            R_EXP[ExpenseRepository]
+            R_INC[IncomeRepository]
+            R_INV[InvestmentRepository]
+            R_NW[NetWorthRepository]
+            R_PREF[UserPrefsRepository]
+        end
+        subgraph DB_Layer
+            DB_CORE[(AppDatabase)]
+            TABLES[incomes, expenses, card_installments, budget_goals...]
+        end
+    end
+
+    %% Interactions
+    Screens -->|Action| Providers
+    Providers -->|Reactive Calc| Services
+    Providers -->|Request| Repositories
+    Repositories -->|Query| DB_CORE
+    DB_CORE --- TABLES
+    Components -.->|Used by| Screens
+
+    style Screens fill:#f8fafc,stroke:#cbd5e1
+    style Providers fill:#f0fdf4,stroke:#22c55e
+    style Repositories fill:#fffaf5,stroke:#f97316
+        </pre>
+        
+        <div class="legend">
+            <div class="legend-item"><span class="dot" style="background: #cbd5e1;"></span> UI Components</div>
+            <div class="legend-item"><span class="dot" style="background: #22c55e;"></span> Business Logic</div>
+            <div class="legend-item"><span class="dot" style="background: #f97316;"></span> Data Persistence</div>
+            <div class="legend-item"><span>⇢</span> Primary Action</div>
+            <div class="legend-item"><span>---</span> Database Schema</div>
+        </div>
+    </div>
+</body>
+</html>
