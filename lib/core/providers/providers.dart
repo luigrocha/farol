@@ -32,7 +32,7 @@ import '../models/budget_alert.dart';
 import '../models/salary_settings.dart';
 import '../services/financial_calculator_service.dart';
 import '../services/clt_calculator_service.dart';
-import '../services/budget_recommendation_service.dart';
+
 import '../../features/budget/data/budget_settings_repository.dart';
 import '../../features/budget/domain/budget_settings.dart';
 import '../models/category.dart';
@@ -1170,69 +1170,4 @@ class SalarySettingsNotifier extends AsyncNotifier<SalarySettings?> {
   }
 }
 
-// ═══════════════════════════════════════════
-// AI BUDGET RECOMMENDATION PROVIDERS
-// ═══════════════════════════════════════════
 
-/// 3-month average cash expenses per category (excludes Swile).
-final threeMonthAvgByCategoryProvider =
-    FutureProvider.autoDispose<Map<String, double>>((ref) async {
-  final repo = ref.watch(expenseRepositoryProvider);
-  final now = DateTime.now();
-  final start = DateTime(now.year, now.month - 2, 1);
-  final expenses =
-      await repo.getByRange(start.month, start.year, now.month, now.year);
-  final totals = <String, double>{};
-  for (final e in expenses.where((e) => e.payType != 'Swile')) {
-    totals[e.category] = (totals[e.category] ?? 0) + e.amount;
-  }
-  return totals.map((k, v) => MapEntry(k, v / 3));
-});
-
-/// True when the AI recommendation dismissal stored in user_settings has not expired.
-final aiRecommendationDismissedProvider =
-    FutureProvider.autoDispose<bool>((ref) async {
-  final db = ref.watch(databaseProvider);
-  final val = await db.getSetting('ai_rec_dismissed_until');
-  if (val == null) return false;
-  final until = DateTime.tryParse(val);
-  if (until == null) return false;
-  return DateTime.now().isBefore(until);
-});
-
-/// Calls the Claude API and returns budget recommendations.
-final budgetRecommendationProvider =
-    FutureProvider.autoDispose<BudgetRecommendation>((ref) async {
-  final netSalary = ref.read(effectiveNetSalaryProvider);
-  final expensesByCategory =
-      await ref.watch(threeMonthAvgByCategoryProvider.future);
-  final goals = ref.watch(budgetGoalsProvider).value ?? [];
-  final currentGoals = {
-    for (final g in goals)
-      if (!swileCategories.contains(g.category)) g.category: g.targetPercentage,
-  };
-  final swileBalance = ref.watch(swileMealBalanceProvider) +
-      ref.watch(swileFoodBalanceProvider);
-  final cash = ref.read(cashExpensesProvider);
-  final housing = expensesByCategory['HOUSING'] ?? 0;
-  final installments = ref.watch(installmentsProvider).value ?? [];
-  final instTotal =
-      installments.fold(0.0, (s, i) => s + i.monthlyAmount);
-  final score = FinancialCalculatorService.calculateHealthScore(
-    netSalary: netSalary,
-    cashExpenses: cash,
-    housingExpenses: housing,
-    monthlyBalance: netSalary - cash,
-    emergencyFund: 0,
-    avgMonthlyExpenses: cash,
-    activeInstallmentsTotal: instTotal,
-  );
-  final ctx = BudgetContext(
-    netSalary: netSalary,
-    expensesByCategory: expensesByCategory,
-    currentGoals: currentGoals,
-    swileBalance: swileBalance,
-    healthScore: score.toDouble(),
-  );
-  return BudgetRecommendationService().generateRecommendations(ctx);
-});

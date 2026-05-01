@@ -43,6 +43,7 @@ ThemeData _build({
   return ThemeData(
     useMaterial3: true,
     brightness: brightness,
+    fontFamilyFallback: const ['Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji'],
     colorScheme: ColorScheme(
       brightness: brightness,
       primary: tokens.FarolColors.navy,
