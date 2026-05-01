@@ -78,6 +78,31 @@ class IncomeRepository {
     });
   }
 
+  Future<void> update({
+    required int id,
+    required int month,
+    required int year,
+    required String incomeType,
+    required double amount,
+    bool isNet = true,
+    double? inssDeducted,
+    double? irrfDeducted,
+    String? notes,
+  }) async {
+    final userId = _userId;
+    if (userId == null) throw Exception('Not authenticated');
+    await _supabase.from('incomes').update({
+      'month': month,
+      'year': year,
+      'income_type': incomeType,
+      'amount': amount,
+      'is_net': isNet,
+      if (inssDeducted != null) 'inss_deducted': inssDeducted,
+      if (irrfDeducted != null) 'irrf_deducted': irrfDeducted,
+      if (notes != null) 'notes': notes,
+    }).eq('id', id);
+  }
+
   Future<void> delete(int id) async {
     await _supabase.from('incomes').delete().eq('id', id);
   }

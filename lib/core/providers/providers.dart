@@ -896,6 +896,8 @@ class IncomeNotifier extends AsyncNotifier<void> {
     required String incomeType,
     required double amount,
     bool isNet = true,
+    double? inssDeducted,
+    double? irrfDeducted,
     String? notes,
   }) async {
     await ref.read(incomeRepositoryProvider).insert(
@@ -904,6 +906,8 @@ class IncomeNotifier extends AsyncNotifier<void> {
           incomeType: incomeType,
           amount: amount,
           isNet: isNet,
+          inssDeducted: inssDeducted,
+          irrfDeducted: irrfDeducted,
           notes: notes,
         );
     ref.invalidate(_allIncomesStreamProvider);
@@ -911,6 +915,31 @@ class IncomeNotifier extends AsyncNotifier<void> {
 
   Future<void> delete(int id) async {
     await ref.read(incomeRepositoryProvider).delete(id);
+    ref.invalidate(_allIncomesStreamProvider);
+  }
+
+  Future<void> save({
+    required int id,
+    required int month,
+    required int year,
+    required String incomeType,
+    required double amount,
+    bool isNet = true,
+    double? inssDeducted,
+    double? irrfDeducted,
+    String? notes,
+  }) async {
+    await ref.read(incomeRepositoryProvider).update(
+          id: id,
+          month: month,
+          year: year,
+          incomeType: incomeType,
+          amount: amount,
+          isNet: isNet,
+          inssDeducted: inssDeducted,
+          irrfDeducted: irrfDeducted,
+          notes: notes,
+        );
     ref.invalidate(_allIncomesStreamProvider);
   }
 }

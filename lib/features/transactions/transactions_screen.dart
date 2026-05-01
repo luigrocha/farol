@@ -15,6 +15,7 @@ import '../../features/auth/domain/auth_state.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'quick_add_bottom_sheet.dart';
 import 'edit_expense_bottom_sheet.dart';
+import 'edit_income_bottom_sheet.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
   const TransactionsScreen({super.key});
@@ -258,34 +259,41 @@ class _IncomeRow extends ConsumerWidget {
           if (context.mounted) context.showErrorSnackBar(e);
         }
       },
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
-        child: Row(children: [
-          Container(
-            width: 38, height: 38,
-            decoration: BoxDecoration(
-              color: tokens.FarolColors.tide.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
+      child: GestureDetector(
+        onTap: () => showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          builder: (_) => EditIncomeBottomSheet(income: income),
+        ),
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+          child: Row(children: [
+            Container(
+              width: 38, height: 38,
+              decoration: BoxDecoration(
+                color: tokens.FarolColors.tide.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Center(child: Text(type.emoji, style: const TextStyle(fontSize: 18))),
             ),
-            child: Center(child: Text(type.emoji, style: const TextStyle(fontSize: 18))),
-          ),
-          const SizedBox(width: 14),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(type.label,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-            if (income.notes != null && income.notes!.isNotEmpty)
-              Text(income.notes!,
-                  style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
-                  maxLines: 1, overflow: TextOverflow.ellipsis),
-          ])),
-          Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-            _BRLSmall(value: income.amount, size: 15, weight: FontWeight.w700, color: tokens.FarolColors.tide),
-            Text(income.isNet ? 'Líquido' : 'Bruto',
-                style: TextStyle(fontSize: 11, color: colors.onSurfaceFaint)),
+            const SizedBox(width: 14),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(type.label,
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
+              if (income.notes != null && income.notes!.isNotEmpty)
+                Text(income.notes!,
+                    style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
+                    maxLines: 1, overflow: TextOverflow.ellipsis),
+            ])),
+            Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+              _BRLSmall(value: income.amount, size: 15, weight: FontWeight.w700, color: tokens.FarolColors.tide),
+              Text(income.isNet ? 'Líquido' : 'Bruto',
+                  style: TextStyle(fontSize: 11, color: colors.onSurfaceFaint)),
+            ]),
           ]),
-        ]),
+        ),
       ),
     );
   }
@@ -305,21 +313,52 @@ class _AddIncomeSheetState extends ConsumerState<_AddIncomeSheet> {
   IncomeType _type = IncomeType.netSalary;
   final _amountController = TextEditingController();
   final _notesController = TextEditingController();
+  final _dependentsController = TextEditingController(text: '0');
   bool _isNet = true;
   bool _saving = false;
+  NetSalaryResult? _calculatedNet;
+  bool _showCalculation = false;
 
   @override
   void dispose() {
     _amountController.dispose();
     _notesController.dispose();
+    _dependentsController.dispose();
     super.dispose();
   }
 
+  void _calculateNet() {
+    final amountStr = _amountController.text.replaceAll('.', '').replaceAll(',', '.');
+    final gross = double.tryParse(amountStr);
+    if (gross == null || gross <= 0) return;
+    final dependents = int.tryParse(_dependentsController.text) ?? 0;
+    setState(() {
+      _calculatedNet = FinancialCalculatorService.calculateNetFromGross(gross, dependents: dependents);
+      _showCalculation = true;
+    });
+  }
+
+  void _useNetValue() {
+    if (_calculatedNet == null) return;
+    setState(() {
+      _amountController.text = _calculatedNet!.net.toStringAsFixed(2).replaceAll('.', ',');
+      _isNet = true;
+    });
+  }
+
   Future<void> _save() async {
-    final amount = double.tryParse(_amountController.text.replaceAll(',', '.'));
+    final amountStr = _amountController.text.replaceAll('.', '').replaceAll(',', '.');
+    final amount = double.tryParse(amountStr);
     if (amount == null || amount <= 0) return;
     setState(() => _saving = true);
     try {
+      double? inssDeducted;
+      double? irrfDeducted;
+      if (_showCalculation && _calculatedNet != null) {
+        inssDeducted = _calculatedNet!.inss;
+        irrfDeducted = _calculatedNet!.irrf;
+      }
+
       final month = ref.read(selectedMonthProvider);
       final year = ref.read(selectedYearProvider);
       await ref.read(incomeNotifierProvider.notifier).insert(
@@ -328,6 +367,8 @@ class _AddIncomeSheetState extends ConsumerState<_AddIncomeSheet> {
             incomeType: _type.dbValue,
             amount: amount,
             isNet: _isNet,
+            inssDeducted: inssDeducted,
+            irrfDeducted: irrfDeducted,
             notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
           );
       if (mounted) Navigator.pop(context);
@@ -348,7 +389,6 @@ class _AddIncomeSheetState extends ConsumerState<_AddIncomeSheet> {
             Text('Novo Ingresso',
                 style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700, color: colors.onSurface)),
             const SizedBox(height: 20),
-            // Type selector
             Text('Tipo', style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
             const SizedBox(height: 6),
             SizedBox(
@@ -387,7 +427,6 @@ class _AddIncomeSheetState extends ConsumerState<_AddIncomeSheet> {
               decoration: const InputDecoration(labelText: 'Valor', prefixText: 'R\$ '),
             ),
             const SizedBox(height: 12),
-            // Net / Gross toggle
             Row(children: [
               Expanded(child: Text('Valor líquido (ya descontado INSS/IRRF)',
                   style: TextStyle(fontSize: 13, color: colors.onSurfaceMuted))),
@@ -397,7 +436,103 @@ class _AddIncomeSheetState extends ConsumerState<_AddIncomeSheet> {
                 activeThumbColor: tokens.FarolColors.tide,
               ),
             ]),
-            const SizedBox(height: 8),
+            if (_type == IncomeType.netSalary) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: colors.surfaceLow,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Dependentes (IRRF)',
+                            style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 60,
+                          child: TextField(
+                            controller: _dependentsController,
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(vertical: 8),
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _calculateNet,
+                        icon: const Icon(Icons.calculate_outlined, size: 18),
+                        label: const Text('Calcular líquido'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: tokens.FarolColors.tide,
+                          side: BorderSide(color: tokens.FarolColors.tide.withValues(alpha: 0.3)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            if (_showCalculation && _calculatedNet != null) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: tokens.FarolColors.tide.withValues(alpha: 0.06),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: tokens.FarolColors.tide.withValues(alpha: 0.15)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Desglose del salario',
+                      style: GoogleFonts.manrope(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: tokens.FarolColors.tide,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    _buildAddCalcRow('Bruto', _calculatedNet!.gross, colors.onSurface),
+                    _buildAddCalcRow('INSS', -_calculatedNet!.inss, const Color(0xFFFF6B35)),
+                    _buildAddCalcRow('IRRF', -_calculatedNet!.irrf, const Color(0xFFFF6B35)),
+                    const Divider(height: 20),
+                    _buildAddCalcRow('Líquido', _calculatedNet!.net, tokens.FarolColors.tide, bold: true),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed: _useNetValue,
+                        icon: const Icon(Icons.download_outlined, size: 16),
+                        label: const Text('Usar valor líquido'),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: tokens.FarolColors.tide,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            const SizedBox(height: 12),
             TextField(
               controller: _notesController,
               decoration: const InputDecoration(labelText: 'Observación (opcional)'),
@@ -415,6 +550,35 @@ class _AddIncomeSheetState extends ConsumerState<_AddIncomeSheet> {
             ),
           ]),
         ),
+      ),
+    );
+  }
+
+  Widget _buildAddCalcRow(String label, double value, Color color, {bool bold = false}) {
+    final formatted = FinancialCalculatorService.formatBRL(value);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
+              color: color,
+            ),
+          ),
+          Text(
+            formatted,
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: bold ? FontWeight.w700 : FontWeight.w600,
+              color: color,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+        ],
       ),
     );
   }

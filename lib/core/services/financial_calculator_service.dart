@@ -255,6 +255,38 @@ class FinancialCalculatorService {
   }
 
   // ═══════════════════════════════════════════
+  // NET SALARY CALCULATOR (Gross → Net)
+  // Computes INSS + IRRF deductions from gross
+  // ═══════════════════════════════════════════
+
+  static NetSalaryResult calculateNetFromGross(double grossSalary, {int dependents = 0}) {
+    if (grossSalary <= 0) {
+      return NetSalaryResult(
+        gross: grossSalary,
+        inss: 0,
+        irrf: 0,
+        net: grossSalary,
+        inssBreakdown: [],
+        irrfBreakdown: [],
+      );
+    }
+
+    final inssResult = calculateINSS(grossSalary);
+    final taxableBase = grossSalary - inssResult.total;
+    final irrfResult = calculateIRRF(taxableBase, dependents);
+    final net = grossSalary - inssResult.total - irrfResult.total;
+
+    return NetSalaryResult(
+      gross: grossSalary,
+      inss: inssResult.total,
+      irrf: irrfResult.total,
+      net: net,
+      inssBreakdown: inssResult.rows,
+      irrfBreakdown: irrfResult.rows,
+    );
+  }
+
+  // ═══════════════════════════════════════════
   // RESCISSION SIMULATOR
   // ═══════════════════════════════════════════
 
@@ -403,6 +435,24 @@ class FgtsYearProjection {
     required this.balance,
     required this.withdrawal,
     required this.afterBalance,
+  });
+}
+
+class NetSalaryResult {
+  final double gross;
+  final double inss;
+  final double irrf;
+  final double net;
+  final List<TaxBreakdownRow> inssBreakdown;
+  final List<TaxBreakdownRow> irrfBreakdown;
+
+  const NetSalaryResult({
+    required this.gross,
+    required this.inss,
+    required this.irrf,
+    required this.net,
+    required this.inssBreakdown,
+    required this.irrfBreakdown,
   });
 }
 
