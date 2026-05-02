@@ -131,6 +131,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'fab_transactions',
         onPressed: () => showModalBottomSheet(
           context: context,
           isScrollControlled: true,

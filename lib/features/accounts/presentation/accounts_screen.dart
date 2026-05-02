@@ -73,6 +73,7 @@ class AccountsScreen extends ConsumerWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'fab_accounts',
         onPressed: () => showModalBottomSheet(
           context: context,
           isScrollControlled: true,

@@ -118,6 +118,7 @@ class DashboardScreen extends ConsumerWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'fab_dashboard',
         onPressed: () => showModalBottomSheet(
           context: context,
           isScrollControlled: true,

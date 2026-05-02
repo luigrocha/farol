@@ -65,6 +65,7 @@ class PeriodBudgetScreen extends ConsumerWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'fab_period_budget',
         onPressed: () => _openEdit(context, null),
         backgroundColor: tokens.FarolColors.beam,
         child: const Icon(Icons.add, color: tokens.FarolColors.navy),

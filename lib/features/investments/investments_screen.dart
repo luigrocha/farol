@@ -48,6 +48,7 @@ class InvestmentsScreen extends ConsumerWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'fab_investments',
         onPressed: () => showModalBottomSheet(
           context: context,
           isScrollControlled: true,

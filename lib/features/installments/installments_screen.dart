@@ -58,6 +58,7 @@ class InstallmentsScreen extends ConsumerWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'fab_installments',
         onPressed: () => showModalBottomSheet(
           context: context,
           isScrollControlled: true,
