@@ -172,17 +172,60 @@ final categoryRepositoryProvider = Provider<CategoryRepository>((ref) {
 });
 
 // ═══════════════════════════════════════════
-// RAW SUPABASE STREAM PROVIDERS
-// One stream per table – stable, not tied to month/year.
-// Derived providers filter from these to avoid extra WebSocket churn.
+// HYBRID REALTIME + POLLING PROVIDERS
+// Realtime active when screen is foreground,
+// polling fallback when background or on error.
 // ═══════════════════════════════════════════
 
+final realtimeActiveProvider = StateProvider<bool>((ref) => true);
+final realtimeMaxRetriesReachedProvider = StateProvider<bool>((ref) => false);
+
 final _allIncomesStreamProvider = StreamProvider.autoDispose<List<Income>>((ref) {
-  return ref.watch(incomeRepositoryProvider).watchAll();
+  final useRealtime = ref.watch(realtimeActiveProvider);
+  final repository = ref.watch(incomeRepositoryProvider);
+  final maxRetries = ref.watch(realtimeMaxRetriesReachedProvider);
+
+  if (maxRetries) {
+    ref.read(realtimeActiveProvider.notifier).state = false;
+  }
+
+  final effectiveRealtime = useRealtime && !maxRetries;
+
+  if (effectiveRealtime) {
+    return repository.watchRealtime().handleError((error, stackTrace) {
+      ref.read(realtimeMaxRetriesReachedProvider.notifier).state = true;
+      return <Income>[];
+    });
+  } else {
+    return Stream.periodic(
+      const Duration(seconds: 30),
+      (_) => repository.fetchAll(),
+    ).asyncMap((future) => future);
+  }
 });
 
 final _allExpensesStreamProvider = StreamProvider.autoDispose<List<Expense>>((ref) {
-  return ref.watch(expenseRepositoryProvider).watchAll();
+  final useRealtime = ref.watch(realtimeActiveProvider);
+  final repository = ref.watch(expenseRepositoryProvider);
+  final maxRetries = ref.watch(realtimeMaxRetriesReachedProvider);
+
+  if (maxRetries) {
+    ref.read(realtimeActiveProvider.notifier).state = false;
+  }
+
+  final effectiveRealtime = useRealtime && !maxRetries;
+
+  if (effectiveRealtime) {
+    return repository.watchRealtime().handleError((error, stackTrace) {
+      ref.read(realtimeMaxRetriesReachedProvider.notifier).state = true;
+      return <Expense>[];
+    });
+  } else {
+    return Stream.periodic(
+      const Duration(seconds: 30),
+      (_) => repository.fetchAll(),
+    ).asyncMap((future) => future);
+  }
 });
 
 final categoriesStreamProvider = StreamProvider.autoDispose<List<Category>>((ref) {

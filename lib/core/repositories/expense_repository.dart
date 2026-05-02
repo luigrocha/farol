@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart' show DateUtils;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/expense.dart';
+import '../services/supabase_realtime_manager.dart';
 
 class ExpenseRepository {
   final SupabaseClient _supabase;
@@ -119,6 +121,31 @@ class ExpenseRepository {
 
   Future<void> delete(int id) async {
     await _supabase.from('expenses').delete().eq('id', id);
+  }
+
+  Stream<List<Expense>> watchRealtime() {
+    return SupabaseRealtimeManager.instance.createManagedStream<Expense>(
+      table: 'expenses',
+      primaryKey: ['id'],
+      fromJson: Expense.fromJson,
+      userId: _userId,
+      userIdColumn: 'user_id',
+    );
+  }
+
+  Future<void> unsubscribeRealtime() {
+    return SupabaseRealtimeManager.instance.unsubscribe('expenses');
+  }
+  bool get shouldFallbackToPolling => SupabaseRealtimeManager.instance.isMaxRetriesReached('expenses');
+
+  Future<List<Expense>> fetchAll() async {
+    return SupabaseRealtimeManager.instance
+        .fetchAll(
+          table: 'expenses',
+          userId: _userId,
+          userIdColumn: 'user_id',
+        )
+        .then((rows) => rows.map(Expense.fromJson).toList());
   }
 
   Future<List<Expense>> getFixedForMonth(int month, int year) async {

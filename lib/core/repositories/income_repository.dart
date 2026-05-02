@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/income.dart';
+import '../services/supabase_realtime_manager.dart';
 
 class IncomeRepository {
   final SupabaseClient _supabase;
@@ -105,6 +107,31 @@ class IncomeRepository {
 
   Future<void> delete(int id) async {
     await _supabase.from('incomes').delete().eq('id', id);
+  }
+
+  Stream<List<Income>> watchRealtime() {
+    return SupabaseRealtimeManager.instance.createManagedStream<Income>(
+      table: 'incomes',
+      primaryKey: ['id'],
+      fromJson: Income.fromJson,
+      userId: _userId,
+      userIdColumn: 'user_id',
+    );
+  }
+
+  Future<void> unsubscribeRealtime() {
+    return SupabaseRealtimeManager.instance.unsubscribe('incomes');
+  }
+  bool get shouldFallbackToPolling => SupabaseRealtimeManager.instance.isMaxRetriesReached('incomes');
+
+  Future<List<Income>> fetchAll() async {
+    return SupabaseRealtimeManager.instance
+        .fetchAll(
+          table: 'incomes',
+          userId: _userId,
+          userIdColumn: 'user_id',
+        )
+        .then((rows) => rows.map(Income.fromJson).toList());
   }
 
   bool _inRange(int m, int y, int sm, int sy, int em, int ey) {

@@ -24,7 +24,7 @@ class TransactionsScreen extends ConsumerStatefulWidget {
 }
 
 class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late final TabController _tabController;
   bool _showCategories = false;
 
@@ -33,12 +33,28 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() => setState(() {}));
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    _unsubscribeRealtime();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      _unsubscribeRealtime();
+    }
+  }
+
+  void _unsubscribeRealtime() {
+    ref.read(incomeRepositoryProvider).unsubscribeRealtime();
+    ref.read(expenseRepositoryProvider).unsubscribeRealtime();
   }
 
   bool get _onExpensesTab => _tabController.index == 0;
