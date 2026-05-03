@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'design/farol_colors.dart' as tokens;
 import 'core/theme/farol_colors.dart' show FarolColorsContext;
@@ -77,6 +78,14 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Preload Noto fallback fonts for CanvasKit (web). CanvasKit does not use
+  // system fonts — every glyph outside Inter/Manrope (e.g. fl_chart symbols)
+  // must be covered by an explicitly loaded font family.
+  await GoogleFonts.pendingFonts([
+    GoogleFonts.notoSans(),
+    GoogleFonts.notoSansSymbols2(),
+  ]);
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

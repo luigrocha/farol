@@ -26,6 +26,12 @@ class AppTheme {
   static const Color onSurfaceSoft = Color(0xFF6B7280);
   static const Color onSurfaceFaint = Color(0xFF9CA3AF);
 
+  // Noto Sans covers all pt_BR + R$ glyphs. Noto Sans Symbols 2 covers
+  // Unicode symbols used by fl_chart (arrows, bullets, etc.).
+  static const List<String> _fontFallback = ['Noto Sans', 'Noto Sans Symbols 2'];
+
+  static TextStyle _fb(TextStyle s) => s.copyWith(fontFamilyFallback: _fontFallback);
+
   static ThemeData get lightTheme => _buildTheme(FarolColors.light, Brightness.light);
   static ThemeData get darkTheme => _buildTheme(FarolColors.dark, Brightness.dark);
 
@@ -69,31 +75,31 @@ class AppTheme {
         margin: EdgeInsets.zero,
       ),
       textTheme: GoogleFonts.interTextTheme(ThemeData(brightness: brightness).textTheme).copyWith(
-        displayLarge: GoogleFonts.manrope(fontWeight: FontWeight.w800, color: c.onSurface),
-        displayMedium: GoogleFonts.manrope(fontWeight: FontWeight.w800, color: c.onSurface),
-        displaySmall: GoogleFonts.manrope(fontWeight: FontWeight.w700, color: c.onSurface),
-        headlineLarge: GoogleFonts.manrope(fontWeight: FontWeight.w800, color: c.onSurface),
-        headlineMedium: GoogleFonts.manrope(fontWeight: FontWeight.w700, color: c.onSurface),
-        headlineSmall: GoogleFonts.manrope(fontWeight: FontWeight.w700, color: c.onSurface),
-        titleLarge: GoogleFonts.manrope(fontWeight: FontWeight.w700, color: c.onSurface),
-        titleMedium: GoogleFonts.manrope(fontWeight: FontWeight.w600, color: c.onSurface),
-        titleSmall: GoogleFonts.manrope(fontWeight: FontWeight.w600, color: c.onSurface),
-        bodyLarge: GoogleFonts.inter(color: c.onSurface),
-        bodyMedium: GoogleFonts.inter(color: c.onSurface),
-        bodySmall: GoogleFonts.inter(color: c.onSurfaceSoft),
-        labelLarge: GoogleFonts.inter(color: c.onSurface, fontWeight: FontWeight.w500),
-        labelMedium: GoogleFonts.inter(color: c.onSurfaceSoft),
-        labelSmall: GoogleFonts.inter(color: c.onSurfaceSoft),
+        displayLarge: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w800, color: c.onSurface)),
+        displayMedium: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w800, color: c.onSurface)),
+        displaySmall: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w700, color: c.onSurface)),
+        headlineLarge: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w800, color: c.onSurface)),
+        headlineMedium: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w700, color: c.onSurface)),
+        headlineSmall: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w700, color: c.onSurface)),
+        titleLarge: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w700, color: c.onSurface)),
+        titleMedium: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w600, color: c.onSurface)),
+        titleSmall: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w600, color: c.onSurface)),
+        bodyLarge: _fb(GoogleFonts.inter(color: c.onSurface)),
+        bodyMedium: _fb(GoogleFonts.inter(color: c.onSurface)),
+        bodySmall: _fb(GoogleFonts.inter(color: c.onSurfaceSoft)),
+        labelLarge: _fb(GoogleFonts.inter(color: c.onSurface, fontWeight: FontWeight.w500)),
+        labelMedium: _fb(GoogleFonts.inter(color: c.onSurfaceSoft)),
+        labelSmall: _fb(GoogleFonts.inter(color: c.onSurfaceSoft)),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: c.surface,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: GoogleFonts.manrope(
+        titleTextStyle: _fb(GoogleFonts.manrope(
           color: primaryColor,
           fontSize: 20,
           fontWeight: FontWeight.w800,
-        ),
+        )),
         iconTheme: IconThemeData(color: c.onSurface),
       ),
       navigationBarTheme: NavigationBarThemeData(
