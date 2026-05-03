@@ -8,6 +8,7 @@ import '../../core/models/enums.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../design/farol_colors.dart' as tokens;
+import '../../core/i18n/app_localizations.dart';
 import '../../core/widgets/farol_snackbar.dart';
 
 class EditIncomeBottomSheet extends ConsumerStatefulWidget {
@@ -80,7 +81,7 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
     final amountStr = _amountController.text.replaceAll('.', '').replaceAll(',', '.');
     final amount = double.tryParse(amountStr);
     if (amount == null || amount <= 0) {
-      if (mounted) context.showErrorSnackBar('Valor inválido');
+      if (mounted) context.showErrorSnackBar(context.l10n.invalidAmount);
       return;
     }
 
@@ -109,7 +110,7 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
           );
       if (mounted) {
         Navigator.pop(context);
-        context.showSuccessSnackBar('Ingresso atualizado');
+        context.showSuccessSnackBar(context.l10n.incomeUpdated);
       }
     } catch (e) {
       if (mounted) context.showErrorSnackBar(e);
@@ -121,6 +122,7 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final l10n = context.l10n;
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: SafeArea(
@@ -132,7 +134,7 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Editar Ingresso',
+                  l10n.editIncome,
                   style: GoogleFonts.manrope(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -140,7 +142,7 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                Text('Tipo', style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
+                Text(l10n.translate('type'), style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
                 const SizedBox(height: 6),
                 SizedBox(
                   height: 44,
@@ -176,14 +178,14 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                   controller: _amountController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))],
-                  decoration: const InputDecoration(labelText: 'Valor', prefixText: 'R\$ '),
+                  decoration: InputDecoration(labelText: l10n.amount, prefixText: 'R\$ '),
                 ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
                       child: Text(
-                        'Valor líquido (ya descontado INSS/IRRF)',
+                        l10n.netValueHint,
                         style: TextStyle(fontSize: 13, color: colors.onSurfaceMuted),
                       ),
                     ),
@@ -209,7 +211,7 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                           children: [
                             Expanded(
                               child: Text(
-                                'Dependentes (IRRF)',
+                                l10n.dependentsIrrf,
                                 style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft),
                               ),
                             ),
@@ -235,7 +237,7 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                           child: OutlinedButton.icon(
                             onPressed: _calculateNet,
                             icon: const Icon(Icons.calculate_outlined, size: 18),
-                            label: const Text('Calcular líquido'),
+                            label: Text(l10n.calculateNet),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: tokens.FarolColors.tide,
                               side: BorderSide(color: tokens.FarolColors.tide.withValues(alpha: 0.3)),
@@ -260,7 +262,7 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Desglose del salario',
+                          l10n.salaryBreakdown,
                           style: GoogleFonts.manrope(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
@@ -268,18 +270,18 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        _buildCalcRow('Bruto', _calculatedNet!.gross, colors.onSurface),
+                        _buildCalcRow(l10n.lblGross, _calculatedNet!.gross, colors.onSurface),
                         _buildCalcRow('INSS', -_calculatedNet!.inss, const Color(0xFFFF6B35)),
                         _buildCalcRow('IRRF', -_calculatedNet!.irrf, const Color(0xFFFF6B35)),
                         const Divider(height: 20),
-                        _buildCalcRow('Líquido', _calculatedNet!.net, tokens.FarolColors.tide, bold: true),
+                        _buildCalcRow(l10n.lblNet, _calculatedNet!.net, tokens.FarolColors.tide, bold: true),
                         const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
                           child: FilledButton.icon(
                             onPressed: _useNetValue,
                             icon: const Icon(Icons.download_outlined, size: 16),
-                            label: const Text('Usar valor líquido'),
+                            label: Text(l10n.useNetValue),
                             style: FilledButton.styleFrom(
                               backgroundColor: tokens.FarolColors.tide,
                               padding: const EdgeInsets.symmetric(vertical: 10),
@@ -293,7 +295,7 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: _notesController,
-                  decoration: const InputDecoration(labelText: 'Observación (opcional)'),
+                  decoration: InputDecoration(labelText: l10n.translate('notes_optional')),
                 ),
                 const SizedBox(height: 20),
                 SizedBox(
@@ -307,7 +309,7 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                             height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                           )
-                        : const Text('Guardar cambios'),
+                        : Text(l10n.saveChanges),
                   ),
                 ),
               ],

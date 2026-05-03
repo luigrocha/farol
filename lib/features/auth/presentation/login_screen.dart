@@ -66,7 +66,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Scaffold(
        backgroundColor: cs.surface,
       body: AuthActionHandler(
-        successMessage: 'Welcome back!',
+        successMessage: l10n.welcomeBack,
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(28, 20, 28, 32),

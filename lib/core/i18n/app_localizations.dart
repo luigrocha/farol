@@ -352,6 +352,19 @@ class AppLocalizations {
       'left': 'Left',
       'over': 'Over',
       'goal': 'Goal',
+      'edit_income': 'Edit Income',
+      'income_updated': 'Income updated!',
+      'net_value_hint': 'Net value (INSS/IRRF already deducted)',
+      'dependents_irrf': 'Dependents (IRRF)',
+      'calculate_net': 'Calculate net',
+      'salary_breakdown': 'Salary Breakdown',
+      'use_net_value': 'Use net value',
+      'save_changes': 'Save changes',
+      'welcome_back': 'Welcome back!',
+      'error_loading': 'Error loading',
+      'subcategory': 'Subcategory',
+      'description': 'Description',
+      'optional': 'optional',
     },
     'es': {
       'app_name': 'Farol',
@@ -696,6 +709,19 @@ class AppLocalizations {
       'left': 'Restan',
       'over': 'Excedido',
       'goal': 'Meta',
+      'edit_income': 'Editar Ingreso',
+      'income_updated': '¡Ingreso actualizado!',
+      'net_value_hint': 'Valor neto (INSS/IRRF ya descontado)',
+      'dependents_irrf': 'Dependientes (IRRF)',
+      'calculate_net': 'Calcular neto',
+      'salary_breakdown': 'Desglose del salario',
+      'use_net_value': 'Usar valor neto',
+      'save_changes': 'Guardar cambios',
+      'welcome_back': '¡Bienvenido de vuelta!',
+      'error_loading': 'Error al cargar',
+      'subcategory': 'Subcategoría',
+      'description': 'Descripción',
+      'optional': 'opcional',
     },
     'pt': {
       'app_name': 'Farol',
@@ -1038,6 +1064,19 @@ class AppLocalizations {
       'left': 'Restam',
       'over': 'Excedido',
       'goal': 'Meta',
+      'edit_income': 'Editar Receita',
+      'income_updated': 'Receita atualizada!',
+      'net_value_hint': 'Valor líquido (INSS/IRRF já descontado)',
+      'dependents_irrf': 'Dependentes (IRRF)',
+      'calculate_net': 'Calcular líquido',
+      'salary_breakdown': 'Detalhamento do salário',
+      'use_net_value': 'Usar valor líquido',
+      'save_changes': 'Salvar alterações',
+      'welcome_back': 'Bem-vindo de volta!',
+      'error_loading': 'Erro ao carregar',
+      'subcategory': 'Subcategoria',
+      'description': 'Descrição',
+      'optional': 'opcional',
     },
   };
 
@@ -1227,6 +1266,21 @@ class AppLocalizations {
   String get left => translate('left');
   String get over => translate('over');
   String get goal => translate('goal');
+
+  // ── Income editing ──
+  String get editIncome => translate('edit_income');
+  String get incomeUpdated => translate('income_updated');
+  String get netValueHint => translate('net_value_hint');
+  String get dependentsIrrf => translate('dependents_irrf');
+  String get calculateNet => translate('calculate_net');
+  String get salaryBreakdown => translate('salary_breakdown');
+  String get useNetValue => translate('use_net_value');
+  String get saveChanges => translate('save_changes');
+  String get welcomeBack => translate('welcome_back');
+  String get errorLoading => translate('error_loading');
+  String get subcategory => translate('subcategory');
+  String get description => translate('description');
+  String get optional => translate('optional');
 }
 
 extension AppLocalizationsContext on BuildContext {

@@ -135,7 +135,7 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
         // Installments field (conditional)
         if (_method == PaymentMethod.creditInstallment) ...[
           TextField(controller: _installmentsCtrl, keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Number of installments', prefixIcon: Icon(Icons.format_list_numbered))),
+            decoration: InputDecoration(labelText: l10n.translate('num_installments'), prefixIcon: const Icon(Icons.format_list_numbered))),
           const SizedBox(height: 12),
         ],
 
@@ -146,7 +146,7 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
 
         // Description
         TextField(controller: _descCtrl,
-          decoration: InputDecoration(labelText: '${l10n.translate('description')} (${l10n.translate('optional')})', prefixIcon: const Icon(Icons.description))),
+          decoration: InputDecoration(labelText: '${l10n.description} (${l10n.optional})', prefixIcon: const Icon(Icons.description))),
         const SizedBox(height: 12),
 
         // Date
