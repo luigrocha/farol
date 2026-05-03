@@ -1,4 +1,5 @@
 {
+  "autoCompactEnabled": false,
   "permissions": {
     "allow": [
       "Bash(cat)",
@@ -8,7 +9,9 @@
       "Bash(grep -v \"^$\\\\|A new version\\\\|To update\\\\|flutter upgrade\\\\|└\\\\|┌\\\\|│\")",
       "Bash(flutter build *)",
       "Bash(git *)",
-      "Skill(schedule)"
+      "Skill(schedule)",
+      "Bash(claude doctor *)",
+      "Skill(update-config)"
     ]
   }
 }
