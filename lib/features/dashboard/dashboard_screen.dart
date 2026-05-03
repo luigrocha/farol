@@ -4,10 +4,10 @@ import '../../core/providers/providers.dart';
 import '../../core/models/budget_alert.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../core/i18n/app_localizations.dart';
+import '../../core/theme/farol_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../transactions/quick_add_bottom_sheet.dart';
 import 'widgets/alert_banner.dart';
-import 'widgets/period_banner.dart';
 import 'widgets/period_balance_hero.dart';
 import 'widgets/health_gauge_card.dart';
 import 'widgets/kpi_grid.dart';
@@ -22,6 +22,12 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final month = ref.watch(selectedMonthProvider);
     final year = ref.watch(selectedYearProvider);
+    final period = ref.watch(selectedPeriodProvider);
+    final l10n = AppLocalizations.of(context);
+    final months = l10n.months;
+    final periodLabel =
+        '${period.start.day} ${months[period.start.month - 1]} – '
+        '${period.end.day} ${months[period.end.month - 1]}';
 
     ref.listen<AsyncValue<int>>(fixedExpensePropagationProvider, (_, next) {
       next.whenData((count) {
@@ -43,18 +49,34 @@ class DashboardScreen extends ConsumerWidget {
         slivers: [
           SliverAppBar(
             floating: true,
+            toolbarHeight: 64,
             title: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
                   icon: const Icon(Icons.chevron_left, size: 20),
                   onPressed: () => _changeMonth(ref, month, year, -1),
                 ),
-                Text(
-                  '${AppLocalizations.of(context).months[month - 1]} $year',
-                  style: GoogleFonts.manrope(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                  ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${months[month - 1]} $year',
+                      style: GoogleFonts.manrope(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      periodLabel,
+                      style: GoogleFonts.manrope(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 11,
+                        color: context.colors.onSurfaceSoft,
+                      ),
+                    ),
+                  ],
                 ),
                 IconButton(
                   icon: const Icon(Icons.chevron_right, size: 20),
@@ -98,7 +120,6 @@ class DashboardScreen extends ConsumerWidget {
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 const AlertBanner(),
-                const PeriodBanner(),
                 const SizedBox(height: 12),
                 const PeriodBalanceHero(),
                 const SizedBox(height: 12),
