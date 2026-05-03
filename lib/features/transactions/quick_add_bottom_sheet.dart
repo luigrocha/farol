@@ -109,7 +109,7 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
         // Installments field (conditional)
         if (_method == PaymentMethod.creditInstallment) ...[
           TextField(controller: _installmentsCtrl, keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Number of installments', prefixIcon: Icon(Icons.format_list_numbered))),
+            decoration: InputDecoration(labelText: l10n.translate('num_installments'), prefixIcon: const Icon(Icons.format_list_numbered))),
           const SizedBox(height: 12),
         ],
 

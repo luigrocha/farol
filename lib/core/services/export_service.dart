@@ -14,6 +14,7 @@ import '../repositories/category_repository.dart';
 import '../../features/budget/domain/budget_settings.dart';
 import 'export_web_stub.dart' if (dart.library.js_interop) 'export_web.dart';
 import 'pdf_report_service.dart';
+import '../i18n/app_localizations.dart';
 
 class ExportService {
   final ExpenseRepository expenseRepo;
@@ -109,12 +110,9 @@ class ExportService {
       categoryNames: categoriesMap,
     );
 
-    const monthNames = [
-      'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
-      'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic',
-    ];
+    final monthNames = AppLocalizations.monthsForLocale(locale);
     final filename = 'farol_${monthNames[month - 1]}_$year.pdf';
-    await _share(bytes, filename, 'application/pdf', 'Resumen Farol $month/$year');
+    await _share(bytes, filename, 'application/pdf', 'Farol $month/$year');
   }
 
   // ═══════════════════════════════════════════
