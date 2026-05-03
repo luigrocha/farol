@@ -403,11 +403,11 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<void> setSetting(String key, String value) async {
-    await into(userSettings).insertOnConflictUpdate(
-      UserSettingsCompanion(
-        key: Value(key),
-        value: Value(value),
-      ),
+    await customInsert(
+      'INSERT INTO user_settings (key, value) VALUES (?, ?) '
+      'ON CONFLICT(key) DO UPDATE SET value = excluded.value',
+      variables: [Variable.withString(key), Variable.withString(value)],
+      updates: {userSettings},
     );
   }
 
