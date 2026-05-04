@@ -1,5 +1,7 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/i18n/app_localizations.dart';
 import '../../../core/widgets/farol_snackbar.dart';
@@ -261,14 +263,104 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
 // ─── Avatar Section ───────────────────────────────────────────────────────────
 
-class _AvatarSection extends StatelessWidget {
+class _AvatarSection extends ConsumerStatefulWidget {
   final String initials;
   final String? photoUrl;
 
   const _AvatarSection({required this.initials, this.photoUrl});
 
+  @override
+  ConsumerState<_AvatarSection> createState() => _AvatarSectionState();
+}
+
+class _AvatarSectionState extends ConsumerState<_AvatarSection> {
+  bool _isUploading = false;
+
   bool _isValidUrl(String? url) =>
       url != null && (url.startsWith('http://') || url.startsWith('https://'));
+
+  Future<void> _pickAndUpload(ImageSource source) async {
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid == null) return;
+
+    final picker = ImagePicker();
+    final XFile? file = await picker.pickImage(
+      source: source,
+      imageQuality: 75,
+      maxWidth: 512,
+      maxHeight: 512,
+    );
+    if (file == null || !mounted) return;
+
+    final Uint8List bytes = await file.readAsBytes();
+
+    setState(() => _isUploading = true);
+    try {
+      final repo = ref.read(profileRepositoryProvider);
+      final oldUrl = widget.photoUrl;
+      if (_isValidUrl(oldUrl)) await repo.deleteAvatar(oldUrl!);
+      final newUrl = await repo.uploadAvatar(uid, bytes);
+      await repo.updateProfile(uid, avatarUrl: newUrl);
+      ref.invalidate(currentProfileProvider);
+    } catch (e) {
+      if (mounted) {
+        // ignore: use_build_context_synchronously
+        context.showErrorSnackBar(AppLocalizations.of(context).uploadPhotoError);
+      }
+    } finally {
+      if (mounted) setState(() => _isUploading = false);
+    }
+  }
+
+  void _showSourceSheet() {
+    final l10n = AppLocalizations.of(context);
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 36,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: Colors.black26,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Text(
+                l10n.changePhoto,
+                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              ListTile(
+                leading: const Icon(Icons.camera_alt_outlined),
+                title: Text(l10n.takePhoto),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  _pickAndUpload(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: Text(l10n.chooseFromGallery),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  _pickAndUpload(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -278,33 +370,41 @@ class _AvatarSection extends StatelessWidget {
           CircleAvatar(
             radius: 48,
             backgroundColor: tokens.FarolColors.navy,
-            backgroundImage: _isValidUrl(photoUrl)
-                ? NetworkImage(photoUrl!)
+            backgroundImage: _isValidUrl(widget.photoUrl)
+                ? NetworkImage('${widget.photoUrl}?v=${widget.photoUrl.hashCode}')
                 : null,
-            child: !_isValidUrl(photoUrl)
-                ? Text(
-                    initials,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                      letterSpacing: 1,
-                    ),
+            child: _isUploading
+                ? const CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    color: Colors.white,
                   )
-                : null,
+                : (!_isValidUrl(widget.photoUrl)
+                    ? Text(
+                        widget.initials,
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          letterSpacing: 1,
+                        ),
+                      )
+                    : null),
           ),
           Positioned(
             bottom: 0,
             right: 0,
-            child: Container(
-              width: 32,
-              height: 32,
-              decoration: const BoxDecoration(
-                color: tokens.FarolColors.beam,
-                shape: BoxShape.circle,
-                boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
+            child: GestureDetector(
+              onTap: _isUploading ? null : _showSourceSheet,
+              child: Container(
+                width: 32,
+                height: 32,
+                decoration: const BoxDecoration(
+                  color: tokens.FarolColors.beam,
+                  shape: BoxShape.circle,
+                  boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
+                ),
+                child: const Icon(Icons.camera_alt, size: 16, color: Colors.white),
               ),
-              child: const Icon(Icons.camera_alt, size: 16, color: Colors.white),
             ),
           ),
         ],

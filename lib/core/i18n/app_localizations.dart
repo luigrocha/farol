@@ -304,6 +304,11 @@ class AppLocalizations {
       'delete_account_confirm_title': 'Delete account?',
       'delete_account_confirm_body': 'This action is irreversible. All your data will be permanently removed.',
       'delete_account_confirm': 'Yes, delete',
+      'change_photo': 'Change Photo',
+      'take_photo': 'Take a Selfie',
+      'choose_from_gallery': 'Choose from Gallery',
+      'uploading_photo': 'Uploading photo...',
+      'upload_photo_error': 'Failed to update photo. Try again.',
       'photo': 'Photo',
       'initials': 'Initials',
       'appearance': 'Appearance',
@@ -694,6 +699,11 @@ class AppLocalizations {
       'delete_account_confirm_title': '¿Eliminar cuenta?',
       'delete_account_confirm_body': 'Esta acción es irreversible. Todos tus datos serán eliminados permanentemente.',
       'delete_account_confirm': 'Sí, eliminar',
+      'change_photo': 'Cambiar Foto',
+      'take_photo': 'Tomar Selfie',
+      'choose_from_gallery': 'Elegir de la Galería',
+      'uploading_photo': 'Subiendo foto...',
+      'upload_photo_error': 'Error al actualizar la foto. Inténtalo de nuevo.',
       'photo': 'Foto',
       'initials': 'Iniciales',
       'appearance': 'Apariencia',
@@ -1084,6 +1094,11 @@ class AppLocalizations {
       'delete_account_confirm_title': 'Excluir conta?',
       'delete_account_confirm_body': 'Esta ação é irreversível. Todos os seus dados serão permanentemente removidos.',
       'delete_account_confirm': 'Sim, excluir',
+      'change_photo': 'Alterar Foto',
+      'take_photo': 'Tirar Selfie',
+      'choose_from_gallery': 'Escolher da Galeria',
+      'uploading_photo': 'Enviando foto...',
+      'upload_photo_error': 'Falha ao atualizar a foto. Tente novamente.',
       'photo': 'Foto',
       'initials': 'Iniciais',
       'appearance': 'Aparência',
@@ -1474,6 +1489,11 @@ class AppLocalizations {
   String get deleteAccountConfirmTitle => translate('delete_account_confirm_title');
   String get deleteAccountConfirmBody => translate('delete_account_confirm_body');
   String get deleteAccountConfirm => translate('delete_account_confirm');
+  String get changePhoto => translate('change_photo');
+  String get takePhoto => translate('take_photo');
+  String get chooseFromGallery => translate('choose_from_gallery');
+  String get uploadingPhoto => translate('uploading_photo');
+  String get uploadPhotoError => translate('upload_photo_error');
   String get appearance => translate('appearance');
   String get customizeInterface => translate('customize_interface');
   String get conciergeSupport => translate('concierge_support');

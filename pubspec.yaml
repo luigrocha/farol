@@ -38,6 +38,9 @@ dependencies:
   http: ^1.3.0
 
 
+  # Media
+  image_picker: ^1.1.2
+
   # Supabase & Auth
   supabase_flutter: ^2.4.3
   google_sign_in: ^6.1.6
