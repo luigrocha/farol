@@ -108,7 +108,7 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
               ),
               const SizedBox(width: 12),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Patrimônio Neto', style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700)),
+                Text(AppLocalizations.of(context).netWorthTitle, style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700)),
                 Text('${_monthName(month)} $year', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
               ])),
             ]),
@@ -124,7 +124,7 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(children: [
-                    Text('Total estimado: ', style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
+                    Text('${AppLocalizations.of(context).estimatedTotal}: ', style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
                     Text(
                       FinancialCalculatorService.formatBRL(_parse(_patrimonyCtrl) + _parse(_fgtsCtrl) + _parse(_investmentsCtrl) + _parse(_emergencyCtrl) - pending),
                       style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w700, color: tokens.FarolColors.navy),
@@ -137,10 +137,10 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
             Flexible(
               child: SingleChildScrollView(
                 child: Column(children: [
-                  _Field(label: '🏠 Patrimônio (Imóveis)', ctrl: _patrimonyCtrl, onChanged: () => setState(() {})),
+                  _Field(label: AppLocalizations.of(context).patrimonyRealEstate, ctrl: _patrimonyCtrl, onChanged: () => setState(() {})),
                   _Field(label: '🏦 FGTS', ctrl: _fgtsCtrl, onChanged: () => setState(() {})),
-                  _Field(label: '📈 Inversiones', ctrl: _investmentsCtrl, onChanged: () => setState(() {})),
-                  _Field(label: '💰 Fundo de Emergência', ctrl: _emergencyCtrl, onChanged: () => setState(() {})),
+                  _Field(label: '📈 ${AppLocalizations.of(context).investments}', ctrl: _investmentsCtrl, onChanged: () => setState(() {})),
+                  _Field(label: AppLocalizations.of(context).emergencyFund, ctrl: _emergencyCtrl, onChanged: () => setState(() {})),
                   if (pending > 0)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
@@ -148,7 +148,7 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
                         const Icon(Icons.credit_card_outlined, size: 14, color: Colors.orange),
                         const SizedBox(width: 6),
                         Text(
-                          'Dívidas (parcelas): -${FinancialCalculatorService.formatBRL(pending)}',
+                          '${AppLocalizations.of(context).debtsInstallments}: -${FinancialCalculatorService.formatBRL(pending)}',
                           style: const TextStyle(fontSize: 11, color: Colors.orange),
                         ),
                       ]),
@@ -170,7 +170,7 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
                 ),
                 child: _saving
                     ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                    : const Text('Guardar', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                    : Text(AppLocalizations.of(context).save, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
               ),
             ),
           ],

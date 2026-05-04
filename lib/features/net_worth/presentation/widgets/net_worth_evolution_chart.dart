@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../core/i18n/app_localizations.dart';
 import '../../../../core/models/net_worth_snapshot.dart';
 import '../../../../core/providers/providers.dart';
 import '../../../../core/theme/farol_colors.dart';
@@ -22,7 +23,7 @@ class NetWorthEvolutionChart extends ConsumerWidget {
       decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(20)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text('Evolução', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700)),
+          Text(context.l10n.evolution, style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700)),
           _FilterChips(selected: filter, onChanged: (f) => ref.read(netWorthFilterProvider.notifier).state = f),
         ]),
         const SizedBox(height: 16),
@@ -34,7 +35,7 @@ class NetWorthEvolutionChart extends ConsumerWidget {
                   height: 80,
                   child: Center(
                     child: Text(
-                      'Sem dados históricos ainda.\nOs snapshots são salvos automaticamente.',
+                      context.l10n.noHistoryData,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.manrope(fontSize: 12, color: colors.onSurfaceSoft, height: 1.5),
                     ),
@@ -54,10 +55,10 @@ class _FilterChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const options = [
+    final options = [
       (NetWorthFilter.sixMonths, '6M'),
       (NetWorthFilter.oneYear, '1A'),
-      (NetWorthFilter.allTime, 'Todo'),
+      (NetWorthFilter.allTime, context.l10n.filterAllTime),
     ];
     return Row(children: options.map((opt) {
       final isSelected = selected == opt.$1;

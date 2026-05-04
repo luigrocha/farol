@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../core/i18n/app_localizations.dart';
 import '../../../../core/providers/providers.dart';
 import '../../../../core/theme/farol_colors.dart';
 import '../../../../design/farol_colors.dart' as tokens;
@@ -33,7 +34,7 @@ class PeriodFlowCard extends ConsumerWidget {
         children: [
           Row(children: [
             Expanded(
-              child: Text('Fluxo do Período',
+              child: Text(context.l10n.periodFlow,
                   style: GoogleFonts.manrope(
                       fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurfaceSoft, letterSpacing: 0.5)),
             ),
@@ -42,12 +43,12 @@ class PeriodFlowCard extends ConsumerWidget {
           ]),
           const SizedBox(height: 16),
           Row(children: [
-            _FlowBlock(label: 'Receitas', value: income, color: tokens.FarolColors.tide, isPrivate: isPrivate),
+            _FlowBlock(label: context.l10n.income, value: income, color: tokens.FarolColors.tide, isPrivate: isPrivate),
             const SizedBox(width: 8),
-            _FlowBlock(label: 'Despesas', value: expenses, color: tokens.FarolColors.coral, isPrivate: isPrivate),
+            _FlowBlock(label: context.l10n.expenses, value: expenses, color: tokens.FarolColors.coral, isPrivate: isPrivate),
             const SizedBox(width: 8),
             _FlowBlock(
-              label: 'Saldo',
+              label: context.l10n.monthlyBalance,
               value: balance,
               color: balance >= 0 ? tokens.FarolColors.tide : tokens.FarolColors.coral,
               isPrivate: isPrivate,
@@ -60,7 +61,7 @@ class PeriodFlowCard extends ConsumerWidget {
             Row(children: [
               Icon(Icons.swap_horiz_rounded, size: 14, color: colors.onSurfaceSoft),
               const SizedBox(width: 6),
-              Text('Transferências internas', style: GoogleFonts.manrope(fontSize: 12, color: colors.onSurfaceSoft)),
+              Text(context.l10n.internalTransfers, style: GoogleFonts.manrope(fontSize: 12, color: colors.onSurfaceSoft)),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),

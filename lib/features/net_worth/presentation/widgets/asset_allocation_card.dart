@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../core/i18n/app_localizations.dart';
 import '../../../../core/providers/providers.dart';
 import '../../../../core/theme/farol_colors.dart';
 import '../../../../design/farol_colors.dart' as tokens;
@@ -19,11 +20,12 @@ class AssetAllocationCard extends ConsumerWidget {
 
     final total = alloc.banks + alloc.investments + alloc.fgts + alloc.patrimony;
 
+    final l10n = context.l10n;
     final sections = [
-      _Bucket('Contas', alloc.banks, tokens.FarolColors.navy),
-      _Bucket('Investimentos', alloc.investments, tokens.FarolColors.tide),
+      _Bucket(l10n.accountsLabel, alloc.banks, tokens.FarolColors.navy),
+      _Bucket(l10n.investments, alloc.investments, tokens.FarolColors.tide),
       _Bucket('FGTS', alloc.fgts, tokens.FarolColors.beam),
-      _Bucket('Patrimônio', alloc.patrimony, const Color(0xFF8FA3B8)),
+      _Bucket(l10n.netWorth, alloc.patrimony, const Color(0xFF8FA3B8)),
     ].where((b) => b.value > 0).toList();
 
     return FarolCard(
@@ -31,7 +33,7 @@ class AssetAllocationCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Alocação de Ativos',
+            context.l10n.assetAllocation,
             style: GoogleFonts.manrope(
                 fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurfaceSoft, letterSpacing: 0.5),
           ),
@@ -40,7 +42,7 @@ class AssetAllocationCard extends ConsumerWidget {
             Center(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 24),
-                child: Text('Nenhuma conta cadastrada',
+                child: Text(context.l10n.noAccountsRegistered,
                     style: TextStyle(color: colors.onSurfaceFaint, fontSize: 14)),
               ),
             )

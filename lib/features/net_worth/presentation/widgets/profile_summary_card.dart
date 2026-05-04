@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../core/i18n/app_localizations.dart';
 import '../../../../core/providers/providers.dart';
 import '../../../../core/theme/farol_colors.dart';
 import '../../../../design/farol_colors.dart' as tokens;
@@ -24,7 +25,7 @@ class ProfileSummaryCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Patrimônio Líquido',
+            context.l10n.netWorthTitle,
             style: GoogleFonts.manrope(
               fontSize: 13,
               fontWeight: FontWeight.w600,
@@ -43,9 +44,9 @@ class ProfileSummaryCard extends ConsumerWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              _MiniPill(label: 'Contas', value: banks, isPrivate: isPrivate, color: tokens.FarolColors.navy),
+              _MiniPill(label: context.l10n.accountsLabel, value: banks, isPrivate: isPrivate, color: tokens.FarolColors.navy),
               const SizedBox(width: 8),
-              _MiniPill(label: 'Invest.', value: investments, isPrivate: isPrivate, color: tokens.FarolColors.tide),
+              _MiniPill(label: context.l10n.investments, value: investments, isPrivate: isPrivate, color: tokens.FarolColors.tide),
               const SizedBox(width: 8),
               _MiniPill(label: 'FGTS', value: fgts, isPrivate: isPrivate, color: tokens.FarolColors.beam),
             ],
