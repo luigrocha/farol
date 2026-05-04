@@ -289,6 +289,23 @@ class AppLocalizations {
       // Profile & Settings
       'profile': 'Profile',
       'edit_profile': 'Edit Profile',
+      'personal_data': 'Personal Data',
+      'professional_profile': 'Professional Profile',
+      'security': 'Security',
+      'job_title': 'Job Title',
+      'company': 'Company',
+      'monthly_income': 'Monthly Income',
+      'phone': 'Phone',
+      'cpf_label': 'CPF',
+      'verified': 'Verified',
+      'change_password': 'Change Password',
+      'manage_2fa': 'Manage 2FA',
+      'delete_account': 'Delete Account',
+      'delete_account_confirm_title': 'Delete account?',
+      'delete_account_confirm_body': 'This action is irreversible. All your data will be permanently removed.',
+      'delete_account_confirm': 'Yes, delete',
+      'photo': 'Photo',
+      'initials': 'Initials',
       'appearance': 'Appearance',
       'customize_interface': 'Customize your interface for maximum visual comfort.',
       'concierge_support': 'Concierge Support',
@@ -662,6 +679,23 @@ class AppLocalizations {
       // Profile & Settings
       'profile': 'Perfil',
       'edit_profile': 'Editar Perfil',
+      'personal_data': 'Datos Personales',
+      'professional_profile': 'Perfil Profesional',
+      'security': 'Seguridad',
+      'job_title': 'Cargo',
+      'company': 'Empresa',
+      'monthly_income': 'Ingreso Mensual',
+      'phone': 'Teléfono',
+      'cpf_label': 'CPF',
+      'verified': 'Verificado',
+      'change_password': 'Cambiar Contraseña',
+      'manage_2fa': 'Gestionar 2FA',
+      'delete_account': 'Eliminar cuenta',
+      'delete_account_confirm_title': '¿Eliminar cuenta?',
+      'delete_account_confirm_body': 'Esta acción es irreversible. Todos tus datos serán eliminados permanentemente.',
+      'delete_account_confirm': 'Sí, eliminar',
+      'photo': 'Foto',
+      'initials': 'Iniciales',
       'appearance': 'Apariencia',
       'customize_interface': 'Personaliza tu interfaz para máximo confort visual.',
       'concierge_support': 'Soporte Concierge',
@@ -1035,6 +1069,23 @@ class AppLocalizations {
       // Profile & Settings
       'profile': 'Perfil',
       'edit_profile': 'Editar Perfil',
+      'personal_data': 'Dados Pessoais',
+      'professional_profile': 'Perfil Profissional',
+      'security': 'Segurança',
+      'job_title': 'Cargo',
+      'company': 'Empresa',
+      'monthly_income': 'Renda Mensal',
+      'phone': 'Telefone',
+      'cpf_label': 'CPF',
+      'verified': 'Verificado',
+      'change_password': 'Alterar Senha',
+      'manage_2fa': 'Gerenciar 2FA',
+      'delete_account': 'Excluir conta',
+      'delete_account_confirm_title': 'Excluir conta?',
+      'delete_account_confirm_body': 'Esta ação é irreversível. Todos os seus dados serão permanentemente removidos.',
+      'delete_account_confirm': 'Sim, excluir',
+      'photo': 'Foto',
+      'initials': 'Iniciais',
       'appearance': 'Aparência',
       'customize_interface': 'Personalize sua interface para o máximo conforto visual.',
       'concierge_support': 'Suporte Concierge',
@@ -1408,6 +1459,21 @@ class AppLocalizations {
   // Profile & Settings
   String get profile => translate('profile');
   String get editProfile => translate('edit_profile');
+  String get personalData => translate('personal_data');
+  String get professionalProfile => translate('professional_profile');
+  String get security => translate('security');
+  String get jobTitle => translate('job_title');
+  String get company => translate('company');
+  String get monthlyIncome => translate('monthly_income');
+  String get phone => translate('phone');
+  String get cpfLabel => translate('cpf_label');
+  String get verified => translate('verified');
+  String get changePassword => translate('change_password');
+  String get manage2fa => translate('manage_2fa');
+  String get deleteAccount => translate('delete_account');
+  String get deleteAccountConfirmTitle => translate('delete_account_confirm_title');
+  String get deleteAccountConfirmBody => translate('delete_account_confirm_body');
+  String get deleteAccountConfirm => translate('delete_account_confirm');
   String get appearance => translate('appearance');
   String get customizeInterface => translate('customize_interface');
   String get conciergeSupport => translate('concierge_support');

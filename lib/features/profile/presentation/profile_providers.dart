@@ -17,11 +17,32 @@ class ProfileNotifier extends AsyncNotifier<void> {
   @override
   FutureOr<void> build() {}
 
-  Future<void> saveProfile({required String uid, String? name, String? avatarUrl}) async {
+  Future<void> saveProfile({
+    required String uid,
+    String? name,
+    String? avatarUrl,
+    String? phone,
+    String? jobTitle,
+    String? company,
+  }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      await ref.read(profileRepositoryProvider).updateProfile(uid, name: name, avatarUrl: avatarUrl);
+      await ref.read(profileRepositoryProvider).updateProfile(
+        uid,
+        name: name,
+        avatarUrl: avatarUrl,
+        phone: phone,
+        jobTitle: jobTitle,
+        company: company,
+      );
       ref.invalidate(currentProfileProvider);
+    });
+  }
+
+  Future<void> deleteAccount(String uid) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref.read(profileRepositoryProvider).deleteAccount(uid);
     });
   }
 }
