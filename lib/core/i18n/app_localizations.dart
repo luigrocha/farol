@@ -361,6 +361,27 @@ class AppLocalizations {
       'welcome_back': 'Welcome back!',
       'error_loading': 'Error loading',
       'save_changes': 'Save changes',
+      // Budget overflow
+      'budget_overflow_warning': 'Your budget allocations exceed 100%. Tap a category to adjust.',
+      'rebalance': 'Rebalance',
+      'allocated_over_limit': '%s%% allocated — over limit',
+      // Accounts & Patrimony
+      'bank_accounts': 'Bank Accounts',
+      'manage_accounts_desc': 'Manage your accounts and transfers',
+      'patrimony': 'Patrimony',
+      'patrimony_desc': 'Consolidated view of your assets',
+      // Salary sheet
+      'salary_clt_title': 'CLT Salary 2026',
+      'gross_monthly_salary': 'Monthly gross salary',
+      'dependents': 'Dependents',
+      'dependents_deduction': 'Deduction: %s / month',
+      'simplified_deduction': 'Simplified deduction',
+      'simplified_deduction_desc': 'R\$ 607.20 deducted from IRRF base',
+      'other_deductions': 'Other deductions (health plan, etc.)',
+      'net_salary_label': 'NET SALARY',
+      'effective_rate_suffix': '%% effective rate',
+      'monthly_reduction_applied': 'Monthly reduction applied: −%s',
+      'fgts_employer_note': '* FGTS is an employer charge, not deducted from salary.',
     },
     'es': {
       // Core
@@ -712,6 +733,27 @@ class AppLocalizations {
       'welcome_back': '¡Bienvenido de vuelta!',
       'error_loading': 'Error al cargar',
       'save_changes': 'Guardar cambios',
+      // Budget overflow
+      'budget_overflow_warning': 'Tus asignaciones de presupuesto superan el 100%. Toca una categoría para ajustar.',
+      'rebalance': 'Rebalancear',
+      'allocated_over_limit': '%s%% asignado — límite excedido',
+      // Accounts & Patrimony
+      'bank_accounts': 'Cuentas Bancarias',
+      'manage_accounts_desc': 'Gestiona tus cuentas y transferencias',
+      'patrimony': 'Patrimonio',
+      'patrimony_desc': 'Vista consolidada de tu patrimonio',
+      // Salary sheet
+      'salary_clt_title': 'Salario CLT 2026',
+      'gross_monthly_salary': 'Salario bruto mensual',
+      'dependents': 'Dependientes',
+      'dependents_deduction': 'Deducción: %s / mes',
+      'simplified_deduction': 'Descuento simplificado',
+      'simplified_deduction_desc': 'R\$ 607,20 deducidos de la base del IRRF',
+      'other_deductions': 'Otras deducciones (plan de salud, etc.)',
+      'net_salary_label': 'SALARIO NETO',
+      'effective_rate_suffix': '%% alícuota efectiva',
+      'monthly_reduction_applied': 'Reducción mensual aplicada: −%s',
+      'fgts_employer_note': '* FGTS es un cargo del empleador, no descontado del salario.',
     },
     'pt': {
       // Core
@@ -1063,6 +1105,27 @@ class AppLocalizations {
       'welcome_back': 'Bem-vindo de volta!',
       'error_loading': 'Erro ao carregar',
       'save_changes': 'Salvar alterações',
+      // Budget overflow
+      'budget_overflow_warning': 'Suas alocações de orçamento excedem 100%. Toque em uma categoria para ajustar.',
+      'rebalance': 'Rebalancear',
+      'allocated_over_limit': '%s%% alocado — limite excedido',
+      // Accounts & Patrimony
+      'bank_accounts': 'Contas Bancárias',
+      'manage_accounts_desc': 'Gerencie suas contas e transferências',
+      'patrimony': 'Patrimônio',
+      'patrimony_desc': 'Visão consolidada do seu patrimônio',
+      // Salary sheet
+      'salary_clt_title': 'Salário CLT 2026',
+      'gross_monthly_salary': 'Salário bruto mensal',
+      'dependents': 'Dependentes',
+      'dependents_deduction': 'Dedução: %s / mês',
+      'simplified_deduction': 'Desconto simplificado',
+      'simplified_deduction_desc': 'R\$ 607,20 deduzidos da base do IRRF',
+      'other_deductions': 'Outras deduções (plano de saúde, etc.)',
+      'net_salary_label': 'SALÁRIO LÍQUIDO',
+      'effective_rate_suffix': '%% alíquota efetiva',
+      'monthly_reduction_applied': 'Redução mensal aplicada: −%s',
+      'fgts_employer_note': '* FGTS é encargo do empregador, não descontado do salário.',
     },
   };
 
@@ -1414,6 +1477,27 @@ class AppLocalizations {
   String get welcomeBack => translate('welcome_back');
   String get errorLoading => translate('error_loading');
   String get saveChanges => translate('save_changes');
+  // Budget overflow
+  String get budgetOverflowWarning => translate('budget_overflow_warning');
+  String get rebalance => translate('rebalance');
+  String allocatedOverLimit(String pct) => translate('allocated_over_limit').replaceFirst('%s', pct).replaceFirst('%%', '%');
+  // Accounts & Patrimony
+  String get bankAccounts => translate('bank_accounts');
+  String get manageAccountsDesc => translate('manage_accounts_desc');
+  String get patrimony => translate('patrimony');
+  String get patrimonyDesc => translate('patrimony_desc');
+  // Salary sheet
+  String get salaryCltTitle => translate('salary_clt_title');
+  String get grossMonthlySalary => translate('gross_monthly_salary');
+  String get dependents => translate('dependents');
+  String dependentsDeduction(String amount) => translate('dependents_deduction').replaceFirst('%s', amount);
+  String get simplifiedDeduction => translate('simplified_deduction');
+  String get simplifiedDeductionDesc => translate('simplified_deduction_desc');
+  String get otherDeductions => translate('other_deductions');
+  String get netSalaryLabel => translate('net_salary_label');
+  String effectiveRateSuffix(String rate) => '$rate${translate('effective_rate_suffix').replaceFirst('%%', '%')}';
+  String monthlyReductionApplied(String amount) => translate('monthly_reduction_applied').replaceFirst('%s', amount);
+  String get fgtsEmployerNote => translate('fgts_employer_note');
 }
 
 extension AppLocalizationsContext on BuildContext {

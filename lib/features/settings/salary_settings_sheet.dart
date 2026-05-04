@@ -139,7 +139,7 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
                       size: 20, color: _kGreen),
                 ),
                 const SizedBox(width: 12),
-                Text('Salário CLT 2026',
+                Text(l10n.salaryCltTitle,
                     style: GoogleFonts.manrope(
                         fontSize: 18, fontWeight: FontWeight.w700)),
               ]),
@@ -160,7 +160,7 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
                     fontWeight: FontWeight.w700,
                     color: colors.onSurface),
                 decoration: InputDecoration(
-                  labelText: 'Salário bruto mensal',
+                  labelText: l10n.grossMonthlySalary,
                   prefixText: 'R\$ ',
                   prefixStyle: GoogleFonts.inter(
                       fontSize: 16,
@@ -184,13 +184,13 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
                   children: [
                     Column(crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                      Text('Dependentes',
+                      Text(l10n.dependents,
                           style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: colors.onSurface)),
                       Text(
-                          'Dedução: ${FinancialCalculatorService.formatBRL(189.59 * _dependents)} / mês',
+                          l10n.dependentsDeduction(FinancialCalculatorService.formatBRL(189.59 * _dependents)),
                           style: TextStyle(
                               fontSize: 11, color: colors.onSurfaceSoft)),
                     ]),
@@ -215,12 +215,12 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
                   dense: true,
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-                  title: Text('Desconto simplificado',
+                  title: Text(l10n.simplifiedDeduction,
                       style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: colors.onSurface)),
-                  subtitle: Text('R\$ 607,20 deduzidos da base do IRRF',
+                  subtitle: Text(l10n.simplifiedDeductionDesc,
                       style: TextStyle(
                           fontSize: 11, color: colors.onSurfaceSoft)),
                   value: _useSimplified,
@@ -243,7 +243,7 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
                 ],
                 onChanged: (_) => _recompute(),
                 decoration: InputDecoration(
-                  labelText: 'Outras deduções (plano de saúde, etc.)',
+                  labelText: l10n.otherDeductions,
                   prefixText: 'R\$ ',
                   hintText: '0,00',
                   filled: true,
@@ -321,8 +321,8 @@ class _PreviewCard extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         // Header
         Row(children: [
-          const Text('SALÁRIO LÍQUIDO',
-              style: TextStyle(
+          Text(AppLocalizations.of(context).netSalaryLabel,
+              style: const TextStyle(
                   fontSize: 9,
                   letterSpacing: 1.4,
                   fontWeight: FontWeight.w700,
@@ -334,7 +334,7 @@ class _PreviewCard extends StatelessWidget {
                 color: Colors.white.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(20)),
             child: Text(
-              '${result.effectiveRate.toStringAsFixed(1)}% alíquota efetiva',
+              AppLocalizations.of(context).effectiveRateSuffix(result.effectiveRate.toStringAsFixed(1)),
               style: const TextStyle(
                   fontSize: 9,
                   color: Colors.white70,
@@ -370,15 +370,15 @@ class _PreviewCard extends StatelessWidget {
               const Icon(Icons.info_outline, size: 12, color: Colors.white70),
               const SizedBox(width: 6),
               Text(
-                'Reducão mensal aplicada: −${FinancialCalculatorService.formatBRL(result.reducaoMensal)}',
+                AppLocalizations.of(context).monthlyReductionApplied(FinancialCalculatorService.formatBRL(result.reducaoMensal)),
                 style: const TextStyle(fontSize: 10, color: Colors.white70),
               ),
             ]),
           ),
         ],
         const SizedBox(height: 8),
-        const Text('* FGTS é encargo do empregador, não descontado do salário.',
-            style: TextStyle(fontSize: 9, color: Colors.white54)),
+        Text(AppLocalizations.of(context).fgtsEmployerNote,
+            style: const TextStyle(fontSize: 9, color: Colors.white54)),
       ]),
     );
   }

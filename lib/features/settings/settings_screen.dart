@@ -691,10 +691,10 @@ class _BudgetSection extends ConsumerWidget {
             children: [
               const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 18),
               const SizedBox(width: 10),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Your budget allocations exceed 100%. Tap a category to adjust.',
-                  style: TextStyle(fontSize: 12, color: Colors.red, fontWeight: FontWeight.w500),
+                  AppLocalizations.of(context).budgetOverflowWarning,
+                  style: const TextStyle(fontSize: 12, color: Colors.red, fontWeight: FontWeight.w500),
                 ),
               ),
               TextButton(
@@ -710,9 +710,9 @@ class _BudgetSection extends ConsumerWidget {
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                child: const Text(
-                  'Rebalance',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                child: Text(
+                  AppLocalizations.of(context).rebalance,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
                 ),
               ),
             ],
@@ -765,7 +765,7 @@ class _BudgetSection extends ConsumerWidget {
                   ),
                   Text(
                     ref.watch(budgetPercentageOverflowProvider)
-                        ? '${ref.watch(budgetCashPercentageTotalProvider).toStringAsFixed(1)}% allocated — over limit'
+                        ? AppLocalizations.of(context).allocatedOverLimit(ref.watch(budgetCashPercentageTotalProvider).toStringAsFixed(1))
                         : AppLocalizations.of(context).translate('set_spending_limits'),
                     style: TextStyle(
                       fontSize: 11,
@@ -891,8 +891,8 @@ class _NetWorthSection extends ConsumerWidget {
             ),
             const SizedBox(width: 14),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Contas Bancárias', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-              Text('Gerencie suas contas e transferências', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+              Text(AppLocalizations.of(context).bankAccounts, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
+              Text(AppLocalizations.of(context).manageAccountsDesc, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
             ])),
             Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
           ]),
@@ -917,8 +917,8 @@ class _NetWorthSection extends ConsumerWidget {
             ),
             const SizedBox(width: 14),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Patrimônio', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-              Text('Visão consolidada do seu patrimônio', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+              Text(AppLocalizations.of(context).patrimony, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
+              Text(AppLocalizations.of(context).patrimonyDesc, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
             ])),
             Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
           ]),
