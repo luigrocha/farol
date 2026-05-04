@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import '../../design/farol_colors.dart' as tokens;
 import '../theme/farol_colors.dart';
+import '../i18n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HealthGauge extends StatelessWidget {
@@ -46,7 +47,7 @@ class HealthGauge extends StatelessWidget {
                 ),
               ),
               Text(
-                statusLabel ?? 'HEALTHY',
+                statusLabel ?? AppLocalizations.of(context).healthHealthy,
                 style: TextStyle(
                   fontSize: size * 0.08,
                   fontWeight: FontWeight.w700,

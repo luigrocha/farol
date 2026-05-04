@@ -3,23 +3,25 @@ import 'package:fl_chart/fl_chart.dart';
 import 'dart:math' as math;
 import '../../design/farol_colors.dart' as tokens;
 import '../theme/farol_colors.dart';
+import '../i18n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FarolDonutChart extends StatelessWidget {
   final Map<String, double> data;
   final double total;
-  final String centerLabel;
+  final String? centerLabel;
 
   const FarolDonutChart({
     super.key,
     required this.data,
     required this.total,
-    this.centerLabel = 'Diversificada',
+    this.centerLabel,
   });
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final label = centerLabel ?? AppLocalizations.of(context).chartDiversified;
     return SizedBox(
       width: 180,
       height: 180,
@@ -37,7 +39,7 @@ class FarolDonutChart extends StatelessWidget {
             )).toList(),
           )),
           Column(mainAxisSize: MainAxisSize.min, children: [
-            Text(centerLabel.toUpperCase(), style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, fontWeight: FontWeight.w700, letterSpacing: 1)),
+            Text(label.toUpperCase(), style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, fontWeight: FontWeight.w700, letterSpacing: 1)),
             const SizedBox(height: 4),
             Text('R\$ ${(total / 1000).toStringAsFixed(1)}k', style: GoogleFonts.manrope(fontSize: 20, fontWeight: FontWeight.w800, color: colors.onSurface)),
           ]),
