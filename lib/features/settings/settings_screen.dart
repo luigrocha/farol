@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../../main.dart';
 import '../../core/providers/providers.dart';
 import '../../core/models/financial_period.dart';
@@ -67,10 +68,13 @@ class SettingsScreen extends ConsumerWidget {
                 label: Text(l10n.signOut, style: const TextStyle(color: tokens.FarolColors.coral, fontWeight: FontWeight.w600)),
               )),
               const SizedBox(height: 12),
-              Center(
-                child: Text(
-                  'v0.0.1',
-                  style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft, letterSpacing: 0.3),
+              FutureBuilder<PackageInfo>(
+                future: PackageInfo.fromPlatform(),
+                builder: (context, snap) => Center(
+                  child: Text(
+                    snap.hasData ? 'v${snap.data!.version}' : '',
+                    style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft, letterSpacing: 0.3),
+                  ),
                 ),
               ),
               const SizedBox(height: 40),
