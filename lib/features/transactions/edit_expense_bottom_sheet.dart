@@ -9,6 +9,7 @@ import '../../core/theme/farol_colors.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../core/i18n/app_localizations.dart';
 import '../../core/widgets/farol_snackbar.dart';
+import '../../core/widgets/farol_dialogs.dart';
 
 class EditExpenseBottomSheet extends ConsumerStatefulWidget {
   final Expense expense;
@@ -90,7 +91,8 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700),
           decoration: const InputDecoration(prefixText: 'R\$ ', hintText: '0,00'),
-          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.,]'))]),
+          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.,]'))],
+          onChanged: (_) => setState(() {})),
         const SizedBox(height: 16),
 
         // Category grid
@@ -133,10 +135,15 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
           selected: _method == m, onSelected: (v) => setState(() { if (v) _method = m; }))).toList()),
         const SizedBox(height: 12),
 
-        // Installments field (conditional)
+        // Installments field + total preview (conditional)
         if (_method == PaymentMethod.creditInstallment) ...[
-          TextField(controller: _installmentsCtrl, keyboardType: TextInputType.number,
+          TextField(
+            controller: _installmentsCtrl,
+            keyboardType: TextInputType.number,
+            onChanged: (_) => setState(() {}),
             decoration: InputDecoration(labelText: l10n.translate('num_installments'), prefixIcon: const Icon(Icons.format_list_numbered))),
+          const SizedBox(height: 8),
+          _InstallmentTotalPreview(amountCtrl: _amountCtrl, installmentsCtrl: _installmentsCtrl),
           const SizedBox(height: 12),
         ],
 
@@ -198,6 +205,32 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
       context.showSuccessSnackBar(l10n.invalidAmount);
       return;
     }
+
+    // Determine propagation scope before locking UI
+    bool propagate = false;
+    final isFixed = widget.expense.isFixed;
+    final planId = widget.expense.installmentPlanId;
+
+    if (isFixed) {
+      final choice = await showScopeChoiceDialog(
+        context,
+        title: 'Editar gasto fixo',
+        singleLabel: 'Só este mês',
+        allLabel: 'Este e todos os futuros',
+      );
+      if (choice == null) return;
+      propagate = choice;
+    } else if (planId != null) {
+      final choice = await showScopeChoiceDialog(
+        context,
+        title: 'Editar parcela',
+        singleLabel: 'Só esta parcela',
+        allLabel: 'Atualizar todas as parcelas',
+      );
+      if (choice == null) return;
+      propagate = choice;
+    }
+
     setState(() => _saving = true);
 
     final payType = _method.isSwile ? 'Swile' : 'Cash';
@@ -206,7 +239,7 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
         : 1;
 
     final categories = ref.read(categoriesStreamProvider).value ?? [];
-    final currentCat = categories.firstWhere((c) => c.dbValue == _categoryDbValue, 
+    final currentCat = categories.firstWhere((c) => c.dbValue == _categoryDbValue,
         orElse: () => categories.isNotEmpty ? categories.first : const Category(dbValue: 'OTHER', name: 'Other', emoji: '📋'));
 
     final desc = _descCtrl.text.isEmpty ? _subcategory ?? currentCat.name : _descCtrl.text;
@@ -227,6 +260,25 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
         storeDescription: desc,
       );
 
+      if (propagate && isFixed) {
+        await ref.read(expenseRepositoryProvider).updateFixedSeriesFrom(
+          widget.expense,
+          amount: amount,
+          category: _categoryDbValue,
+          subcategory: _subcategory,
+          paymentMethod: _method.dbValue,
+          storeDescription: _descCtrl.text.isNotEmpty ? desc : null,
+        );
+      } else if (propagate && planId != null) {
+        await ref.read(expenseRepositoryProvider).updateProjectedByPlan(
+          planId,
+          amount: amount,
+          category: _categoryDbValue,
+          subcategory: _subcategory,
+          paymentMethod: _method.dbValue,
+        );
+      }
+
       HapticFeedback.mediumImpact();
       if (mounted) {
         Navigator.pop(context);
@@ -238,5 +290,36 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
         context.showErrorSnackBar(e);
       }
     }
+  }
+}
+
+class _InstallmentTotalPreview extends StatelessWidget {
+  final TextEditingController amountCtrl;
+  final TextEditingController installmentsCtrl;
+
+  const _InstallmentTotalPreview({
+    required this.amountCtrl,
+    required this.installmentsCtrl,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final amountStr = amountCtrl.text.replaceAll('.', '').replaceAll(',', '.');
+    final amount = double.tryParse(amountStr) ?? 0;
+    final numInst = int.tryParse(installmentsCtrl.text) ?? 0;
+    if (amount <= 0 || numInst <= 1) return const SizedBox.shrink();
+    final total = amount * numInst;
+    final totalStr = total.toStringAsFixed(2).replaceAll('.', ',');
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        'Total projetado: R\$ $totalStr ($numInst × R\$ ${amount.toStringAsFixed(2).replaceAll('.', ',')})',
+        style: TextStyle(
+          fontSize: 12,
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
   }
 }

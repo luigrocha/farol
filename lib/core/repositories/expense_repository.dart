@@ -152,6 +152,57 @@ class ExpenseRepository {
     await _supabase.from('expenses').delete().inFilter('id', ids);
   }
 
+  Future<void> updateFixedSeriesFrom(
+    Expense from, {
+    required double amount,
+    required String category,
+    String? subcategory,
+    required String paymentMethod,
+    String? storeDescription,
+  }) async {
+    final userId = _userId;
+    if (userId == null) return;
+    final data = await _supabase
+        .from('expenses')
+        .select('id, month, year, store_description')
+        .eq('user_id', userId)
+        .eq('is_fixed', true)
+        .eq('category', from.category)
+        .eq('payment_method', from.paymentMethod);
+    final ids = (data as List)
+        .where((r) {
+          if ((r['store_description'] as String?) != from.storeDescription) return false;
+          final y = (r['year'] as num).toInt();
+          final m = (r['month'] as num).toInt();
+          return y * 12 + m >= from.year * 12 + from.month;
+        })
+        .map((r) => (r['id'] as num).toInt())
+        .toList();
+    if (ids.isEmpty) return;
+    await _supabase.from('expenses').update({
+      'amount': amount,
+      'category': category,
+      if (subcategory != null) 'subcategory': subcategory,
+      'payment_method': paymentMethod,
+      if (storeDescription != null) 'store_description': storeDescription,
+    }).inFilter('id', ids);
+  }
+
+  Future<void> updateProjectedByPlan(
+    int planId, {
+    required double amount,
+    required String category,
+    String? subcategory,
+    required String paymentMethod,
+  }) async {
+    await _supabase.from('expenses').update({
+      'amount': amount,
+      'category': category,
+      if (subcategory != null) 'subcategory': subcategory,
+      'payment_method': paymentMethod,
+    }).eq('installment_plan_id', planId).eq('is_projected', true);
+  }
+
   Future<int> getProjectedCountForPlan(int planId) async {
     final data = await _supabase
         .from('expenses')

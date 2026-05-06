@@ -65,7 +65,8 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700),
           decoration: const InputDecoration(prefixText: 'R\$ ', hintText: '0,00'),
-          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.,]'))]),
+          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.,]'))],
+          onChanged: (_) => setState(() {})),
         const SizedBox(height: 16),
 
         // 2. Category grid
@@ -108,10 +109,15 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
           selected: _method==m, onSelected: (v) => setState(() { if(v) _method=m; }))).toList()),
         const SizedBox(height: 12),
 
-        // Installments field (conditional)
+        // Installments field + total preview (conditional)
         if (_method == PaymentMethod.creditInstallment) ...[
-          TextField(controller: _installmentsCtrl, keyboardType: TextInputType.number,
+          TextField(
+            controller: _installmentsCtrl,
+            keyboardType: TextInputType.number,
+            onChanged: (_) => setState(() {}),
             decoration: InputDecoration(labelText: l10n.translate('num_installments'), prefixIcon: const Icon(Icons.format_list_numbered))),
+          const SizedBox(height: 8),
+          _InstallmentTotalPreview(amountCtrl: _amountCtrl, installmentsCtrl: _installmentsCtrl),
           const SizedBox(height: 12),
         ],
 
@@ -271,5 +277,36 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
         context.showErrorSnackBar(e);
       }
     }
+  }
+}
+
+class _InstallmentTotalPreview extends StatelessWidget {
+  final TextEditingController amountCtrl;
+  final TextEditingController installmentsCtrl;
+
+  const _InstallmentTotalPreview({
+    required this.amountCtrl,
+    required this.installmentsCtrl,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final amountStr = amountCtrl.text.replaceAll('.', '').replaceAll(',', '.');
+    final amount = double.tryParse(amountStr) ?? 0;
+    final numInst = int.tryParse(installmentsCtrl.text) ?? 0;
+    if (amount <= 0 || numInst <= 1) return const SizedBox.shrink();
+    final total = amount * numInst;
+    final totalStr = total.toStringAsFixed(2).replaceAll('.', ',');
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        'Total projetado: R\$ $totalStr ($numInst × R\$ ${amount.toStringAsFixed(2).replaceAll('.', ',')})',
+        style: TextStyle(
+          fontSize: 12,
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
   }
 }

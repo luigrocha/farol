@@ -1,6 +1,37 @@
 import 'package:flutter/material.dart';
 import '../i18n/app_localizations.dart';
 
+/// Generic scope choice dialog. Returns null = cancel, false = single, true = all.
+Future<bool?> showScopeChoiceDialog(
+  BuildContext context, {
+  required String title,
+  required String singleLabel,
+  required String allLabel,
+  String? warning,
+}) async {
+  return showDialog<bool?>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text(title),
+      content: warning != null ? Text(warning) : null,
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx),
+          child: Text(AppLocalizations.of(ctx).cancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: Text(singleLabel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          child: Text(allLabel),
+        ),
+      ],
+    ),
+  );
+}
+
 /// Returns null = cancel, false = delete only this item, true = delete entire series/plan.
 Future<bool?> showDeleteExpenseChoiceDialog(
   BuildContext context, {
