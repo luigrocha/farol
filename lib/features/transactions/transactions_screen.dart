@@ -938,8 +938,57 @@ class _TxRow extends ConsumerWidget {
               style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
         ]),
       ),
-      confirmDismiss: (_) async => showConfirmDeleteDialog(context,
-          title: l10n.confirmDelete, body: l10n.cannotUndo),
+      confirmDismiss: (_) async {
+        final planId = expense.installmentPlanId as int?;
+        final isFixed = expense.isFixed as bool;
+
+        // Installment expense linked to a plan
+        if (planId != null) {
+          final numInst = expense.installments as int;
+          final choice = await showDeleteExpenseChoiceDialog(
+            context,
+            title: 'Excluir parcela',
+            singleLabel: 'Só esta parcela',
+            seriesLabel: 'Todo o plano ($numInst parcelas)',
+            warning: 'Excluir o plano remove todas as parcelas e projeções.',
+          );
+          if (choice == null) return false;
+          if (choice == true) {
+            try {
+              await ref.read(installmentRepositoryProvider).delete(planId);
+              if (context.mounted) context.showSuccessSnackBar('Plano excluído');
+            } catch (e) {
+              if (context.mounted) context.showErrorSnackBar(e);
+            }
+            return false; // stream removes all related rows
+          }
+          return true; // single row → onDismissed handles it
+        }
+
+        // Fixed recurring expense
+        if (isFixed) {
+          final choice = await showDeleteExpenseChoiceDialog(
+            context,
+            title: 'Excluir gasto fixo',
+            singleLabel: 'Só este mês',
+            seriesLabel: 'Este mês e todos os futuros',
+          );
+          if (choice == null) return false;
+          if (choice == true) {
+            try {
+              await ref.read(expenseRepositoryProvider).deleteFixedSeriesFrom(expense);
+              if (context.mounted) context.showSuccessSnackBar('Série excluída');
+            } catch (e) {
+              if (context.mounted) context.showErrorSnackBar(e);
+            }
+            return false; // stream removes all matching rows
+          }
+          return true; // single row → onDismissed handles it
+        }
+
+        // Simple expense
+        return showConfirmDeleteDialog(context, title: l10n.confirmDelete, body: l10n.cannotUndo);
+      },
       onDismissed: (_) async {
         try {
           await ref.read(expenseRepositoryProvider).delete(expense.id as int);
