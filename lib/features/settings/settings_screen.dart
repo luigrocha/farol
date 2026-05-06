@@ -66,6 +66,13 @@ class SettingsScreen extends ConsumerWidget {
                 icon: const Icon(Icons.logout, color: tokens.FarolColors.coral, size: 16),
                 label: Text(l10n.signOut, style: const TextStyle(color: tokens.FarolColors.coral, fontWeight: FontWeight.w600)),
               )),
+              const SizedBox(height: 12),
+              Center(
+                child: Text(
+                  'v0.0.1',
+                  style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft, letterSpacing: 0.3),
+                ),
+              ),
               const SizedBox(height: 40),
             ]))),
         ],
