@@ -13,6 +13,8 @@ class Expense {
   final bool isFixed;
   final String? storeDescription;
   final DateTime createdAt;
+  final bool isProjected;
+  final int? installmentPlanId;
 
   const Expense({
     required this.id,
@@ -29,6 +31,8 @@ class Expense {
     this.isFixed = false,
     this.storeDescription,
     required this.createdAt,
+    this.isProjected = false,
+    this.installmentPlanId,
   });
 
   factory Expense.fromJson(Map<String, dynamic> json) {
@@ -49,6 +53,8 @@ class Expense {
       isFixed: json['is_fixed'] as bool? ?? false,
       storeDescription: json['store_description'] as String?,
       createdAt: createdAt,
+      isProjected: json['is_projected'] as bool? ?? false,
+      installmentPlanId: (json['installment_plan_id'] as num?)?.toInt(),
     );
   }
 }

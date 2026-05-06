@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/providers.dart';
 import '../../core/models/enums.dart';
+import '../../core/models/financial_period.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../core/i18n/app_localizations.dart';
@@ -181,27 +182,76 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
     final desc = _descCtrl.text.isEmpty ? _subcategory ?? currentCat.name : _descCtrl.text;
 
     try {
-      await ref.read(expenseRepositoryProvider).insert(
-        transactionDate: _date,
-        month: _date.month,
-        year: _date.year,
-        payType: payType,
-        category: _categoryDbValue,
-        subcategory: _subcategory ?? currentCat.name,
-        amount: amount,
-        paymentMethod: _method.dbValue,
-        installments: numInst,
-        isFixed: _isFixed,
-        storeDescription: desc,
-      );
+      if (_method == PaymentMethod.creditInstallment && numInst > 1) {
+        // amount = value per installment entered by user
+        final totalValue = amount * numInst;
+        // Floor to 2 decimal places; last cuota absorbs rounding residual
+        final baseAmount = (amount * 100).floorToDouble() / 100;
+        final lastAmount = (totalValue * 100).roundToDouble() / 100 -
+            baseAmount * (numInst - 1);
 
-      if (_method == PaymentMethod.creditInstallment) {
-        await ref.read(installmentRepositoryProvider).insert(
+        // Create installment plan and get its id
+        final planId = await ref.read(installmentRepositoryProvider).insert(
           description: desc,
           purchaseDate: _date,
-          totalValue: amount * numInst,
+          totalValue: totalValue,
           numInstallments: numInst,
-          monthlyAmount: amount,
+          monthlyAmount: baseAmount,
+        );
+
+        // Insert current (real) expense linked to the plan
+        await ref.read(expenseRepositoryProvider).insert(
+          transactionDate: _date,
+          month: _date.month,
+          year: _date.year,
+          payType: payType,
+          category: _categoryDbValue,
+          subcategory: _subcategory ?? currentCat.name,
+          amount: baseAmount,
+          paymentMethod: _method.dbValue,
+          installments: numInst,
+          isFixed: false,
+          storeDescription: '$desc (1/$numInst)',
+          installmentPlanId: planId,
+        );
+
+        // Generate projected expenses for remaining installments
+        final cutoffDay =
+            ref.read(budgetSettingsProvider).value?.cutoffDay ?? 1;
+        FinancialPeriod period =
+            FinancialPeriod.current(cutoffDay, now: _date);
+        for (int i = 2; i <= numInst; i++) {
+          period = period.next;
+          final iValue = (i == numInst) ? lastAmount : baseAmount;
+          await ref.read(expenseRepositoryProvider).insert(
+            transactionDate: period.start,
+            month: period.start.month,
+            year: period.start.year,
+            payType: payType,
+            category: _categoryDbValue,
+            subcategory: _subcategory ?? currentCat.name,
+            amount: iValue,
+            paymentMethod: _method.dbValue,
+            installments: numInst,
+            isFixed: false,
+            storeDescription: '$desc ($i/$numInst)',
+            isProjected: true,
+            installmentPlanId: planId,
+          );
+        }
+      } else {
+        await ref.read(expenseRepositoryProvider).insert(
+          transactionDate: _date,
+          month: _date.month,
+          year: _date.year,
+          payType: payType,
+          category: _categoryDbValue,
+          subcategory: _subcategory ?? currentCat.name,
+          amount: amount,
+          paymentMethod: _method.dbValue,
+          installments: numInst,
+          isFixed: _isFixed,
+          storeDescription: desc,
         );
       }
 

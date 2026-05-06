@@ -30,7 +30,7 @@ class InstallmentRepository {
         .map((rows) => rows.map(CardInstallment.fromJson).toList());
   }
 
-  Future<void> insert({
+  Future<int> insert({
     required String description,
     required DateTime purchaseDate,
     required double totalValue,
@@ -42,7 +42,7 @@ class InstallmentRepository {
   }) async {
     final userId = _userId;
     if (userId == null) throw Exception('Not authenticated');
-    await _supabase.from('card_installments').insert({
+    final result = await _supabase.from('card_installments').insert({
       'user_id': userId,
       'description': description,
       'purchase_date': purchaseDate.toIso8601String(),
@@ -52,7 +52,8 @@ class InstallmentRepository {
       'monthly_amount': monthlyAmount,
       'status': status,
       if (notes != null) 'notes': notes,
-    });
+    }).select('id').single();
+    return (result['id'] as num).toInt();
   }
 
   Future<void> advance(int id, int newCurrent, int numInstallments) async {

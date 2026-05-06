@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/models/card_installment.dart';
+import '../../core/models/financial_period.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../design/farol_colors.dart' as tokens;
@@ -406,6 +407,9 @@ class _DetailSheetState extends ConsumerState<_InstallmentDetailSheet> {
           const SizedBox(height: 10),
         ],
 
+        _ProjectionMigrationButton(inst: widget.inst),
+        const SizedBox(height: 10),
+
         SizedBox(
           width: double.infinity,
           height: 48,
@@ -462,6 +466,141 @@ class _DetailSheetState extends ConsumerState<_InstallmentDetailSheet> {
           context.showErrorSnackBar(e);
         }
       }
+    }
+  }
+}
+
+/// Shows a migration button when a plan has fewer projected expenses than
+/// remaining installments — i.e., it was created before the projection feature.
+class _ProjectionMigrationButton extends ConsumerStatefulWidget {
+  final CardInstallment inst;
+  const _ProjectionMigrationButton({required this.inst});
+
+  @override
+  ConsumerState<_ProjectionMigrationButton> createState() =>
+      _ProjectionMigrationButtonState();
+}
+
+class _ProjectionMigrationButtonState
+    extends ConsumerState<_ProjectionMigrationButton> {
+  bool _loading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final inst = widget.inst;
+    if (inst.isComplete) return const SizedBox.shrink();
+
+    final countAsync = ref.watch(projectedCountForPlanProvider(inst.id));
+
+    return countAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (existingCount) {
+        final missing = inst.remainingInstallments - existingCount;
+        if (missing <= 0) return const SizedBox.shrink();
+
+        return Column(children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            margin: const EdgeInsets.only(bottom: 10),
+            decoration: BoxDecoration(
+              color: Colors.orange.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+            ),
+            child: Row(children: [
+              const Icon(Icons.info_outline, size: 16, color: Colors.orange),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '$missing parcela${missing == 1 ? '' : 's'} sem projeção futura',
+                  style: const TextStyle(fontSize: 12, color: Colors.orange),
+                ),
+              ),
+            ]),
+          ),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: OutlinedButton.icon(
+              onPressed: _loading ? null : () => _generate(existingCount),
+              icon: _loading
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2))
+                  : const Icon(Icons.auto_fix_high_outlined, size: 18),
+              label: Text(
+                'Gerar $missing projeção${missing == 1 ? '' : 'ões'} futura${missing == 1 ? '' : 's'}',
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.orange.shade700,
+                side: BorderSide(color: Colors.orange.shade300),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
+              ),
+            ),
+          ),
+        ]);
+      },
+    );
+  }
+
+  Future<void> _generate(int existingCount) async {
+    final inst = widget.inst;
+    setState(() => _loading = true);
+    try {
+      final cutoffDay =
+          ref.read(budgetSettingsProvider).value?.cutoffDay ?? 1;
+
+      // Start from current period, skip over already-projected periods
+      FinancialPeriod period = FinancialPeriod.current(cutoffDay);
+      for (int skip = 0; skip < existingCount; skip++) {
+        period = period.next;
+      }
+
+      final baseAmount = inst.monthlyAmount;
+      // Recalculate last installment to absorb rounding residual
+      final lastAmount =
+          (inst.totalValue * 100).roundToDouble() / 100 -
+          baseAmount * (inst.numInstallments - 1);
+
+      final startNum = inst.currentInstallment + existingCount + 1;
+      final toGenerate = inst.remainingInstallments - existingCount;
+
+      for (int i = 0; i < toGenerate; i++) {
+        period = period.next;
+        final installmentNum = startNum + i;
+        final amount =
+            (installmentNum == inst.numInstallments) ? lastAmount : baseAmount;
+        await ref.read(expenseRepositoryProvider).insert(
+          transactionDate: period.start,
+          month: period.start.month,
+          year: period.start.year,
+          payType: 'Cash',
+          category: 'CARD_INSTALLMENTS',
+          amount: amount,
+          paymentMethod: 'creditInstallment',
+          installments: inst.numInstallments,
+          isFixed: false,
+          storeDescription:
+              '${inst.description} ($installmentNum/${inst.numInstallments})',
+          isProjected: true,
+          installmentPlanId: inst.id,
+        );
+      }
+
+      ref.invalidate(projectedCountForPlanProvider(inst.id));
+      if (mounted) {
+        context.showSuccessSnackBar(
+            '✅ $toGenerate projeção${toGenerate == 1 ? '' : 'ões'} gerada${toGenerate == 1 ? '' : 's'}');
+      }
+    } catch (e) {
+      if (mounted) context.showErrorSnackBar(e);
+    } finally {
+      if (mounted) setState(() => _loading = false);
     }
   }
 }

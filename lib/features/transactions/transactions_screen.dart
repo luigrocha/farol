@@ -1030,6 +1030,22 @@ class _TxRow extends ConsumerWidget {
                               letterSpacing: 0.5)),
                     ),
                   ],
+                  if (expense.isProjected as bool) ...[
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                          color: Colors.orange.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: Colors.orange.withValues(alpha: 0.4))),
+                      child: const Text('PREVISTO',
+                          style: TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.orange,
+                              letterSpacing: 0.5)),
+                    ),
+                  ],
                 ]),
               ]),
             ),

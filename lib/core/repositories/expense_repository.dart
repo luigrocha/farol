@@ -71,6 +71,8 @@ class ExpenseRepository {
     int installments = 1,
     bool isFixed = false,
     String? storeDescription,
+    bool isProjected = false,
+    int? installmentPlanId,
   }) async {
     final userId = _userId;
     if (userId == null) throw Exception('Not authenticated');
@@ -87,6 +89,8 @@ class ExpenseRepository {
       'installments': installments,
       'is_fixed': isFixed,
       if (storeDescription != null) 'store_description': storeDescription,
+      'is_projected': isProjected,
+      if (installmentPlanId != null) 'installment_plan_id': installmentPlanId,
     });
   }
 
@@ -121,6 +125,15 @@ class ExpenseRepository {
 
   Future<void> delete(int id) async {
     await _supabase.from('expenses').delete().eq('id', id);
+  }
+
+  Future<int> getProjectedCountForPlan(int planId) async {
+    final data = await _supabase
+        .from('expenses')
+        .select('id')
+        .eq('installment_plan_id', planId)
+        .eq('is_projected', true);
+    return data.length;
   }
 
   Stream<List<Expense>> watchRealtime() {
@@ -173,7 +186,9 @@ class ExpenseRepository {
 
     for (int i = 1; i <= 12; i++) {
       final dt = DateTime(toYear, toMonth - i, 1);
-      final source = await getFixedForMonth(dt.month, dt.year);
+      final source = (await getFixedForMonth(dt.month, dt.year))
+          .where((e) => !e.isProjected)
+          .toList();
       if (source.isEmpty) continue;
 
       final rows = source.map((e) {

@@ -273,7 +273,7 @@ final totalIncomeProvider = Provider.autoDispose<double>((ref) {
 // EXPENSE PROVIDERS
 // ═══════════════════════════════════════════
 
-/// Expenses filtered to the currently selected month/year.
+/// Expenses filtered to the currently selected month/year (includes projected).
 final expensesProvider = Provider.autoDispose<AsyncValue<List<Expense>>>((ref) {
   final month = ref.watch(selectedMonthProvider);
   final year = ref.watch(selectedYearProvider);
@@ -282,20 +282,28 @@ final expensesProvider = Provider.autoDispose<AsyncValue<List<Expense>>>((ref) {
   );
 });
 
+/// Real (non-projected) expenses for the selected month/year.
+/// Use this for totals and budget calculations.
+final realExpensesProvider = Provider.autoDispose<AsyncValue<List<Expense>>>((ref) {
+  return ref.watch(expensesProvider).whenData(
+    (all) => all.where((e) => !e.isProjected).toList(),
+  );
+});
+
 final totalExpensesProvider = Provider.autoDispose<double>((ref) {
-  final expenses = ref.watch(expensesProvider).value ?? [];
+  final expenses = ref.watch(realExpensesProvider).value ?? [];
   return expenses.fold(0.0, (sum, e) => sum + e.amount);
 });
 
 final cashExpensesProvider = Provider.autoDispose<double>((ref) {
-  final expenses = ref.watch(expensesProvider).value ?? [];
+  final expenses = ref.watch(realExpensesProvider).value ?? [];
   return expenses
       .where((e) => e.payType == 'Cash')
       .fold(0.0, (sum, e) => sum + e.amount);
 });
 
 final swileExpensesProvider = Provider.autoDispose<double>((ref) {
-  final expenses = ref.watch(expensesProvider).value ?? [];
+  final expenses = ref.watch(realExpensesProvider).value ?? [];
   return expenses
       .where((e) => e.payType == 'Swile')
       .fold(0.0, (sum, e) => sum + e.amount);
@@ -342,7 +350,7 @@ final swileFoodBalanceProvider = Provider.autoDispose<double>((ref) {
 });
 
 final expensesByCategoryProvider = Provider.autoDispose<Map<String, double>>((ref) {
-  final expenses = ref.watch(expensesProvider).value ?? [];
+  final expenses = ref.watch(realExpensesProvider).value ?? [];
   final map = <String, double>{};
   for (final e in expenses) {
     map[e.category] = (map[e.category] ?? 0) + e.amount;
@@ -351,7 +359,7 @@ final expensesByCategoryProvider = Provider.autoDispose<Map<String, double>>((re
 });
 
 final cashExpensesByCategoryProvider = Provider.autoDispose<Map<String, double>>((ref) {
-  final expenses = ref.watch(expensesProvider).value ?? [];
+  final expenses = ref.watch(realExpensesProvider).value ?? [];
   final map = <String, double>{};
   for (final e in expenses.where((e) => e.payType == 'Cash')) {
     map[e.category] = (map[e.category] ?? 0) + e.amount;
@@ -410,6 +418,13 @@ final installmentsProvider = StreamProvider.autoDispose<List<CardInstallment>>((
 
 final allInstallmentsProvider = StreamProvider.autoDispose<List<CardInstallment>>((ref) {
   return ref.watch(installmentRepositoryProvider).watchAll();
+});
+
+/// Returns how many projected expenses already exist for a given installment plan.
+/// Used to detect legacy plans that need migration.
+final projectedCountForPlanProvider =
+    FutureProvider.autoDispose.family<int, int>((ref, planId) {
+  return ref.read(expenseRepositoryProvider).getProjectedCountForPlan(planId);
 });
 
 final totalMonthlyInstallmentsProvider = Provider.autoDispose<double>((ref) {
@@ -1039,6 +1054,7 @@ final periodBudgetEntriesProvider =
 
     final spentByCategory = <String, double>{};
     for (final e in expenses) {
+      if (e.isProjected) continue;
       if (e.payType == 'Swile') continue;
       if (!period.contains(e.transactionDate)) continue;
       spentByCategory[e.category] =
