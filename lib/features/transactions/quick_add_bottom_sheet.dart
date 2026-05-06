@@ -25,6 +25,7 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
   bool _isFixed = false;
   DateTime _date = DateTime.now();
   String? _subcategory;
+  bool _saving = false;
 
   static const _subcategories = {
     'HOUSING': ['Rent', 'Condo Fee', 'Electricity', 'Water', 'Gas', 'Internet', 'Property Tax', 'Maintenance'],
@@ -138,9 +139,11 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
         // Save button
         SizedBox(width: double.infinity, height: 52,
           child: ElevatedButton(
-            onPressed: _save,
+            onPressed: _saving ? null : _save,
             style: ElevatedButton.styleFrom(backgroundColor: tokens.FarolColors.beam, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), elevation: 0),
-            child: Text(l10n.save.toUpperCase(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)))),
+            child: _saving
+                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                : Text(l10n.save.toUpperCase(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)))),
       ])),
     );
   }
@@ -162,6 +165,7 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
   }
 
   Future<void> _save() async {
+    if (_saving) return;
     final l10n = AppLocalizations.of(context);
     final amountStr = _amountCtrl.text.replaceAll('.', '').replaceAll(',', '.');
     final amount = double.tryParse(amountStr);
@@ -169,6 +173,7 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
       context.showSuccessSnackBar(l10n.invalidAmount);
       return;
     }
+    setState(() => _saving = true);
 
     final payType = _method.isSwile ? 'Swile' : 'Cash';
     final numInst = _method == PaymentMethod.creditInstallment
@@ -262,6 +267,7 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
       }
     } catch (e) {
       if (mounted) {
+        setState(() => _saving = false);
         context.showErrorSnackBar(e);
       }
     }
