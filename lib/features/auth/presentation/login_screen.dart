@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../../../core/i18n/app_localizations.dart';
 import '../../../core/widgets/farol_snackbar.dart';
 import '../../../core/theme/farol_colors.dart';
@@ -233,6 +234,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     // ),
                   ]),
                   const SizedBox(height: 32),
+                  FutureBuilder<PackageInfo>(
+                    future: PackageInfo.fromPlatform(),
+                    builder: (context, snap) => Center(
+                      child: Text(
+                        snap.hasData ? 'v${snap.data!.version}' : '',
+                        style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.outline, letterSpacing: 0.3),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
 
                   // ── Sign-up link ─────────────────────────────────────
                   Center(

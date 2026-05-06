@@ -16,7 +16,8 @@
       "Bash(grep -v \"^$\")",
       "Bash(grep -E \"\\\\.\\(dart\\)$\")",
       "Bash(xargs ls *)",
-      "Bash(grep -E \"\\\\.dart$\")"
+      "Bash(grep -E \"\\\\.dart$\")",
+      "Bash(grep -n \"^import\\\\|SizedBox\\(height: 3[0-9]\\\\|],\\\\s*$\\\\|child: Column\" /Users/lgrocha/Documents/Claude/farol/lib/features/auth/presentation/signup_screen.dart)"
     ]
   },
   "autoCompactEnabled": false

@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../../../core/theme/farol_colors.dart';
 import '../../../design/farol_colors.dart' as tokens;
 import '../../../design/widgets/farol_button.dart';
@@ -269,6 +270,16 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                             ),
                           ),
                         ]),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  FutureBuilder<PackageInfo>(
+                    future: PackageInfo.fromPlatform(),
+                    builder: (context, snap) => Center(
+                      child: Text(
+                        snap.hasData ? 'v${snap.data!.version}' : '',
+                        style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.outline, letterSpacing: 0.3),
                       ),
                     ),
                   ),
