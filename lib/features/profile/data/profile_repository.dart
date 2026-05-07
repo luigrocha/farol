@@ -89,6 +89,7 @@ class ProfileRepository {
     String? phone,
     String? jobTitle,
     String? company,
+    String? cpf,
   }) async {
     await _supabase.from('profiles').upsert({
       'id': uid,
@@ -97,6 +98,7 @@ class ProfileRepository {
       if (phone != null) 'phone': phone,
       if (jobTitle != null) 'job_title': jobTitle,
       if (company != null) 'company': company,
+      if (cpf != null) 'cpf': cpf,
       'updated_at': DateTime.now().toUtc().toIso8601String(),
     });
   }

@@ -24,6 +24,7 @@ class ProfileNotifier extends AsyncNotifier<void> {
     String? phone,
     String? jobTitle,
     String? company,
+    String? cpf,
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
@@ -34,6 +35,7 @@ class ProfileNotifier extends AsyncNotifier<void> {
         phone: phone,
         jobTitle: jobTitle,
         company: company,
+        cpf: cpf,
       );
       ref.invalidate(currentProfileProvider);
     });

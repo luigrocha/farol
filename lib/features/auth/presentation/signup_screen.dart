@@ -10,6 +10,7 @@ import '../../../core/theme/farol_colors.dart';
 import '../../../design/farol_colors.dart' as tokens;
 import '../../../design/widgets/farol_button.dart';
 import '../../../core/i18n/app_localizations.dart';
+import '../../../core/widgets/cpf_input_formatter.dart';
 import 'auth_providers.dart';
 import 'widgets/auth_buttons.dart';
 
@@ -191,8 +192,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   TextFormField(
                     controller: _cpfController,
                     keyboardType: TextInputType.number,
+                    inputFormatters: [CpfInputFormatter()],
                     decoration: InputDecoration(
                       labelText: l10n.translate('cpf_optional'),
+                      hintText: '000.000.000-00',
                       prefixIcon: const Icon(Icons.badge_outlined),
                       suffixIcon: Tooltip(
                         message: 'CPF é armazenado com segurança e não é compartilhado',

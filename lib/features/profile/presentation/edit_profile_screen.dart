@@ -1,10 +1,11 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/i18n/app_localizations.dart';
 import '../../../core/widgets/farol_snackbar.dart';
+import '../../../core/widgets/cpf_input_formatter.dart';
 import '../../../core/theme/farol_colors.dart';
 import '../../../design/farol_colors.dart' as tokens;
 import '../../auth/presentation/password_reset_screen.dart';
@@ -24,6 +25,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   late final TextEditingController _phoneCtrl;
   late final TextEditingController _jobTitleCtrl;
   late final TextEditingController _companyCtrl;
+  late final TextEditingController _cpfCtrl;
   bool _initialized = false;
 
   @override
@@ -32,6 +34,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     _phoneCtrl.dispose();
     _jobTitleCtrl.dispose();
     _companyCtrl.dispose();
+    _cpfCtrl.dispose();
     super.dispose();
   }
 
@@ -41,6 +44,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     _phoneCtrl = TextEditingController(text: profile?.phone ?? '');
     _jobTitleCtrl = TextEditingController(text: profile?.jobTitle ?? '');
     _companyCtrl = TextEditingController(text: profile?.company ?? '');
+    _cpfCtrl = TextEditingController(
+      text: profile?.cpf != null ? CpfInputFormatter.formatCpf(profile!.cpf!) : '',
+    );
     _initialized = true;
   }
 
@@ -49,12 +55,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final uid = Supabase.instance.client.auth.currentUser?.id;
     if (uid == null) return;
 
+    final cpfDigits = _cpfCtrl.text.replaceAll(RegExp(r'\D'), '');
     await ref.read(profileControllerProvider.notifier).saveProfile(
           uid: uid,
           name: _nameCtrl.text.trim(),
           phone: _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
           jobTitle: _jobTitleCtrl.text.trim().isEmpty ? null : _jobTitleCtrl.text.trim(),
           company: _companyCtrl.text.trim().isEmpty ? null : _companyCtrl.text.trim(),
+          cpf: cpfDigits.isEmpty ? null : cpfDigits,
         );
 
     if (mounted && !ref.read(profileControllerProvider).hasError) {
@@ -165,11 +173,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           (v == null || v.trim().isEmpty) ? l10n.nameRequired : null,
                     ),
                     _Divider(),
-                    _ReadOnlyRow(
+                    _EditRow(
+                      controller: _cpfCtrl,
                       label: l10n.cpfLabel,
-                      value: _maskCpf(profile?.cpf),
-                      icon: Icons.lock_outline,
+                      icon: Icons.badge_outlined,
                       colors: colors,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [CpfInputFormatter()],
                     ),
                     _Divider(),
                     _ReadOnlyRow(
@@ -253,12 +263,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     return '${parts[0][0]}${parts[parts.length - 1][0]}'.toUpperCase();
   }
 
-  String _maskCpf(String? cpf) {
-    if (cpf == null || cpf.isEmpty) return '—';
-    final digits = cpf.replaceAll(RegExp(r'\D'), '');
-    if (digits.length != 11) return cpf;
-    return '${digits.substring(0, 3)}.***.***-${digits.substring(9)}';
-  }
 }
 
 // ─── Avatar Section ───────────────────────────────────────────────────────────
@@ -461,6 +465,7 @@ class _EditRow extends StatelessWidget {
   final String? Function(String?)? validator;
   final TextInputType keyboardType;
   final Widget? trailing;
+  final List<TextInputFormatter>? inputFormatters;
 
   const _EditRow({
     required this.controller,
@@ -470,6 +475,7 @@ class _EditRow extends StatelessWidget {
     this.validator,
     this.keyboardType = TextInputType.text,
     this.trailing,
+    this.inputFormatters,
   });
 
   @override
@@ -485,6 +491,7 @@ class _EditRow extends StatelessWidget {
               controller: controller,
               validator: validator,
               keyboardType: keyboardType,
+              inputFormatters: inputFormatters,
               style: TextStyle(fontSize: 15, color: colors.onSurface),
               decoration: InputDecoration(
                 labelText: label,
