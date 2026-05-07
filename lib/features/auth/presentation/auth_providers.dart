@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../data/auth_repository.dart';
@@ -22,7 +23,14 @@ final authStateProvider = StreamProvider<AppAuthState>((ref) {
   // Prepend the synchronous initial value so the app never blocks on cold start.
   final controller = StreamController<AppAuthState>();
   controller.add(initialState);
-  controller.addStream(repo.authStateChanges).then((_) => controller.close());
+  repo.authStateChanges.listen(
+    controller.add,
+    onError: (Object e, StackTrace st) {
+      debugPrint('[Auth] authStateChanges error: $e\n$st');
+      controller.add(const AppAuthUnauthenticated());
+    },
+    onDone: controller.close,
+  );
   return controller.stream;
 });
 

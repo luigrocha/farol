@@ -187,23 +187,40 @@ class AppEntryPoint extends ConsumerWidget {
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (err, stack) {
-        // Stream errors should be rare; surface them instead of silently hiding.
         final l10n = AppLocalizations.of(context);
+        debugPrint('[Auth] authStateProvider error: $err\n$stack');
         return Scaffold(
           body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                const SizedBox(height: 16),
-                Text(l10n.somethingWentWrong),
-                const SizedBox(height: 8),
-                TextButton(
-                  onPressed: () =>
-                      ref.invalidate(authStateProvider),
-                  child: Text(l10n.retry),
-                ),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(l10n.somethingWentWrong,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  Text(
+                    err.toString(),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () => ref.invalidate(authStateProvider),
+                    child: Text(l10n.retry),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      ref.invalidate(authStateProvider);
+                      Navigator.of(context)
+                          .pushNamedAndRemoveUntil('/login', (r) => false);
+                    },
+                    child: const Text('Voltar para login'),
+                  ),
+                ],
+              ),
             ),
           ),
         );
