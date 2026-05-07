@@ -12,11 +12,35 @@ import 'widgets/asset_allocation_card.dart';
 import 'widgets/net_worth_evolution_chart.dart';
 import 'widgets/period_flow_card.dart';
 
-class PatrimonioScreen extends ConsumerWidget {
+class PatrimonioScreen extends ConsumerStatefulWidget {
   const PatrimonioScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PatrimonioScreen> createState() => _PatrimonioScreenState();
+}
+
+class _PatrimonioScreenState extends ConsumerState<PatrimonioScreen> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final colors = context.colors;
     return Scaffold(
       backgroundColor: colors.surface,
