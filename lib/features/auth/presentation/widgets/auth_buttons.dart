@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../auth_providers.dart';
 import '../../../../core/widgets/farol_snackbar.dart';
 
-/// A helper widget to handle authentication actions.
-/// Can be used inside existing Stitch-based UIs.
 class AuthActionHandler extends ConsumerWidget {
   final Widget child;
   final String? successMessage;
@@ -25,27 +23,16 @@ class AuthActionHandler extends ConsumerWidget {
 
       // Detect loading → success transition
       if (previous?.isLoading == true && current.hasValue) {
-        final msg = successMessage;
-        if (msg != null) {
-          context.showSuccessSnackBar(msg);
-        }
-        // Clear the auth stack and let AppEntryPoint route to the right screen
-        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+        // Navigate to branded loading screen which waits for authStateProvider
+        // to confirm the authenticated state before routing to the app.
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          '/auth_loading',
+          (route) => false,
+        );
       }
     });
 
-    return Stack(
-      children: [
-        child,
-        if (ref.watch(authControllerProvider).isLoading)
-          Positioned.fill(
-            child: Container(
-              color: Colors.black26,
-              child: const Center(child: CircularProgressIndicator()),
-            ),
-          ),
-      ],
-    );
+    return child;
   }
 }
 

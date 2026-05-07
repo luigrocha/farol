@@ -32,6 +32,7 @@ import 'features/simulators/fgts_aniversario_screen.dart';
 import 'features/simulators/rescission_simulator_screen.dart';
 import 'features/period_budget/presentation/period_budget_screen.dart';
 import 'features/net_worth/presentation/patrimonio_screen.dart';
+import 'features/auth/presentation/auth_loading_screen.dart';
 
 final themeModeProvider =
     NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
@@ -156,6 +157,7 @@ class FarolApp extends ConsumerWidget {
         '/fgts_aniversario': (context) => const FgtsAniversarioScreen(),
         '/rescission_simulator': (context) => const RescissionSimulatorScreen(),
         '/patrimonio': (context) => const PatrimonioScreen(),
+        '/auth_loading': (context) => const AuthLoadingScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/investment_detail') {
