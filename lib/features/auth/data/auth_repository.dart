@@ -90,11 +90,9 @@ class SupabaseAuthRepository implements AuthRepository {
           OAuthProvider.google,
           redirectTo: _kWebRedirectUrl,
         );
-        // Redirect in progress — session arrives via authStateChanges after redirect.
-        // This line is unreachable on the redirect path; the type system requires it.
-        return AppUser.fromSupabase(
-          _supabase.auth.currentUser ?? (throw Exception('Google Sign-In redirect initiated')),
-        );
+        // Browser is now redirecting to Google. Throw a sentinel so the caller
+        // knows a redirect is in progress (not an error).
+        throw const GoogleRedirectException();
       }
 
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -118,6 +116,8 @@ class SupabaseAuthRepository implements AuthRepository {
 
       if (response.user == null) throw Exception('User is null after Google sign in');
       return AppUser.fromSupabase(response.user!);
+    } on GoogleRedirectException {
+      rethrow;
     } on AuthException catch (e) {
       throw _mapException(e);
     } catch (e) {
@@ -229,4 +229,10 @@ class SupabaseAuthRepository implements AuthRepository {
     }
     return Exception(e.message);
   }
+}
+
+/// Thrown on web when `signInWithOAuth` initiates a browser redirect.
+/// Not a real error — the session arrives via `authStateChanges` after redirect.
+class GoogleRedirectException implements Exception {
+  const GoogleRedirectException();
 }

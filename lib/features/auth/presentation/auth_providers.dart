@@ -49,8 +49,16 @@ class AuthNotifier extends AsyncNotifier<void> {
 
   Future<void> signInWithGoogle() async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(
-        () => ref.read(authRepositoryProvider).signInWithGoogle());
+    try {
+      await ref.read(authRepositoryProvider).signInWithGoogle();
+      state = const AsyncData(null);
+    } on GoogleRedirectException {
+      // Redirect in progress — browser navigates to Google.
+      // Session will arrive via authStateChanges; reset to idle.
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+    }
   }
 
   Future<void> signInWithApple() async {
