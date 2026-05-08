@@ -39,6 +39,10 @@ import '../models/category.dart';
 import '../repositories/category_repository.dart';
 import '../domain/value_objects/category_ref.dart';
 import '../domain/services/category_resolver.dart';
+import '../repositories/installment_plan_repository.dart';
+import '../repositories/installment_payment_repository.dart';
+import '../domain/entities/installment_plan.dart';
+import '../domain/entities/installment_payment.dart';
 
 // ═══════════════════════════════════════════
 // LOCAL-DEVICE PROVIDERS (Drift)
@@ -171,6 +175,31 @@ final budgetGoalsRepositoryProvider = Provider<BudgetGoalsRepository>((ref) {
 
 final categoryRepositoryProvider = Provider<CategoryRepository>((ref) {
   return CategoryRepository(Supabase.instance.client);
+});
+
+final installmentPlanRepositoryProvider =
+    Provider<InstallmentPlanRepository>((ref) {
+  return InstallmentPlanRepository(Supabase.instance.client);
+});
+
+final installmentPaymentRepositoryProvider =
+    Provider<InstallmentPaymentRepository>((ref) {
+  return InstallmentPaymentRepository(Supabase.instance.client);
+});
+
+final installmentPlansStreamProvider =
+    StreamProvider.autoDispose<List<InstallmentPlan>>((ref) {
+  return ref.watch(installmentPlanRepositoryProvider).watchAll();
+});
+
+final activeInstallmentPlansProvider =
+    StreamProvider.autoDispose<List<InstallmentPlan>>((ref) {
+  return ref.watch(installmentPlanRepositoryProvider).watchActive();
+});
+
+final pendingInstallmentPaymentsProvider =
+    FutureProvider.autoDispose<List<InstallmentPayment>>((ref) {
+  return ref.watch(installmentPaymentRepositoryProvider).getPending();
 });
 
 // ═══════════════════════════════════════════
