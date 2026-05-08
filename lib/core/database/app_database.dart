@@ -42,24 +42,6 @@ class Expenses extends Table {
 }
 
 // ═══════════════════════════════════════════
-// TABLE: Card Installments
-// ═══════════════════════════════════════════
-class CardInstallments extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get description => text()();
-  DateTimeColumn get purchaseDate => dateTime()();
-  RealColumn get totalValue => real()();
-  IntColumn get numInstallments => integer()();
-  IntColumn get currentInstallment => integer()();
-  RealColumn get monthlyAmount => real()();
-  TextColumn get status =>
-      text().withDefault(const Constant('Active'))();
-  TextColumn get notes => text().nullable()();
-  DateTimeColumn get createdAt =>
-      dateTime().withDefault(currentDateAndTime)();
-}
-
-// ═══════════════════════════════════════════
 // TABLE: Investments
 // ═══════════════════════════════════════════
 class Investments extends Table {
@@ -152,7 +134,6 @@ class SyncQueueItems extends Table {
 @DriftDatabase(tables: [
   Incomes,
   Expenses,
-  CardInstallments,
   Investments,
   NetWorthSnapshots,
   BudgetGoals,
@@ -166,7 +147,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -174,6 +155,9 @@ class AppDatabase extends _$AppDatabase {
         onUpgrade: (m, from, to) async {
           if (from < 3) {
             await m.createTable(syncQueueItems);
+          }
+          if (from < 4) {
+            await customStatement('DROP TABLE IF EXISTS card_installments');
           }
           if (from == 1) {
             await m.createTable(categoryTable);
@@ -292,37 +276,6 @@ class AppDatabase extends _$AppDatabase {
               t.subcategory.like('%$query%') |
               t.category.like('%$query%')))
         .get();
-  }
-
-  // ═══════════════════════════════════════════
-  // CARD INSTALLMENTS DAOs
-  // ═══════════════════════════════════════════
-  Future<List<CardInstallment>> getAllInstallments() {
-    return select(cardInstallments).get();
-  }
-
-  Future<List<CardInstallment>> getActiveInstallments() {
-    return (select(cardInstallments)
-          ..where((t) => t.status.equals('Active')))
-        .get();
-  }
-
-  Future<int> insertInstallment(CardInstallmentsCompanion entry) {
-    return into(cardInstallments).insert(entry);
-  }
-
-  Future<bool> updateInstallment(CardInstallment entry) {
-    return update(cardInstallments).replace(entry);
-  }
-
-  Future<int> deleteInstallment(int id) {
-    return (delete(cardInstallments)..where((t) => t.id.equals(id))).go();
-  }
-
-  Stream<List<CardInstallment>> watchActiveInstallments() {
-    return (select(cardInstallments)
-          ..where((t) => t.status.equals('Active')))
-        .watch();
   }
 
   // ═══════════════════════════════════════════

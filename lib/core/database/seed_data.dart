@@ -15,7 +15,6 @@ class SeedData {
 
     await _seedIncome();
     await _seedExpenses();
-    await _seedCardInstallments();
     await _seedNetWorthSnapshot();
     await _seedBudgetGoals();
     await _seedUserSettings();
@@ -96,19 +95,6 @@ class SeedData {
       isFixed: Value(isFixed),
       storeDescription: Value(subcategory),
     );
-  }
-
-  Future<void> _seedCardInstallments() async {
-    await db.insertInstallment(CardInstallmentsCompanion(
-      description: const Value('Spouse Surgery'),
-      purchaseDate: Value(DateTime(2025, 3, 1)),
-      totalValue: const Value(9059.64),
-      numInstallments: const Value(12),
-      currentInstallment: const Value(2), // April = 2nd installment
-      monthlyAmount: const Value(754.97),
-      status: const Value('Active'),
-      notes: const Value('Started in March 2025'),
-    ));
   }
 
   Future<void> _seedNetWorthSnapshot() async {
