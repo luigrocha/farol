@@ -53,6 +53,9 @@ import '../domain/services/obligation_engine.dart';
 import '../domain/entities/financial_projection.dart';
 import '../domain/entities/financial_snapshot.dart';
 import '../domain/value_objects/money.dart';
+import '../domain/entities/financial_insight.dart';
+import '../domain/services/intelligence_layer.dart';
+import '../repositories/dismissed_insights_repository.dart';
 import '../infrastructure/sync/sync_manager.dart' show SyncManager, SyncStatus;
 import '../infrastructure/sync/operation_queue.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -1529,6 +1532,44 @@ final isOfflineProvider = StreamProvider<bool>((ref) {
   return Connectivity()
       .onConnectivityChanged
       .map((results) => results.every((r) => r == ConnectivityResult.none));
+});
+
+// ═══════════════════════════════════════════
+// INTELLIGENCE LAYER PROVIDERS
+// ═══════════════════════════════════════════
+
+final dismissedInsightsRepositoryProvider =
+    Provider<DismissedInsightsRepository>((ref) {
+  return DismissedInsightsRepository(ref.read(databaseProvider));
+});
+
+/// Dismissed insight IDs/groups — refreshed when user dismisses.
+final dismissedInsightsProvider =
+    FutureProvider.autoDispose<Set<String>>((ref) {
+  return ref.watch(dismissedInsightsRepositoryProvider).getDismissed();
+});
+
+/// The full list of active insights, sorted by priority, max 3.
+final insightsProvider =
+    FutureProvider.autoDispose<List<FinancialInsight>>((ref) async {
+  final snapshot = ref.watch(financialSnapshotProvider);
+  final projection = await ref.watch(financialProjectionProvider.future);
+  final allExpenses = await ref.watch(expenseRepositoryProvider).getAll();
+  final dismissed = await ref.watch(dismissedInsightsProvider.future);
+
+  final now = DateTime.now();
+  final recent = allExpenses
+      .where((e) =>
+          e.transactionDate.isAfter(now.subtract(const Duration(days: 30))))
+      .toList();
+
+  return const IntelligenceLayer().analyze(
+    snapshot: snapshot,
+    projection: projection,
+    recentExpenses: recent,
+    allExpenses: allExpenses,
+    dismissedIds: dismissed,
+  );
 });
 
 

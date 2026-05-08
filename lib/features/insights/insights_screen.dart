@@ -1,0 +1,115 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../core/domain/entities/financial_insight.dart';
+import '../../core/providers/providers.dart';
+import 'insight_card.dart';
+
+class InsightsScreen extends ConsumerWidget {
+  const InsightsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final insightsAsync = ref.watch(insightsProvider);
+
+    return Scaffold(
+      body: CustomScrollView(slivers: [
+        SliverAppBar(
+          floating: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: Text('Insights',
+              style: GoogleFonts.manrope(
+                  fontSize: 17, fontWeight: FontWeight.w800)),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.all(16),
+          sliver: SliverList(
+            delegate: SliverChildListDelegate([
+              Text(
+                'Análises baseadas nos seus dados reais.',
+                style: GoogleFonts.manrope(fontSize: 13, color: Colors.grey),
+              ),
+              const SizedBox(height: 16),
+              insightsAsync.when(
+                loading: () => const Center(
+                    child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 48),
+                        child: CircularProgressIndicator())),
+                error: (e, _) => Text('Erro: $e'),
+                data: (insights) {
+                  if (insights.isEmpty) {
+                    return const _EmptyState();
+                  }
+                  return _GroupedInsights(insights: insights);
+                },
+              ),
+              const SizedBox(height: 80),
+            ]),
+          ),
+        ),
+      ]),
+    );
+  }
+}
+
+class _GroupedInsights extends StatelessWidget {
+  const _GroupedInsights({required this.insights});
+  final List<FinancialInsight> insights;
+
+  @override
+  Widget build(BuildContext context) {
+    final groups = {
+      InsightPriority.critical: <FinancialInsight>[],
+      InsightPriority.warning: <FinancialInsight>[],
+      InsightPriority.info: <FinancialInsight>[],
+      InsightPriority.achievement: <FinancialInsight>[],
+    };
+    for (final i in insights) {
+      groups[i.priority]!.add(i);
+    }
+
+    final labels = {
+      InsightPriority.critical: 'Alertas críticos',
+      InsightPriority.warning: 'Atenção',
+      InsightPriority.info: 'Oportunidades',
+      InsightPriority.achievement: 'Conquistas',
+    };
+
+    final sections = <Widget>[];
+    for (final entry in groups.entries) {
+      if (entry.value.isEmpty) continue;
+      sections.add(Padding(
+        padding: const EdgeInsets.only(bottom: 6, top: 12),
+        child: Text(labels[entry.key]!,
+            style: GoogleFonts.manrope(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: Colors.grey,
+                letterSpacing: 0.5)),
+      ));
+      for (final insight in entry.value) {
+        sections.add(InsightCard(insight: insight));
+      }
+    }
+
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: sections);
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState();
+
+  @override
+  Widget build(BuildContext context) => const Padding(
+        padding: EdgeInsets.symmetric(vertical: 60),
+        child: Center(
+          child: Text(
+            'Nenhum insight no momento.\nContinue registrando seus gastos!',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+}

@@ -19,6 +19,7 @@ import 'widgets/recurring_suggestions_card.dart';
 import 'widgets/burn_rate_card.dart';
 import 'widgets/liquidity_alert_card.dart';
 import 'widgets/connectivity_banner.dart';
+import '../insights/insights_panel.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -114,6 +115,8 @@ class DashboardScreen extends ConsumerWidget {
                 const LiquidityAlertCard(),
                 const AlertBanner(),
                 const SizedBox(height: 12),
+                const InsightsPanel(),
+                const SizedBox(height: 4),
                 const PeriodBalanceHero(),
                 const SizedBox(height: 12),
                 const HealthGaugeCard(),
