@@ -46,8 +46,13 @@ import '../domain/entities/installment_payment.dart';
 import '../domain/services/installment_service.dart';
 import '../domain/services/financial_engine.dart';
 import '../domain/services/envelope_engine.dart';
+import '../domain/services/recurring_service.dart';
 import '../domain/entities/financial_snapshot.dart';
 import '../domain/entities/envelope.dart';
+import '../domain/entities/recurring_rule.dart';
+import '../domain/entities/recurring_occurrence.dart';
+import '../repositories/recurring_rules_repository.dart';
+import '../repositories/recurring_occurrences_repository.dart';
 
 // ═══════════════════════════════════════════
 // LOCAL-DEVICE PROVIDERS (Drift)
@@ -1384,6 +1389,59 @@ final financialSnapshotProvider = Provider.autoDispose<FinancialSnapshot>((ref) 
     envelopes: envelopes,
     totalAllocated: totalAllocated,
   );
+});
+
+// ═══════════════════════════════════════════
+// RECURRING RULES PROVIDERS
+// ═══════════════════════════════════════════
+
+final recurringRulesRepositoryProvider =
+    Provider<RecurringRulesRepository>((ref) {
+  return RecurringRulesRepository(Supabase.instance.client);
+});
+
+final recurringOccurrencesRepositoryProvider =
+    Provider<RecurringOccurrencesRepository>((ref) {
+  return RecurringOccurrencesRepository(Supabase.instance.client);
+});
+
+final recurringServiceProvider = Provider<RecurringService>((ref) {
+  return RecurringService(
+    rulesRepo: ref.read(recurringRulesRepositoryProvider),
+    occurrencesRepo: ref.read(recurringOccurrencesRepositoryProvider),
+    expenseRepo: ref.read(expenseRepositoryProvider),
+  );
+});
+
+final recurringRulesStreamProvider =
+    StreamProvider.autoDispose<List<RecurringRule>>((ref) {
+  return ref.watch(recurringRulesRepositoryProvider).watchAll();
+});
+
+final activeRecurringRulesProvider =
+    Provider.autoDispose<List<RecurringRule>>((ref) {
+  return ref
+      .watch(recurringRulesStreamProvider)
+      .value
+      ?.where((r) => r.isActive)
+      .toList() ?? [];
+});
+
+/// Job provider — call ref.watch(generateRecurringOccurrencesProvider) in a
+/// widget or lifecycle observer to trigger the generation job on startup.
+final generateRecurringOccurrencesProvider =
+    FutureProvider.autoDispose<int>((ref) async {
+  final service = ref.read(recurringServiceProvider);
+  return service.generateUpcomingOccurrences(monthsAhead: 3);
+});
+
+/// Pending occurrences for the current period — used by dashboard and
+/// ObligationEngine (forecasting).
+final pendingRecurringOccurrencesProvider =
+    FutureProvider.autoDispose<List<RecurringOccurrence>>((ref) async {
+  final repo = ref.watch(recurringOccurrencesRepositoryProvider);
+  final period = ref.watch(selectedPeriodProvider);
+  return repo.getPendingInRange(period.start, period.end);
 });
 
 

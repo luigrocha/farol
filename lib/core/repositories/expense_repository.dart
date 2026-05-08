@@ -94,6 +94,8 @@ class ExpenseRepository {
     int? installmentPlanId,
     String? installmentPlanUuidId,
     String? installmentPaymentId,
+    String? recurringRuleId,
+    String? recurringOccurrenceId,
   }) async {
     final userId = _userId;
     if (userId == null) throw Exception('Not authenticated');
@@ -115,6 +117,8 @@ class ExpenseRepository {
       if (installmentPlanId != null) 'installment_plan_id': installmentPlanId,
       if (installmentPlanUuidId != null) 'installment_plan_uuid_id': installmentPlanUuidId,
       if (installmentPaymentId != null) 'installment_payment_id': installmentPaymentId,
+      if (recurringRuleId != null) 'recurring_rule_id': recurringRuleId,
+      if (recurringOccurrenceId != null) 'recurring_occurrence_id': recurringOccurrenceId,
       if (categoryId != null) 'category_id': categoryId,
     }).select('id').single();
     return (data['id'] as num).toInt();
