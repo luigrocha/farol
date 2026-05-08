@@ -16,6 +16,8 @@ import 'widgets/monthly_goal_card.dart';
 import 'widgets/installments_summary_card.dart';
 import 'widgets/recurring_card.dart';
 import 'widgets/recurring_suggestions_card.dart';
+import 'widgets/burn_rate_card.dart';
+import 'widgets/liquidity_alert_card.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -106,6 +108,7 @@ class DashboardScreen extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
+                const LiquidityAlertCard(),
                 const AlertBanner(),
                 const SizedBox(height: 12),
                 const PeriodBalanceHero(),
@@ -119,6 +122,8 @@ class DashboardScreen extends ConsumerWidget {
                 const MonthlyGoalCard(),
                 const SizedBox(height: 16),
                 const InstallmentsSummaryCard(),
+                const SizedBox(height: 16),
+                const BurnRateCard(),
                 const SizedBox(height: 16),
                 const RecurringCard(),
                 const SizedBox(height: 16),

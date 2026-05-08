@@ -9,6 +9,7 @@ import '../../core/models/income.dart';
 import '../../core/i18n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'cashflow_chart.dart';
 
 class AnalyticsScreen extends ConsumerWidget {
   const AnalyticsScreen({super.key});
@@ -58,6 +59,8 @@ class AnalyticsScreen extends ConsumerWidget {
                   _CategoryBreakdown(expenses: expenses),
                   const SizedBox(height: 24),
                   _MonthlyBarsCard(expenses: expenses, l10n: l10n),
+                  const SizedBox(height: 24),
+                  const CashflowChart(),
                   const SizedBox(height: 80),
                 ])),
               );

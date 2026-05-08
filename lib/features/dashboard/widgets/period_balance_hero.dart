@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/providers.dart';
+import '../../../core/services/financial_calculator_service.dart';
 import '../../../design/farol_colors.dart' as tokens;
 import 'shared/brl_display.dart';
 
@@ -10,10 +11,12 @@ class PeriodBalanceHero extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final snap = ref.watch(financialSnapshotProvider);
+    final projAsync = ref.watch(financialProjectionProvider);
     final balance = snap.currentBalance.amount;
     final income = snap.totalIncome.amount;
     final expenses = snap.cashSpent.amount;
     final isPositive = snap.isPositive;
+    final projectedClosing = projAsync.value?.projectedClosingBalance;
 
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, '/patrimonio'),
@@ -50,6 +53,22 @@ class PeriodBalanceHero extends ConsumerWidget {
             ),
             const SizedBox(height: 6),
             BrlBig(value: balance, size: 36, color: Colors.white),
+            if (projectedClosing != null) ...[
+              const SizedBox(height: 4),
+              Row(children: [
+                const Icon(Icons.trending_flat, size: 12, color: Colors.white38),
+                const SizedBox(width: 4),
+                Text(
+                  'Projeção ao fechamento: ${FinancialCalculatorService.formatBRL(projectedClosing.amount)}',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: projectedClosing.isNegative
+                        ? const Color(0xFFFF8A80)
+                        : Colors.white54,
+                  ),
+                ),
+              ]),
+            ],
             const SizedBox(height: 16),
             Row(
               children: [

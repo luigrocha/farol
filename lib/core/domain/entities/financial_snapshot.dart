@@ -1,5 +1,6 @@
 import '../value_objects/money.dart';
 import 'envelope.dart';
+import 'financial_projection.dart';
 import 'scheduled_payment.dart';
 import '../../models/financial_period.dart';
 
@@ -33,6 +34,9 @@ class FinancialSnapshot {
   final List<ScheduledPayment> upcomingPayments;
   final Money totalFutureObligations;
 
+  // ── Forecasting (null = not yet computed) ───────
+  final FinancialProjection? projection;
+
   const FinancialSnapshot({
     required this.period,
     required this.generatedAt,
@@ -50,6 +54,7 @@ class FinancialSnapshot {
     required this.savingsRate,
     required this.upcomingPayments,
     required this.totalFutureObligations,
+    this.projection,
   });
 
   factory FinancialSnapshot.empty(FinancialPeriod period) => FinancialSnapshot(
@@ -97,6 +102,7 @@ class FinancialSnapshot {
     double? savingsRate,
     List<ScheduledPayment>? upcomingPayments,
     Money? totalFutureObligations,
+    FinancialProjection? projection,
   }) =>
       FinancialSnapshot(
         period: period ?? this.period,
@@ -116,5 +122,6 @@ class FinancialSnapshot {
         upcomingPayments: upcomingPayments ?? this.upcomingPayments,
         totalFutureObligations:
             totalFutureObligations ?? this.totalFutureObligations,
+        projection: projection ?? this.projection,
       );
 }

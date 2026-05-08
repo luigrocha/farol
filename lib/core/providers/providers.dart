@@ -48,7 +48,11 @@ import '../domain/services/financial_engine.dart';
 import '../domain/services/envelope_engine.dart';
 import '../domain/services/recurring_service.dart';
 import '../domain/services/recurring_detector.dart';
+import '../domain/services/forecasting_engine.dart';
+import '../domain/services/obligation_engine.dart';
+import '../domain/entities/financial_projection.dart';
 import '../domain/entities/financial_snapshot.dart';
+import '../domain/value_objects/money.dart';
 import '../domain/entities/envelope.dart';
 import '../domain/entities/recurring_rule.dart';
 import '../domain/entities/recurring_occurrence.dart';
@@ -1426,6 +1430,65 @@ final pendingRecurringOccurrencesProvider =
   final repo = ref.watch(recurringOccurrencesRepositoryProvider);
   final period = ref.watch(selectedPeriodProvider);
   return repo.getPendingInRange(period.start, period.end);
+});
+
+// ═══════════════════════════════════════════
+// FORECASTING PROVIDERS
+// ═══════════════════════════════════════════
+
+/// Full financial projection: BurnRate + LiquidityRisk + ProjectedClosingBalance.
+/// Computed async so it never blocks the main snapshot.
+final financialProjectionProvider =
+    FutureProvider.autoDispose<FinancialProjection?>((ref) async {
+  final snap = ref.watch(financialSnapshotProvider);
+  final pendingInstallments =
+      await ref.watch(pendingInstallmentPaymentsProvider.future);
+  final pendingOccurrences =
+      await ref.watch(pendingRecurringOccurrencesProvider.future);
+  final expenses = await ref.watch(expenseRepositoryProvider).getAll();
+
+  final obligations = const ObligationEngine().buildObligations(
+    pendingInstallments: pendingInstallments,
+    pendingOccurrences: pendingOccurrences,
+  );
+
+  return const ForecastingEngine().buildProjection(
+    period: snap.period,
+    totalSpent: snap.totalSpent,
+    totalAllocated: snap.totalAllocated,
+    currentBalance: snap.currentBalance,
+    projectedIncome: Money.zero, // income already in currentBalance
+    obligations: obligations,
+    expenseHistory: expenses,
+    buildForecastChart: false,
+  );
+});
+
+/// Full cashflow chart — only loaded when analytics screen is open.
+final cashflowForecastProvider =
+    FutureProvider.autoDispose<FinancialProjection?>((ref) async {
+  final snap = ref.watch(financialSnapshotProvider);
+  final pendingInstallments =
+      await ref.watch(pendingInstallmentPaymentsProvider.future);
+  final pendingOccurrences =
+      await ref.watch(pendingRecurringOccurrencesProvider.future);
+  final expenses = await ref.watch(expenseRepositoryProvider).getAll();
+
+  final obligations = const ObligationEngine().buildObligations(
+    pendingInstallments: pendingInstallments,
+    pendingOccurrences: pendingOccurrences,
+  );
+
+  return const ForecastingEngine().buildProjection(
+    period: snap.period,
+    totalSpent: snap.totalSpent,
+    totalAllocated: snap.totalAllocated,
+    currentBalance: snap.currentBalance,
+    projectedIncome: Money.zero,
+    obligations: obligations,
+    expenseHistory: expenses,
+    buildForecastChart: true,
+  );
 });
 
 /// Detects recurring patterns from all-time expense history.
