@@ -9,10 +9,11 @@ class PeriodBalanceHero extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final income = ref.watch(totalIncomeProvider);
-    final expenses = ref.watch(cashExpensesProvider);
-    final balance = ref.watch(monthlyBalanceProvider);
-    final isPositive = balance >= 0;
+    final snap = ref.watch(financialSnapshotProvider);
+    final balance = snap.currentBalance.amount;
+    final income = snap.totalIncome.amount;
+    final expenses = snap.cashSpent.amount;
+    final isPositive = snap.isPositive;
 
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, '/patrimonio'),

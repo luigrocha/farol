@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/providers/providers.dart';
-import '../../../core/services/financial_calculator_service.dart';
 import '../../../core/widgets/health_gauge.dart';
 import '../../../core/widgets/shimmer_box.dart';
 import '../../../core/i18n/app_localizations.dart';
@@ -16,33 +15,17 @@ class HealthGaugeCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final colors = context.colors;
-    final net = ref.watch(effectiveNetSalaryProvider);
-    final cash = ref.watch(cashExpensesProvider);
-    final byCategory = ref.watch(cashExpensesByCategoryProvider);
-    final bal = ref.watch(cashRemainingProvider);
-    final snapAsync = ref.watch(netWorthSnapshotProvider);
-    final instAsync = ref.watch(installmentsProvider);
+    final snap = ref.watch(financialSnapshotProvider);
 
-    if (snapAsync.isLoading || instAsync.isLoading) {
-      return const DashboardCardSkeleton(height: 200);
-    }
-
-    final snap = snapAsync.value;
-    final inst = instAsync.value ?? [];
-    final housing = byCategory['HOUSING'] ?? 0;
-    final instTotal = inst.fold(0.0, (s, i) => s + i.monthlyAmount);
-    final ef = snap?.emergencyFund ?? 0;
-    final score = FinancialCalculatorService.calculateHealthScore(
-      netSalary: net,
-      cashExpenses: cash,
-      housingExpenses: housing,
-      monthlyBalance: bal,
-      emergencyFund: ef,
-      avgMonthlyExpenses: cash,
-      activeInstallmentsTotal: instTotal,
-    );
-
+    // Keep triggering the health auto-save side-effect
     ref.watch(healthAutoSaveProvider);
+
+    // Show skeleton while net worth or installments are loading
+    final isLoading = ref.watch(netWorthSnapshotProvider).isLoading ||
+        ref.watch(installmentsProvider).isLoading;
+    if (isLoading) return const DashboardCardSkeleton(height: 200);
+
+    final score = snap.healthScore;
 
     String statusLabel = l10n.healthHealthy;
     String description = l10n.healthExcellentDesc;

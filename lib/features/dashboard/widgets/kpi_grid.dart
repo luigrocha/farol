@@ -14,12 +14,14 @@ class KpiGrid extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final colors = context.colors;
-    final net = ref.watch(effectiveNetSalaryProvider);
-    final swile = ref.watch(effectiveSwileProvider);
-    final cash = ref.watch(cashExpensesProvider);
-    final cashRemaining = ref.watch(cashRemainingProvider);
-    final swileRemaining = ref.watch(swileRemainingProvider);
-    final sr = ref.watch(effectiveSavingsRateProvider);
+    final snap = ref.watch(financialSnapshotProvider);
+
+    final net = snap.cashIncome.amount;
+    final swile = snap.swileIncome.amount;
+    final cash = snap.cashSpent.amount;
+    final cashRemaining = snap.currentBalance.amount;
+    final swileRemaining = snap.swileBalance.amount;
+    final sr = snap.savingsRate;
 
     return GridView.count(
       crossAxisCount: 2,

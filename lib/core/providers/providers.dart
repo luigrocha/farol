@@ -44,6 +44,8 @@ import '../repositories/installment_payment_repository.dart';
 import '../domain/entities/installment_plan.dart';
 import '../domain/entities/installment_payment.dart';
 import '../domain/services/installment_service.dart';
+import '../domain/services/financial_engine.dart';
+import '../domain/entities/financial_snapshot.dart';
 
 // ═══════════════════════════════════════════
 // LOCAL-DEVICE PROVIDERS (Drift)
@@ -1315,5 +1317,43 @@ class SalarySettingsNotifier extends AsyncNotifier<SalarySettings?> {
     await budgetNotifier.save(updatedBudget);
   }
 }
+
+// ═══════════════════════════════════════════
+// FINANCIAL SNAPSHOT PROVIDER
+// ═══════════════════════════════════════════
+
+final _financialEngineProvider = Provider<FinancialEngine>((_) => const FinancialEngine());
+
+/// Single source of truth for the current period's financial state.
+/// All dashboard widgets should consume this instead of individual providers.
+final financialSnapshotProvider = Provider.autoDispose<FinancialSnapshot>((ref) {
+  final engine = ref.watch(_financialEngineProvider);
+  final incomes = ref.watch(incomesProvider).value ?? [];
+  final expenses = ref.watch(realExpensesProvider).value ?? [];
+  final netSalaryOverride = ref.watch(effectiveNetSalaryProvider);
+  final activePlans = ref.watch(activeInstallmentPlansProvider).value ?? [];
+  final accountsExist = ref.watch(accountsProvider).value?.isNotEmpty ?? false;
+  final emergencyFund = accountsExist
+      ? ref.watch(liquidAccountsTotalProvider)
+      : (ref.watch(netWorthSnapshotProvider).value?.emergencyFund ?? 0);
+
+  final month = ref.watch(selectedMonthProvider);
+  final year = ref.watch(selectedYearProvider);
+  final cutoffDay = ref.watch(budgetSettingsProvider).value?.cutoffDay ?? 1;
+  final period = FinancialPeriod.current(cutoffDay,
+      now: DateTime(year, month, cutoffDay));
+
+  final swileOverride = ref.watch(effectiveSwileProvider);
+
+  return engine.buildSnapshot(
+    period: period,
+    incomes: incomes,
+    expenses: expenses,
+    netSalaryOverride: netSalaryOverride,
+    swileOverride: swileOverride,
+    emergencyFund: emergencyFund,
+    activePlans: activePlans,
+  );
+});
 
 
