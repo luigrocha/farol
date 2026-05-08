@@ -65,8 +65,6 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
     final year = ref.watch(selectedYearProvider);
     final filteredAsync = ref.watch(expensesProvider);
     final filteredExpenses = ref.watch(filteredExpensesProvider);
-    ref.watch(fixedExpensePropagationProvider);
-
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (context, _) => [

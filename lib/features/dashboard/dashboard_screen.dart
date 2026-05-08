@@ -29,21 +29,6 @@ class DashboardScreen extends ConsumerWidget {
         '${period.start.day} ${months[period.start.month - 1]} – '
         '${period.end.day} ${months[period.end.month - 1]}';
 
-    ref.listen<AsyncValue<int>>(fixedExpensePropagationProvider, (_, next) {
-      next.whenData((count) {
-        if (count > 0) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '$count gasto${count == 1 ? '' : 's'} fijo${count == 1 ? '' : 's'} copiado${count == 1 ? '' : 's'} del mes anterior',
-              ),
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        }
-      });
-    });
-
     return Scaffold(
       body: CustomScrollView(
         slivers: [
