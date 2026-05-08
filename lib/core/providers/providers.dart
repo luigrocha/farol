@@ -53,6 +53,9 @@ import '../domain/services/obligation_engine.dart';
 import '../domain/entities/financial_projection.dart';
 import '../domain/entities/financial_snapshot.dart';
 import '../domain/value_objects/money.dart';
+import '../infrastructure/sync/sync_manager.dart' show SyncManager, SyncStatus;
+import '../infrastructure/sync/operation_queue.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import '../domain/entities/envelope.dart';
 import '../domain/entities/recurring_rule.dart';
 import '../domain/entities/recurring_occurrence.dart';
@@ -1499,6 +1502,33 @@ final recurringCandidatesProvider =
   final rules = ref.watch(recurringRulesStreamProvider).value ?? [];
   final existingNames = rules.map((r) => r.name).toList();
   return const RecurringDetector().detect(expenses, existingRuleNames: existingNames);
+});
+
+// ═══════════════════════════════════════════
+// OFFLINE SYNC PROVIDERS
+// ═══════════════════════════════════════════
+
+final operationQueueProvider = Provider<OperationQueue>((ref) {
+  final db = ref.read(databaseProvider);
+  return OperationQueue(db, Supabase.instance.client);
+});
+
+final syncManagerProvider = Provider<SyncManager>((ref) {
+  final queue = ref.read(operationQueueProvider);
+  final manager = SyncManager(queue, Supabase.instance.client);
+  ref.onDispose(manager.dispose);
+  return manager;
+});
+
+final syncStatusProvider = StreamProvider<SyncStatus>((ref) {
+  return ref.watch(syncManagerProvider).statusStream;
+});
+
+/// True when device has no network connection.
+final isOfflineProvider = StreamProvider<bool>((ref) {
+  return Connectivity()
+      .onConnectivityChanged
+      .map((results) => results.every((r) => r == ConnectivityResult.none));
 });
 
 

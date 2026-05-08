@@ -132,6 +132,21 @@ class CategoryTable extends Table {
 }
 
 // ═══════════════════════════════════════════
+// TABLE: SyncQueueItems
+// ═══════════════════════════════════════════
+class SyncQueueItems extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get operationType => text()();
+  TextColumn get payload => text()(); // JSON
+  TextColumn get idempotencyKey => text().unique()();
+  IntColumn get retryCount => integer().withDefault(const Constant(0))();
+  TextColumn get status => text().withDefault(const Constant('pending'))();
+  TextColumn get error => text().nullable()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get processedAt => dateTime().nullable()();
+}
+
+// ═══════════════════════════════════════════
 // DATABASE
 // ═══════════════════════════════════════════
 @DriftDatabase(tables: [
@@ -143,6 +158,7 @@ class CategoryTable extends Table {
   BudgetGoals,
   UserSettings,
   CategoryTable,
+  SyncQueueItems,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(openConnection());
@@ -150,12 +166,15 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) => m.createAll(),
         onUpgrade: (m, from, to) async {
+          if (from < 3) {
+            await m.createTable(syncQueueItems);
+          }
           if (from == 1) {
             await m.createTable(categoryTable);
             // Seed initial categories

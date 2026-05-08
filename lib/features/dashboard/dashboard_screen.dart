@@ -18,6 +18,7 @@ import 'widgets/recurring_card.dart';
 import 'widgets/recurring_suggestions_card.dart';
 import 'widgets/burn_rate_card.dart';
 import 'widgets/liquidity_alert_card.dart';
+import 'widgets/connectivity_banner.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -34,7 +35,9 @@ class DashboardScreen extends ConsumerWidget {
         '${period.end.day} ${months[period.end.month - 1]}';
 
     return Scaffold(
-      body: CustomScrollView(
+      body: Column(children: [
+        const ConnectivityBanner(),
+        Expanded(child: CustomScrollView(
         slivers: [
           SliverAppBar(
             floating: true,
@@ -133,7 +136,8 @@ class DashboardScreen extends ConsumerWidget {
             ),
           ),
         ],
-      ),
+      )),
+      ]),
       floatingActionButton: FloatingActionButton(
         heroTag: 'fab_dashboard',
         onPressed: () => showModalBottomSheet(
