@@ -47,6 +47,7 @@ import '../domain/services/installment_service.dart';
 import '../domain/services/financial_engine.dart';
 import '../domain/services/envelope_engine.dart';
 import '../domain/services/recurring_service.dart';
+import '../domain/services/recurring_detector.dart';
 import '../domain/entities/financial_snapshot.dart';
 import '../domain/entities/envelope.dart';
 import '../domain/entities/recurring_rule.dart';
@@ -1425,6 +1426,16 @@ final pendingRecurringOccurrencesProvider =
   final repo = ref.watch(recurringOccurrencesRepositoryProvider);
   final period = ref.watch(selectedPeriodProvider);
   return repo.getPendingInRange(period.start, period.end);
+});
+
+/// Detects recurring patterns from all-time expense history.
+/// Returns candidates with confidence >= 0.75 not already covered by a rule.
+final recurringCandidatesProvider =
+    FutureProvider.autoDispose<List<RecurringRuleCandidate>>((ref) async {
+  final expenses = await ref.watch(expenseRepositoryProvider).getAll();
+  final rules = ref.watch(recurringRulesStreamProvider).value ?? [];
+  final existingNames = rules.map((r) => r.name).toList();
+  return const RecurringDetector().detect(expenses, existingRuleNames: existingNames);
 });
 
 
