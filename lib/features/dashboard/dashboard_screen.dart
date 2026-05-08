@@ -14,6 +14,7 @@ import 'widgets/kpi_grid.dart';
 import 'widgets/expense_breakdown.dart';
 import 'widgets/monthly_goal_card.dart';
 import 'widgets/installments_summary_card.dart';
+import 'widgets/recurring_card.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -117,6 +118,8 @@ class DashboardScreen extends ConsumerWidget {
                 const MonthlyGoalCard(),
                 const SizedBox(height: 16),
                 const InstallmentsSummaryCard(),
+                const SizedBox(height: 16),
+                const RecurringCard(),
                 const SizedBox(height: 80),
               ]),
             ),
