@@ -77,7 +77,8 @@ class ExpenseRepository {
         .toList();
   }
 
-  Future<void> insert({
+  /// Returns the id of the newly created expense row.
+  Future<int> insert({
     required DateTime transactionDate,
     required int month,
     required int year,
@@ -91,11 +92,13 @@ class ExpenseRepository {
     String? storeDescription,
     bool isProjected = false,
     int? installmentPlanId,
+    String? installmentPlanUuidId,
+    String? installmentPaymentId,
   }) async {
     final userId = _userId;
     if (userId == null) throw Exception('Not authenticated');
     final categoryId = await _resolveCategoryId(category);
-    await _supabase.from('expenses').insert({
+    final data = await _supabase.from('expenses').insert({
       'user_id': userId,
       'transaction_date': transactionDate.toIso8601String().substring(0, 10),
       'month': month,
@@ -110,8 +113,11 @@ class ExpenseRepository {
       if (storeDescription != null) 'store_description': storeDescription,
       'is_projected': isProjected,
       if (installmentPlanId != null) 'installment_plan_id': installmentPlanId,
+      if (installmentPlanUuidId != null) 'installment_plan_uuid_id': installmentPlanUuidId,
+      if (installmentPaymentId != null) 'installment_payment_id': installmentPaymentId,
       if (categoryId != null) 'category_id': categoryId,
-    });
+    }).select('id').single();
+    return (data['id'] as num).toInt();
   }
 
   Future<void> update({

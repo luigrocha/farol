@@ -43,6 +43,7 @@ import '../repositories/installment_plan_repository.dart';
 import '../repositories/installment_payment_repository.dart';
 import '../domain/entities/installment_plan.dart';
 import '../domain/entities/installment_payment.dart';
+import '../domain/services/installment_service.dart';
 
 // ═══════════════════════════════════════════
 // LOCAL-DEVICE PROVIDERS (Drift)
@@ -200,6 +201,14 @@ final activeInstallmentPlansProvider =
 final pendingInstallmentPaymentsProvider =
     FutureProvider.autoDispose<List<InstallmentPayment>>((ref) {
   return ref.watch(installmentPaymentRepositoryProvider).getPending();
+});
+
+final installmentServiceProvider = Provider<InstallmentService>((ref) {
+  return InstallmentService(
+    planRepo: ref.read(installmentPlanRepositoryProvider),
+    paymentRepo: ref.read(installmentPaymentRepositoryProvider),
+    expenseRepo: ref.read(expenseRepositoryProvider),
+  );
 });
 
 // ═══════════════════════════════════════════

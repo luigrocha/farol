@@ -18,6 +18,7 @@ class InstallmentPlan {
 
   // Runtime-populated fields (not stored directly)
   final int paidCount;
+  final String? categorySlug; // populated by caller from categories cache
 
   const InstallmentPlan({
     required this.id,
@@ -37,6 +38,7 @@ class InstallmentPlan {
     required this.createdAt,
     required this.updatedAt,
     this.paidCount = 0,
+    this.categorySlug,
   });
 
   bool get isActive => status == 'active';
@@ -74,6 +76,7 @@ class InstallmentPlan {
     DateTime? createdAt,
     DateTime? updatedAt,
     int? paidCount,
+    String? categorySlug,
   }) {
     return InstallmentPlan(
       id: id ?? this.id,
@@ -94,6 +97,7 @@ class InstallmentPlan {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       paidCount: paidCount ?? this.paidCount,
+      categorySlug: categorySlug ?? this.categorySlug,
     );
   }
 
