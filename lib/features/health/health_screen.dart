@@ -16,29 +16,19 @@ class HealthScreen extends ConsumerWidget {
     final colors = context.colors;
     final month = ref.watch(selectedMonthProvider);
     final year = ref.watch(selectedYearProvider);
-    final net = ref.watch(effectiveNetSalaryProvider);
-    final cash = ref.watch(cashExpensesProvider);
+    final financialSnap = ref.watch(financialSnapshotProvider);
     final byCategory = ref.watch(cashExpensesByCategoryProvider);
-    final balance = ref.watch(cashRemainingProvider);
-    final snap = ref.watch(netWorthSnapshotProvider).value;
-    final inst = ref.watch(installmentsProvider).value ?? [];
-    final housing = byCategory['HOUSING'] ?? 0;
-    final instTotal = inst.fold(0.0, (s, i) => s + i.monthlyAmount);
-    final ef = snap?.emergencyFund ?? 0;
+    final nwSnap = ref.watch(netWorthSnapshotProvider).value;
+    final net = financialSnap.cashIncome.amount;
+    final cash = financialSnap.cashSpent.amount;
+    final balance = financialSnap.currentBalance.amount;
+    final housing = byCategory['housing'] ?? 0;
+    final ef = nwSnap?.emergencyFund ?? 0;
     final efMonths = cash > 0 ? ef / cash : 0.0;
-    final savingsRate = net > 0 ? (net - cash) / net * 100 : 0.0;
+    final savingsRate = financialSnap.savingsRate * 100;
     final housingRate = net > 0 ? housing / net * 100 : 0.0;
-    final installmentsRate = net > 0 ? instTotal / net * 100 : 0.0;
-
-    final score = FinancialCalculatorService.calculateHealthScore(
-      netSalary: net,
-      cashExpenses: cash,
-      housingExpenses: housing,
-      monthlyBalance: balance,
-      emergencyFund: ef,
-      avgMonthlyExpenses: cash,
-      activeInstallmentsTotal: instTotal,
-    );
+    final installmentsRate = net > 0 ? financialSnap.totalFutureObligations.amount / net * 100 : 0.0;
+    final score = financialSnap.healthScore;
 
     String statusLabel;
     if (score < 4) {

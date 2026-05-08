@@ -181,6 +181,11 @@ class ExpenseRepository {
 
   /// Deletes all fixed expenses from [from]'s period onward that share the
   /// same category, payment method, and store description.
+  ///
+  /// @deprecated Use RecurringRule + RecurringService instead. This method
+  /// operates on the legacy `is_fixed=true` pattern. No longer called from the
+  /// UI as of 2026-05-08. Will be removed in a future release.
+  @Deprecated('Use RecurringRule-based deletion instead. isFixed pattern is legacy.')
   Future<void> deleteFixedSeriesFrom(Expense from) async {
     final userId = _userId;
     if (userId == null) return;

@@ -16,7 +16,7 @@ class ExpenseBreakdown extends ConsumerWidget {
     final colors = context.colors;
     final byCategory = ref.watch(cashExpensesByCategoryProvider);
     final goals = ref.watch(budgetGoalsMapProvider);
-    final catsMap = ref.watch(categoriesMapProvider);
+    final catsRef = {for (final c in ref.watch(categoriesRefProvider)) c.slug: c};
     final net = ref.watch(effectiveNetSalaryProvider);
     final l10n = AppLocalizations.of(context);
 
@@ -106,9 +106,9 @@ class ExpenseBreakdown extends ConsumerWidget {
                           : tokens.FarolColors.tide;
               final labelColor = ratio >= kAlertWarningThreshold ? barColor : colors.onSurfaceSoft;
 
-              final catModel = catsMap[catDbValue];
-              final label = catModel?.name ?? catDbValue;
-              final emoji = catModel?.emoji ?? '💰';
+              final catRef = catsRef[catDbValue];
+              final label = catRef?.name ?? catDbValue;
+              final emoji = catRef?.emoji ?? '💰';
 
               return Padding(
                 padding: const EdgeInsets.only(bottom: 14),

@@ -1,7 +1,7 @@
-import 'package:farol/core/models/category.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/domain/value_objects/category_ref.dart';
 import '../../core/providers/providers.dart';
 import '../../core/models/enums.dart';
 import '../../core/models/expense.dart';
@@ -31,15 +31,15 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
   bool _saving = false;
 
   static const _subcategories = {
-    'HOUSING': ['Rent', 'Condo Fee', 'Electricity', 'Water', 'Gas', 'Internet', 'Property Tax', 'Maintenance'],
-    'TRANSPORT': ['Uber', 'Subway/Bus', 'Fuel', 'Parking', 'Maintenance'],
-    'FOOD_GROCERY': ['Supermarket', 'Restaurant', 'Delivery', 'Bakery', 'Farmers Market'],
-    'HEALTH': ['Pharmacy', 'Doctor', 'Health Plan', 'Lab Tests', 'Gym'],
-    'SUBSCRIPTIONS': ['Streaming', 'Apps', 'Mobile Phone', 'Gym', 'Other'],
-    'LEISURE': ['Cinema', 'Travel', 'Bars', 'Games', 'Hobbies'],
-    'EDUCATION': ['Course', 'Books', 'Certification', 'Materials'],
-    'CARD_INSTALLMENTS': ['Installment Purchase'],
-    'OTHER': ['Gift', 'Donation', 'Unexpected', 'Other'],
+    'housing': ['Rent', 'Condo Fee', 'Electricity', 'Water', 'Gas', 'Internet', 'Property Tax', 'Maintenance'],
+    'transport': ['Uber', 'Subway/Bus', 'Fuel', 'Parking', 'Maintenance'],
+    'food_grocery': ['Supermarket', 'Restaurant', 'Delivery', 'Bakery', 'Farmers Market'],
+    'health': ['Pharmacy', 'Doctor', 'Health Plan', 'Lab Tests', 'Gym'],
+    'subscriptions': ['Streaming', 'Apps', 'Mobile Phone', 'Gym', 'Other'],
+    'leisure': ['Cinema', 'Travel', 'Bars', 'Games', 'Hobbies'],
+    'education': ['Course', 'Books', 'Certification', 'Materials'],
+    'card_installments': ['Installment Purchase'],
+    'other': ['Gift', 'Donation', 'Unexpected', 'Other'],
   };
 
   @override
@@ -72,7 +72,7 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final bottom = MediaQuery.of(context).viewInsets.bottom;
-    final categoriesAsync = ref.watch(categoriesStreamProvider);
+    final categories = ref.watch(categoriesRefProvider);
 
     return Container(
       decoration: BoxDecoration(
@@ -98,20 +98,14 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
         // Category grid
         Align(alignment: Alignment.centerLeft, child: Text(l10n.category, style: Theme.of(context).textTheme.labelLarge)),
         const SizedBox(height: 8),
-        categoriesAsync.when(
-          loading: () => const SizedBox(height: 100, child: Center(child: CircularProgressIndicator())),
-          error: (_, __) => Text(l10n.translate('error_loading')),
-          data: (categories) {
-            return GridView.count(
-              crossAxisCount: 3, 
-              shrinkWrap: true, 
-              physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: 2.5, 
-              mainAxisSpacing: 8, 
-              crossAxisSpacing: 8,
-              children: categories.map((c) => _catChip(c, context)).toList(),
-            );
-          },
+        GridView.count(
+          crossAxisCount: 3,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          childAspectRatio: 2.5,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+          children: categories.map((c) => _catChip(c, context)).toList(),
         ),
         const SizedBox(height: 16),
 
@@ -180,7 +174,7 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
     );
   }
 
-  Widget _catChip(Category c, BuildContext context) {
+  Widget _catChip(CategoryRef c, BuildContext context) {
     final sel = _categoryDbValue == c.slug;
     final color = tokens.FarolColors.getCategoryColor(c.slug);
     return GestureDetector(
@@ -238,9 +232,9 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
         ? int.tryParse(_installmentsCtrl.text) ?? 1
         : 1;
 
-    final categories = ref.read(categoriesStreamProvider).value ?? [];
+    final categories = ref.read(categoriesRefProvider);
     final currentCat = categories.firstWhere((c) => c.slug == _categoryDbValue,
-        orElse: () => categories.isNotEmpty ? categories.first : const Category(slug: 'other', name: 'Other', emoji: '📋'));
+        orElse: () => categories.isNotEmpty ? categories.first : CategoryRef.uncategorized(_categoryDbValue));
 
     final desc = _descCtrl.text.isEmpty ? _subcategory ?? currentCat.name : _descCtrl.text;
 

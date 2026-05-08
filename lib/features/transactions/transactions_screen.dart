@@ -963,25 +963,32 @@ class _TxRow extends ConsumerWidget {
           return true; // single row → onDismissed handles it
         }
 
-        // Fixed recurring expense
+        // Fixed recurring expense (legacy isFixed pattern)
+        // deleteFixedSeriesFrom is deprecated — show info dialog, allow single delete only.
+        // To manage the full series, convert to a RecurringRule.
         if (isFixed) {
-          final choice = await showDeleteExpenseChoiceDialog(
-            context,
-            title: 'Excluir gasto fixo',
-            singleLabel: 'Só este mês',
-            seriesLabel: 'Este mês e todos os futuros',
+          final confirmed = await showDialog<bool>(
+            context: context,
+            builder: (_) => AlertDialog(
+              title: const Text('Gasto fixo legado'),
+              content: const Text(
+                'Este gasto foi criado como fixo no formato antigo. '
+                'Para gerenciar ou excluir a série completa, converta-o em Recorrente.\n\n'
+                'Deseja excluir apenas este mês?',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text('Cancelar'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  child: const Text('Excluir só este mês'),
+                ),
+              ],
+            ),
           );
-          if (choice == null) return false;
-          if (choice == true) {
-            try {
-              await ref.read(expenseRepositoryProvider).deleteFixedSeriesFrom(expense);
-              if (context.mounted) context.showSuccessSnackBar('Série excluída');
-            } catch (e) {
-              if (context.mounted) context.showErrorSnackBar(e);
-            }
-            return false; // stream removes all matching rows
-          }
-          return true; // single row → onDismissed handles it
+          return confirmed == true;
         }
 
         // Simple expense

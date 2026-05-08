@@ -1,7 +1,7 @@
-import 'package:farol/core/models/category.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/domain/value_objects/category_ref.dart';
 import '../../core/providers/providers.dart';
 import '../../core/models/enums.dart';
 import '../../core/models/financial_period.dart';
@@ -46,7 +46,7 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final bottom = MediaQuery.of(context).viewInsets.bottom;
-    final categoriesAsync = ref.watch(categoriesStreamProvider);
+    final categories = ref.watch(categoriesRefProvider);
 
     return Container(
       decoration: BoxDecoration(
@@ -72,20 +72,14 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
         // 2. Category grid
         Align(alignment: Alignment.centerLeft, child: Text(l10n.category, style: Theme.of(context).textTheme.labelLarge)),
         const SizedBox(height: 8),
-        categoriesAsync.when(
-          loading: () => const SizedBox(height: 100, child: Center(child: CircularProgressIndicator())),
-          error: (_, __) => Text(l10n.translate('error_loading')),
-          data: (categories) {
-            return GridView.count(
-              crossAxisCount: 3, 
-              shrinkWrap: true, 
-              physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: 2.5, 
-              mainAxisSpacing: 8, 
-              crossAxisSpacing: 8,
-              children: categories.map((c) => _catChip(c, context)).toList(),
-            );
-          },
+        GridView.count(
+          crossAxisCount: 3,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          childAspectRatio: 2.5,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+          children: categories.map((c) => _catChip(c, context)).toList(),
         ),
         const SizedBox(height: 16),
 
@@ -154,7 +148,7 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
     );
   }
 
-  Widget _catChip(Category c, BuildContext context) {
+  Widget _catChip(CategoryRef c, BuildContext context) {
     final sel = _categoryDbValue == c.slug;
     final color = tokens.FarolColors.getCategoryColor(c.slug);
     return GestureDetector(
@@ -186,9 +180,9 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
         ? int.tryParse(_installmentsCtrl.text) ?? 1
         : 1;
 
-    final categories = ref.read(categoriesStreamProvider).value ?? [];
-    final currentCat = categories.firstWhere((c) => c.slug == _categoryDbValue, 
-        orElse: () => categories.isNotEmpty ? categories.first : const Category(slug: 'other', name: 'Other', emoji: '📋'));
+    final categories = ref.read(categoriesRefProvider);
+    final currentCat = categories.firstWhere((c) => c.slug == _categoryDbValue,
+        orElse: () => categories.isNotEmpty ? categories.first : CategoryRef.uncategorized(_categoryDbValue));
     
     final desc = _descCtrl.text.isEmpty ? _subcategory ?? currentCat.name : _descCtrl.text;
 

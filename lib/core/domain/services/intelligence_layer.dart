@@ -44,13 +44,13 @@ class IntelligenceLayer {
         ?.let(raw.add);
     raw.addAll(_rule12UnusualMerchants(recentExpenses, allExpenses));
 
-    return raw
+    final filtered = raw
         .where((i) => i.confidence >= minConfidence)
         .where((i) => !i.isExpired())
         .where((i) => !_isDismissed(i, dismissedIds))
         .toList()
-      ..sort(_byPriority)
-      ..take(maxVisible);
+      ..sort(_byPriority);
+    return filtered.take(maxVisible).toList();
   }
 
   // ── RULE 1: Overdraft risk ────────────────────────────────────────────────

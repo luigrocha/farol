@@ -111,31 +111,32 @@ farol/
 - App de finanzas personales para trabajadores CLT en Brasil
 - Diferenciadores: `cutoffDay` personalizable, Swile como bucket separado, FGTS/13°/INSS/IRRF
 - Idioma: pt_BR (i18n habilitado)
-- Estado: ~70-80% implementado, fragmentado, necesita motor financiero unificado
+- Estado: motor preditivo completo — foco atual em UI polish, testes e web adaptation
 
-## 🗄️ Base de Datos
+## 🗄️ Base de Dados
 
-- Schema Drift: `lib/core/database/app_database.dart` (schemaVersion: 2)
-- Supabase: fuente de verdad principal en producción
-- Drift: mirror local + queue de operaciones offline
-- **Regla**: siempre tener migration strategy antes de cambiar schema
+- Schema Supabase: 25 migrations aplicadas (V1–V25) — fonte de verdade em produção
+- Schema Drift: `lib/core/database/app_database.dart` — device-local (UserSettings, OperationQueue, dismissed insights)
+- Drift: mirror local + fila de operações offline (`OperationQueue`)
+- **Regra**: sempre ter migration strategy antes de mudar schema
 
-## ⚙️ Servicios Core Actuales
+## ⚙️ Arquitetura de Domínio (implementada)
 
-| Servicio | Responsabilidad | Estado |
-|---|---|---|
-| `FinancialCalculatorService` | Cálculos INSS/IRRF/FGTS/Health | ✅ Sólido |
-| `FinancialPeriod` | Períodos con cutoffDay | ✅ Sólido |
-| `ExportService` | CSV/JSON export | ✅ Estable |
-| `SupabaseRealtimeManager` | Realtime subscriptions | ⚠️ Parcial |
+| Camada | Componente | Localização | Estado |
+|---|---|---|---|
+| Value Objects | `Money`, `CategoryRef` | `core/domain/value_objects/` | ✅ |
+| Entities | `FinancialSnapshot`, `InstallmentPlan/Payment`, `RecurringRule/Occurrence`, `Envelope`, `FinancialInsight`, `FinancialProjection` | `core/domain/entities/` | ✅ |
+| Services | `FinancialEngine`, `ForecastingEngine`, `ObligationEngine`, `EnvelopeEngine`, `IntelligenceLayer`, `InstallmentService`, `RecurringService`, `RecurrenceResolver`, `RecurringDetector`, `CategoryResolver` | `core/domain/services/` | ✅ |
+| Infrastructure | `SyncManager`, `OperationQueue`, `ConflictResolver` | `core/infrastructure/sync/` | ✅ |
+| Providers | `financialSnapshotProvider`, `financialProjectionProvider`, `cashflowForecastProvider`, `insightsProvider`, `recurringRulesStreamProvider`, `installmentPlansStreamProvider`, `isOfflineProvider`, `categoriesRefProvider` | `core/providers/providers.dart` | ✅ |
 
-## 🚨 Problemas Conocidos (No tocar sin plan)
+## 🚨 Foco Atual — O que realmente falta
 
-1. **Categorías dual**: enum `ExpenseCategory` + `CategoryTable` en paralelo — riesgo de `StateError`
-2. **Installments desacoplados**: `CardInstallment` y `Expense` no tienen relación real
-3. **month/year vs fechas reales**: expenses filtradas por `(month, year)` vs período que cruza meses
-4. **Recurrentes**: solo `isFixed + copy` — no hay RRULE, no hay forecast de recurrentes
-5. **Forecasting inexistente**: `isProjected` existe en modelo pero no hay motor que lo calcule
+1. **UI audit**: verificar quais screens usam os novos providers vs. providers legados
+2. **Testes**: `ForecastingEngine` e `IntelligenceLayer` sem testes unitários
+3. **Web layout**: todas as screens existem apenas em mobile — falta adaptive layout para desktop
+4. **Migrations em produção**: confirmar que V21–V25 foram aplicadas no Supabase real
+5. **`fixedExpensePropagationProvider`**: ainda existe? Verificar se foi removido do dashboard
 
 ## 🛠️ Dev Commands
 
@@ -149,28 +150,47 @@ flutter test
 
 ---
 
-## 📋 Estado Atual dos Planos
+## 📋 Estado Real dos Planos (auditado em 2026-05-08)
 
-| Plano | Fase | Estado | Prioridade | Desbloqueia |
-|---|---|---|---|---|
-| `categories_redesign.md` | Pré-impl. | 🔴 Não iniciado | **P0** — bloqueia tudo | Todos |
-| `installments_redesign.md` | Pré-impl. | 🔴 Não iniciado | **P1** — inicia c/ P0 F1-2 | forecasting |
-| `financial_engine.md` | Pré-impl. | 🔴 Não iniciado | **P2** — após P0 F3 | forecasting, offline_sync |
-| `recurring_rules.md` | Pré-impl. | 🔴 Não iniciado | **P3** — após P2 F1-2 | forecasting |
-| `forecasting.md` | Pré-impl. | 🔴 Não iniciado | **P4** — após P1+P2+P3 | intelligence_layer |
-| `offline_sync.md` | Pré-impl. | 🔴 Não iniciado | **P5** — paralelo c/ P4 | multi-device |
-| `intelligence_layer.md` | Pré-impl. | 🔴 Não iniciado | **P6** — após P4 | v2 LLM |
+> ⚠️ O status abaixo reflete o código real — não o planejado originalmente.
+> O motor preditivo completo foi implementado. O foco agora é UI + testes + web.
 
-### Grafo de Dependências
+| Plano | Domínio | DB (Migrations) | Providers | UI Screens | Testes | Status Real |
+|---|---|---|---|---|---|---|
+| `categories_redesign.md` | ✅ `CategoryRef`, `CategoryResolver` | ✅ V12, V17–V20 | ✅ `categoriesRefProvider` | ✅ `categories_management_screen` | ⚠️ parcial | 🟡 **UI polish** |
+| `installments_redesign.md` | ✅ `InstallmentPlan/Payment`, `InstallmentService` | ✅ V21–V23 | ✅ `installmentPlansStreamProvider` | ✅ `installments_screen` | ✅ `installment_service_test` | 🟢 **Completo** |
+| `financial_engine.md` | ✅ `Money`, `FinancialSnapshot`, `FinancialEngine`, `EnvelopeEngine` | ✅ (sem schema próprio) | ✅ `financialSnapshotProvider`, `envelopesProvider` | ✅ dashboard widgets: `BurnRateCard`, `PeriodBalanceHero`, `HealthGaugeCard` | ⚠️ parcial | 🟡 **UI polish** |
+| `recurring_rules.md` | ✅ `RecurringRule/Occurrence`, `RecurrenceResolver`, `RecurringDetector` | ✅ V24–V25 | ✅ `recurringRulesStreamProvider`, `generateRecurringOccurrencesProvider` | ✅ `recurring_screen`, `add_recurring_bottom_sheet`, `recurring_suggestions_screen` | ✅ `recurrence_resolver_test` | 🟢 **Completo** |
+| `forecasting.md` | ✅ `ForecastingEngine`, `ObligationEngine`, `BurnRate`, `LiquidityRisk`, `CashflowForecast` | ✅ (lê tabelas existentes) | ✅ `financialProjectionProvider`, `cashflowForecastProvider` | ✅ `analytics_screen` + `cashflow_chart` | 🔴 sem testes | 🟡 **Falta testes** |
+| `offline_sync.md` | ✅ `SyncManager`, `OperationQueue`, `ConflictResolver` | ✅ (Drift `sync_queue`) | ✅ `syncStatusProvider`, `isOfflineProvider` | ✅ `ConnectivityBanner` no dashboard | 🔴 sem testes | 🟡 **Falta testes** |
+| `intelligence_layer.md` | ✅ `IntelligenceLayer` (12 regras), `DismissedInsightsRepository` | ✅ (Drift UserSettings) | ✅ `insightsProvider`, `dismissedInsightsProvider` | ✅ `InsightsPanel`, `insight_card`, `insights_screen` | 🔴 sem testes | 🟡 **Falta testes** |
+
+### O que realmente está pendente
 
 ```
-categories_redesign (P0)
-    ├──→ installments_redesign (P1)   ← inicia com P0 Fase 1-2
-    └──→ financial_engine (P2)        ← precisa P0 Fase 3+
-              ├──→ recurring_rules (P3)
-              │         └──→ forecasting (P4) ← precisa P1+P2+P3
-              │                   └──→ intelligence_layer (P6)
-              └──→ offline_sync (P5)  ← paralelo com P4
+UI Polish (mobile):
+  ├── Audit: quais screens ainda usam providers legados vs. financialSnapshotProvider
+  ├── Confirmar que fixedExpensePropagationProvider foi removido
+  └── Empty states, loading states, error states nos novos widgets
+
+Testes Críticos:
+  ├── ForecastingEngine — algoritmos de BurnRate, DaysUntilEmpty, ProjectedBalance
+  ├── IntelligenceLayer — 12 regras com dados sintéticos
+  └── SyncManager — cenários offline→online, conflict resolution
+
+Web / Desktop:
+  ├── Sidebar navigation (substituir bottom tabs)
+  ├── Master-Detail layout (Transações, Parcelas, Recorrentes)
+  ├── Dashboard Grid (múltiplos widgets simultâneos)
+  └── Full Canvas (Analytics + Forecasting)
+
+Produção:
+  └── Confirmar que migrations V21–V25 foram aplicadas no Supabase de produção
 ```
 
-> **Começar sempre por `categories_redesign.md`** — tudo depende disso.
+### Comandos de próxima sessão
+
+- `"Audita o que está quebrado na UI"` → revisão dos screens com novos providers
+- `"Escreve testes para ForecastingEngine"` → cobertura dos algoritmos críticos
+- `"Implementa web layout do Dashboard"` → sidebar + grid adaptativo
+- `"Verifica migrations em produção"` → checklist V21–V25
