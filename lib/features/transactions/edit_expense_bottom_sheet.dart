@@ -204,6 +204,8 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
     bool propagate = false;
     final isFixed = widget.expense.isFixed;
     final planId = widget.expense.installmentPlanId;
+    // New-system installments (UUID) have no projected rows — single edit only.
+    final isNewSystemInstallment = widget.expense.installmentPlanUuid != null;
 
     if (isFixed) {
       final choice = await showScopeChoiceDialog(
@@ -214,7 +216,7 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
       );
       if (choice == null) return;
       propagate = choice;
-    } else if (planId != null) {
+    } else if (planId != null && !isNewSystemInstallment) {
       final choice = await showScopeChoiceDialog(
         context,
         title: 'Editar parcela',
