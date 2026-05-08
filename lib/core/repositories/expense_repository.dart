@@ -18,19 +18,24 @@ class ExpenseRepository {
   /// Resolves a category slug (or legacy UPPERCASE dbValue) to its UUID.
   /// Prefers user-owned category over system category. Returns null if not found.
   Future<String?> _resolveCategoryId(String categoryRaw) async {
-    final userId = _userId;
-    final slug = categoryRaw.toLowerCase();
-    final data = await _supabase
-        .from('categories')
-        .select('id, user_id')
-        .or('user_id.is.null${userId != null ? ',user_id.eq.$userId' : ''}')
-        .eq('slug', slug)
-        .limit(2);
-    if (data.isEmpty) return null;
-    // Prefer user-owned over system (user_id != null)
-    final sorted = List<Map<String, dynamic>>.from(data)
-      ..sort((a, b) => (a['user_id'] == null ? 1 : 0) - (b['user_id'] == null ? 1 : 0));
-    return sorted.first['id'] as String?;
+    try {
+      final userId = _userId;
+      final slug = categoryRaw.toLowerCase();
+      final data = await _supabase
+          .from('categories')
+          .select('id, user_id')
+          .or('user_id.is.null${userId != null ? ',user_id.eq.$userId' : ''}')
+          .eq('slug', slug)
+          .limit(2);
+      if (data.isEmpty) return null;
+      // Prefer user-owned over system (user_id != null)
+      final sorted = List<Map<String, dynamic>>.from(data)
+        ..sort((a, b) => (a['user_id'] == null ? 1 : 0) - (b['user_id'] == null ? 1 : 0));
+      return sorted.first['id'] as String?;
+    } catch (_) {
+      // Category lookup failure (e.g. offline) must not block the insert.
+      return null;
+    }
   }
 
   Stream<List<Expense>> watchAll() {

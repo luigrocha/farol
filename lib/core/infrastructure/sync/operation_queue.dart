@@ -21,12 +21,13 @@ class OperationQueue {
       await _pruneOldFailed();
     }
 
-    await _db.into(_db.syncQueueItems).insertOnConflictUpdate(
+    await _db.into(_db.syncQueueItems).insert(
           SyncQueueItemsCompanion.insert(
             operationType: op.operationType,
             payload: op.payloadJson,
             idempotencyKey: op.idempotencyKey,
           ),
+          mode: InsertMode.insertOrIgnore,
         );
   }
 
