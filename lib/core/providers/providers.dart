@@ -37,6 +37,8 @@ import '../../features/budget/data/budget_settings_repository.dart';
 import '../../features/budget/domain/budget_settings.dart';
 import '../models/category.dart';
 import '../repositories/category_repository.dart';
+import '../domain/value_objects/category_ref.dart';
+import '../domain/services/category_resolver.dart';
 
 // ═══════════════════════════════════════════
 // LOCAL-DEVICE PROVIDERS (Drift)
@@ -67,7 +69,7 @@ final userSettingsProvider = FutureProvider<Map<String, String>>((ref) {
 final selectedMonthProvider = StateProvider<int>((ref) => DateTime.now().month);
 final selectedYearProvider = StateProvider<int>((ref) => DateTime.now().year);
 final searchQueryProvider = StateProvider<String>((ref) => '');
-// 'all' | 'cash' | 'swile' | any ExpenseCategory.dbValue
+// 'all' | 'cash' | 'swile' | any category slug
 final txPayTypeFilterProvider = StateProvider<String>((ref) => 'all');
 final txCategoryFilterProvider = StateProvider<String?>((ref) => null);
 
@@ -235,6 +237,20 @@ final categoriesStreamProvider = StreamProvider.autoDispose<List<Category>>((ref
 final categoriesMapProvider = Provider.autoDispose<Map<String, Category>>((ref) {
   final cats = ref.watch(categoriesStreamProvider).value ?? [];
   return {for (var c in cats) c.slug: c};
+});
+
+/// List of CategoryRef — domain value objects derived from the loaded categories.
+final categoriesRefProvider = Provider.autoDispose<List<CategoryRef>>((ref) {
+  final cats = ref.watch(categoriesStreamProvider).value ?? [];
+  return cats.map(CategoryRef.fromCategory).toList();
+});
+
+/// Singleton CategoryResolver kept in sync with loaded categories.
+/// Use this to safely resolve raw category strings without risk of StateError.
+final categoryResolverProvider = Provider<CategoryResolver>((ref) {
+  final resolver = CategoryResolver();
+  ref.listen(categoriesRefProvider, (_, refs) => resolver.updateCache(refs), fireImmediately: true);
+  return resolver;
 });
 
 // ═══════════════════════════════════════════
@@ -1045,6 +1061,7 @@ final periodBudgetEntriesProvider =
   final overridesAsync = ref.watch(_periodBudgetsRawProvider);
   final expensesAsync = ref.watch(_allExpensesStreamProvider);
   final period = ref.watch(selectedPeriodProvider);
+  final categories = ref.watch(categoriesRefProvider);
 
   return overridesAsync.whenData((overrides) {
     final expenses = expensesAsync.value ?? [];
@@ -1054,34 +1071,35 @@ final periodBudgetEntriesProvider =
       if (e.isProjected) continue;
       if (e.payType == 'Swile') continue;
       if (!period.contains(e.transactionDate)) continue;
-      spentByCategory[e.category] =
-          (spentByCategory[e.category] ?? 0) + e.amount;
+      // Normalize to lowercase slug for consistent keying
+      final slug = e.category.toLowerCase();
+      spentByCategory[slug] = (spentByCategory[slug] ?? 0) + e.amount;
     }
 
-    final overrideMap = {for (final o in overrides) o.category: o};
+    final overrideMap = {for (final o in overrides) o.category.toLowerCase(): o};
     final seen = <String>{};
     final entries = <PeriodBudgetEntry>[];
 
-    // Goal-backed entries (shown even with no override row).
-    for (final cat in ExpenseCategory.values) {
-      final dbVal = cat.dbValue;
-      final goal = goalsMap[dbVal];
+    // Goal-backed entries — iterate loaded categories (includes custom).
+    for (final cat in categories) {
+      final goal = goalsMap[cat.slug];
       if (goal == null) continue;
-      seen.add(dbVal);
+      seen.add(cat.slug);
       entries.add(PeriodBudgetEntry(
         goal: goal,
-        override: overrideMap[dbVal],
-        spent: spentByCategory[dbVal] ?? 0,
+        override: overrideMap[cat.slug],
+        spent: spentByCategory[cat.slug] ?? 0,
       ));
     }
 
     // Pure-custom entries (period budget with no matching goal).
     for (final o in overrides) {
-      if (seen.contains(o.category)) continue;
+      final slug = o.category.toLowerCase();
+      if (seen.contains(slug)) continue;
       entries.add(PeriodBudgetEntry(
         goal: null,
         override: o,
-        spent: spentByCategory[o.category] ?? 0,
+        spent: spentByCategory[slug] ?? 0,
       ));
     }
 

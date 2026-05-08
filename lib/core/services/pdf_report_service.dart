@@ -212,11 +212,13 @@ class PdfReportService {
   }
 
   static String _catLabel(String dbValue, String locale, Map<String, String> categoryNames) {
-    if (categoryNames.containsKey(dbValue)) {
-      return categoryNames[dbValue]!;
-    }
+    // Try exact match first, then lowercase slug match
+    if (categoryNames.containsKey(dbValue)) return categoryNames[dbValue]!;
+    final slug = dbValue.toLowerCase();
+    if (categoryNames.containsKey(slug)) return categoryNames[slug]!;
+    // Legacy fallback for system categories not in the map
     try {
-      return ExpenseCategory.fromDb(dbValue).labelForLocale(locale);
+      return ExpenseCategory.fromDb(dbValue.toUpperCase()).labelForLocale(locale);
     } catch (_) {
       return dbValue;
     }
