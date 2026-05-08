@@ -178,7 +178,7 @@ class _CategoryTile extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          category.dbValue,
+          category.slug,
           style: TextStyle(
             fontSize: 12,
             color: colors.onSurfaceFaint,
@@ -261,7 +261,7 @@ class _CategoryDialogState extends ConsumerState<_CategoryDialog> {
     try {
       final name = _nameController.text.trim();
       final emoji = _emojiController.text.trim();
-      final dbValue = widget.category?.dbValue ?? name.toUpperCase().replaceAll(' ', '_');
+      final slug = widget.category?.slug ?? name.toLowerCase().replaceAll(' ', '_');
 
       final category = widget.category?.copyWith(
             name: name,
@@ -269,12 +269,12 @@ class _CategoryDialogState extends ConsumerState<_CategoryDialog> {
             isSwile: _isSwile,
           ) ??
           Category(
-            dbValue: dbValue,
+            slug: slug,
             name: name,
             emoji: emoji,
             isSwile: _isSwile,
             isSystem: false,
-            orderIndex: 99, // Will be placed at the end
+            displayOrder: 99,
           );
 
       if (widget.category != null) {

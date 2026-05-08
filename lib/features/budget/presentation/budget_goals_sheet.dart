@@ -27,7 +27,7 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
     if (_initialized) return;
     final goalsMap = ref.read(budgetGoalsMapProvider);
     for (final cat in categories) {
-      final dbValue = cat.dbValue;
+      final dbValue = cat.slug;
       final goal = goalsMap[dbValue];
       final ctrl = TextEditingController(
         text: goal?.targetAmount.toStringAsFixed(2) ?? '',
@@ -54,7 +54,7 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
     double total = 0.0;
     for (final cat in categories) {
       if (cat.isSwile) continue;
-      final text = _controllers[cat.dbValue]?.text ?? '';
+      final text = _controllers[cat.slug]?.text ?? '';
       final amount = _parse(text);
       if (amount > 0 && salary > 0) {
         total += (amount / salary) * 100;
@@ -76,7 +76,7 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
       final effectiveSalary = ref.read(effectiveNetSalaryProvider);
 
       for (final cat in categories) {
-        final dbValue = cat.dbValue;
+        final dbValue = cat.slug;
         final amountText = _controllers[dbValue]?.text ?? '';
         if (amountText.isEmpty) continue;
 
@@ -245,9 +245,9 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
                         for (final cat in cashCats)
                           _BudgetCategoryRow(
                             category: cat,
-                            controller: _controllers[cat.dbValue]!,
+                            controller: _controllers[cat.slug]!,
                             currentSpending:
-                                monthExpensesByCategory[cat.dbValue] ?? 0,
+                                monthExpensesByCategory[cat.slug] ?? 0,
                             effectiveSalary: effectiveSalary,
                             isSwile: false,
                             swileBalance: 0,
@@ -266,9 +266,9 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
                           for (final cat in swileCats)
                             _BudgetCategoryRow(
                               category: cat,
-                              controller: _controllers[cat.dbValue]!,
+                              controller: _controllers[cat.slug]!,
                               currentSpending:
-                                  monthExpensesByCategory[cat.dbValue] ?? 0,
+                                  monthExpensesByCategory[cat.slug] ?? 0,
                               effectiveSalary: effectiveSalary,
                               isSwile: true,
                               swileBalance: swileBalance,

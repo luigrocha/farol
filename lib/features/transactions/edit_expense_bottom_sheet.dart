@@ -181,10 +181,10 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
   }
 
   Widget _catChip(Category c, BuildContext context) {
-    final sel = _categoryDbValue == c.dbValue;
-    final color = tokens.FarolColors.getCategoryColor(c.dbValue);
+    final sel = _categoryDbValue == c.slug;
+    final color = tokens.FarolColors.getCategoryColor(c.slug);
     return GestureDetector(
-      onTap: () => setState(() { _categoryDbValue = c.dbValue; _subcategory = null; }),
+      onTap: () => setState(() { _categoryDbValue = c.slug; _subcategory = null; }),
       child: AnimatedContainer(duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
           color: sel ? color.withValues(alpha: 0.15) : Theme.of(context).cardTheme.color,
@@ -239,8 +239,8 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
         : 1;
 
     final categories = ref.read(categoriesStreamProvider).value ?? [];
-    final currentCat = categories.firstWhere((c) => c.dbValue == _categoryDbValue,
-        orElse: () => categories.isNotEmpty ? categories.first : const Category(dbValue: 'OTHER', name: 'Other', emoji: '📋'));
+    final currentCat = categories.firstWhere((c) => c.slug == _categoryDbValue,
+        orElse: () => categories.isNotEmpty ? categories.first : const Category(slug: 'other', name: 'Other', emoji: '📋'));
 
     final desc = _descCtrl.text.isEmpty ? _subcategory ?? currentCat.name : _descCtrl.text;
 

@@ -1,64 +1,103 @@
 
 class Category {
-  final int id;
-  final String dbValue;
+  final String id;
+  final String? userId;
+  final String? parentId;
+  final String slug;
   final String name;
   final String emoji;
-  final bool isSwile;
+  final String? colorHex;
+  final String financialType; // 'need' | 'want' | 'investment' | 'income' | 'transfer'
   final bool isSystem;
-  final int orderIndex;
+  final bool isSwile;
+  final bool isFixed;
+  final bool isArchived;
+  final int displayOrder;
 
   const Category({
-    this.id = -1,
-    required this.dbValue,
+    this.id = '',
+    this.userId,
+    this.parentId,
+    required this.slug,
     required this.name,
     required this.emoji,
-    this.isSwile = false,
+    this.colorHex,
+    this.financialType = 'want',
     this.isSystem = false,
-    this.orderIndex = 0,
+    this.isSwile = false,
+    this.isFixed = false,
+    this.isArchived = false,
+    this.displayOrder = 0,
   });
 
+  // Legacy adapter — maps old UPPERCASE dbValue to slug
+  static String slugFromLegacy(String dbValue) => dbValue.toLowerCase();
+
   Category copyWith({
-    int? id,
-    String? dbValue,
+    String? id,
+    String? userId,
+    String? parentId,
+    String? slug,
     String? name,
     String? emoji,
-    bool? isSwile,
+    String? colorHex,
+    String? financialType,
     bool? isSystem,
-    int? orderIndex,
+    bool? isSwile,
+    bool? isFixed,
+    bool? isArchived,
+    int? displayOrder,
   }) {
     return Category(
       id: id ?? this.id,
-      dbValue: dbValue ?? this.dbValue,
+      userId: userId ?? this.userId,
+      parentId: parentId ?? this.parentId,
+      slug: slug ?? this.slug,
       name: name ?? this.name,
       emoji: emoji ?? this.emoji,
-      isSwile: isSwile ?? this.isSwile,
+      colorHex: colorHex ?? this.colorHex,
+      financialType: financialType ?? this.financialType,
       isSystem: isSystem ?? this.isSystem,
-      orderIndex: orderIndex ?? this.orderIndex,
+      isSwile: isSwile ?? this.isSwile,
+      isFixed: isFixed ?? this.isFixed,
+      isArchived: isArchived ?? this.isArchived,
+      displayOrder: displayOrder ?? this.displayOrder,
     );
   }
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
-      id: json['id'] as int,
-      dbValue: json['db_value'] as String,
+      id: json['id'] as String,
+      userId: json['user_id'] as String?,
+      parentId: json['parent_id'] as String?,
+      slug: json['slug'] as String,
       name: json['name'] as String,
       emoji: json['emoji'] as String,
-      isSwile: json['is_swile'] as bool? ?? false,
+      colorHex: json['color_hex'] as String?,
+      financialType: json['financial_type'] as String? ?? 'want',
       isSystem: json['is_system'] as bool? ?? false,
-      orderIndex: json['order_index'] as int? ?? 0,
+      isSwile: json['is_swile'] as bool? ?? false,
+      isFixed: json['is_fixed'] as bool? ?? false,
+      isArchived: json['is_archived'] as bool? ?? false,
+      displayOrder: json['display_order'] as int? ?? 0,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'db_value': dbValue,
+      'user_id': userId,
+      'parent_id': parentId,
+      'slug': slug,
       'name': name,
       'emoji': emoji,
-      'is_swile': isSwile,
+      'color_hex': colorHex,
+      'financial_type': financialType,
       'is_system': isSystem,
-      'order_index': orderIndex,
+      'is_swile': isSwile,
+      'is_fixed': isFixed,
+      'is_archived': isArchived,
+      'display_order': displayOrder,
     };
   }
 }

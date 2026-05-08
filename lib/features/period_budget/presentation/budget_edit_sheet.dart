@@ -89,7 +89,7 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
 
     // Default selection if not set
     if (_selectedCategory == null && categories.isNotEmpty) {
-      _selectedCategory = categories.first.dbValue;
+      _selectedCategory = categories.first.slug;
     }
 
     return Padding(
@@ -178,7 +178,7 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
                         },
                   items: categories
                       .map((cat) => DropdownMenuItem(
-                            value: cat.dbValue,
+                            value: cat.slug,
                             child: Row(children: [
                               Text(cat.emoji,
                                   style: const TextStyle(fontSize: 18)),

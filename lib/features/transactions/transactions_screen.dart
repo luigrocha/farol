@@ -744,14 +744,14 @@ class _FilterChips extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
               scrollDirection: Axis.horizontal,
               children: categories.map((cat) {
-                final active = catFilter == cat.dbValue;
+                final active = catFilter == cat.slug;
                 return _Chip(
                   label: '${cat.emoji} ${cat.name}',
                   active: active,
                   small: true,
                   onTap: () {
                     ref.read(txCategoryFilterProvider.notifier).state =
-                        active ? null : cat.dbValue;
+                        active ? null : cat.slug;
                   },
                 );
               }).toList(),

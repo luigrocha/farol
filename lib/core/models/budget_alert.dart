@@ -18,29 +18,21 @@ class BudgetAlert {
     required this.level,
   });
 
-  String get emoji {
+  // Lookup tolerates both legacy UPPERCASE and new lowercase slugs
+  ExpenseCategory? get _legacyCat {
     try {
-      return ExpenseCategory.fromDb(category).emoji;
+      return ExpenseCategory.fromDb(category.toUpperCase());
     } catch (_) {
-      return '📊';
+      return null;
     }
   }
 
-  String get categoryLabel {
-    try {
-      return ExpenseCategory.fromDb(category).label;
-    } catch (_) {
-      return category;
-    }
-  }
+  String get emoji => _legacyCat?.emoji ?? '📊';
 
-  String localizedCategoryLabel(BuildContext context) {
-    try {
-      return ExpenseCategory.fromDb(category).localizedLabel(context);
-    } catch (_) {
-      return category;
-    }
-  }
+  String get categoryLabel => _legacyCat?.label ?? category;
+
+  String localizedCategoryLabel(BuildContext context) =>
+      _legacyCat?.localizedLabel(context) ?? category;
 
   String get percentageLabel => '${(percentage * 100).toStringAsFixed(0)}%';
 }

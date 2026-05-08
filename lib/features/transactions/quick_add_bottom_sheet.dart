@@ -20,7 +20,7 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
   final _amountCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
   final _installmentsCtrl = TextEditingController(text: '2');
-  String _categoryDbValue = 'FOOD_GROCERY';
+  String _categoryDbValue = 'food_grocery';
   PaymentMethod _method = PaymentMethod.pix;
   bool _isFixed = false;
   DateTime _date = DateTime.now();
@@ -28,15 +28,15 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
   bool _saving = false;
 
   static const _subcategories = {
-    'HOUSING': ['Rent', 'Condo Fee', 'Electricity', 'Water', 'Gas', 'Internet', 'Property Tax', 'Maintenance'],
-    'TRANSPORT': ['Uber', 'Subway/Bus', 'Fuel', 'Parking', 'Maintenance'],
-    'FOOD_GROCERY': ['Supermarket', 'Restaurant', 'Delivery', 'Bakery', 'Farmers Market'],
-    'HEALTH': ['Pharmacy', 'Doctor', 'Health Plan', 'Lab Tests', 'Gym'],
-    'SUBSCRIPTIONS': ['Streaming', 'Apps', 'Mobile Phone', 'Gym', 'Other'],
-    'LEISURE': ['Cinema', 'Travel', 'Bars', 'Games', 'Hobbies'],
-    'EDUCATION': ['Course', 'Books', 'Certification', 'Materials'],
-    'CARD_INSTALLMENTS': ['Installment Purchase'],
-    'OTHER': ['Gift', 'Donation', 'Unexpected', 'Other'],
+    'housing': ['Rent', 'Condo Fee', 'Electricity', 'Water', 'Gas', 'Internet', 'Property Tax', 'Maintenance'],
+    'transport': ['Uber', 'Subway/Bus', 'Fuel', 'Parking', 'Maintenance'],
+    'food_grocery': ['Supermarket', 'Restaurant', 'Delivery', 'Bakery', 'Farmers Market'],
+    'health': ['Pharmacy', 'Doctor', 'Health Plan', 'Lab Tests', 'Gym'],
+    'subscriptions': ['Streaming', 'Apps', 'Mobile Phone', 'Gym', 'Other'],
+    'leisure': ['Cinema', 'Travel', 'Bars', 'Games', 'Hobbies'],
+    'education': ['Course', 'Books', 'Certification', 'Materials'],
+    'card_installments': ['Installment Purchase'],
+    'other': ['Gift', 'Donation', 'Unexpected', 'Other'],
   };
 
   @override
@@ -155,10 +155,10 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
   }
 
   Widget _catChip(Category c, BuildContext context) {
-    final sel = _categoryDbValue == c.dbValue;
-    final color = tokens.FarolColors.getCategoryColor(c.dbValue);
+    final sel = _categoryDbValue == c.slug;
+    final color = tokens.FarolColors.getCategoryColor(c.slug);
     return GestureDetector(
-      onTap: () => setState(() { _categoryDbValue = c.dbValue; _subcategory = null; }),
+      onTap: () => setState(() { _categoryDbValue = c.slug; _subcategory = null; }),
       child: AnimatedContainer(duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
           color: sel ? color.withValues(alpha: 0.15) : Theme.of(context).cardTheme.color,
@@ -187,8 +187,8 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
         : 1;
 
     final categories = ref.read(categoriesStreamProvider).value ?? [];
-    final currentCat = categories.firstWhere((c) => c.dbValue == _categoryDbValue, 
-        orElse: () => categories.isNotEmpty ? categories.first : const Category(dbValue: 'OTHER', name: 'Other', emoji: '📋'));
+    final currentCat = categories.firstWhere((c) => c.slug == _categoryDbValue, 
+        orElse: () => categories.isNotEmpty ? categories.first : const Category(slug: 'other', name: 'Other', emoji: '📋'));
     
     final desc = _descCtrl.text.isEmpty ? _subcategory ?? currentCat.name : _descCtrl.text;
 

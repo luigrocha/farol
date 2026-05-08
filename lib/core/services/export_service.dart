@@ -95,7 +95,7 @@ class ExportService {
     final netWorth = await netWorthRepo.getByMonth(month, year);
     final goals = await budgetGoalsRepo.getAll();
     final allCategories = await categoryRepo.getAll();
-    final categoriesMap = {for (final c in allCategories) c.dbValue: c.name};
+    final categoriesMap = {for (final c in allCategories) c.slug: c.name};
 
     final bytes = await PdfReportService.generate(
       month: month,

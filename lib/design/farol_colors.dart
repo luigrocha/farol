@@ -26,23 +26,23 @@ class FarolColors {
   static const lErrorSoft          = Color(0xFFFCE5E7);
 
   static Color getCategoryColor(String category) {
-    switch (category) {
-      case 'HOUSING':       return navy;
-      case 'TRANSPORT':     return beam;
-      case 'FOOD_GROCERY':  return tide;
-      case 'HEALTH':        return coral;
-      case 'LEISURE':       return const Color(0xFF8FA3B8);
-      case 'SUBSCRIPTIONS': return const Color(0xFF6B4EAF);
-      case 'EDUCATION':     return const Color(0xFF9E6B3A);
-      case 'CARD_INSTALLMENTS': return const Color(0xFFB94F82);
-      case 'TESOURO_SELIC': return navy;
-      case 'CDB':           return const Color(0xFF6B4EAF);
-      case 'LCI_LCA':       return tide;
-      case 'FII':           return beam;
-      case 'STOCKS_BR':     return const Color(0xFF0D6E6E);
-      case 'STOCKS_INTL':   return const Color(0xFF1A6BAA);
-      case 'PENSION':       return const Color(0xFF9E6B3A);
-      case 'SAVINGS':       return const Color(0xFFB94F82);
+    switch (category.toLowerCase()) {
+      case 'housing':           return navy;
+      case 'transport':         return beam;
+      case 'food_grocery':      return tide;
+      case 'health':            return coral;
+      case 'leisure':           return const Color(0xFF8FA3B8);
+      case 'subscriptions':     return const Color(0xFF6B4EAF);
+      case 'education':         return const Color(0xFF9E6B3A);
+      case 'card_installments': return const Color(0xFFB94F82);
+      case 'tesouro_selic':     return navy;
+      case 'cdb':               return const Color(0xFF6B4EAF);
+      case 'lci_lca':           return tide;
+      case 'fii':               return beam;
+      case 'stocks_br':         return const Color(0xFF0D6E6E);
+      case 'stocks_intl':       return const Color(0xFF1A6BAA);
+      case 'pension':           return const Color(0xFF9E6B3A);
+      case 'savings':           return const Color(0xFFB94F82);
       default:
         // Deterministic color for custom categories
         final colors = [

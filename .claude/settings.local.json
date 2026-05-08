@@ -17,7 +17,9 @@
       "Bash(grep -E \"\\\\.\\(dart\\)$\")",
       "Bash(xargs ls *)",
       "Bash(grep -E \"\\\\.dart$\")",
-      "Bash(grep -n \"^import\\\\|SizedBox\\(height: 3[0-9]\\\\|],\\\\s*$\\\\|child: Column\" /Users/lgrocha/Documents/Claude/farol/lib/features/auth/presentation/signup_screen.dart)"
+      "Bash(grep -n \"^import\\\\|SizedBox\\(height: 3[0-9]\\\\|],\\\\s*$\\\\|child: Column\" /Users/lgrocha/Documents/Claude/farol/lib/features/auth/presentation/signup_screen.dart)",
+      "Bash(sed -i '' 's/c\\\\.dbValue/c.slug/g; s/\\\\.dbValue == _categoryDbValue/.slug == _categoryDbValue/g; s/c\\\\.dbValue == _categoryDbValue/c.slug == _categoryDbValue/g' /Users/lgrocha/Documents/Claude/farol/lib/features/transactions/quick_add_bottom_sheet.dart)",
+      "Bash(sed -i '' 's/c\\\\.dbValue/c.slug/g; s/\\\\.dbValue == _categoryDbValue/.slug == _categoryDbValue/g' /Users/lgrocha/Documents/Claude/farol/lib/features/transactions/edit_expense_bottom_sheet.dart)"
     ]
   },
   "autoCompactEnabled": false

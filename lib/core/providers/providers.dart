@@ -234,7 +234,7 @@ final categoriesStreamProvider = StreamProvider.autoDispose<List<Category>>((ref
 
 final categoriesMapProvider = Provider.autoDispose<Map<String, Category>>((ref) {
   final cats = ref.watch(categoriesStreamProvider).value ?? [];
-  return {for (var c in cats) c.dbValue: c};
+  return {for (var c in cats) c.slug: c};
 });
 
 // ═══════════════════════════════════════════
@@ -751,10 +751,7 @@ final categoryNotifierProvider = AsyncNotifierProvider<CategoryNotifier, void>((
 
 class CategoryNotifier extends AsyncNotifier<void> {
   @override
-  Future<void> build() async {
-    // Seed categories if empty when the provider is initialized
-    await ref.read(categoryRepositoryProvider).seedInitialCategories();
-  }
+  Future<void> build() async {}
 
   Future<void> add(Category category) async {
     await ref.read(categoryRepositoryProvider).insert(category);
@@ -766,8 +763,8 @@ class CategoryNotifier extends AsyncNotifier<void> {
     ref.invalidate(categoriesStreamProvider);
   }
 
-  Future<void> delete(int id) async {
-    await ref.read(categoryRepositoryProvider).delete(id);
+  Future<void> delete(String id) async {
+    await ref.read(categoryRepositoryProvider).archive(id);
     ref.invalidate(categoriesStreamProvider);
   }
 

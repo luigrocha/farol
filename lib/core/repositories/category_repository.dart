@@ -7,15 +7,19 @@ class CategoryRepository {
 
   String? get _userId => _supabase.auth.currentUser?.id;
 
+  // Returns system categories (user_id IS NULL) + user's custom categories
   Stream<List<Category>> watchAll() {
     final userId = _userId;
     if (userId == null) return Stream.value([]);
     return _supabase
         .from('categories')
         .stream(primaryKey: ['id'])
-        .eq('user_id', userId)
-        .order('order_index', ascending: true)
-        .map((rows) => rows.map(Category.fromJson).toList());
+        .order('display_order', ascending: true)
+        .map((rows) => rows
+            .map(Category.fromJson)
+            .where((c) => c.userId == null || c.userId == userId)
+            .where((c) => !c.isArchived)
+            .toList());
   }
 
   Future<List<Category>> getAll() async {
@@ -24,84 +28,53 @@ class CategoryRepository {
     final data = await _supabase
         .from('categories')
         .select()
-        .eq('user_id', userId)
-        .order('order_index', ascending: true);
+        .or('user_id.is.null,user_id.eq.$userId')
+        .eq('is_archived', false)
+        .order('display_order', ascending: true);
     return data.map((r) => Category.fromJson(r)).toList();
   }
 
   Future<Category> insert(Category category) async {
     final userId = _userId;
     if (userId == null) throw Exception('Not authenticated');
-    
+
     final data = await _supabase.from('categories').insert({
       'user_id': userId,
-      'db_value': category.dbValue,
+      'slug': category.slug,
       'name': category.name,
       'emoji': category.emoji,
+      'color_hex': category.colorHex,
+      'financial_type': category.financialType,
       'is_swile': category.isSwile,
-      'is_system': category.isSystem,
-      'order_index': category.orderIndex,
+      'is_system': false,
+      'is_fixed': category.isFixed,
+      'display_order': category.displayOrder,
     }).select().single();
-    
+
     return Category.fromJson(data);
   }
 
   Future<void> update(Category category) async {
     await _supabase.from('categories').update({
-      'db_value': category.dbValue,
+      'slug': category.slug,
       'name': category.name,
       'emoji': category.emoji,
+      'color_hex': category.colorHex,
+      'financial_type': category.financialType,
       'is_swile': category.isSwile,
-      'is_system': category.isSystem,
-      'order_index': category.orderIndex,
+      'is_fixed': category.isFixed,
+      'display_order': category.displayOrder,
     }).eq('id', category.id);
   }
 
-  Future<void> delete(int id) async {
-    await _supabase.from('categories').delete().eq('id', id);
-  }
-
-  Future<void> insertAll(List<Map<String, dynamic>> rows) async {
-    final userId = _userId;
-    if (userId == null) return;
-    final rowsWithUser = rows.map((r) => {...r, 'user_id': userId}).toList();
-    await _supabase.from('categories').insert(rowsWithUser);
+  Future<void> archive(String id) async {
+    await _supabase.from('categories').update({'is_archived': true}).eq('id', id);
   }
 
   Future<void> reorder(List<Category> categories) async {
-    final userId = _userId;
-    if (userId == null) return;
-
     final updates = categories.asMap().entries.map((entry) {
-      return {
-        'id': entry.value.id,
-        'user_id': userId,
-        'order_index': entry.key,
-      };
+      return {'id': entry.value.id, 'display_order': entry.key};
     }).toList();
-
     await _supabase.from('categories').upsert(updates);
-  }
-
-  Future<void> seedInitialCategories() async {
-    final userId = _userId;
-    if (userId == null) return;
-
-    final existing = await getAll();
-    if (existing.isNotEmpty) return;
-
-    final initialCategories = [
-      {'db_value': 'HOUSING', 'name': 'Housing', 'emoji': '🏠', 'is_system': true, 'order_index': 0},
-      {'db_value': 'TRANSPORT', 'name': 'Transport', 'emoji': '🚗', 'is_system': true, 'order_index': 1},
-      {'db_value': 'FOOD_GROCERY', 'name': 'Food/Grocery', 'emoji': '🛒', 'is_swile': true, 'is_system': true, 'order_index': 2},
-      {'db_value': 'HEALTH', 'name': 'Health', 'emoji': '🏥', 'is_system': true, 'order_index': 3},
-      {'db_value': 'SUBSCRIPTIONS', 'name': 'Subscriptions', 'emoji': '📱', 'is_system': true, 'order_index': 4},
-      {'db_value': 'LEISURE', 'name': 'Leisure', 'emoji': '🎮', 'is_system': true, 'order_index': 5},
-      {'db_value': 'EDUCATION', 'name': 'Education', 'emoji': '📚', 'is_system': true, 'order_index': 6},
-      {'db_value': 'CARD_INSTALLMENTS', 'name': 'Card Installments', 'emoji': '💳', 'is_system': true, 'order_index': 7},
-      {'db_value': 'OTHER', 'name': 'Other', 'emoji': '📋', 'is_system': true, 'order_index': 8},
-    ];
-
-    await insertAll(initialCategories);
   }
 }
