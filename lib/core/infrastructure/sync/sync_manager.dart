@@ -89,9 +89,14 @@ class SyncManager {
     _emitStatus(_status.copyWith(state: SyncState.syncing));
     try {
       await _queue.processPending();
-      await _refreshStatus();
+      final count = await _queue.pendingCount();
+      final hasFailed = await _queue.hasFailedItems;
       _emitStatus(_status.copyWith(
-          state: SyncState.idle, lastSyncAt: DateTime.now()));
+        state: SyncState.idle,
+        lastSyncAt: DateTime.now(),
+        pendingCount: count,
+        hasFailedOps: hasFailed,
+      ));
     } catch (_) {
       _emitStatus(_status.copyWith(state: SyncState.error));
     }

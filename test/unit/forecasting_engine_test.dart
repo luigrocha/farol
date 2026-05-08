@@ -291,7 +291,7 @@ void main() {
         period: _period(),
         totalSpent: Money.fromDouble(10), // R$10 in many days = tiny rate
         totalAllocated: Money.fromDouble(3000),
-        currentBalance: Money.fromDouble(1_000_000),
+        currentBalance: Money.fromDouble(1000000),
         projectedIncome: Money.zero,
         obligations: const [],
       );
@@ -581,7 +581,7 @@ void main() {
     test('daysUntilEmpty: returns -1 when solvent across full 365-day horizon', () {
       expect(
         obligation.daysUntilEmpty(
-          balance: Money.fromDouble(1_000_000),
+          balance: Money.fromDouble(1000000),
           dailyRate: Money.fromDouble(1),
           obligations: const [],
         ),
