@@ -6,7 +6,6 @@ import '../database/app_database.dart' show AppDatabase;
 import '../models/income.dart';
 import '../models/expense.dart';
 import '../models/enums.dart';
-import '../models/card_installment.dart';
 import '../models/investment.dart';
 import '../models/net_worth_snapshot.dart';
 import '../models/account.dart';
@@ -486,14 +485,6 @@ final savingsRateProvider = Provider.autoDispose<double>((ref) {
 // ═══════════════════════════════════════════
 // INSTALLMENTS PROVIDERS
 // ═══════════════════════════════════════════
-
-final installmentsProvider = StreamProvider.autoDispose<List<CardInstallment>>((ref) {
-  return ref.watch(installmentRepositoryProvider).watchActive();
-});
-
-final allInstallmentsProvider = StreamProvider.autoDispose<List<CardInstallment>>((ref) {
-  return ref.watch(installmentRepositoryProvider).watchAll();
-});
 
 /// Returns how many projected expenses already exist for a given installment plan.
 /// Used to detect legacy plans that need migration.

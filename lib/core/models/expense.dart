@@ -15,6 +15,7 @@ class Expense {
   final DateTime createdAt;
   final bool isProjected;
   final int? installmentPlanId;
+  final String? installmentPlanUuid;
 
   const Expense({
     required this.id,
@@ -33,6 +34,7 @@ class Expense {
     required this.createdAt,
     this.isProjected = false,
     this.installmentPlanId,
+    this.installmentPlanUuid,
   });
 
   factory Expense.fromJson(Map<String, dynamic> json) {
@@ -55,6 +57,7 @@ class Expense {
       createdAt: createdAt,
       isProjected: json['is_projected'] as bool? ?? false,
       installmentPlanId: (json['installment_plan_id'] as num?)?.toInt(),
+      installmentPlanUuid: json['installment_plan_uuid_id'] as String?,
     );
   }
 }

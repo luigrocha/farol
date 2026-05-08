@@ -995,11 +995,12 @@ class _TxRow extends ConsumerWidget {
         ]),
       ),
       confirmDismiss: (_) async {
-        final planId = expense.installmentPlanId as int?;
+        final planUuid = expense.installmentPlanUuid;
+        final legacyPlanId = expense.installmentPlanId;
         final isFixed = expense.isFixed as bool;
 
         // Installment expense linked to a plan
-        if (planId != null) {
+        if (planUuid != null || legacyPlanId != null) {
           final numInst = expense.installments as int;
           final choice = await showDeleteExpenseChoiceDialog(
             context,
@@ -1011,7 +1012,11 @@ class _TxRow extends ConsumerWidget {
           if (choice == null) return false;
           if (choice == true) {
             try {
-              await ref.read(installmentRepositoryProvider).delete(planId);
+              if (planUuid != null) {
+                await ref.read(installmentPlanRepositoryProvider).delete(planUuid);
+              } else {
+                await ref.read(installmentRepositoryProvider).delete(legacyPlanId!);
+              }
               if (context.mounted) context.showSuccessSnackBar('Plano excluído');
             } catch (e) {
               if (context.mounted) context.showErrorSnackBar(e);
