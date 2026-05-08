@@ -1196,15 +1196,20 @@ final analyticsIncomesProvider =
 final budgetAlertsProvider = Provider.autoDispose<List<BudgetAlert>>((ref) {
   final goalsMap = ref.watch(budgetGoalsMapProvider);
   final byCategory = ref.watch(cashExpensesByCategoryProvider);
+  final catsMap = ref.watch(categoriesMapProvider);
 
   final alerts = <BudgetAlert>[];
   for (final goal in goalsMap.values) {
     if (goal.targetAmount <= 0) continue;
-    final spent = byCategory[goal.category] ?? 0;
+    final slug = goal.category.toLowerCase();
+    final spent = byCategory[slug] ?? byCategory[goal.category] ?? 0;
     final pct = spent / goal.targetAmount;
     if (pct < 0.75) continue;
+    final cat = catsMap[slug];
     alerts.add(BudgetAlert(
-      category: goal.category,
+      category: slug,
+      categoryName: cat?.name ?? goal.category,
+      categoryEmoji: cat?.emoji ?? '📊',
       spent: spent,
       limit: goal.targetAmount,
       percentage: pct,

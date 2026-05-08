@@ -1,7 +1,7 @@
 # ADR-001: Unificación del Sistema de Categorías
 
 **Fecha**: 2026-05-07
-**Estado**: Propuesto — pendiente de implementación
+**Estado**: Implementado (Fases 1-4 completas, V20 pendiente execução em prod)
 **Área**: Domain · Database
 
 ---
@@ -67,11 +67,20 @@ Crear un adapter que mapea entre enum y CategoryTable, manteniendo ambos.
 
 ## Criterios de Éxito
 
-- [ ] `CategoryResolver.resolve('CUALQUIER_STRING')` nunca lanza excepción en producción
-- [ ] 0 ocurrencias de `ExpenseCategory.fromDb()` en el codebase final
-- [ ] Los usuarios pueden crear categorías custom y usarlas sin crashear la app
-- [ ] Los gastos con categorías custom se muestran correctamente en todos los screens
-- [ ] El `FinancialType` de cada categoría es correcto (need/want/investment)
+- [x] `CategoryResolver.resolve('CUALQUIER_STRING')` nunca lanza excepción en producción
+- [x] 0 ocurrencias de `ExpenseCategory.fromDb()` en el codebase final
+- [x] Los usuarios pueden crear categorías custom y usarlas sin crashear la app
+- [x] Los gastos con categorías custom se muestran correctamente en todos los screens
+- [x] El `FinancialType` de cada categoría es correcto (need/want/investment)
+
+## Migrations executadas
+
+| Migration | Estado |
+|---|---|
+| V17 — recria `categories` com UUID + seed sistema | ✅ Executado |
+| V18 — `category_id UUID` nullable em `expenses` | ✅ Executado |
+| V19 — backfill `category_id` em expenses existentes | ✅ Executado |
+| V20 — `category_id` NOT NULL | ⏳ Executar após ≥2 semanas prod estável |
 
 ## Referencias
 

@@ -36,62 +36,8 @@ enum IncomeType {
   }
 }
 
-// ═══════════════════════════════════════════
-// Expense Category Enum
-// ═══════════════════════════════════════════
-enum ExpenseCategory {
-  housing('HOUSING', 'Housing', '🏠'),
-  transport('TRANSPORT', 'Transport', '🚗'),
-  foodGrocery('FOOD_GROCERY', 'Food/Grocery', '🛒'),
-  health('HEALTH', 'Health', '🏥'),
-  subscriptions('SUBSCRIPTIONS', 'Subscriptions', '📱'),
-  leisure('LEISURE', 'Leisure', '🎮'),
-  education('EDUCATION', 'Education', '📚'),
-  cardInstallments('CARD_INSTALLMENTS', 'Card Installments', '💳'),
-  other('OTHER', 'Other', '📋');
-
-  final String dbValue;
-  final String label;
-  final String emoji;
-  const ExpenseCategory(this.dbValue, this.label, this.emoji);
-
-  static ExpenseCategory fromDb(String value) =>
-      ExpenseCategory.values.firstWhere((e) => e.dbValue == value);
-
-  bool get isSwile => swileCategories.contains(dbValue);
-
-  String localizedLabel(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    switch (this) {
-      case ExpenseCategory.housing: return l10n.translate('cat_housing');
-      case ExpenseCategory.transport: return l10n.translate('cat_transport');
-      case ExpenseCategory.foodGrocery: return l10n.translate('cat_food');
-      case ExpenseCategory.health: return l10n.translate('cat_health');
-      case ExpenseCategory.subscriptions: return l10n.translate('cat_subs');
-      case ExpenseCategory.leisure: return l10n.translate('cat_leisure');
-      case ExpenseCategory.education: return l10n.translate('cat_edu');
-      case ExpenseCategory.cardInstallments: return l10n.translate('cat_card');
-      case ExpenseCategory.other: return l10n.translate('cat_other');
-    }
-  }
-
-  String labelForLocale(String languageCode) {
-    switch (this) {
-      case ExpenseCategory.housing: return AppLocalizations.translateStatic(languageCode, 'cat_housing');
-      case ExpenseCategory.transport: return AppLocalizations.translateStatic(languageCode, 'cat_transport');
-      case ExpenseCategory.foodGrocery: return AppLocalizations.translateStatic(languageCode, 'cat_food');
-      case ExpenseCategory.health: return AppLocalizations.translateStatic(languageCode, 'cat_health');
-      case ExpenseCategory.subscriptions: return AppLocalizations.translateStatic(languageCode, 'cat_subs');
-      case ExpenseCategory.leisure: return AppLocalizations.translateStatic(languageCode, 'cat_leisure');
-      case ExpenseCategory.education: return AppLocalizations.translateStatic(languageCode, 'cat_edu');
-      case ExpenseCategory.cardInstallments: return AppLocalizations.translateStatic(languageCode, 'cat_card');
-      case ExpenseCategory.other: return AppLocalizations.translateStatic(languageCode, 'cat_other');
-    }
-  }
-}
-
-/// DB values of categories funded by Swile vouchers — excluded from cash budget pool.
-const Set<String> swileCategories = {'FOOD_GROCERY'};
+/// Slugs of categories funded by Swile vouchers — excluded from cash budget pool.
+const Set<String> swileCategories = {'food_grocery'};
 
 // ═══════════════════════════════════════════
 // Payment Method Enum

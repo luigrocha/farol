@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'enums.dart';
 
 enum AlertLevel { warning, critical, exceeded }
 
 class BudgetAlert {
-  final String category;
+  final String category; // slug
+  final String categoryName;
+  final String categoryEmoji;
   final double spent;
   final double limit;
   final double percentage;
@@ -12,27 +13,16 @@ class BudgetAlert {
 
   const BudgetAlert({
     required this.category,
+    required this.categoryName,
+    required this.categoryEmoji,
     required this.spent,
     required this.limit,
     required this.percentage,
     required this.level,
   });
 
-  // Lookup tolerates both legacy UPPERCASE and new lowercase slugs
-  ExpenseCategory? get _legacyCat {
-    try {
-      return ExpenseCategory.fromDb(category.toUpperCase());
-    } catch (_) {
-      return null;
-    }
-  }
-
-  String get emoji => _legacyCat?.emoji ?? '📊';
-
-  String get categoryLabel => _legacyCat?.label ?? category;
-
-  String localizedCategoryLabel(BuildContext context) =>
-      _legacyCat?.localizedLabel(context) ?? category;
-
+  String get emoji => categoryEmoji;
+  String get categoryLabel => categoryName;
+  String localizedCategoryLabel(BuildContext context) => categoryName;
   String get percentageLabel => '${(percentage * 100).toStringAsFixed(0)}%';
 }
