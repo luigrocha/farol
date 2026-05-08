@@ -21,7 +21,8 @@
       "Bash(sed -i '' 's/c\\\\.dbValue/c.slug/g; s/\\\\.dbValue == _categoryDbValue/.slug == _categoryDbValue/g; s/c\\\\.dbValue == _categoryDbValue/c.slug == _categoryDbValue/g' /Users/lgrocha/Documents/Claude/farol/lib/features/transactions/quick_add_bottom_sheet.dart)",
       "Bash(sed -i '' 's/c\\\\.dbValue/c.slug/g; s/\\\\.dbValue == _categoryDbValue/.slug == _categoryDbValue/g' /Users/lgrocha/Documents/Claude/farol/lib/features/transactions/edit_expense_bottom_sheet.dart)",
       "Bash(flutter test *)",
-      "Bash(grep -n 'late final.*syncQueue\\\\|get syncQueue\\\\|$SyncQueue' /Users/lgrocha/Documents/Claude/farol/lib/core/database/app_database.g.dart)"
+      "Bash(grep -n 'late final.*syncQueue\\\\|get syncQueue\\\\|$SyncQueue' /Users/lgrocha/Documents/Claude/farol/lib/core/database/app_database.g.dart)",
+      "Bash(kill %1)"
     ]
   },
   "autoCompactEnabled": false
