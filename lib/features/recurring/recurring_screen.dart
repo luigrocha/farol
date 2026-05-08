@@ -21,9 +21,40 @@ class RecurringScreen extends ConsumerStatefulWidget {
 class _RecurringScreenState extends ConsumerState<RecurringScreen> {
   _Filter _filter = _Filter.active;
 
+  static const double _desktopBreakpoint = 800;
+  static const double _contentMaxWidth = 900;
+
   @override
   Widget build(BuildContext context) {
     final rulesAsync = ref.watch(recurringRulesStreamProvider);
+    final isDesktop = MediaQuery.sizeOf(context).width >= _desktopBreakpoint;
+
+    final content = SliverList(
+      delegate: SliverChildListDelegate([
+        _HeroCard(rulesAsync: rulesAsync),
+        const SizedBox(height: 16),
+        _FilterChips(
+          selected: _filter,
+          onChanged: (f) => setState(() => _filter = f),
+        ),
+        const SizedBox(height: 12),
+        rulesAsync.when(
+          loading: () => const Padding(
+            padding: EdgeInsets.symmetric(vertical: 48),
+            child: Center(child: CircularProgressIndicator()),
+          ),
+          error: (e, _) => Center(child: Text('Erro: $e')),
+          data: (all) {
+            final rules = _filtered(all, _filter);
+            if (rules.isEmpty) return _EmptyState(filter: _filter);
+            return Column(
+              children: rules.map((r) => _RuleTile(rule: r)).toList(),
+            );
+          },
+        ),
+        const SizedBox(height: 80),
+      ]),
+    );
 
     return Scaffold(
       body: CustomScrollView(slivers: [
@@ -36,35 +67,23 @@ class _RecurringScreenState extends ConsumerState<RecurringScreen> {
           title: Text('Recorrentes',
               style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w800)),
         ),
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          sliver: SliverList(
-            delegate: SliverChildListDelegate([
-              _HeroCard(rulesAsync: rulesAsync),
-              const SizedBox(height: 16),
-              _FilterChips(
-                selected: _filter,
-                onChanged: (f) => setState(() => _filter = f),
-              ),
-              const SizedBox(height: 12),
-              rulesAsync.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 48),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-                error: (e, _) => Center(child: Text('Erro: $e')),
-                data: (all) {
-                  final rules = _filtered(all, _filter);
-                  if (rules.isEmpty) return _EmptyState(filter: _filter);
-                  return Column(
-                    children: rules.map((r) => _RuleTile(rule: r)).toList(),
-                  );
-                },
-              ),
-              const SizedBox(height: 80),
-            ]),
+        if (isDesktop)
+          SliverLayoutBuilder(
+            builder: (_, constraints) {
+              final hPad =
+                  ((constraints.crossAxisExtent - _contentMaxWidth) / 2)
+                      .clamp(16.0, double.infinity);
+              return SliverPadding(
+                padding: EdgeInsets.symmetric(horizontal: hPad),
+                sliver: content,
+              );
+            },
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: content,
           ),
-        ),
       ]),
       floatingActionButton: FloatingActionButton(
         heroTag: 'fab_recurring',

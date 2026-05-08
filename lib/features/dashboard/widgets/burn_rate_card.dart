@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/domain/entities/burn_rate.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';
+import '../../../core/widgets/shimmer_box.dart';
 
 class BurnRateCard extends ConsumerWidget {
   const BurnRateCard({super.key});
@@ -13,7 +14,7 @@ class BurnRateCard extends ConsumerWidget {
     final projAsync = ref.watch(financialProjectionProvider);
 
     return projAsync.when(
-      loading: () => const SizedBox.shrink(),
+      loading: () => const DashboardCardSkeleton(height: 130),
       error: (_, __) => const SizedBox.shrink(),
       data: (proj) {
         if (proj == null) return const SizedBox.shrink();

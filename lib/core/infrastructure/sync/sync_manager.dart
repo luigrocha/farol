@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'operation_queue.dart';
 import 'sync_operations.dart';
@@ -122,6 +123,17 @@ class SyncManager {
   void _emitStatus(SyncStatus s) {
     _status = s;
     _statusController.add(s);
+  }
+
+  /// Simulates a connectivity change.
+  /// Use only in tests — production code should rely on [_startConnectivityMonitor].
+  @visibleForTesting
+  Future<void> setOnlineForTest(bool isOnline) async {
+    final wasOffline = !_status.isOnline;
+    _emitStatus(_status.copyWith(isOnline: isOnline));
+    if (isOnline && wasOffline) {
+      await processPendingQueue();
+    }
   }
 
   void dispose() {

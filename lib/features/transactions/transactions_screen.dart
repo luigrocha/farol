@@ -60,7 +60,96 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
   bool get _onExpensesTab => _tabController.index == 0;
 
   @override
+  static const double _desktopBreakpoint = 900;
+
+  @override
   Widget build(BuildContext context) {
+    final isDesktop = MediaQuery.sizeOf(context).width >= _desktopBreakpoint;
+    return isDesktop ? _buildDesktop(context) : _buildMobile(context);
+  }
+
+  // ── Desktop: Gastos | Ingresos side by side ──────────────────────────────
+
+  Widget _buildDesktop(BuildContext context) {
+    final month = ref.watch(selectedMonthProvider);
+    final year = ref.watch(selectedYearProvider);
+    final months = AppLocalizations.of(context).months;
+
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 64,
+        title: Row(children: [
+          _Avatar(),
+          const SizedBox(width: 10),
+          Text(
+            '${months[month - 1]} $year',
+            style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700),
+          ),
+        ]),
+      ),
+      body: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: _buildExpensesPanel(context, headerLabel: 'Gastos')),
+          const VerticalDivider(thickness: 1, width: 1),
+          Expanded(child: const _IncomeTab()),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'fab_transactions_desktop',
+        onPressed: () => showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          builder: (_) => const QuickAddBottomSheet(),
+        ),
+        backgroundColor: tokens.FarolColors.beam,
+        child: const Icon(Icons.add, color: tokens.FarolColors.navy),
+      ),
+    );
+  }
+
+  Widget _buildExpensesPanel(BuildContext context, {String? headerLabel}) {
+    final filteredAsync = ref.watch(expensesProvider);
+    final filteredExpenses = ref.watch(filteredExpensesProvider);
+    return CustomScrollView(
+      slivers: [
+        if (headerLabel != null)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 4),
+              child: Text(
+                headerLabel,
+                style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700),
+              ),
+            ),
+          ),
+        SliverToBoxAdapter(
+          child: Column(children: [
+            const _SearchBar(),
+            _FilterChips(
+              showCategories: _showCategories,
+              onToggleCategories: (v) => setState(() => _showCategories = v),
+            ),
+            const _TotalMonthlyHero(),
+            const SizedBox(height: 16),
+          ]),
+        ),
+        if (filteredAsync.isLoading)
+          const SliverFillRemaining(child: Center(child: CircularProgressIndicator()))
+        else if (filteredAsync.hasError)
+          SliverFillRemaining(child: Center(child: Text('Erro: ${filteredAsync.error}')))
+        else if (filteredExpenses.isEmpty)
+          const SliverFillRemaining(child: Center(child: Text('Nenhum gasto encontrado')))
+        else
+          SliverList(delegate: _buildExpenseDelegate(filteredExpenses)),
+        const SliverToBoxAdapter(child: SizedBox(height: 80)),
+      ],
+    );
+  }
+
+  // ── Mobile: NestedScrollView + TabBarView (unchanged) ────────────────────
+
+  Widget _buildMobile(BuildContext context) {
     final month = ref.watch(selectedMonthProvider);
     final year = ref.watch(selectedYearProvider);
     final filteredAsync = ref.watch(expensesProvider);
@@ -81,10 +170,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
             actions: const [Icon(Icons.calendar_today, size: 22), SizedBox(width: 20)],
             bottom: TabBar(
               controller: _tabController,
-              tabs: const [
-                Tab(text: 'Gastos'),
-                Tab(text: 'Ingresos'),
-              ],
+              tabs: const [Tab(text: 'Gastos'), Tab(text: 'Ingresos')],
               labelStyle: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w700),
               unselectedLabelStyle: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w500),
               indicatorColor: tokens.FarolColors.beam,
@@ -95,35 +181,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         body: TabBarView(
           controller: _tabController,
           children: [
-            // ── Tab 0: Gastos ──
-            CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Column(children: [
-                    const _SearchBar(),
-                    _FilterChips(
-                      showCategories: _showCategories,
-                      onToggleCategories: (v) => setState(() => _showCategories = v),
-                    ),
-                    const _TotalMonthlyHero(),
-                    const SizedBox(height: 16),
-                  ]),
-                ),
-                if (filteredAsync.isLoading)
-                  const SliverFillRemaining(child: Center(child: CircularProgressIndicator()))
-                else if (filteredAsync.hasError)
-                  SliverFillRemaining(child: Center(child: Text('Erro: ${filteredAsync.error}')))
-                else if (filteredExpenses.isEmpty)
-                  const SliverFillRemaining(child: Center(child: Text('Nenhum gasto encontrado')))
-                else ...[
-                  SliverList(
-                    delegate: _buildExpenseDelegate(filteredExpenses),
-                  ),
-                ],
-                const SliverToBoxAdapter(child: SizedBox(height: 80)),
-              ],
-            ),
-            // ── Tab 1: Ingresos ──
+            _buildExpensesPanel(context),
             const _IncomeTab(),
           ],
         ),
@@ -963,8 +1021,8 @@ class _TxRow extends ConsumerWidget {
           return true; // single row → onDismissed handles it
         }
 
-        // Fixed recurring expense (legacy isFixed pattern)
-        // deleteFixedSeriesFrom is deprecated — show info dialog, allow single delete only.
+        // Fixed recurring expense (legacy isFixed pattern).
+        // Series deletion is not supported — show info dialog, allow single delete only.
         // To manage the full series, convert to a RecurringRule.
         if (isFixed) {
           final confirmed = await showDialog<bool>(

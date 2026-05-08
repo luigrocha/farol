@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/providers/providers.dart';
+import '../../core/widgets/shimmer_box.dart';
 import 'insight_card.dart';
 import 'insights_screen.dart';
 
@@ -13,7 +14,20 @@ class InsightsPanel extends ConsumerWidget {
     final insightsAsync = ref.watch(insightsProvider);
 
     return insightsAsync.when(
-      loading: () => const SizedBox.shrink(),
+      loading: () => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Insights',
+              style: GoogleFonts.manrope(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.grey)),
+          const SizedBox(height: 8),
+          const ShimmerBox(width: double.infinity, height: 64, borderRadius: 12),
+          const SizedBox(height: 8),
+          const ShimmerBox(width: double.infinity, height: 64, borderRadius: 12),
+        ],
+      ),
       error: (_, __) => const SizedBox.shrink(),
       data: (insights) {
         if (insights.isEmpty) return const SizedBox.shrink();

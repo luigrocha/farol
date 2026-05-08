@@ -14,12 +14,15 @@ import 'cashflow_chart.dart';
 class AnalyticsScreen extends ConsumerWidget {
   const AnalyticsScreen({super.key});
 
+  static const double _desktopBreakpoint = 800;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final range = ref.watch(analyticsRangeProvider);
     final expensesAsync = ref.watch(analyticsExpensesProvider);
     final incomesAsync = ref.watch(analyticsIncomesProvider);
+    final isDesktop = MediaQuery.sizeOf(context).width >= _desktopBreakpoint;
 
     return Scaffold(
       body: CustomScrollView(
@@ -48,26 +51,92 @@ class AnalyticsScreen extends ConsumerWidget {
             error: (e, _) => SliverFillRemaining(child: Center(child: Text('Error: $e'))),
             data: (expenses) {
               final incomes = incomesAsync.value ?? [];
-              return SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                sliver: SliverList(delegate: SliverChildListDelegate([
-                  const SizedBox(height: 16),
-                  _SummaryCards(expenses: expenses, range: range),
-                  const SizedBox(height: 16),
-                  _MonthlyTrendCard(expenses: expenses, incomes: incomes, l10n: l10n),
-                  const SizedBox(height: 24),
-                  _CategoryBreakdown(expenses: expenses),
-                  const SizedBox(height: 24),
-                  _MonthlyBarsCard(expenses: expenses, l10n: l10n),
-                  const SizedBox(height: 24),
-                  const CashflowChart(),
-                  const SizedBox(height: 80),
-                ])),
-              );
+              if (isDesktop) {
+                return _buildDesktopGrid(context, expenses, incomes, range, l10n);
+              }
+              return _buildMobileList(expenses, incomes, range, l10n);
             },
           ),
         ],
       ),
+    );
+  }
+
+  // ── Desktop: two-column chart grid ──────────────────────────────────────
+  //
+  //  ┌────────────────────────┬───────────────────────────┐
+  //  │  SummaryCards          │  MonthlyTrendCard         │
+  //  │  CategoryBreakdown     │  MonthlyBarsCard          │
+  //  │                        │  CashflowChart            │
+  //  └────────────────────────┴───────────────────────────┘
+
+  Widget _buildDesktopGrid(
+    BuildContext context,
+    List<Expense> expenses,
+    List<Income> incomes,
+    AnalyticsRange range,
+    AppLocalizations l10n,
+  ) {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 80),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Left column
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _SummaryCards(expenses: expenses, range: range),
+                  const SizedBox(height: 24),
+                  _CategoryBreakdown(expenses: expenses),
+                ],
+              ),
+            ),
+            const SizedBox(width: 24),
+            // Right column
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _MonthlyTrendCard(expenses: expenses, incomes: incomes, l10n: l10n),
+                  const SizedBox(height: 24),
+                  _MonthlyBarsCard(expenses: expenses, l10n: l10n),
+                  const SizedBox(height: 24),
+                  const CashflowChart(),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Mobile: single-column list (unchanged) ───────────────────────────────
+
+  Widget _buildMobileList(
+    List<Expense> expenses,
+    List<Income> incomes,
+    AnalyticsRange range,
+    AppLocalizations l10n,
+  ) {
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      sliver: SliverList(delegate: SliverChildListDelegate([
+        const SizedBox(height: 16),
+        _SummaryCards(expenses: expenses, range: range),
+        const SizedBox(height: 16),
+        _MonthlyTrendCard(expenses: expenses, incomes: incomes, l10n: l10n),
+        const SizedBox(height: 24),
+        _CategoryBreakdown(expenses: expenses),
+        const SizedBox(height: 24),
+        _MonthlyBarsCard(expenses: expenses, l10n: l10n),
+        const SizedBox(height: 24),
+        const CashflowChart(),
+        const SizedBox(height: 80),
+      ])),
     );
   }
 }

@@ -12,6 +12,9 @@ import 'budget_edit_sheet.dart';
 class PeriodBudgetScreen extends ConsumerWidget {
   const PeriodBudgetScreen({super.key});
 
+  static const double _desktopBreakpoint = 800;
+  static const double _contentMaxWidth = 860;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
@@ -100,29 +103,68 @@ class PeriodBudgetScreen extends ConsumerWidget {
     WidgetRef ref,
     List<PeriodBudgetEntry> entries,
     FarolColors colors,
-  ) =>
-      SliverPadding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        sliver: SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (_, i) => _EntryCard(
-              entry: entries[i],
-              isSwileBacked: _isSwileBacked(entries[i].category, ref),
-              onTap: () => _openEdit(context, entries[i]),
-              onAction: () => _handleAction(context, ref, entries[i]),
-            ),
-            childCount: entries.length,
+  ) {
+    final isDesktop =
+        MediaQuery.sizeOf(context).width >= _desktopBreakpoint;
+    final list = SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (_, i) => _EntryCard(
+          entry: entries[i],
+          isSwileBacked: _isSwileBacked(entries[i].category, ref),
+          onTap: () => _openEdit(context, entries[i]),
+          onAction: () => _handleAction(context, ref, entries[i]),
+        ),
+        childCount: entries.length,
+      ),
+    );
+
+    if (isDesktop) {
+      // Center the list with a max-width constraint on large screens.
+      return SliverPadding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        sliver: SliverLayoutBuilder(
+          builder: (ctx, constraints) {
+            final hPad = ((constraints.crossAxisExtent - _contentMaxWidth) / 2)
+                .clamp(16.0, double.infinity);
+            return SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: hPad),
+              sliver: list,
+            );
+          },
+        ),
+      );
+    }
+
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      sliver: list,
+    );
+  }
+
+  void _openEdit(BuildContext context, PeriodBudgetEntry? entry) {
+    final isDesktop =
+        MediaQuery.sizeOf(context).width >= _desktopBreakpoint;
+
+    if (isDesktop) {
+      // On desktop open as a centered Dialog instead of a bottom sheet.
+      showDialog(
+        context: context,
+        builder: (_) => Dialog(
+          insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 60),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
+            child: BudgetEditSheet(entry: entry),
           ),
         ),
       );
-
-  void _openEdit(BuildContext context, PeriodBudgetEntry? entry) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => BudgetEditSheet(entry: entry),
-    );
+    } else {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => BudgetEditSheet(entry: entry),
+      );
+    }
   }
 
   Future<void> _handleAction(

@@ -25,9 +25,40 @@ class InstallmentsScreen extends ConsumerStatefulWidget {
 class _InstallmentsScreenState extends ConsumerState<InstallmentsScreen> {
   _Filter _filter = _Filter.active;
 
+  static const double _desktopBreakpoint = 800;
+  static const double _contentMaxWidth = 900;
+
   @override
   Widget build(BuildContext context) {
     final plansAsync = ref.watch(installmentPlansStreamProvider);
+    final isDesktop = MediaQuery.sizeOf(context).width >= _desktopBreakpoint;
+
+    final content = SliverList(
+      delegate: SliverChildListDelegate([
+        _HeroCard(plansAsync: plansAsync),
+        const SizedBox(height: 16),
+        _FilterChips(
+          selected: _filter,
+          onChanged: (f) => setState(() => _filter = f),
+        ),
+        const SizedBox(height: 12),
+        plansAsync.when(
+          loading: () => const Padding(
+            padding: EdgeInsets.symmetric(vertical: 48),
+            child: Center(child: CircularProgressIndicator()),
+          ),
+          error: (e, _) => Center(child: Text('Erro: $e')),
+          data: (all) {
+            final plans = _filtered(all, _filter);
+            if (plans.isEmpty) return _EmptyState(filter: _filter);
+            return Column(
+              children: plans.map((p) => _PlanTile(plan: p)).toList(),
+            );
+          },
+        ),
+        const SizedBox(height: 80),
+      ]),
+    );
 
     return Scaffold(
       body: CustomScrollView(slivers: [
@@ -40,37 +71,23 @@ class _InstallmentsScreenState extends ConsumerState<InstallmentsScreen> {
           title: Text('Parcelas',
               style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w800)),
         ),
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          sliver: SliverList(
-            delegate: SliverChildListDelegate([
-              _HeroCard(plansAsync: plansAsync),
-              const SizedBox(height: 16),
-              _FilterChips(
-                selected: _filter,
-                onChanged: (f) => setState(() => _filter = f),
-              ),
-              const SizedBox(height: 12),
-              plansAsync.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 48),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-                error: (e, _) => Center(child: Text('Erro: $e')),
-                data: (all) {
-                  final plans = _filtered(all, _filter);
-                  if (plans.isEmpty) return _EmptyState(filter: _filter);
-                  return Column(
-                    children: plans
-                        .map((p) => _PlanTile(plan: p))
-                        .toList(),
-                  );
-                },
-              ),
-              const SizedBox(height: 80),
-            ]),
+        if (isDesktop)
+          SliverLayoutBuilder(
+            builder: (_, constraints) {
+              final hPad =
+                  ((constraints.crossAxisExtent - _contentMaxWidth) / 2)
+                      .clamp(16.0, double.infinity);
+              return SliverPadding(
+                padding: EdgeInsets.symmetric(horizontal: hPad),
+                sliver: content,
+              );
+            },
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: content,
           ),
-        ),
       ]),
       floatingActionButton: FloatingActionButton(
         heroTag: 'fab_installments',

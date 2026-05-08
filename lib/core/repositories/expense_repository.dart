@@ -179,35 +179,6 @@ class ExpenseRepository {
     await _supabase.from('expenses').delete().eq('id', id);
   }
 
-  /// Deletes all fixed expenses from [from]'s period onward that share the
-  /// same category, payment method, and store description.
-  ///
-  /// @deprecated Use RecurringRule + RecurringService instead. This method
-  /// operates on the legacy `is_fixed=true` pattern. No longer called from the
-  /// UI as of 2026-05-08. Will be removed in a future release.
-  @Deprecated('Use RecurringRule-based deletion instead. isFixed pattern is legacy.')
-  Future<void> deleteFixedSeriesFrom(Expense from) async {
-    final userId = _userId;
-    if (userId == null) return;
-    final data = await _supabase
-        .from('expenses')
-        .select('id, month, year, store_description')
-        .eq('user_id', userId)
-        .eq('is_fixed', true)
-        .eq('category', from.category)
-        .eq('payment_method', from.paymentMethod);
-    final ids = (data as List)
-        .where((r) {
-          if ((r['store_description'] as String?) != from.storeDescription) return false;
-          final y = (r['year'] as num).toInt();
-          final m = (r['month'] as num).toInt();
-          return y * 12 + m >= from.year * 12 + from.month;
-        })
-        .map((r) => (r['id'] as num).toInt())
-        .toList();
-    if (ids.isEmpty) return;
-    await _supabase.from('expenses').delete().inFilter('id', ids);
-  }
 
   Future<void> updateFixedSeriesFrom(
     Expense from, {

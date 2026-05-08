@@ -136,11 +136,25 @@ farol/
    - `categoriesStreamProvider` removido de quick_add e edit_expense → `categoriesRefProvider`
    - `categoriesMapProvider` removido de expense_breakdown → `categoriesRefProvider`
    - `cashExpensesProvider`, `cashRemainingProvider`, `installmentsProvider` (CardInstallment) removidos de health_screen → `financialSnapshotProvider`
-   - `deleteFixedSeriesFrom` deprecado; branch `isFixed` em transactions_screen mostra aviso de legado
+   - `deleteFixedSeriesFrom` **removido** de `expense_repository.dart` em 2026-05-08
 2. ~~**Testes**~~ ✅ **Concluído 2026-05-08** — `test/unit/forecasting_engine_test.dart` (30 testes), `test/unit/intelligence_layer_test.dart` (22 testes)
-3. **Web layout**: todas as screens existem apenas em mobile — falta adaptive layout para desktop
-4. **Migrations em produção**: confirmar que V21–V25 foram aplicadas no Supabase real
+3. ~~**Web layout**~~ ✅ **Concluído 2026-05-08** — NavigationRail no MainShell + layout adaptativo em todas as screens principais (Dashboard, Transactions, Analytics, Budget, Installments, Recurring)
+4. ~~**Migrations em produção**~~ ✅ **Confirmado 2026-05-08** — V21–V25 aplicadas. Tabelas `installment_plans`, `installment_payments`, `recurring_rules`, `recurring_occurrences` presentes em produção.
 5. ~~**`fixedExpensePropagationProvider`**~~ ✅ Confirmado removido — não existe mais no codebase
+6. ~~**Empty/loading states nos widgets do dashboard**~~ ✅ **Concluído 2026-05-08**
+   - `BurnRateCard`: loading → `DashboardCardSkeleton(height: 130)` (antes: `SizedBox.shrink`)
+   - `InsightsPanel`: loading → 2 shimmer boxes com label (antes: `SizedBox.shrink`)
+   - `HealthGaugeCard`, `InstallmentsSummaryCard`: já tinham `DashboardCardSkeleton` ✅
+
+## ⚠️ Débito Técnico Pendente (card_installments)
+
+O sistema de parcelamento tem **dois layers coexistentes**:
+- **Legado**: tabela `card_installments` (Supabase) → `CardInstallment` model → `installmentsProvider`
+  - Ainda usado por: `InstallmentsSummaryCard`, `HealthGaugeCard`, `NetWorthSettingsSheet`, `PdfReportService`
+- **Novo**: tabela `installment_plans/payments` (V21–V23) → `InstallmentPlan` entity → `installmentPlansStreamProvider`
+  - Usado por: `installments_screen`
+
+Para remover o layer legado, é necessário um plano de migração dedicado que substitua `installmentsProvider` pelo novo sistema em todos os consumers.
 
 ## 🛠️ Dev Commands
 
@@ -165,36 +179,18 @@ flutter test
 | `installments_redesign.md` | ✅ `InstallmentPlan/Payment`, `InstallmentService` | ✅ V21–V23 | ✅ `installmentPlansStreamProvider` | ✅ `installments_screen` | ✅ `installment_service_test` | 🟢 **Completo** |
 | `financial_engine.md` | ✅ `Money`, `FinancialSnapshot`, `FinancialEngine`, `EnvelopeEngine` | ✅ (sem schema próprio) | ✅ `financialSnapshotProvider`, `envelopesProvider` | ✅ dashboard widgets: `BurnRateCard`, `PeriodBalanceHero`, `HealthGaugeCard` | ⚠️ parcial | 🟡 **UI polish** |
 | `recurring_rules.md` | ✅ `RecurringRule/Occurrence`, `RecurrenceResolver`, `RecurringDetector` | ✅ V24–V25 | ✅ `recurringRulesStreamProvider`, `generateRecurringOccurrencesProvider` | ✅ `recurring_screen`, `add_recurring_bottom_sheet`, `recurring_suggestions_screen` | ✅ `recurrence_resolver_test` | 🟢 **Completo** |
-| `forecasting.md` | ✅ `ForecastingEngine`, `ObligationEngine`, `BurnRate`, `LiquidityRisk`, `CashflowForecast` | ✅ (lê tabelas existentes) | ✅ `financialProjectionProvider`, `cashflowForecastProvider` | ✅ `analytics_screen` + `cashflow_chart` | 🔴 sem testes | 🟡 **Falta testes** |
-| `offline_sync.md` | ✅ `SyncManager`, `OperationQueue`, `ConflictResolver` | ✅ (Drift `sync_queue`) | ✅ `syncStatusProvider`, `isOfflineProvider` | ✅ `ConnectivityBanner` no dashboard | 🔴 sem testes | 🟡 **Falta testes** |
-| `intelligence_layer.md` | ✅ `IntelligenceLayer` (12 regras), `DismissedInsightsRepository` | ✅ (Drift UserSettings) | ✅ `insightsProvider`, `dismissedInsightsProvider` | ✅ `InsightsPanel`, `insight_card`, `insights_screen` | 🔴 sem testes | 🟡 **Falta testes** |
+| `forecasting.md` | ✅ `ForecastingEngine`, `ObligationEngine`, `BurnRate`, `LiquidityRisk`, `CashflowForecast` | ✅ (lê tabelas existentes) | ✅ `financialProjectionProvider`, `cashflowForecastProvider` | ✅ `analytics_screen` + `cashflow_chart` | ⚠️ parcial | 🟡 **UI polish** |
+| `offline_sync.md` | ✅ `SyncManager`, `OperationQueue`, `ConflictResolver` | ✅ (Drift `sync_queue`) | ✅ `syncStatusProvider`, `isOfflineProvider` | ✅ `ConnectivityBanner` no dashboard | ✅ 29 testes (sync/) | 🟢 **Completo** |
+| `intelligence_layer.md` | ✅ `IntelligenceLayer` (12 regras), `DismissedInsightsRepository` | ✅ (Drift UserSettings) | ✅ `insightsProvider`, `dismissedInsightsProvider` | ✅ `InsightsPanel`, `insight_card`, `insights_screen` | ✅ 22 testes | 🟢 **Completo** |
 
 ### O que realmente está pendente
 
 ```
-UI Polish (mobile):
-  ├── Audit: quais screens ainda usam providers legados vs. financialSnapshotProvider
-  ├── Confirmar que fixedExpensePropagationProvider foi removido
-  └── Empty states, loading states, error states nos novos widgets
-
-Testes Críticos:
-  ├── ForecastingEngine — algoritmos de BurnRate, DaysUntilEmpty, ProjectedBalance
-  ├── IntelligenceLayer — 12 regras com dados sintéticos
-  └── SyncManager — cenários offline→online, conflict resolution
-
-Web / Desktop:
-  ├── Sidebar navigation (substituir bottom tabs)
-  ├── Master-Detail layout (Transações, Parcelas, Recorrentes)
-  ├── Dashboard Grid (múltiplos widgets simultâneos)
-  └── Full Canvas (Analytics + Forecasting)
-
-Produção:
-  └── Confirmar que migrations V21–V25 foram aplicadas no Supabase de produção
+Débito Técnico:
+  └── Migrar consumers de installmentsProvider (CardInstallment legacy) para installmentPlansStreamProvider
+      Afetados: InstallmentsSummaryCard, HealthGaugeCard, NetWorthSettingsSheet, PdfReportService
 ```
 
 ### Comandos de próxima sessão
 
-- `"Audita o que está quebrado na UI"` → revisão dos screens com novos providers
-- `"Escreve testes para ForecastingEngine"` → cobertura dos algoritmos críticos
-- `"Implementa web layout do Dashboard"` → sidebar + grid adaptativo
-- `"Verifica migrations em produção"` → checklist V21–V25
+- `"Migra InstallmentsSummaryCard para installmentPlansStreamProvider"` → remove layer legado card_installments
