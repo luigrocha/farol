@@ -3,7 +3,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import '../models/expense.dart';
 import '../models/income.dart';
-import '../models/card_installment.dart';
+import '../domain/entities/installment_plan.dart';
 import '../models/net_worth_snapshot.dart';
 import '../models/budget_goal.dart';
 import '../models/enums.dart';
@@ -29,7 +29,7 @@ class PdfReportService {
     required int year,
     required List<Expense> expenses,
     required List<Income> incomes,
-    required List<CardInstallment> installments,
+    required List<InstallmentPlan> installments,
     required BudgetSettings? budget,
     required NetWorthSnapshot? netWorth,
     required List<BudgetGoal> goals,
@@ -325,8 +325,8 @@ class PdfReportService {
   // INSTALLMENTS TABLE
   // ═══════════════════════════════════════════
 
-  static pw.Widget _installmentsTable(List<CardInstallment> installments) {
-    final totalMonthly = installments.fold(0.0, (s, i) => s + i.monthlyAmount);
+  static pw.Widget _installmentsTable(List<InstallmentPlan> installments) {
+    final totalMonthly = installments.fold(0.0, (s, i) => s + i.installmentAmount);
     return pw.Table(
       columnWidths: {
         0: const pw.FlexColumnWidth(4),
@@ -338,15 +338,14 @@ class PdfReportService {
         ...installments.asMap().entries.map((entry) {
           final i = entry.key;
           final inst = entry.value;
-          final remaining =
-              inst.monthlyAmount * (inst.numInstallments - inst.currentInstallment + 1);
+          final remaining = inst.remainingAmount;
           return pw.TableRow(
             decoration: pw.BoxDecoration(color: i.isEven ? PdfColors.white : _surface),
             children: [
               _cell(
-                  '${inst.description} (${inst.currentInstallment}/${inst.numInstallments})',
+                  '${inst.description} (${inst.paidCount}/${inst.numInstallments})',
                   pw.TextStyle(font: pw.Font.helvetica(), fontSize: 9, color: _textDark)),
-              _cell(FinancialCalculatorService.formatBRL(inst.monthlyAmount),
+              _cell(FinancialCalculatorService.formatBRL(inst.installmentAmount),
                   pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 9, color: _textDark),
                   align: pw.TextAlign.right),
               _cell(FinancialCalculatorService.formatBRL(remaining),

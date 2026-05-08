@@ -78,8 +78,8 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
     final colors = context.colors;
     final month = ref.watch(selectedMonthProvider);
     final year = ref.watch(selectedYearProvider);
-    final inst = ref.watch(installmentsProvider).value ?? [];
-    final pending = inst.fold(0.0, (s, i) => s + i.monthlyAmount);
+    final inst = ref.watch(activeInstallmentPlansProvider).value ?? [];
+    final pending = inst.fold(0.0, (s, i) => s + i.installmentAmount);
 
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),

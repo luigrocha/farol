@@ -503,13 +503,13 @@ final projectedCountForPlanProvider =
 });
 
 final totalMonthlyInstallmentsProvider = Provider.autoDispose<double>((ref) {
-  final list = ref.watch(installmentsProvider).value ?? [];
-  return list.fold(0.0, (sum, i) => sum + i.monthlyAmount);
+  final list = ref.watch(activeInstallmentPlansProvider).value ?? [];
+  return list.fold(0.0, (sum, i) => sum + i.installmentAmount);
 });
 
 final totalRemainingInstallmentsProvider = Provider.autoDispose<double>((ref) {
-  final list = ref.watch(installmentsProvider).value ?? [];
-  return list.fold(0.0, (sum, i) => sum + i.remainingBalance);
+  final list = ref.watch(activeInstallmentPlansProvider).value ?? [];
+  return list.fold(0.0, (sum, i) => sum + i.remainingAmount);
 });
 
 // ═══════════════════════════════════════════
@@ -915,7 +915,7 @@ class NetWorthNotifier extends AsyncNotifier<void> {
 final exportServiceProvider = Provider<ExportService>((ref) => ExportService(
       expenseRepo: ref.watch(expenseRepositoryProvider),
       incomeRepo: ref.watch(incomeRepositoryProvider),
-      installmentRepo: ref.watch(installmentRepositoryProvider),
+      installmentRepo: ref.watch(installmentPlanRepositoryProvider),
       investmentRepo: ref.watch(investmentRepositoryProvider),
       netWorthRepo: ref.watch(netWorthRepositoryProvider),
       budgetGoalsRepo: ref.watch(budgetGoalsRepositoryProvider),
@@ -959,9 +959,9 @@ class HealthAutoSaveNotifier extends AutoDisposeAsyncNotifier<void> {
     final byCategory = ref.read(cashExpensesByCategoryProvider);
     final balance = ref.read(cashRemainingProvider);
     final snap = ref.read(netWorthSnapshotProvider).value;
-    final inst = ref.read(installmentsProvider).value ?? [];
+    final inst = ref.read(activeInstallmentPlansProvider).value ?? [];
     final housing = byCategory['HOUSING'] ?? 0;
-    final instTotal = inst.fold(0.0, (s, i) => s + i.monthlyAmount);
+    final instTotal = inst.fold(0.0, (s, i) => s + i.installmentAmount);
     final accountsExist = ref.read(accountsProvider).value?.isNotEmpty ?? false;
     final ef = accountsExist
         ? ref.read(liquidAccountsTotalProvider)

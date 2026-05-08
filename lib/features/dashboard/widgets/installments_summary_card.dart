@@ -13,7 +13,7 @@ class InstallmentsSummaryCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
-    final instAsync = ref.watch(installmentsProvider);
+    final instAsync = ref.watch(activeInstallmentPlansProvider);
 
     if (instAsync.isLoading) {
       return const DashboardCardSkeleton(height: 100);
@@ -27,11 +27,11 @@ class InstallmentsSummaryCard extends ConsumerWidget {
 
     final totalMonthly = installments.fold(
       0.0,
-      (s, i) => s + i.monthlyAmount,
+      (s, i) => s + i.installmentAmount,
     );
     final totalRemaining = installments.fold(
       0.0,
-      (s, i) => s + i.remainingBalance,
+      (s, i) => s + i.remainingAmount,
     );
 
     return GestureDetector(
@@ -189,7 +189,7 @@ class InstallmentsSummaryCard extends ConsumerWidget {
                             ),
                           ),
                           Text(
-                            '${inst.currentInstallment}/${inst.numInstallments}',
+                            '${inst.paidCount}/${inst.numInstallments}',
                             style: TextStyle(
                               fontSize: 11,
                               color: colors.onSurfaceSoft,

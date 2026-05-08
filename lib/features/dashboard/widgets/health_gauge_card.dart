@@ -22,7 +22,7 @@ class HealthGaugeCard extends ConsumerWidget {
 
     // Show skeleton while net worth or installments are loading
     final isLoading = ref.watch(netWorthSnapshotProvider).isLoading ||
-        ref.watch(installmentsProvider).isLoading;
+        ref.watch(activeInstallmentPlansProvider).isLoading;
     if (isLoading) return const DashboardCardSkeleton(height: 200);
 
     final score = snap.healthScore;

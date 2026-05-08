@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../repositories/expense_repository.dart';
 import '../repositories/income_repository.dart';
-import '../repositories/installment_repository.dart';
+import '../repositories/installment_plan_repository.dart';
 import '../repositories/investment_repository.dart';
 import '../repositories/net_worth_repository.dart';
 import '../repositories/budget_goals_repository.dart';
@@ -19,7 +19,7 @@ import '../i18n/app_localizations.dart';
 class ExportService {
   final ExpenseRepository expenseRepo;
   final IncomeRepository incomeRepo;
-  final InstallmentRepository installmentRepo;
+  final InstallmentPlanRepository installmentRepo;
   final InvestmentRepository investmentRepo;
   final NetWorthRepository netWorthRepo;
   final BudgetGoalsRepository budgetGoalsRepo;
