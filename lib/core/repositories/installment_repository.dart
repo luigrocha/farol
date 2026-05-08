@@ -56,12 +56,49 @@ class InstallmentRepository {
     return (result['id'] as num).toInt();
   }
 
+  /// Updates the legacy card_installments counter and mirrors the payment
+  /// into installment_payments if a migrated plan exists for this record.
   Future<void> advance(int id, int newCurrent, int numInstallments) async {
     final newStatus = newCurrent >= numInstallments ? 'Settled' : 'Active';
+
+    // 1. Update legacy table (keeps old UI working)
     await _supabase.from('card_installments').update({
       'current_installment': newCurrent,
       'status': newStatus,
     }).eq('id', id);
+
+    // 2. Mirror into new system: mark installment_payment #newCurrent as paid
+    try {
+      final planRows = await _supabase
+          .from('installment_plans')
+          .select('id')
+          .eq('legacy_card_installment_id', id)
+          .limit(1);
+      if (planRows.isEmpty) return;
+
+      final planId = planRows.first['id'] as String;
+      await _supabase
+          .from('installment_payments')
+          .update({
+            'status': 'paid',
+            'paid_date': DateTime.now().toIso8601String().substring(0, 10),
+            'paid_amount': null, // actual amount already in the row
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('plan_id', planId)
+          .eq('installment_num', newCurrent)
+          .eq('status', 'pending');
+
+      // Close plan if fully paid
+      if (newCurrent >= numInstallments) {
+        await _supabase
+            .from('installment_plans')
+            .update({'status': 'completed', 'updated_at': DateTime.now().toIso8601String()})
+            .eq('id', planId);
+      }
+    } catch (_) {
+      // Mirror failure is non-fatal — legacy table is the source of truth for now
+    }
   }
 
   Future<void> complete(int id) async {
