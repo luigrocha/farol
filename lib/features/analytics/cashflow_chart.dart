@@ -154,11 +154,11 @@ class CashflowChart extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Row(children: [
-            _Legend(color: const Color(0xFF00897B), label: 'Real', dashed: false),
-            const SizedBox(width: 16),
-            _Legend(color: const Color(0xFFF59E0B), label: 'Projeção', dashed: true),
-            const SizedBox(width: 16),
+          const Row(children: [
+            _Legend(color: Color(0xFF00897B), label: 'Real', dashed: false),
+            SizedBox(width: 16),
+            _Legend(color: Color(0xFFF59E0B), label: 'Projeção', dashed: true),
+            SizedBox(width: 16),
             _Legend(color: Colors.red, label: 'Compromisso', isDot: true),
           ]),
         ]);

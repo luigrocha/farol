@@ -402,7 +402,7 @@ class _ActionBtn extends StatelessWidget {
       icon: Icon(icon, size: 16, color: c),
       label: Text(label, style: GoogleFonts.manrope(fontSize: 12, color: c)),
       style: OutlinedButton.styleFrom(
-        side: BorderSide(color: c.withOpacity(0.4)),
+        side: BorderSide(color: c.withValues(alpha: 0.4)),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
@@ -452,7 +452,7 @@ class _CategoryIcon extends StatelessWidget {
     return Container(
       width: 40, height: 40,
       decoration: BoxDecoration(
-        color: _teal.withOpacity(0.12),
+        color: _teal.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Icon(_iconFor(slug), size: 20, color: _teal),
@@ -487,7 +487,7 @@ class _StatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(label,

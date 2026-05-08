@@ -175,7 +175,8 @@ final incomeRepositoryProvider = Provider<IncomeRepository>((ref) {
 });
 
 final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
-  return ExpenseRepository(Supabase.instance.client);
+  final syncManager = ref.read(syncManagerProvider);
+  return ExpenseRepository(Supabase.instance.client, syncManager: syncManager);
 });
 
 final installmentRepositoryProvider = Provider<InstallmentRepository>((ref) {

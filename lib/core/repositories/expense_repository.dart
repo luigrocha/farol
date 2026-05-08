@@ -3,10 +3,15 @@ import 'package:flutter/material.dart' show DateUtils;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/expense.dart';
 import '../services/supabase_realtime_manager.dart';
+import '../infrastructure/sync/sync_manager.dart';
+import '../infrastructure/sync/sync_operations.dart';
 
 class ExpenseRepository {
   final SupabaseClient _supabase;
-  const ExpenseRepository(this._supabase);
+  final SyncManager? _syncManager;
+
+  const ExpenseRepository(this._supabase, {SyncManager? syncManager})
+      : _syncManager = syncManager;
 
   String? get _userId => _supabase.auth.currentUser?.id;
 
@@ -78,6 +83,7 @@ class ExpenseRepository {
   }
 
   /// Returns the id of the newly created expense row.
+  /// Routes through SyncManager for offline-first support when available.
   Future<int> insert({
     required DateTime transactionDate,
     required int month,
@@ -100,7 +106,7 @@ class ExpenseRepository {
     final userId = _userId;
     if (userId == null) throw Exception('Not authenticated');
     final categoryId = await _resolveCategoryId(category);
-    final data = await _supabase.from('expenses').insert({
+    final row = <String, dynamic>{
       'user_id': userId,
       'transaction_date': transactionDate.toIso8601String().substring(0, 10),
       'month': month,
@@ -120,7 +126,16 @@ class ExpenseRepository {
       if (recurringRuleId != null) 'recurring_rule_id': recurringRuleId,
       if (recurringOccurrenceId != null) 'recurring_occurrence_id': recurringOccurrenceId,
       if (categoryId != null) 'category_id': categoryId,
-    }).select('id').single();
+    };
+
+    if (_syncManager != null) {
+      await _syncManager!.execute(InsertExpenseOperation(payload: row));
+      // Return 0 as a sentinel — callers that need the real DB id should
+      // re-query after insert (offline path cannot guarantee a server id).
+      return 0;
+    }
+
+    final data = await _supabase.from('expenses').insert(row).select('id').single();
     return (data['id'] as num).toInt();
   }
 

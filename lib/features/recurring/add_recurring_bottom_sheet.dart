@@ -86,7 +86,7 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
           const SizedBox(height: 20),
 
           // Nome
-          _Label('Nome'),
+          const _Label('Nome'),
           TextField(
             controller: _nameCtrl,
             onChanged: (_) => setState(() {}),
@@ -95,7 +95,7 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
           const SizedBox(height: 16),
 
           // Valor
-          _Label('Valor (R\$)'),
+          const _Label('Valor (R\$)'),
           TextField(
             controller: _amountCtrl,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -106,8 +106,9 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
           const SizedBox(height: 16),
 
           // Frequência
-          _Label('Frequência'),
+          const _Label('Frequência'),
           DropdownButtonFormField<RecurringFrequency>(
+            // ignore: deprecated_member_use
             value: _frequency,
             decoration: _inputDec(null),
             items: RecurringFrequency.values
@@ -122,8 +123,9 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
               _frequency == RecurringFrequency.quarterly ||
               _frequency == RecurringFrequency.semiannual ||
               _frequency == RecurringFrequency.yearly) ...[
-            _Label('Dia do mês'),
+            const _Label('Dia do mês'),
             DropdownButtonFormField<int>(
+              // ignore: deprecated_member_use
               value: _dayOfMonth,
               decoration: _inputDec(null),
               items: List.generate(28, (i) => i + 1)
@@ -135,11 +137,12 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
           ],
 
           // Categoria
-          _Label('Categoria'),
+          const _Label('Categoria'),
           categoriesAsync.when(
             loading: () => const LinearProgressIndicator(),
             error: (_, __) => const SizedBox(),
             data: (cats) => DropdownButtonFormField<String>(
+              // ignore: deprecated_member_use
               value: _categorySlug,
               decoration: _inputDec('Selecione'),
               items: cats
@@ -151,7 +154,7 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
           const SizedBox(height: 16),
 
           // Data de início
-          _Label('Início'),
+          const _Label('Início'),
           InkWell(
             onTap: _pickStartDate,
             child: InputDecorator(
@@ -305,7 +308,7 @@ class _PreviewSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: _teal.withOpacity(0.08),
+        color: _teal.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
