@@ -11,6 +11,7 @@ import '../repositories/investment_repository.dart';
 import '../repositories/net_worth_repository.dart';
 import '../repositories/budget_goals_repository.dart';
 import '../repositories/category_repository.dart';
+import '../domain/entities/financial_insight.dart';
 import '../../features/budget/domain/budget_settings.dart';
 import 'export_web_stub.dart' if (dart.library.js_interop) 'export_web.dart';
 import 'pdf_report_service.dart';
@@ -88,7 +89,14 @@ class ExportService {
   // PDF MONTHLY REPORT
   // ═══════════════════════════════════════════
 
-  Future<void> exportMonthlyReport(int month, int year, BudgetSettings? budget, {String locale = 'pt'}) async {
+  Future<void> exportMonthlyReport(
+    int month,
+    int year,
+    BudgetSettings? budget, {
+    String locale = 'pt',
+    List<FinancialInsight> insights = const [],
+    double healthScore = 0,
+  }) async {
     final expenses = await expenseRepo.getByRange(month, year, month, year);
     final incomes = await incomeRepo.getByRange(month, year, month, year);
     final installments = await installmentRepo.getActive();
@@ -108,6 +116,8 @@ class ExportService {
       goals: goals,
       locale: locale,
       categoryNames: categoriesMap,
+      insights: insights,
+      healthScore: healthScore,
     );
 
     final monthNames = AppLocalizations.monthsForLocale(locale);

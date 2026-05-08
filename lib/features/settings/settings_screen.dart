@@ -499,8 +499,11 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
         color: tokens.FarolColors.coral,
         isLoading: _loading == _ExportTask.pdf,
         onTap: () => _run(_ExportTask.pdf,
-            () => svc.exportMonthlyReport(month, year, ref.read(budgetSettingsProvider).value,
-                locale: Localizations.localeOf(context).languageCode)),
+            () => svc.exportMonthlyReport(
+                month, year, ref.read(budgetSettingsProvider).value,
+                locale: Localizations.localeOf(context).languageCode,
+                insights: ref.read(insightsProvider).value ?? [],
+                healthScore: ref.read(financialSnapshotProvider).healthScore.toDouble())),
       ),
       const _PrivacyToggleRow(),
     ]);
