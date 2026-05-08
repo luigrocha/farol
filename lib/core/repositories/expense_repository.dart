@@ -10,6 +10,24 @@ class ExpenseRepository {
 
   String? get _userId => _supabase.auth.currentUser?.id;
 
+  /// Resolves a category slug (or legacy UPPERCASE dbValue) to its UUID.
+  /// Prefers user-owned category over system category. Returns null if not found.
+  Future<String?> _resolveCategoryId(String categoryRaw) async {
+    final userId = _userId;
+    final slug = categoryRaw.toLowerCase();
+    final data = await _supabase
+        .from('categories')
+        .select('id, user_id')
+        .or('user_id.is.null${userId != null ? ',user_id.eq.$userId' : ''}')
+        .eq('slug', slug)
+        .limit(2);
+    if (data.isEmpty) return null;
+    // Prefer user-owned over system (user_id != null)
+    final sorted = List<Map<String, dynamic>>.from(data)
+      ..sort((a, b) => (a['user_id'] == null ? 1 : 0) - (b['user_id'] == null ? 1 : 0));
+    return sorted.first['id'] as String?;
+  }
+
   Stream<List<Expense>> watchAll() {
     final userId = _userId;
     if (userId != null) {
@@ -76,6 +94,7 @@ class ExpenseRepository {
   }) async {
     final userId = _userId;
     if (userId == null) throw Exception('Not authenticated');
+    final categoryId = await _resolveCategoryId(category);
     await _supabase.from('expenses').insert({
       'user_id': userId,
       'transaction_date': transactionDate.toIso8601String().substring(0, 10),
@@ -91,6 +110,7 @@ class ExpenseRepository {
       if (storeDescription != null) 'store_description': storeDescription,
       'is_projected': isProjected,
       if (installmentPlanId != null) 'installment_plan_id': installmentPlanId,
+      if (categoryId != null) 'category_id': categoryId,
     });
   }
 
@@ -108,6 +128,7 @@ class ExpenseRepository {
     bool isFixed = false,
     String? storeDescription,
   }) async {
+    final categoryId = await _resolveCategoryId(category);
     await _supabase.from('expenses').update({
       'transaction_date': transactionDate.toIso8601String().substring(0, 10),
       'month': month,
@@ -120,6 +141,7 @@ class ExpenseRepository {
       'installments': installments,
       'is_fixed': isFixed,
       'store_description': storeDescription,
+      if (categoryId != null) 'category_id': categoryId,
     }).eq('id', id);
   }
 
@@ -179,12 +201,14 @@ class ExpenseRepository {
         .map((r) => (r['id'] as num).toInt())
         .toList();
     if (ids.isEmpty) return;
+    final categoryId = await _resolveCategoryId(category);
     await _supabase.from('expenses').update({
       'amount': amount,
       'category': category,
       if (subcategory != null) 'subcategory': subcategory,
       'payment_method': paymentMethod,
       if (storeDescription != null) 'store_description': storeDescription,
+      if (categoryId != null) 'category_id': categoryId,
     }).inFilter('id', ids);
   }
 
@@ -195,11 +219,13 @@ class ExpenseRepository {
     String? subcategory,
     required String paymentMethod,
   }) async {
+    final categoryId = await _resolveCategoryId(category);
     await _supabase.from('expenses').update({
       'amount': amount,
       'category': category,
       if (subcategory != null) 'subcategory': subcategory,
       'payment_method': paymentMethod,
+      if (categoryId != null) 'category_id': categoryId,
     }).eq('installment_plan_id', planId).eq('is_projected', true);
   }
 
@@ -267,6 +293,13 @@ class ExpenseRepository {
           .toList();
       if (source.isEmpty) continue;
 
+      // Resolve category_ids once per unique category in the batch
+      final slugs = source.map((e) => e.category).toSet();
+      final idMap = <String, String?>{};
+      for (final slug in slugs) {
+        idMap[slug] = await _resolveCategoryId(slug);
+      }
+
       final rows = source.map((e) {
         final day = e.transactionDate.day;
         final maxDay = DateUtils.getDaysInMonth(toYear, toMonth);
@@ -284,6 +317,7 @@ class ExpenseRepository {
           'installments': e.installments,
           'is_fixed': true,
           if (e.storeDescription != null) 'store_description': e.storeDescription,
+          if (idMap[e.category] != null) 'category_id': idMap[e.category],
         };
       }).toList();
 
