@@ -298,31 +298,32 @@ if (isFixed && expense.recurringRuleId == null) {
 
 ## ✅ Checklist de Completitude
 
-### Fase 1 — Category Pickers
-- [ ] `quick_add_bottom_sheet.dart`: `categoriesStreamProvider` → `categoriesRefProvider`
-- [ ] `quick_add_bottom_sheet.dart`: `_catChip` recebe `CategoryRef`
-- [ ] `quick_add_bottom_sheet.dart`: `_save` usa `CategoryRef.uncategorized()` como fallback
-- [ ] `edit_expense_bottom_sheet.dart`: `categoriesStreamProvider` → `categoriesRefProvider`
-- [ ] `edit_expense_bottom_sheet.dart`: chaves `_subcategories` convertidas para lowercase
+### Fase 1 — Category Pickers ✅ 2026-05-08
+- [x] `quick_add_bottom_sheet.dart`: `categoriesStreamProvider` → `categoriesRefProvider`
+- [x] `quick_add_bottom_sheet.dart`: `_catChip` recebe `CategoryRef`
+- [x] `quick_add_bottom_sheet.dart`: `_save` usa `CategoryRef.uncategorized()` como fallback
+- [x] `edit_expense_bottom_sheet.dart`: `categoriesStreamProvider` → `categoriesRefProvider`
+- [x] `edit_expense_bottom_sheet.dart`: chaves `_subcategories` convertidas para lowercase (bug fix: lookup nunca encontrava com UPPERCASE)
 - [ ] Teste manual: criar gasto com categoria custom → aparece corretamente
 
-### Fase 2 — expense_breakdown
-- [ ] `expense_breakdown.dart`: `categoriesMapProvider` → `categoriesRefProvider`
-- [ ] Widget exibe categorias custom com nome e emoji corretos
+### Fase 2 — expense_breakdown ✅ 2026-05-08
+- [x] `expense_breakdown.dart`: `categoriesMapProvider` → `categoriesRefProvider` (mapa inline)
+- [ ] Verificar em produção: categorias custom exibem nome e emoji corretos
 - [ ] Sem regressão: categorias do sistema (housing, transport...) continuam exibindo
 
-### Fase 3 — health_screen
-- [ ] `health_screen.dart`: `snap.healthScore` em vez de `calculateHealthScore()`
-- [ ] `snap.savingsRate` e `snap.currentBalance` usados para sub-scores
-- [ ] `installmentsProvider` (CardInstallment) removido da tela
-- [ ] Score idêntico ao exibido no `HealthGaugeCard` do dashboard
-- [ ] Sub-scores coerentes com os valores do período
+### Fase 3 — health_screen ✅ 2026-05-08
+- [x] `health_screen.dart`: `financialSnap.healthScore` em vez de `calculateHealthScore()`
+- [x] `financialSnap.savingsRate * 100` e `financialSnap.currentBalance.amount` para sub-scores
+- [x] `installmentsProvider` (CardInstallment legado) removido da tela
+- [x] `cashExpensesProvider` e `cashRemainingProvider` removidos
+- [x] `byCategory['HOUSING']` corrigido para `byCategory['housing']`
+- [ ] Verificar em produção: score idêntico ao `HealthGaugeCard` do dashboard
 
-### Fase 4 — isFixed cleanup
-- [ ] Query SQL executada no Supabase — resultado documentado
-- [ ] Branch `isFixed` ajustada conforme Cenário A ou B
-- [ ] `deleteFixedSeriesFrom` marcado como `@deprecated` no repositório
-- [ ] Teste: swipe de delete em gasto legacy isFixed → comportamento correto
+### Fase 4 — isFixed cleanup ✅ 2026-05-08 (Cenário B)
+- [ ] Query SQL no Supabase ainda pendente (para decidir se migrar para Cenário A)
+- [x] Branch `isFixed`: Cenário B aplicado — dialog de aviso, exclusão individual apenas
+- [x] `deleteFixedSeriesFrom` marcado como `@Deprecated` no repositório
+- [ ] Teste manual: swipe em gasto legacy isFixed → dialog de aviso exibido
 
 ---
 

@@ -132,11 +132,15 @@ farol/
 
 ## 🚨 Foco Atual — O que realmente falta
 
-1. **UI audit**: verificar quais screens usam os novos providers vs. providers legados
-2. **Testes**: `ForecastingEngine` e `IntelligenceLayer` sem testes unitários
+1. ~~**UI audit + migração**~~ ✅ **Concluído 2026-05-08** — ver `plans/ui_provider_migration.md` e `docs/architecture/ui_audit_2026_05_08.md`
+   - `categoriesStreamProvider` removido de quick_add e edit_expense → `categoriesRefProvider`
+   - `categoriesMapProvider` removido de expense_breakdown → `categoriesRefProvider`
+   - `cashExpensesProvider`, `cashRemainingProvider`, `installmentsProvider` (CardInstallment) removidos de health_screen → `financialSnapshotProvider`
+   - `deleteFixedSeriesFrom` deprecado; branch `isFixed` em transactions_screen mostra aviso de legado
+2. ~~**Testes**~~ ✅ **Concluído 2026-05-08** — `test/unit/forecasting_engine_test.dart` (30 testes), `test/unit/intelligence_layer_test.dart` (22 testes)
 3. **Web layout**: todas as screens existem apenas em mobile — falta adaptive layout para desktop
 4. **Migrations em produção**: confirmar que V21–V25 foram aplicadas no Supabase real
-5. **`fixedExpensePropagationProvider`**: ainda existe? Verificar se foi removido do dashboard
+5. ~~**`fixedExpensePropagationProvider`**~~ ✅ Confirmado removido — não existe mais no codebase
 
 ## 🛠️ Dev Commands
 

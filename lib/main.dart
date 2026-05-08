@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -88,10 +89,13 @@ void main() async {
     GoogleFonts.notoSansSymbols2(),
   ]);
 
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  // Lock to portrait only on mobile — web/desktop handle their own orientation.
+  if (!kIsWeb) {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
 
   const supabaseUrl = String.fromEnvironment('SUPABASE_URL', defaultValue: '');
   const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY', defaultValue: '');
@@ -341,27 +345,97 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
     }
   }
 
+  void _onDestinationSelected(int i) => setState(() {
+        _currentIndex = i;
+        _visited.add(i);
+      });
+
+  Widget _buildScreenStack() {
+    return Stack(
+      children: List.generate(_screenBuilders.length, (i) {
+        if (!_visited.contains(i)) return const SizedBox.shrink();
+        return Offstage(
+          offstage: i != _currentIndex,
+          child: _screenBuilders[i](),
+        );
+      }),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final width = MediaQuery.sizeOf(context).width;
+    final isDesktop = width >= 600;
 
+    if (isDesktop) {
+      return _buildDesktopShell(l10n);
+    }
+    return _buildMobileShell(l10n);
+  }
+
+  // ── Desktop: NavigationRail + content side by side ────────────────────────
+
+  Widget _buildDesktopShell(AppLocalizations l10n) {
     return Scaffold(
-      body: Stack(
-        children: List.generate(_screenBuilders.length, (i) {
-          // Only build screens that have been visited at least once.
-          if (!_visited.contains(i)) return const SizedBox.shrink();
-          return Offstage(
-            offstage: i != _currentIndex,
-            child: _screenBuilders[i](),
-          );
-        }),
+      body: Row(
+        children: [
+          NavigationRail(
+            extended: true,
+            selectedIndex: _currentIndex,
+            onDestinationSelected: _onDestinationSelected,
+            minExtendedWidth: 190,
+            leading: _NavRailHeader(),
+            destinations: _railDestinations(l10n),
+          ),
+          const VerticalDivider(thickness: 1, width: 1),
+          Expanded(child: _buildScreenStack()),
+        ],
       ),
+    );
+  }
+
+  List<NavigationRailDestination> _railDestinations(AppLocalizations l10n) => [
+        NavigationRailDestination(
+          icon: const Icon(Icons.home_outlined),
+          selectedIcon: const Icon(Icons.home),
+          label: Text(l10n.dashboard),
+        ),
+        NavigationRailDestination(
+          icon: const Icon(Icons.receipt_long_outlined),
+          selectedIcon: const Icon(Icons.receipt_long),
+          label: Text(l10n.transactions),
+        ),
+        NavigationRailDestination(
+          icon: const Icon(Icons.bar_chart_outlined),
+          selectedIcon: const Icon(Icons.bar_chart),
+          label: Text(l10n.analytics),
+        ),
+        const NavigationRailDestination(
+          icon: Icon(Icons.pie_chart_outline),
+          selectedIcon: Icon(Icons.pie_chart),
+          label: Text('Budget'),
+        ),
+        NavigationRailDestination(
+          icon: const Icon(Icons.trending_up_outlined),
+          selectedIcon: const Icon(Icons.trending_up),
+          label: Text(l10n.investments),
+        ),
+        NavigationRailDestination(
+          icon: const Icon(Icons.settings_outlined),
+          selectedIcon: const Icon(Icons.settings),
+          label: Text(l10n.settings),
+        ),
+      ];
+
+  // ── Mobile: BottomNavigationBar ───────────────────────────────────────────
+
+  Widget _buildMobileShell(AppLocalizations l10n) {
+    return Scaffold(
+      body: _buildScreenStack(),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
-        onDestinationSelected: (i) => setState(() {
-          _currentIndex = i;
-          _visited.add(i);
-        }),
+        onDestinationSelected: _onDestinationSelected,
         destinations: [
           NavigationDestination(
             icon: const Icon(Icons.home_outlined),
@@ -393,6 +467,44 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
             selectedIcon: const Icon(Icons.settings),
             label: l10n.settings,
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Logo / quick-action header shown above the rail destinations on desktop.
+class _NavRailHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: tokens.FarolColors.navy,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.light_sharp, color: Colors.white, size: 18),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                'Farol',
+                style: GoogleFonts.manrope(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: tokens.FarolColors.navy,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
         ],
       ),
     );
