@@ -5,6 +5,7 @@ import '../../services/financial_calculator_service.dart';
 import '../entities/financial_snapshot.dart';
 import '../entities/scheduled_payment.dart';
 import '../entities/installment_plan.dart';
+import '../entities/envelope.dart';
 import '../value_objects/money.dart';
 
 /// Produces a [FinancialSnapshot] from raw data.
@@ -20,6 +21,8 @@ class FinancialEngine {
     required double swileOverride,
     required double emergencyFund,
     required List<InstallmentPlan> activePlans,
+    List<Envelope> envelopes = const [],
+    Money totalAllocated = Money.zero,
   }) {
     // ── Income ────────────────────────────────────────────────────────────────
     final cashIncome = Money.fromDouble(
@@ -129,8 +132,8 @@ class FinancialEngine {
       swileSpent: swileSpent,
       currentBalance: currentBalance,
       swileBalance: swileBalance,
-      envelopes: const [],
-      totalAllocated: Money.zero,
+      envelopes: envelopes,
+      totalAllocated: totalAllocated,
       healthScore: healthScore,
       savingsRate: savingsRate,
       upcomingPayments: upcomingPayments,

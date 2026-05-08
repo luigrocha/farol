@@ -1,7 +1,7 @@
 # ADR-002: FinancialSnapshot como Única Fuente de Verdad del Dashboard
 
-**Fecha**: 2026-05-07
-**Estado**: Propuesto — pendiente de implementación
+**Fecha**: 2026-05-08
+**Estado**: Implementado ✅
 **Área**: Domain · Providers · UI
 
 ---

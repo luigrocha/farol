@@ -45,7 +45,9 @@ import '../domain/entities/installment_plan.dart';
 import '../domain/entities/installment_payment.dart';
 import '../domain/services/installment_service.dart';
 import '../domain/services/financial_engine.dart';
+import '../domain/services/envelope_engine.dart';
 import '../domain/entities/financial_snapshot.dart';
+import '../domain/entities/envelope.dart';
 
 // ═══════════════════════════════════════════
 // LOCAL-DEVICE PROVIDERS (Drift)
@@ -1323,6 +1325,29 @@ class SalarySettingsNotifier extends AsyncNotifier<SalarySettings?> {
 // ═══════════════════════════════════════════
 
 final _financialEngineProvider = Provider<FinancialEngine>((_) => const FinancialEngine());
+final _envelopeEngineProvider = Provider<EnvelopeEngine>((_) => const EnvelopeEngine());
+
+/// Envelopes for the current period, with rollover from the previous period.
+final envelopesProvider = Provider.autoDispose<List<Envelope>>((ref) {
+  final engine = ref.watch(_envelopeEngineProvider);
+  final entries = ref.watch(periodBudgetEntriesProvider).value ?? [];
+  if (entries.isEmpty) return const [];
+
+  final allExpenses = ref.watch(_allExpensesStreamProvider).value ?? [];
+  final cutoffDay = ref.watch(budgetSettingsProvider).value?.cutoffDay ?? 1;
+  final period = FinancialPeriod.current(cutoffDay);
+  final previousPeriod = period.previous;
+  final categoriesBySlug = {
+    for (final c in ref.watch(categoriesRefProvider)) c.slug: c
+  };
+
+  return engine.buildEnvelopes(
+    entries: entries,
+    categoriesBySlug: categoriesBySlug,
+    previousExpenses: allExpenses,
+    previousPeriod: previousPeriod,
+  );
+});
 
 /// Single source of truth for the current period's financial state.
 /// All dashboard widgets should consume this instead of individual providers.
@@ -1331,11 +1356,13 @@ final financialSnapshotProvider = Provider.autoDispose<FinancialSnapshot>((ref) 
   final incomes = ref.watch(incomesProvider).value ?? [];
   final expenses = ref.watch(realExpensesProvider).value ?? [];
   final netSalaryOverride = ref.watch(effectiveNetSalaryProvider);
+  final swileOverride = ref.watch(effectiveSwileProvider);
   final activePlans = ref.watch(activeInstallmentPlansProvider).value ?? [];
   final accountsExist = ref.watch(accountsProvider).value?.isNotEmpty ?? false;
   final emergencyFund = accountsExist
       ? ref.watch(liquidAccountsTotalProvider)
       : (ref.watch(netWorthSnapshotProvider).value?.emergencyFund ?? 0);
+  final envelopes = ref.watch(envelopesProvider);
 
   final month = ref.watch(selectedMonthProvider);
   final year = ref.watch(selectedYearProvider);
@@ -1343,7 +1370,8 @@ final financialSnapshotProvider = Provider.autoDispose<FinancialSnapshot>((ref) 
   final period = FinancialPeriod.current(cutoffDay,
       now: DateTime(year, month, cutoffDay));
 
-  final swileOverride = ref.watch(effectiveSwileProvider);
+  final envelopeEngine = ref.watch(_envelopeEngineProvider);
+  final totalAllocated = envelopeEngine.totalAllocated(envelopes);
 
   return engine.buildSnapshot(
     period: period,
@@ -1353,6 +1381,8 @@ final financialSnapshotProvider = Provider.autoDispose<FinancialSnapshot>((ref) 
     swileOverride: swileOverride,
     emergencyFund: emergencyFund,
     activePlans: activePlans,
+    envelopes: envelopes,
+    totalAllocated: totalAllocated,
   );
 });
 

@@ -6,6 +6,7 @@ import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';
 import '../../../core/theme/farol_colors.dart';
 import '../../../design/farol_colors.dart' as tokens;
+import '../../../core/domain/value_objects/money.dart';
 import 'budget_edit_sheet.dart';
 
 class PeriodBudgetScreen extends ConsumerWidget {
@@ -209,7 +210,12 @@ class _EntryCard extends ConsumerWidget {
     final colors = context.colors;
     final catsMap = ref.watch(categoriesMapProvider);
     final cat = catsMap[entry.category];
-    
+
+    final slug = entry.category.toLowerCase();
+    final envelopes = ref.watch(envelopesProvider);
+    final envelope = envelopes.where((e) => e.category.slug == slug).firstOrNull;
+    final rollover = envelope?.rolloverAmount ?? Money.zero;
+
     final pct = entry.percentage.clamp(0.0, 1.0);
 
     final Color progressColor;
@@ -265,6 +271,24 @@ class _EntryCard extends ConsumerWidget {
                     ],
                   ),
                 ),
+                if (rollover.isPositive)
+                  Container(
+                    margin: const EdgeInsets.only(right: 6),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1A4A3A).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      '+${rollover.formatted}',
+                      style: const TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF1A7A5A),
+                      ),
+                    ),
+                  ),
                 if (isSwileBacked)
                   Container(
                     margin: const EdgeInsets.only(right: 6),
