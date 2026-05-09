@@ -6,6 +6,18 @@
 
 ---
 
+## 🎯 Posicionamento Estratégico (atualizado 2026-05-08)
+
+```
+❌ "controla tus gastos"
+✅ "entiende el futuro de tu dinero"
+```
+
+**Próxima grande fase**: Multiusuário (Workspace model) + Freemium
+→ Ver `plans/multiuser_freemium.md` — plano completo com 4 fases e migrações V26–V30
+
+---
+
 ## 🧭 Roles de Claude en este proyecto
 
 ### 1. CTO Assistant
