@@ -63,8 +63,10 @@ class InsightCard extends ConsumerWidget {
                     ref.read(dismissedInsightsRepositoryProvider);
                 await repo.dismiss(
                     insight.dismissGroup ?? insight.id);
+                await repo.trackDismiss(insight.type);
                 ref.invalidate(dismissedInsightsProvider);
                 ref.invalidate(insightsProvider);
+                ref.invalidate(insightStatsProvider);
                 onDismissed?.call();
               },
               child: Padding(

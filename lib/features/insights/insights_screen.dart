@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/domain/entities/financial_insight.dart';
+import '../../core/domain/entities/insight_stats.dart';
 import '../../core/providers/providers.dart';
 import 'insight_card.dart';
 
@@ -46,6 +47,8 @@ class InsightsScreen extends ConsumerWidget {
                   return _GroupedInsights(insights: insights);
                 },
               ),
+              const SizedBox(height: 32),
+              const _DismissStats(),
               const SizedBox(height: 80),
             ]),
           ),
@@ -96,6 +99,81 @@ class _GroupedInsights extends StatelessWidget {
     }
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: sections);
+  }
+}
+
+/// Section that shows which insight types the user dismisses most often.
+/// Only displayed when at least one type has been dismissed ≥2 times.
+class _DismissStats extends ConsumerWidget {
+  const _DismissStats();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final statsAsync = ref.watch(insightStatsProvider);
+
+    return statsAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (stats) {
+        // Only show types dismissed at least twice — noise filter.
+        final frequent = stats.where((s) => s.dismissedCount >= 2).toList();
+        if (frequent.isEmpty) return const SizedBox.shrink();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Text(
+                'Tipos mais ignorados',
+                style: GoogleFonts.manrope(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.grey,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+            ...frequent.map((s) => _StatRow(stat: s)),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _StatRow extends StatelessWidget {
+  const _StatRow({required this.stat});
+  final InsightStats stat;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(children: [
+        Expanded(
+          child: Text(
+            InsightStats.labelFor(stat.type),
+            style: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w500),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(
+            '${stat.dismissedCount}×',
+            style: GoogleFonts.manrope(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: Colors.grey.shade600,
+            ),
+          ),
+        ),
+      ]),
+    );
   }
 }
 

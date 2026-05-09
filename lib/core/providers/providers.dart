@@ -55,6 +55,8 @@ import '../domain/value_objects/money.dart';
 import '../domain/entities/financial_insight.dart';
 import '../domain/services/intelligence_layer.dart';
 import '../repositories/dismissed_insights_repository.dart';
+import '../domain/entities/insight_stats.dart';
+import '../repositories/forecast_cache_repository.dart';
 import '../infrastructure/sync/sync_manager.dart' show SyncManager, SyncStatus;
 import '../infrastructure/sync/operation_queue.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -1434,6 +1436,10 @@ final pendingRecurringOccurrencesProvider =
 // FORECASTING PROVIDERS
 // ═══════════════════════════════════════════
 
+final forecastCacheRepositoryProvider = Provider<ForecastCacheRepository>((ref) {
+  return ForecastCacheRepository(ref.read(databaseProvider));
+});
+
 /// Full financial projection: BurnRate + LiquidityRisk + ProjectedClosingBalance.
 /// Computed async so it never blocks the main snapshot.
 final financialProjectionProvider =
@@ -1463,9 +1469,57 @@ final financialProjectionProvider =
 });
 
 /// Full cashflow chart — only loaded when analytics screen is open.
+///
+/// Uses a client-side TTL cache (2 h) stored in Drift [UserSettings].
+/// The cache key includes the period start/end dates so a period change
+/// automatically invalidates the result. [SyncManager] also calls
+/// [ForecastCacheRepository.invalidate] after a successful sync.
 final cashflowForecastProvider =
     FutureProvider.autoDispose<FinancialProjection?>((ref) async {
   final snap = ref.watch(financialSnapshotProvider);
+  final cache = ref.read(forecastCacheRepositoryProvider);
+
+  // Build a stable key from the current financial period.
+  final periodKey =
+      '${snap.period.start.toIso8601String()}_${snap.period.end.toIso8601String()}';
+
+  // ── Cache hit ──────────────────────────────────────────────────────────────
+  final cached = await cache.get(periodKey);
+  if (cached != null) {
+    // Reconstruct a FinancialProjection using the cached chart + fresh snapshot.
+    // The snapshot-derived fields (burnRate, liquidityRisk, projectedClosing)
+    // are recomputed from the live snapshot so they always reflect current state.
+    final pendingInstallments =
+        await ref.watch(pendingInstallmentPaymentsProvider.future);
+    final pendingOccurrences =
+        await ref.watch(pendingRecurringOccurrencesProvider.future);
+
+    final obligations = const ObligationEngine().buildObligations(
+      pendingInstallments: pendingInstallments,
+      pendingOccurrences: pendingOccurrences,
+    );
+
+    final projection = const ForecastingEngine().buildProjection(
+      period: snap.period,
+      totalSpent: snap.totalSpent,
+      totalAllocated: snap.totalAllocated,
+      currentBalance: snap.currentBalance,
+      projectedIncome: Money.zero,
+      obligations: obligations,
+      expenseHistory: const [],
+      buildForecastChart: false,
+    );
+
+    // Attach the cached chart — avoids fetching all expenses again.
+    return FinancialProjection(
+      burnRate: projection.burnRate,
+      projectedClosingBalance: projection.projectedClosingBalance,
+      liquidityRisk: projection.liquidityRisk,
+      cashflowForecast: cached,
+    );
+  }
+
+  // ── Cache miss: full computation ───────────────────────────────────────────
   final pendingInstallments =
       await ref.watch(pendingInstallmentPaymentsProvider.future);
   final pendingOccurrences =
@@ -1477,7 +1531,7 @@ final cashflowForecastProvider =
     pendingOccurrences: pendingOccurrences,
   );
 
-  return const ForecastingEngine().buildProjection(
+  final result = const ForecastingEngine().buildProjection(
     period: snap.period,
     totalSpent: snap.totalSpent,
     totalAllocated: snap.totalAllocated,
@@ -1487,6 +1541,13 @@ final cashflowForecastProvider =
     expenseHistory: expenses,
     buildForecastChart: true,
   );
+
+  // Persist the chart to cache (burnRate/liquidityRisk are cheap to recompute).
+  if (result?.cashflowForecast != null) {
+    await cache.put(periodKey, result!.cashflowForecast!);
+  }
+
+  return result;
 });
 
 /// Detects recurring patterns from all-time expense history.
@@ -1539,6 +1600,13 @@ final dismissedInsightsRepositoryProvider =
 final dismissedInsightsProvider =
     FutureProvider.autoDispose<Set<String>>((ref) {
   return ref.watch(dismissedInsightsRepositoryProvider).getDismissed();
+});
+
+/// Dismiss-rate analytics — how many times each insight type has been dismissed.
+/// Invalidated whenever the user dismisses an insight (via InsightCard).
+final insightStatsProvider =
+    FutureProvider.autoDispose<List<InsightStats>>((ref) {
+  return ref.watch(dismissedInsightsRepositoryProvider).getStats();
 });
 
 /// The full list of active insights, sorted by priority, max 3.

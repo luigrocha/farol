@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
+import '../../core/widgets/shimmer_box.dart';
 
 class CashflowChart extends ConsumerWidget {
   const CashflowChart({super.key});
@@ -13,10 +14,12 @@ class CashflowChart extends ConsumerWidget {
     final projAsync = ref.watch(cashflowForecastProvider);
 
     return projAsync.when(
-      loading: () => const SizedBox(
-        height: 200,
-        child: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text('Fluxo de Caixa (90 dias)',
+            style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 8),
+        const ShimmerBox(width: double.infinity, height: 200, borderRadius: 12),
+      ]),
       error: (e, _) => Text('Erro: $e'),
       data: (proj) {
         if (proj == null || proj.cashflowForecast == null) {
@@ -25,8 +28,11 @@ class CashflowChart extends ConsumerWidget {
         final forecast = proj.cashflowForecast!;
         if (forecast.isEmpty) return const SizedBox.shrink();
 
+        final minBalance = forecast.minBalance;
+        final minBalanceFormatted = FinancialCalculatorService.formatBRL(minBalance.amount);
+
         return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Fluxo de caixa (90 dias)',
+          Text('Fluxo de Caixa (90 dias)',
               style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w700)),
           const SizedBox(height: 4),
           if (forecast.goesNegative)
@@ -154,13 +160,48 @@ class CashflowChart extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Row(children: [
-            _Legend(color: Color(0xFF00897B), label: 'Real', dashed: false),
-            SizedBox(width: 16),
-            _Legend(color: Color(0xFFF59E0B), label: 'Projeção', dashed: true),
-            SizedBox(width: 16),
-            _Legend(color: Colors.red, label: 'Compromisso', isDot: true),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            const Row(children: [
+              _Legend(color: Color(0xFF00897B), label: 'Real', dashed: false),
+              SizedBox(width: 16),
+              _Legend(color: Color(0xFFF59E0B), label: 'Projeção', dashed: true),
+              SizedBox(width: 16),
+              _Legend(color: Colors.red, label: 'Compromisso', isDot: true),
+            ]),
           ]),
+          const SizedBox(height: 10),
+          // Min-balance summary
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: minBalance.isNegative
+                  ? Colors.red.withValues(alpha: 0.07)
+                  : Colors.grey.withValues(alpha: 0.07),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(children: [
+              Icon(
+                minBalance.isNegative
+                    ? Icons.trending_down_rounded
+                    : Icons.trending_flat_rounded,
+                size: 14,
+                color: minBalance.isNegative ? Colors.red : Colors.grey,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'Saldo mínimo projetado: ',
+                style: GoogleFonts.manrope(fontSize: 11, color: Colors.grey.shade600),
+              ),
+              Text(
+                minBalanceFormatted,
+                style: GoogleFonts.manrope(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: minBalance.isNegative ? Colors.red : Colors.grey.shade700,
+                ),
+              ),
+            ]),
+          ),
         ]);
       },
     );

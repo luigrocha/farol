@@ -137,9 +137,18 @@ class _CategoryTile extends StatelessWidget {
     this.onDelete,
   });
 
+  static (String, Color) _financialTypeLabel(String type) => switch (type) {
+        'need' => ('Necessidade', Color(0xFF2196F3)),
+        'investment' => ('Investimento', Color(0xFF00897B)),
+        'income' => ('Receita', Color(0xFF4CAF50)),
+        'transfer' => ('Transferência', Color(0xFF9E9E9E)),
+        _ => ('Desejo', Color(0xFFF59E0B)),
+      };
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final (typeLabel, typeColor) = _financialTypeLabel(category.financialType);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -170,40 +179,33 @@ class _CategoryTile extends StatelessWidget {
             ),
           ),
         ),
-        title: Text(
-          category.name,
-          style: GoogleFonts.manrope(
-            fontWeight: FontWeight.w600,
-            color: colors.onSurface,
+        title: Row(children: [
+          Flexible(
+            child: Text(
+              category.name,
+              style: GoogleFonts.manrope(
+                fontWeight: FontWeight.w600,
+                color: colors.onSurface,
+              ),
+            ),
           ),
-        ),
-        subtitle: Text(
-          category.slug,
-          style: TextStyle(
-            fontSize: 12,
-            color: colors.onSurfaceFaint,
-          ),
+          const SizedBox(width: 6),
+          if (category.isSystem)
+            _Chip(label: 'Sistema', color: colors.onSurfaceFaint),
+        ]),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Row(children: [
+            _Chip(label: typeLabel, color: typeColor),
+            if (category.isSwile) ...[
+              const SizedBox(width: 4),
+              _Chip(label: 'Swile', color: tokens.FarolColors.beam),
+            ],
+          ]),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (category.isSwile)
-              Container(
-                margin: const EdgeInsets.only(right: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: tokens.FarolColors.beam.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: const Text(
-                  'SWILE',
-                  style: TextStyle(
-                    fontSize: 8,
-                    fontWeight: FontWeight.bold,
-                    color: tokens.FarolColors.beam,
-                  ),
-                ),
-              ),
             IconButton(
               icon: const Icon(Icons.edit_outlined, size: 20),
               onPressed: onEdit,
@@ -215,12 +217,34 @@ class _CategoryTile extends StatelessWidget {
                 onPressed: onDelete,
                 color: tokens.FarolColors.coral.withValues(alpha: 0.7),
               ),
-            const Icon(Icons.drag_indicator, size: 20),
+            Icon(Icons.drag_indicator, size: 20, color: colors.onSurfaceFaint),
           ],
         ),
       ),
     );
   }
+}
+
+class _Chip extends StatelessWidget {
+  const _Chip({required this.label, required this.color});
+  final String label;
+  final Color color;
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w700,
+            color: color,
+          ),
+        ),
+      );
 }
 
 class _CategoryDialog extends ConsumerStatefulWidget {
@@ -237,7 +261,16 @@ class _CategoryDialogState extends ConsumerState<_CategoryDialog> {
   late TextEditingController _nameController;
   late TextEditingController _emojiController;
   late bool _isSwile;
+  late String _financialType;
   bool _saving = false;
+
+  static const _typeOptions = [
+    ('need', 'Necessidade'),
+    ('want', 'Desejo'),
+    ('investment', 'Investimento'),
+    ('income', 'Receita'),
+    ('transfer', 'Transferência'),
+  ];
 
   @override
   void initState() {
@@ -245,6 +278,7 @@ class _CategoryDialogState extends ConsumerState<_CategoryDialog> {
     _nameController = TextEditingController(text: widget.category?.name ?? '');
     _emojiController = TextEditingController(text: widget.category?.emoji ?? '📁');
     _isSwile = widget.category?.isSwile ?? false;
+    _financialType = widget.category?.financialType ?? 'want';
   }
 
   @override
@@ -267,12 +301,14 @@ class _CategoryDialogState extends ConsumerState<_CategoryDialog> {
             name: name,
             emoji: emoji,
             isSwile: _isSwile,
+            financialType: _financialType,
           ) ??
           Category(
             slug: slug,
             name: name,
             emoji: emoji,
             isSwile: _isSwile,
+            financialType: _financialType,
             isSystem: false,
             displayOrder: 99,
           );
@@ -330,12 +366,23 @@ class _CategoryDialogState extends ConsumerState<_CategoryDialog> {
                 autofocus: true,
               ),
               const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _financialType,
+                decoration: const InputDecoration(labelText: 'Tipo financeiro'),
+                items: _typeOptions
+                    .map((t) => DropdownMenuItem(value: t.$1, child: Text(t.$2)))
+                    .toList(),
+                onChanged: widget.category?.isSystem == true
+                    ? null
+                    : (v) => setState(() => _financialType = v ?? 'want'),
+              ),
+              const SizedBox(height: 16),
               SwitchListTile(
                 title: Text(l10n.swileCategory),
                 subtitle: Text(l10n.swileCategoryDesc),
                 value: _isSwile,
-                onChanged: widget.category?.isSystem == true 
-                    ? null 
+                onChanged: widget.category?.isSystem == true
+                    ? null
                     : (v) => setState(() => _isSwile = v),
                 contentPadding: EdgeInsets.zero,
               ),

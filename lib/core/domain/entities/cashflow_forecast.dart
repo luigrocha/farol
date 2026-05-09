@@ -20,6 +20,25 @@ class CashflowDataPoint {
     required this.dailyIncome,
     required this.isReal,
   });
+
+  Map<String, dynamic> toJson() => {
+        'date': date.toIso8601String(),
+        'balance': balance.amount,
+        'hasObligation': hasObligation,
+        'dailyExpense': dailyExpense.amount,
+        'dailyIncome': dailyIncome.amount,
+        'isReal': isReal,
+      };
+
+  factory CashflowDataPoint.fromJson(Map<String, dynamic> json) =>
+      CashflowDataPoint(
+        date: DateTime.parse(json['date'] as String),
+        balance: Money.fromDouble((json['balance'] as num).toDouble()),
+        hasObligation: json['hasObligation'] as bool,
+        dailyExpense: Money.fromDouble((json['dailyExpense'] as num).toDouble()),
+        dailyIncome: Money.fromDouble((json['dailyIncome'] as num).toDouble()),
+        isReal: json['isReal'] as bool,
+      );
 }
 
 class CashflowForecast {
@@ -37,4 +56,17 @@ class CashflowForecast {
 
   /// Whether the balance dips negative at any point
   bool get goesNegative => points.any((p) => p.balance.isNegative);
+
+  Map<String, dynamic> toJson() => {
+        'generatedAt': generatedAt.toIso8601String(),
+        'points': points.map((p) => p.toJson()).toList(),
+      };
+
+  factory CashflowForecast.fromJson(Map<String, dynamic> json) =>
+      CashflowForecast(
+        generatedAt: DateTime.parse(json['generatedAt'] as String),
+        points: (json['points'] as List<dynamic>)
+            .map((p) => CashflowDataPoint.fromJson(p as Map<String, dynamic>))
+            .toList(),
+      );
 }

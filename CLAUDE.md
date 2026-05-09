@@ -176,16 +176,31 @@ flutter test
 
 | Plano | Domínio | DB (Migrations) | Providers | UI Screens | Testes | Status Real |
 |---|---|---|---|---|---|---|
-| `categories_redesign.md` | ✅ `CategoryRef`, `CategoryResolver` | ✅ V12, V17–V20 | ✅ `categoriesRefProvider` | ✅ `categories_management_screen` | ⚠️ parcial | 🟡 **UI polish** |
+| `categories_redesign.md` | ✅ `CategoryRef`, `CategoryResolver` | ✅ V12, V17–V20 | ✅ `categoriesRefProvider` | ✅ `categories_management_screen` | ⚠️ parcial | 🟢 **Completo** |
 | `installments_redesign.md` | ✅ `InstallmentPlan/Payment`, `InstallmentService` | ✅ V21–V23 | ✅ `installmentPlansStreamProvider`, `activeInstallmentPlansProvider` | ✅ `installments_screen`, `InstallmentsSummaryCard`, `HealthGaugeCard` | ✅ `installment_service_test` | 🟢 **Completo** |
-| `financial_engine.md` | ✅ `Money`, `FinancialSnapshot`, `FinancialEngine`, `EnvelopeEngine` | ✅ (sem schema próprio) | ✅ `financialSnapshotProvider`, `envelopesProvider` | ✅ dashboard widgets: `BurnRateCard`, `PeriodBalanceHero`, `HealthGaugeCard` | ⚠️ parcial | 🟡 **UI polish** |
+| `financial_engine.md` | ✅ `Money`, `FinancialSnapshot`, `FinancialEngine`, `EnvelopeEngine` | ✅ (sem schema próprio) | ✅ `financialSnapshotProvider`, `envelopesProvider` | ✅ dashboard widgets: `BurnRateCard`, `PeriodBalanceHero`, `HealthGaugeCard` | ⚠️ parcial | 🟢 **Completo** |
 | `recurring_rules.md` | ✅ `RecurringRule/Occurrence`, `RecurrenceResolver`, `RecurringDetector` | ✅ V24–V25 | ✅ `recurringRulesStreamProvider`, `generateRecurringOccurrencesProvider` | ✅ `recurring_screen`, `add_recurring_bottom_sheet`, `recurring_suggestions_screen` | ✅ `recurrence_resolver_test` | 🟢 **Completo** |
-| `forecasting.md` | ✅ `ForecastingEngine`, `ObligationEngine`, `BurnRate`, `LiquidityRisk`, `CashflowForecast` | ✅ (lê tabelas existentes) | ✅ `financialProjectionProvider`, `cashflowForecastProvider` | ✅ `analytics_screen` + `cashflow_chart` | ⚠️ parcial | 🟡 **UI polish** |
+| `forecasting.md` | ✅ `ForecastingEngine`, `ObligationEngine`, `BurnRate`, `LiquidityRisk`, `CashflowForecast` | ✅ (lê tabelas existentes) | ✅ `financialProjectionProvider`, `cashflowForecastProvider` | ✅ `analytics_screen` + `cashflow_chart` | ⚠️ parcial | 🟢 **Completo** |
 | `offline_sync.md` | ✅ `SyncManager`, `OperationQueue`, `ConflictResolver` | ✅ (Drift `sync_queue`) | ✅ `syncStatusProvider`, `isOfflineProvider` | ✅ `ConnectivityBanner` no dashboard | ✅ 29 testes (sync/) | 🟢 **Completo** |
 | `intelligence_layer.md` | ✅ `IntelligenceLayer` (12 regras), `DismissedInsightsRepository` | ✅ (Drift UserSettings) | ✅ `insightsProvider`, `dismissedInsightsProvider` | ✅ `InsightsPanel`, `insight_card`, `insights_screen` | ✅ 22 testes | 🟢 **Completo** |
 
 ### O que realmente está pendente
 
-Nenhum débito técnico de UI ou testes em aberto.
+- **Dismiss rate tracking** ✅ **Concluído 2026-05-08**
+  - `InsightStats` entity em `core/domain/entities/insight_stats.dart`
+  - `DismissedInsightsRepository.trackDismiss()` + `getStats()` — key `'insight_dismissal_stats'` em UserSettings (Drift)
+  - `insightStatsProvider` em `providers.dart`
+  - `InsightCard` chama `trackDismiss` + invalida `insightStatsProvider` no dismiss
+  - `InsightsScreen` exibe seção "Tipos mais ignorados" para tipos com ≥2 dismissals
 
-O único item remanescente é o shim de compatibilidade `InstallmentRepository` (ver seção acima) — que deve permanecer até uma migração de dados de produção deliberada.
+- **Cashflow forecast cache** ✅ **Concluído 2026-05-08** — ver ADR em `docs/decisions/adr_cashflow_forecast_cache.md`
+  - Edge Function descartada (ver ADR); implementado cache client-side em Drift UserSettings
+  - `CashflowDataPoint`/`CashflowForecast` agora têm `toJson`/`fromJson`
+  - `ForecastCacheRepository` — TTL 2h, chave inclui período financeiro
+  - `forecastCacheRepositoryProvider` + `cashflowForecastProvider` atualizado: cache hit evita fetch de todas as despesas
+- **UI polish** ✅ **Concluído 2026-05-08** — fechar planos 🟡 `categories_redesign`, `financial_engine`, `forecasting`
+  - `CategoriesManagementScreen`: `_CategoryTile` mostra chip `financialType` + badge "Sistema"; `_CategoryDialog` tem seletor de tipo financeiro
+  - `AnalyticsScreen`: textos em espanhol corrigidos → pt_BR ("Tendência Mensal", "Receita", "Distribuição por Categoria", "Comparativo Mensal", "MÉDIA/MÊS", subtítulo da tela)
+  - `CashflowChart`: loading state → `ShimmerBox` (antes: `CircularProgressIndicator`); card de saldo mínimo projetado adicionado abaixo do gráfico
+
+O único item de compatibilidade remanescente é o shim `InstallmentRepository` (ver seção acima) — deve permanecer até migração de dados de produção deliberada.

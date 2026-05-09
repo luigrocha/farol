@@ -39,7 +39,7 @@ class AnalyticsScreen extends ConsumerWidget {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(l10n.analytics, style: GoogleFonts.manrope(fontSize: 32, fontWeight: FontWeight.w800, letterSpacing: -0.9, height: 1.1)),
               const SizedBox(height: 6),
-              Text('Tu dinero, analizado en el tiempo.', style: TextStyle(fontSize: 13, color: context.colors.onSurfaceSoft)),
+              Text('Seus dados, analisados ao longo do tempo.', style: TextStyle(fontSize: 13, color: context.colors.onSurfaceSoft)),
             ]),
           )),
           SliverToBoxAdapter(child: _RangePicker(
@@ -245,7 +245,7 @@ class _SummaryCards extends ConsumerWidget {
       )),
       const SizedBox(width: 10),
       Expanded(child: _MetricCard(
-        label: 'AVG / MES',
+        label: 'MÉDIA/MÊS',
         value: FinancialCalculatorService.formatBRL(avg),
         icon: Icons.calendar_month_outlined,
         color: tokens.FarolColors.beam,
@@ -319,10 +319,10 @@ class _MonthlyTrendCard extends StatelessWidget {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text('Tendencia Mensual', style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
+        Text('Tendência Mensal', style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
         Row(children: [
           const _Legend(color: tokens.FarolColors.beam, label: 'Gasto'),
-          if (hasIncome) ...[const SizedBox(width: 12), const _Legend(color: tokens.FarolColors.navy, label: 'Ingreso')],
+          if (hasIncome) ...[const SizedBox(width: 12), const _Legend(color: tokens.FarolColors.navy, label: 'Receita')],
         ]),
       ]),
       const SizedBox(height: 12),
@@ -394,7 +394,7 @@ class _CategoryBreakdown extends ConsumerWidget {
     if (sorted.isEmpty) return const SizedBox.shrink();
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text('Distribución por Categoría', style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
+      Text('Distribuição por Categoria', style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
       const SizedBox(height: 16),
       Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
         _DonutChart(data: byCat, total: total),
@@ -455,7 +455,7 @@ class _MonthlyBarsCard extends StatelessWidget {
     final avgVal = sorted.fold(0.0, (s, e) => s + e.value) / sorted.length;
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text('Comparativo Mensual', style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
+      Text('Comparativo Mensal', style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
       const SizedBox(height: 12),
       ...sorted.map((entry) {
         final pct = maxVal > 0 ? entry.value / maxVal : 0.0;
