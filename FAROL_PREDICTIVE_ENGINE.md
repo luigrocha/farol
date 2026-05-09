@@ -1802,10 +1802,10 @@ Cada fase tiene valor de producto independiente. El usuario siente la mejora des
 
 ---
 
-## FASE 1: Fundamentos Sólidos (Semanas 1-4)
+## FASE 1: Fundamentos Sólidos
 **ROI**: Elimina errores actuales, prepara el terreno. Sin esta fase, todo lo demás colapsa.
 
-### 1.1 Unificación del sistema de categorías (Semana 1-2)
+### 1.1 Unificación del sistema de categorías
 - Crear tabla `categories` en Supabase (con slugs que matchean los dbValues del enum)
 - Crear `CategoryRef` value object en Dart
 - Escribir `CategoryResolver` que maneja string legacy → CategoryRef sin excepciones
@@ -1815,7 +1815,7 @@ Cada fase tiene valor de producto independiente. El usuario siente la mejora des
 
 **Complejidad**: Media | **Riesgo**: Bajo (cambios aditivos) | **Dependencias**: Ninguna
 
-### 1.2 Migración de Expenses a fechas reales (Semana 2)
+### 1.2 Migración de Expenses a fechas reales
 - Agregar `transaction_date DATE` en la tabla `expenses` (ya existe en el modelo Dart)
 - Asegurar que todos los queries de período usen `transaction_date BETWEEN` en vez de `month/year`
 - El campo `month/year` puede mantenerse como índice adicional para compatibilidad
@@ -1823,7 +1823,7 @@ Cada fase tiene valor de producto independiente. El usuario siente la mejora des
 
 **Complejidad**: Baja | **Riesgo**: Medio (puede afectar queries existentes)
 
-### 1.3 InstallmentPlan + InstallmentPayments (Semana 3-4)
+### 1.3 InstallmentPlan + InstallmentPayments
 - Crear tabla `installment_plans` y `installment_payments` en Supabase
 - Migrar `card_installments` existentes: cada registro genera un plan con N payments
 - Actualizar `InstallmentRepository` para usar el nuevo schema
@@ -1839,10 +1839,10 @@ Cada fase tiene valor de producto independiente. El usuario siente la mejora des
 
 ---
 
-## FASE 2: Motor Central (Semanas 5-10)
+## FASE 2: Motor Central
 **ROI**: El producto empieza a "pensar" por el usuario. Primera diferenciación real.
 
-### 2.1 RecurringRule Engine (Semana 5-6)
+### 2.1 RecurringRule Engine
 - Crear tabla `recurring_rules` y `recurring_occurrences`
 - Implementar `RecurrenceResolver.generateOccurrences()`
 - UI: nueva pantalla "Gastos Fixos & Recorrentes" (reemplaza el isFixed copy)
@@ -1851,7 +1851,7 @@ Cada fase tiene valor de producto independiente. El usuario siente la mejora des
 
 **Complejidad**: Alta | **Riesgo**: Medio
 
-### 2.2 EnvelopeEngine con Rollover (Semana 7-8)
+### 2.2 EnvelopeEngine con Rollover
 - Extender `period_budgets` → `envelopes` con rollover_policy
 - Implementar `EnvelopeEngine.calculateRollover()`
 - UI: badge "Rollover: R$120 do período anterior" en budget card
@@ -1859,7 +1859,7 @@ Cada fase tiene valor de producto independiente. El usuario siente la mejora des
 
 **Complejidad**: Media | **Riesgo**: Bajo
 
-### 2.3 FinancialSnapshot unificado (Semana 9-10)
+### 2.3 FinancialSnapshot unificado
 - Crear `FinancialEngine` que produce `FinancialSnapshot`
 - Migrar el `DashboardScreen` para consumir solo el snapshot
 - Eliminar cálculos duplicados en widgets individuales
@@ -1874,16 +1874,16 @@ Cada fase tiene valor de producto independiente. El usuario siente la mejora des
 
 ---
 
-## FASE 3: Forecasting Real (Semanas 11-16)
+## FASE 3: Forecasting Real
 **ROI**: El "momento wow" del producto. El usuario ve el futuro de sus finanzas.
 
-### 3.1 BurnRate + DaysUntilEmpty (Semana 11-12)
+### 3.1 BurnRate + DaysUntilEmpty
 - Implementar `BurnRate` calculation en `ForecastingEngine`
 - UI: nuevo widget "Velocidade Financeira" en el dashboard
 - Mostrar DaysUntilEmpty con semáforo (verde/amarillo/rojo)
 - Alertas proactivas en el dashboard cuando DUE < 14 días
 
-### 3.2 Projected Balance + Cashflow Chart (Semana 13-14)
+### 3.2 Projected Balance + Cashflow Chart
 - Implementar `calculateProjectedClosingBalance()`
 - UI: Chart de proyección de balance (línea sólida = real, línea punteada = proyectado)
 - Integrar cuotas futuras como puntos en el chart (drops visibles)
@@ -1902,28 +1902,28 @@ Cada fase tiene valor de producto independiente. El usuario siente la mejora des
 
 ---
 
-## FASE 4: Inteligencia y Pulido (Semanas 17-24)
+## FASE 4: Inteligencia y Pulido
 **ROI**: Retención. El usuario que llega a esta fase no abandona la app.
 
-### 4.1 Intelligence Layer (Semana 17-19)
+### 4.1 Intelligence Layer
 - Implementar `IntelligenceLayer` con las 8 reglas core
 - UI: panel de insights en el dashboard (máximo 3 visibles)
 - Implementar dismissal y silenciado de tipos de insight
 - Implementar detección de recurrentes automática
 - UI: sugerencia "Detecté que pagas Netflix cada mes, ¿rastrearlo?"
 
-### 4.2 Detección Automática de Recurrentes (Semana 20-21)
+### 4.2 Detección Automática de Recurrentes
 - Implementar `RecurringDetector.detect()`
 - UI: onboarding flow que propone recurrentes detectados
 - Sistema de confirmación/rechazo de candidatos
 
-### 4.3 Sincronización Robusta (Semana 22-23)
+### 4.3 Sincronización Robusta
 - Implementar `OperationQueue` en Drift
 - Implementar `SyncManager` con retry logic
 - UI: indicador de estado de sync (discreto, no invasivo)
 - Tests de sincronización: offline → registro → reconexión → datos coherentes
 
-### 4.4 Supabase Edge Functions para cálculos pesados (Semana 24)
+### 4.4 Supabase Edge Functions para cálculos pesados
 - Mover el cálculo del cashflow forecast a una Edge Function
 - El cliente solo pide el resultado cacheado
 - Invalidar cache en el servidor cuando llegan nuevas transacciones
@@ -2050,7 +2050,7 @@ El cutoffDay = 10 porque el salário cae el día 10. El Swile es un bucket separ
 
 Esa comprensión cultural, integrada en el motor financiero desde la arquitectura, no en la UI, es la ventaja competitiva. No es una feature. Es el modelo mental correcto.
 
-## 12.4 Visión a 18 meses: Farol como SaaS
+## 12.4 Visión: Farol como SaaS
 
 Con el Financial Engine desacoplado de Flutter:
 - **Farol API**: exponer el engine como API REST → Open Finance integrations
