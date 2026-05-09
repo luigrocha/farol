@@ -1,7 +1,7 @@
 # Plan: Installments Redesign (Cuotas/Parcelas)
-**Área**: Domain · Database · Repositories · UI
+**Area**: Domain · Database · Repositories · UI
 **Prioridade**: P1 — bloqueia o Forecasting Engine
-**Dependências**: `categories_redesign.md` Fase 1-2 (category_id disponível)
+**Dependências**: `categories_redesign.md` Phase 1-2 (category_id disponível)
 **Arquivos impactados**: `card_installment.dart`, `installment_repository.dart`, `add_installment_bottom_sheet.dart`, `installments_screen.dart`, `app_database.dart`
 
 ---
@@ -194,10 +194,10 @@ lib/core/repositories/installment_repository.dart  ← substituído por novos re
 ## 🗺️ Estratégia Incremental
 
 ```
-analisa → propõe → valida → fase 1 → review → fase 2 → review → ...
+analisa → propõe → valida → phase 1 → review → phase 2 → review → ...
 ```
 
-### FASE 1 — Schema + Entidades (sem UI)
+### PHASE 1 — Schema + Entidades (sem UI)
 **Objetivo**: Criar a infraestrutura nova sem quebrar nada existente.
 **Reversibilidade**: 100% — apenas novos arquivos e tabelas.
 
@@ -226,7 +226,7 @@ Tarefa 1.3: Repositórios básicos
 
 ---
 
-### FASE 2 — InstallmentService (a lógica central)
+### PHASE 2 — InstallmentService (a lógica central)
 **Objetivo**: O serviço que orquestra criação de plano + geração automática de parcelas.
 
 ```
@@ -260,7 +260,7 @@ Tarefa 2.4: Testes do InstallmentService
 
 ---
 
-### FASE 3 — Migração dos card_installments existentes
+### PHASE 3 — Migração dos card_installments existentes
 **Objetivo**: Converter dados existentes para o novo modelo.
 
 ```
@@ -293,7 +293,7 @@ Tarefa 3.3: Modo de compatibilidade
 
 ---
 
-### FASE 4 — Nova UI de Installments
+### PHASE 4 — Nova UI de Installments
 **Objetivo**: UI que reflete o novo modelo e melhora a experiência.
 
 ```
@@ -323,9 +323,9 @@ Tarefa 4.4: Dashboard — InstallmentsSummaryCard
 
 ---
 
-### FASE 5 — Integração com Forecasting
+### PHASE 5 — Integração com Forecasting
 **Objetivo**: O ForecastingEngine lê installment_payments pendentes.
-**Pre-condição**: `forecasting.md` Fase 1-2 iniciados.
+**Pre-condição**: `forecasting.md` Phase 1-2 iniciados.
 
 ```
 Tarefa 5.1: ObligationEngine.getScheduledPayments()
@@ -359,32 +359,32 @@ Tarefa 5.3: Dashboard — projeção de parcelas futuras
 
 ## ✅ Checklist de Completude
 
-### Fase 1 — Schema + Entidades
+### Phase 1 — Schema + Entidades
 - [ ] Tabelas `installment_plans` e `installment_payments` criadas em Supabase
 - [ ] RLS policies configuradas
 - [ ] Índices de performance criados
 - [ ] `InstallmentPlan` e `InstallmentPayment` entities em Dart
 - [ ] Repositórios básicos funcionando
 
-### Fase 2 — InstallmentService
+### Phase 2 — InstallmentService
 - [ ] `createPurchase()` gera N parcelas automaticamente
 - [ ] Arredondamento correto: soma das parcelas == total
 - [ ] `payInstallment()` cria Expense vinculada
 - [ ] Última parcela fecha o plano
 - [ ] Testes: arredondamento, fechamento, edge cases
 
-### Fase 3 — Migração
+### Phase 3 — Migração
 - [ ] Script de migração executado em Supabase
 - [ ] Verificação: 0 planos com dados inconsistentes
 - [ ] `advance()` redireciona para `payInstallment()`
 
-### Fase 4 — Nova UI
+### Phase 4 — Nova UI
 - [ ] InstallmentsScreen com lista de planos + progresso
 - [ ] Timeline de parcelas no detalhe do plano
 - [ ] Fluxo de nova compra com preview de parcelas
 - [ ] Dashboard mostra parcelas do período atual
 
-### Fase 5 — Forecasting
+### Phase 5 — Forecasting
 - [ ] `ObligationEngine` lê installment_payments pendentes
 - [ ] Envelopes automáticos para planos ativos
 - [ ] Documentar em `docs/decisions/005-installments-redesign.md`
@@ -395,5 +395,5 @@ Tarefa 5.3: Dashboard — projeção de parcelas futuras
 
 - Análise detalhada: `FAROL_PREDICTIVE_ENGINE.md` → Seção 6
 - ADR pendente: `docs/decisions/005-installments-redesign.md`
-- Depende de: `categories_redesign.md` (Fase 1-2)
-- Desbloqueia: `forecasting.md` (ObligationEngine), `financial_engine.md` (Fase 5)
+- Depends on: `categories_redesign.md` (Phase 1-2)
+- Desbloqueia: `forecasting.md` (ObligationEngine), `financial_engine.md` (Phase 5)

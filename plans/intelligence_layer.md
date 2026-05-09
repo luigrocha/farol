@@ -1,7 +1,7 @@
 # Plan: Budget Intelligence Layer (Copiloto Financeiro)
-**Área**: Domain · Analytics · UI
+**Area**: Domain · Analytics · UI
 **Prioridade**: P6 — o toque final do produto
-**Dependências**: `forecasting.md` (completo) · `recurring_rules.md` (Fase 2+) · `installments_redesign.md` (Fase 2+)
+**Dependências**: `forecasting.md` (complete) · `recurring_rules.md` (Phase 2+) · `installments_redesign.md` (Phase 2+)
 **Arquivos impactados**: Novos em `lib/core/domain/`, novos widgets no dashboard
 
 ---
@@ -410,7 +410,7 @@ lib/features/dashboard/widgets/alert_banner.dart   ← substituído pelo Insight
 
 ## 🗺️ Estratégia Incremental
 
-### FASE 1 — Foundation: Entidades + Regras Básicas
+### PHASE 1 — Foundation: Entidades + Regras Básicas
 **Objetivo**: Infrastructure + as 4 regras de maior impacto.
 **Reversibilidade**: 100% — código novo.
 
@@ -435,7 +435,7 @@ Tarefa 1.4: Integrar IntelligenceLayer no FinancialEngine
 
 ---
 
-### FASE 2 — InsightsPanel no Dashboard
+### PHASE 2 — InsightsPanel no Dashboard
 **Objetivo**: Os insights aparecem na UI de forma não-invasiva.
 
 ```
@@ -463,7 +463,7 @@ Tarefa 2.4: Substituir AlertBanner existente
 
 ---
 
-### FASE 3 — Regras Avançadas
+### PHASE 3 — Regras Avançadas
 **Objetivo**: As 8 regras restantes.
 
 ```
@@ -479,7 +479,7 @@ Tarefa 3.8: _checkUnusualMerchant() — compra incomum
 
 ---
 
-### FASE 4 — Analytics de Insights
+### PHASE 4 — Analytics de Insights
 **Objetivo**: Medir se os insights são úteis.
 
 ```
@@ -513,24 +513,24 @@ Tarefa 4.3: InsightsHealthCard nas Settings
 
 ## ✅ Checklist de Completude
 
-### Fase 1 — Foundation
+### Phase 1 — Foundation
 - [ ] `FinancialInsight` entity completa
 - [ ] `DismissedInsightsRepository` com persistência em Drift
 - [ ] 4 regras core implementadas e testadas
 - [ ] Integrado no `FinancialSnapshot`
 
-### Fase 2 — UI
+### Phase 2 — UI
 - [ ] `InsightCard` widget com todos os estados visuais
 - [ ] `InsightsPanel` no dashboard (máximo 3)
 - [ ] `InsightsScreen` para ver todos
 - [ ] `AlertBanner` antigo removido
 
-### Fase 3 — Regras Avançadas
+### Phase 3 — Regras Avançadas
 - [ ] Todas as 12 regras implementadas
 - [ ] Cada regra testada com dados sintéticos (true positive + false positive)
 - [ ] Dismiss rate < 40% em uso real (indicador de relevância)
 
-### Fase 4 — Analytics
+### Phase 4 — Analytics
 - [ ] `InsightEvent` tracking local
 - [ ] Thresholds ajustados com dados reais
 - [ ] Preferências de alertas nas Settings
@@ -542,5 +542,5 @@ Tarefa 4.3: InsightsHealthCard nas Settings
 
 - Análise detalhada: `FAROL_PREDICTIVE_ENGINE.md` → Seção 8
 - ADR pendente: `docs/decisions/007-intelligence-layer.md`
-- Depende de: `forecasting.md` (completo) · `recurring_rules.md` · `installments_redesign.md`
+- Depends on: `forecasting.md` (complete) · `recurring_rules.md` · `installments_redesign.md`
 - Desbloqueia: v2 — Intelligence com LLM contextual (fora do escopo atual)

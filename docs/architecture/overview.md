@@ -1,11 +1,11 @@
-# Arquitectura de Farol — Visión Viva
+# Farol Architecture — Living Vision
 
-> Este documento se actualiza con cada cambio arquitectónico significativo.
-> Última actualización: Mayo 2026
+> This document is updated with each significant architectural change.
+> Last updated: May 2026
 
 ---
 
-## Estado Actual de la Arquitectura
+## Current Architecture State
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -19,25 +19,25 @@
 ├─────────────────────────────────────────────────────┤
 │              REPOSITORIES                           │
 │  lib/core/repositories/ + lib/features/*/data/      │
-│  SupabaseClient directo (mayoría)                   │
-│  AppDatabase/Drift (algunos)                        │
+│  Direct SupabaseClient (majority)                   │
+│  AppDatabase/Drift (some)                           │
 ├─────────────────────────────────────────────────────┤
-│              SERVICIOS CORE                         │
-│  FinancialCalculatorService (estático)              │
+│              CORE SERVICES                          │
+│  FinancialCalculatorService (static)                │
 │  ExportService · CltCalculatorService               │
 ├─────────────────────────────────────────────────────┤
-│              PERSISTENCIA                           │
-│  Supabase PostgreSQL (fuente de verdad)             │
-│  Drift/SQLite (mirror parcial, sin sync coherente)  │
+│              PERSISTENCE                           │
+│  Supabase PostgreSQL (source of truth)             │
+│  Drift/SQLite (partial mirror, no coherent sync)    │
 └─────────────────────────────────────────────────────┘
 ```
 
-## Arquitectura Objetivo (post-implementación de los planes)
+## Target Architecture (post-plan implementation)
 
 ```
 ┌─────────────────────────────────────────────────────┐
 │                   FLUTTER UI                        │
-│  Screens · Widgets (consumen solo FinancialSnapshot)│
+│  Screens · Widgets (consume only FinancialSnapshot) │
 ├─────────────────────────────────────────────────────┤
 │              APPLICATION LAYER                      │
 │  UseCases · Commands · Queries                      │
@@ -55,22 +55,22 @@
 
 ## Bounded Contexts
 
-| Context | Responsabilidad | Estado |
+| Context | Responsibility | State |
 |---|---|---|
-| Identity & Period | Usuario, perfil, períodos financieros | ✅ Implementado |
-| Ledger | Registro de transacciones pasadas | ⚠️ Parcial |
-| Budget (Envelopes) | Presupuesto por categoría | ⚠️ Básico |
-| Obligations | Cuotas e recurrentes futuros | 🔴 Mínimo |
-| Forecasting | Proyección financiera | 🔴 Inexistente |
-| Intelligence | Insights y recomendaciones | 🔴 Inexistente |
+| Identity & Period | User, profile, financial periods | ✅ Implemented |
+| Ledger | Record of past transactions | ⚠️ Partial |
+| Budget (Envelopes) | Budget per category | ⚠️ Basic |
+| Obligations | Installments & future recurring | 🔴 Minimal |
+| Forecasting | Financial projection | 🔴 Non-existent |
+| Intelligence | Insights & recommendations | 🔴 Non-existent |
 
-## Decisiones Arquitectónicas Vigentes
+## Active Architectural Decisions
 
-Consultar `docs/decisions/` para el historial completo de ADRs.
+See `docs/decisions/` for complete ADR history.
 
-| # | Decisión | Estado |
+| # | Decision | State |
 |---|---|---|
-| 001 | Unificación del sistema de categorías | 🔴 Pendiente |
-| 002 | FinancialSnapshot como fuente única de verdad | 🔴 Pendiente |
-| 003 | Forecasting Engine determinista (no ML) | 🔴 Pendiente |
-| 004 | Sync Strategy: Optimistic + Queue | 🔴 Pendiente |
+| 001 | Category system unification | 🔴 Pending |
+| 002 | FinancialSnapshot as single source of truth | 🔴 Pending |
+| 003 | Deterministic Forecasting Engine (no ML) | 🔴 Pending |
+| 004 | Sync Strategy: Optimistic + Queue | 🔴 Pending |

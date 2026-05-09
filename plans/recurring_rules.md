@@ -1,7 +1,7 @@
 # Plan: Recurring Rules Engine (Gastos Recorrentes)
-**Área**: Domain · Database · Repositories · UI
+**Area**: Domain · Database · Repositories · UI
 **Prioridade**: P3 — alimenta o ObligationEngine do Forecasting
-**Dependências**: `categories_redesign.md` (completo) · `financial_engine.md` (Fase 1-2)
+**Dependências**: `categories_redesign.md` (complete) · `financial_engine.md` (Phase 1-2)
 **Arquivos impactados**: `app_database.dart`, novos em `lib/core/domain/`, UI nova em `features/`
 
 ---
@@ -188,7 +188,7 @@ lib/features/dashboard/dashboard_screen.dart  ← remover fixedExpensePropagatio
 
 ## 🗺️ Estratégia Incremental
 
-### FASE 1 — RecurrenceResolver (puro Dart, sem UI)
+### PHASE 1 — RecurrenceResolver (puro Dart, sem UI)
 **Objetivo**: O coração da lógica — gerar ocorrências a partir de uma regra.
 **Reversibilidade**: 100% — código novo, sem tocar no existente.
 
@@ -219,7 +219,7 @@ Tarefa 1.3: Testes do RecurrenceResolver
 
 ---
 
-### FASE 2 — Schema + Repositórios
+### PHASE 2 — Schema + Repositórios
 **Objetivo**: Persistência do novo modelo.
 
 ```
@@ -248,7 +248,7 @@ Tarefa 2.4: Job de geração de ocorrências
 
 ---
 
-### FASE 3 — Migração dos gastos isFixed existentes
+### PHASE 3 — Migração dos gastos isFixed existentes
 **Objetivo**: Converter `Expense.isFixed = true` para `RecurringRule`.
 
 ```
@@ -277,7 +277,7 @@ Tarefa 3.4: Marcar expenses históricas como ocorrências pagas
 
 ---
 
-### FASE 4 — UI de Recorrentes
+### PHASE 4 — UI de Recorrentes
 **Objetivo**: Tela dedicada para gerenciar recorrentes.
 
 ```
@@ -307,7 +307,7 @@ Tarefa 4.4: Dashboard — RecurringCard
 
 ---
 
-### FASE 5 — Detecção Automática
+### PHASE 5 — Detecção Automática
 **Objetivo**: O engine detecta padrões recorrentes no histórico.
 
 ```
@@ -343,37 +343,37 @@ Tarefa 5.3: Limites do detector
 | RecurrenceResolver com bugs de calendário (ex: fevereiro) | Alta | Datas erradas | Testes exaustivos de edge cases de calendário |
 | Detector sugere recorrentes falso-positivos | Média | Usuário desconfiante | Threshold de confidence alto (0.75) + opção "ignorar sempre" |
 | Muitas ocorrências geradas (regra sem fim × 3 meses) | Média | Uso excessivo de storage | Gerar apenas 3 meses à frente; regenerar sob demanda |
-| `fixedExpensePropagationProvider` removido antes do RecurringEngine estar estável | Alta | Gastos fixos desaparecem | Remover apenas na Fase 3, depois de RecurringEngine validado |
+| `fixedExpensePropagationProvider` removido antes do RecurringEngine estar estável | Alta | Gastos fixos desaparecem | Remover apenas na Phase 3, depois de RecurringEngine validado |
 
 ---
 
 ## ✅ Checklist de Completude
 
-### Fase 1 — RecurrenceResolver
+### Phase 1 — RecurrenceResolver
 - [ ] `RecurringRule` entity com nextOccurrenceDate()
 - [ ] `RecurrenceResolver.generateOccurrences()` implementado
 - [ ] Edge cases: fevereiro, ends_after_n, paused_until
 - [ ] Testes unitários: todas as frequências corretas
 
-### Fase 2 — Schema + Repositórios
+### Phase 2 — Schema + Repositórios
 - [ ] Tabelas `recurring_rules` e `recurring_occurrences` em Supabase
 - [ ] RLS e índices configurados
 - [ ] Repositórios com getPendingInRange() para ObligationEngine
 - [ ] Job de geração de ocorrências (idempotente)
 
-### Fase 3 — Migração
+### Phase 3 — Migração
 - [ ] gastos isFixed → RecurringRules criadas
 - [ ] `fixedExpensePropagationProvider` removido
 - [ ] SnackBar de "gastos copiados" removido
 - [ ] Dashboard não copia mais — projeta recorrentes
 
-### Fase 4 — UI
+### Phase 4 — UI
 - [ ] RecurringScreen com lista + totais
 - [ ] Detalhe com histórico e próximas ocorrências
 - [ ] Fluxo de criação com preview
 - [ ] RecurringCard no dashboard
 
-### Fase 5 — Detecção Automática
+### Phase 5 — Detecção Automática
 - [ ] `RecurringDetector.detect()` com confidence scoring
 - [ ] Card de sugestões não-invasivo no dashboard
 - [ ] Ao confirmar: cria regra + marca histórico como pago
@@ -385,5 +385,5 @@ Tarefa 5.3: Limites do detector
 
 - Análise detalhada: `FAROL_PREDICTIVE_ENGINE.md` → Seção 5
 - ADR pendente: `docs/decisions/006-recurring-rules.md`
-- Depende de: `categories_redesign.md` (completo) · `financial_engine.md` Fase 1-2
+- Depends on: `categories_redesign.md` (complete) · `financial_engine.md` Phase 1-2
 - Desbloqueia: `forecasting.md` (ObligationEngine lê recurring_occurrences)

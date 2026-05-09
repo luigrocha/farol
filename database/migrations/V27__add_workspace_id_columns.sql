@@ -1,5 +1,5 @@
 -- V27__add_workspace_id_columns.sql
--- Add nullable workspace_id to all 14 data tables.
+-- Add nullable workspace_id to all data tables.
 -- Columns are nullable here; V28 backfills values, V29 enforces NOT NULL.
 -- Prerequisite: V26 applied (workspaces table exists).
 
@@ -12,11 +12,21 @@ ALTER TABLE account_transfers     ADD COLUMN IF NOT EXISTS workspace_id UUID REF
 ALTER TABLE budget_goals          ADD COLUMN IF NOT EXISTS workspace_id UUID REFERENCES workspaces(id) ON DELETE CASCADE;
 ALTER TABLE period_budgets        ADD COLUMN IF NOT EXISTS workspace_id UUID REFERENCES workspaces(id) ON DELETE CASCADE;
 ALTER TABLE categories            ADD COLUMN IF NOT EXISTS workspace_id UUID REFERENCES workspaces(id) ON DELETE CASCADE;
-ALTER TABLE salary_settings       ADD COLUMN IF NOT EXISTS workspace_id UUID REFERENCES workspaces(id) ON DELETE CASCADE;
 ALTER TABLE installment_plans     ADD COLUMN IF NOT EXISTS workspace_id UUID REFERENCES workspaces(id) ON DELETE CASCADE;
 ALTER TABLE installment_payments  ADD COLUMN IF NOT EXISTS workspace_id UUID REFERENCES workspaces(id) ON DELETE CASCADE;
 ALTER TABLE recurring_rules       ADD COLUMN IF NOT EXISTS workspace_id UUID REFERENCES workspaces(id) ON DELETE CASCADE;
 ALTER TABLE recurring_occurrences ADD COLUMN IF NOT EXISTS workspace_id UUID REFERENCES workspaces(id) ON DELETE CASCADE;
+
+-- salary_settings table not present in current schema; conditionally add if it exists
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables
+    WHERE table_name = 'salary_settings'
+  ) THEN
+    ALTER TABLE salary_settings ADD COLUMN IF NOT EXISTS workspace_id UUID REFERENCES workspaces(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 -- Verification (run after applying):
 -- SELECT column_name, table_name

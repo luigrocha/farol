@@ -1,73 +1,74 @@
 # Plan: Categories System Redesign
-**Área**: Domain · Database · Repositories
-**Prioridad**: P0 — bloquea todo lo demás
-**Dependencias**: Ninguna (este plan es el punto de partida)
-**Archivos impactados**: `enums.dart`, `category.dart`, `app_database.dart`, `category_repository.dart`, todos los repositorios que usan `ExpenseCategory`
+
+**Area**: Domain · Database · Repositories  
+**Priority**: P0 — blocks everything else  
+**Dependencies**: None (this plan is the starting point)  
+**Files impacted**: `enums.dart`, `category.dart`, `app_database.dart`, `category_repository.dart`, all repositories using `ExpenseCategory`
 
 ---
 
-## 🔍 Contexto del Problema
+## 🔍 Problem Context
 
-### Estado actual (confirmado en código)
+### Current state (confirmed in code)
 
 ```dart
-// PROBLEMA 1: Dos sistemas paralelos e incompatibles
+// PROBLEM 1: Two parallel, incompatible systems
 
-// Sistema A — enum hardcodeado en Dart (enums.dart)
+// System A — hardcoded enum in Dart (enums.dart)
 enum ExpenseCategory {
   housing('HOUSING', ...), transport('TRANSPORT', ...),
-  // ... 9 valores fijos, no extensibles sin recompilar
+  // ... 9 fixed values, not extensible without recompiling
 }
 
-// Sistema B — tabla en DB (app_database.dart + Supabase)
+// System B — table in DB (app_database.dart + Supabase)
 class CategoryTable extends Table {
   // dbValue, name, emoji, isSwile, isSystem, orderIndex
-  // Permite custom categories del usuario
+  // Allows user custom categories
 }
 
-// BOMBA DE TIEMPO:
+// TIME BOMB:
 ExpenseCategory.fromDb('CUSTOM_ROPA') // → StateError: No element
 ```
 
 ```dart
-// PROBLEMA 2: Los expenses almacenan category como String raw
+// PROBLEM 2: Expenses store category as raw String
 class Expense {
   final String category; // 'HOUSING', 'CUSTOM_ROPA', ...
-  // En algunos flujos: ExpenseCategory.fromDb(category) → puede lanzar
-  // En otros flujos: se usa como string raw → inconsistente
+  // In some flows: ExpenseCategory.fromDb(category) → may throw
+  // In other flows: used as raw string → inconsistent
 }
 ```
 
-### Impacto actual
-- Cualquier categoría custom del usuario puede crashear la app
-- `BudgetGoals` usa `category` como string → misma bomba de tiempo
-- `PeriodBudget` usa `category` como string → inconsistente con CategoryTable
-- El forecasting no puede operar sobre categorías si no hay un modelo unificado
+### Current impact
+- Any custom category can crash the app
+- `BudgetGoals` uses `category` as string → same time bomb
+- `PeriodBudget` uses `category` as string → inconsistent with CategoryTable
+- Forecasting cannot operate on categories without a unified model
 
 ---
 
-## 📐 Arquitectura Propuesta
+## 📐 Proposed Architecture
 
-### Modelo unificado: `CategoryRef`
+### Unified model: `CategoryRef`
 
 ```dart
-// Reemplaza el enum ExpenseCategory completamente
-// Es un value object en el dominio — siempre válido, nunca lanza
+// Completely replaces ExpenseCategory enum
+// Is a value object in the domain — always valid, never throws
 class CategoryRef {
-  final String id;           // UUID (Supabase) o slug local
+  final String id;           // UUID (Supabase) or local slug
   final String slug;         // 'housing', 'custom_ropa'
-  final String name;         // 'Moradia' (localizado)
+  final String name;         // 'Moradia' (localized)
   final String emoji;
   final String? colorHex;
   final FinancialType financialType; // need | want | investment | income | transfer
   final String? parentId;
   final bool isSystem;
   final bool isSwile;
-  final bool isFixed;        // típicamente fijo
+  final bool isFixed;        // typically fixed
 
   bool get isCustom => !isSystem;
 
-  // Compatibilidad backward — nunca lanza StateError
+  // Backward compatibility — never throws StateError
   static CategoryRef fromLegacyString(String dbValue, List<CategoryRef> all) {
     return all.firstWhere(
       (c) => c.slug.toUpperCase() == dbValue.toUpperCase(),
@@ -77,13 +78,13 @@ class CategoryRef {
 }
 ```
 
-### Schema DB propuesto
+### Proposed DB schema
 
 ```sql
 -- Supabase migration
 CREATE TABLE categories (
   id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id       UUID REFERENCES auth.users(id),  -- NULL = sistema global
+  user_id       UUID REFERENCES auth.users(id),  -- NULL = global system
   parent_id     UUID REFERENCES categories(id),
   slug          TEXT NOT NULL,
   name          TEXT NOT NULL,
@@ -101,17 +102,17 @@ CREATE TABLE categories (
   UNIQUE(user_id, slug)
 );
 
--- Campo adicional en expenses (backward compat: nullable primero)
+-- Additional field in expenses (backward compat: nullable first)
 ALTER TABLE expenses ADD COLUMN category_id UUID REFERENCES categories(id);
 ```
 
 ---
 
-## ⚡ Análisis de Impacto
+## ⚡ Impact Analysis
 
-### Archivos que usan `ExpenseCategory` enum directamente
+### Files using `ExpenseCategory` enum directly
 ```
-lib/core/models/enums.dart                    ← definición del enum
+lib/core/models/enums.dart                    ← enum definition
 lib/features/transactions/quick_add_bottom_sheet.dart
 lib/features/transactions/edit_expense_bottom_sheet.dart
 lib/features/analytics/analytics_screen.dart
@@ -123,9 +124,9 @@ lib/features/settings/categories_management_screen.dart
 lib/core/repositories/category_repository.dart
 ```
 
-### Archivos que usan `category` como String raw
+### Files using `category` as raw String
 ```
-lib/core/database/app_database.dart           ← DAOs con category String
+lib/core/database/app_database.dart           ← DAOs with category String
 lib/core/models/expense.dart                  ← category: String
 lib/core/models/period_budget.dart            ← category: String
 lib/core/models/budget_goal.dart              ← category: String
@@ -133,171 +134,171 @@ lib/core/repositories/period_budget_repository.dart
 lib/core/repositories/budget_goals_repository.dart
 ```
 
-### Breaking Changes Identificados
-| Change | Severidad | Mitigación |
+### Identified Breaking Changes
+| Change | Severity | Mitigation |
 |---|---|---|
-| Eliminar enum `ExpenseCategory` | 🔴 CRÍTICO | Mantener en paralelo hasta Fase 4 |
-| `Expense.category` String → `CategoryRef` | 🔴 CRÍTICO | Campo nullable `categoryRef` adicional |
-| `BudgetGoal.category` String | 🟡 MEDIO | `CategoryResolver` como adapter |
-| `category_id` en expenses (Supabase) | 🟡 MEDIO | Nullable + backfill job |
-| DAOs Drift con `CategoryTable` | 🟢 BAJO | Extensión, no reemplazo |
+| Delete enum `ExpenseCategory` | 🔴 CRITICAL | Keep in parallel until Phase 4 |
+| `Expense.category` String → `CategoryRef` | 🔴 CRITICAL | Add nullable `categoryRef` field |
+| `BudgetGoal.category` String | 🟡 MEDIUM | `CategoryResolver` as adapter |
+| `category_id` in expenses (Supabase) | 🟡 MEDIUM | Nullable + backfill job |
+| Drift DAOs with `CategoryTable` | 🟢 LOW | Extension, not replacement |
 
 ---
 
-## 🗺️ Estrategia Incremental
+## 🗺️ Incremental Strategy
 
 ```
-analiza → propone → validar → fase 1 → review → fase 2 → review → ...
+analyze → propose → validate → phase 1 → review → phase 2 → review → ...
 ```
 
-### FASE 1 — El Puente Seguro (sin breaking changes)
-**Objetivo**: Crear la infraestructura nueva sin tocar código existente.
-**Reversibilidad**: 100% — solo se agregan archivos nuevos.
+### PHASE 1 — The Safe Bridge (no breaking changes)
+**Goal**: Create new infrastructure without touching existing code.
+**Reversibility**: 100% — only new files added.
 
 ```
-Tarea 1.1: Crear CategoryRef value object
+Task 1.1: Create CategoryRef value object
   - lib/core/domain/value_objects/category_ref.dart
   - FinancialType enum
   - CategoryRef.uncategorized() factory (safe fallback)
-  - CategoryRef.fromLegacyString() (adapter sin excepciones)
+  - CategoryRef.fromLegacyString() (adapter with no exceptions)
 
-Tarea 1.2: Crear CategoryResolver service
+Task 1.2: Create CategoryResolver service
   - lib/core/domain/services/category_resolver.dart
-  - Carga categorías del DB (Supabase + Drift)
-  - Mapea String legacy → CategoryRef (nunca lanza)
-  - Cache en memoria (invalidar on category change)
+  - Load categories from DB (Supabase + Drift)
+  - Map legacy String → CategoryRef (never throws)
+  - In-memory cache (invalidate on category change)
 
-Tarea 1.3: Crear tabla categories en Supabase
-  - Migration SQL con todos los slugs sistema
-  - Seed: mapeo 1:1 con enum actual (HOUSING → housing, etc.)
+Task 1.3: Create categories table in Supabase
+  - Migration SQL with all system slugs
+  - Seed: 1:1 mapping with current enum (HOUSING → housing, etc.)
   - RLS policies
 
-Tarea 1.4: Agregar category_id a expenses (nullable)
+Task 1.4: Add category_id to expenses (nullable)
   - Supabase: ALTER TABLE expenses ADD COLUMN category_id UUID
-  - Drift: agregar campo nullable al schema (migration)
-  - NO actualizar ningún query existente todavía
+  - Drift: add nullable field to schema (migration)
+  - Do NOT update any existing queries yet
 ```
 
-**Test de éxito**: `CategoryResolver.resolve('CUSTOM_XYZ')` retorna `CategoryRef.uncategorized()` — nunca StateError.
+**Success test**: `CategoryResolver.resolve('CUSTOM_XYZ')` returns `CategoryRef.uncategorized()` — never StateError.
 
 ---
 
-### FASE 2 — El Backfill (datos existentes)
-**Objetivo**: Poblar `category_id` en expenses existentes.
-**Reversibilidad**: Alta — el campo viejo `category` String sigue intacto.
+### PHASE 2 — The Backfill (existing data)
+**Goal**: Populate `category_id` in existing expenses.
+**Reversibility**: High — old `category` String field remains intact.
 
 ```
-Tarea 2.1: Job de backfill Supabase
-  - Script SQL: UPDATE expenses SET category_id = (
+Task 2.1: Supabase backfill job
+  - SQL script: UPDATE expenses SET category_id = (
       SELECT id FROM categories WHERE slug = LOWER(expenses.category)
     )
-  - Ejecutar en Supabase SQL editor (no en código app)
-  - Verificar: COUNT(*) WHERE category_id IS NULL después del backfill
+  - Execute in Supabase SQL editor (not in app code)
+  - Verify: COUNT(*) WHERE category_id IS NULL after backfill
 
-Tarea 2.2: Asegurar que nuevos expenses siempre tengan category_id
-  - Modificar ExpenseRepository.insert() para resolver y guardar category_id
-  - Usar CategoryResolver para mapear el string a UUID
-  - El campo String 'category' sigue guardándose (backward compat)
+Task 2.2: Ensure new expenses always have category_id
+  - Modify ExpenseRepository.insert() to resolve and save category_id
+  - Use CategoryResolver to map string to UUID
+  - String 'category' field still saved (backward compat)
 ```
 
-**Test de éxito**: Todos los expenses nuevos tienen `category_id` NOT NULL. Los viejos tienen el campo poblado post-backfill.
+**Success test**: All new expenses have `category_id` NOT NULL. Old ones have field populated post-backfill.
 
 ---
 
-### FASE 3 — La Migración de Providers
-**Objetivo**: Los providers de Riverpod usan `CategoryRef` en vez del enum.
-**Reversibilidad**: Media — requiere cambios coordinados en UI.
+### PHASE 3 — Provider Migration
+**Goal**: Riverpod providers use `CategoryRef` instead of enum.
+**Reversibility**: Medium — requires coordinated UI changes.
 
 ```
-Tarea 3.1: CategoryRepository refactorizado
+Task 3.1: Refactored CategoryRepository
   - watchCategories() → Stream<List<CategoryRef>>
-  - Internamente: combina CategoryTable (Drift) + Supabase categories
-  - Provee CategoryRef para sistema + custom del usuario
+  - Internally: combines CategoryTable (Drift) + Supabase categories
+  - Provides CategoryRef for system + user custom
 
-Tarea 3.2: categoryProvider en Riverpod
-  - Provider global de categorías cacheadas
-  - Usado por todos los screens que necesitan la lista
-  - Invalida cuando el usuario agrega/edita categoría
+Task 3.2: categoryProvider in Riverpod
+  - Global provider for cached categories
+  - Used by all screens needing the list
+  - Invalidates when user adds/edits category
 
-Tarea 3.3: Migrar screens uno a uno (coordinado)
-  - categories_management_screen.dart → usa CategoryRef
-  - quick_add_bottom_sheet.dart → dropdown usa CategoryRef
-  - expense_breakdown.dart → usa CategoryRef para display
-  - Mantener adapter para código que aún usa String
+Task 3.3: Migrate screens one by one (coordinated)
+  - categories_management_screen.dart → uses CategoryRef
+  - quick_add_bottom_sheet.dart → dropdown uses CategoryRef
+  - expense_breakdown.dart → uses CategoryRef for display
+  - Keep adapter for code still using String
 ```
 
-**Test de éxito**: Abrir la app, crear una categoría custom, crear un gasto con esa categoría, cerrar y reabrir → el gasto muestra la categoría correcta. Sin StateError.
+**Success test**: Open app, create custom category, create expense with it, close and reopen → expense shows correct category. No StateError.
 
 ---
 
-### FASE 4 — Eliminación del Enum (cleanup)
-**Objetivo**: Remover el enum `ExpenseCategory` del código.
-**Reversibilidad**: Baja — cambio irreversible, hacer último.
-**Pre-condición**: Fases 1-3 completas y en producción estable por ≥2 semanas.
+### PHASE 4 — Enum Removal (cleanup)
+**Goal**: Remove `ExpenseCategory` enum from code.
+**Reversibility**: Low — irreversible change, do last.
+**Pre-condition**: Phases 1-3 complete and stable in production ≥2 weeks.
 
 ```
-Tarea 4.1: Audit final de uso del enum
-  - grep -r "ExpenseCategory" lib/ → debe retornar 0 usos
+Task 4.1: Final enum usage audit
+  - grep -r "ExpenseCategory" lib/ → must return 0 uses
 
-Tarea 4.2: Eliminar enum de enums.dart
-  - Mantener swileCategories como Set<String> (o migrar a CategoryRef.isSwile)
+Task 4.2: Delete enum from enums.dart
+  - Keep swileCategories as Set<String> (or migrate to CategoryRef.isSwile)
 
-Tarea 4.3: Hacer category_id NOT NULL en expenses
+Task 4.3: Make category_id NOT NULL in expenses
   - Supabase migration: ALTER TABLE expenses ALTER COLUMN category_id SET NOT NULL
-  - Verificar primero que NO existen nulls en producción
+  - Verify first that NO nulls exist in production
 
-Tarea 4.4: Marcar campo String 'category' como deprecated
-  - Mantenerlo en DB por 1 período más (backward compat con exports)
-  - Eventualmente: DROP COLUMN category (fuera de scope de este plan)
+Task 4.4: Deprecate String 'category' field
+  - Keep in DB for 1 more period (backward compat with exports)
+  - Eventually: DROP COLUMN category (out of scope for this plan)
 ```
 
 ---
 
-## 🚨 Riesgos y Mitigaciones
+## 🚨 Risks and Mitigations
 
-| Riesgo | Probabilidad | Impacto | Mitigación |
+| Risk | Probability | Impact | Mitigation |
 |---|---|---|---|
-| StateError en producción (categoría desconocida) | Alta (ya ocurre) | Crash | Fase 1: CategoryRef.uncategorized() como fallback |
-| Backfill incompleto (slugs que no matchean) | Media | Datos huérfanos | Verificar COUNT IS NULL post-backfill, manual fix si hay outliers |
-| Provider rebuild cascade al cambiar CategoryRef | Media | Performance | autoDispose + family providers por categoría |
-| Drift migration error (campo nullable) | Baja | Crash en upgrade | Test migration en emulador antes de release |
-| Categoría custom con slug que choca con sistema | Baja | Conflicto DB | UNIQUE constraint `(user_id, slug)` — user_id NULL = sistema |
+| StateError in production (unknown category) | High (already occurs) | Crash | Phase 1: CategoryRef.uncategorized() as fallback |
+| Incomplete backfill (non-matching slugs) | Medium | Orphaned data | Verify COUNT IS NULL post-backfill, manual fix if outliers |
+| Provider rebuild cascade on CategoryRef change | Medium | Performance | autoDispose + family providers per category |
+| Drift migration error (nullable field) | Low | Crash on upgrade | Test migration in emulator before release |
+| Custom category with slug clashing system | Low | DB conflict | UNIQUE constraint `(user_id, slug)` — user_id NULL = system |
 
 ---
 
-## ✅ Checklist de Completitud
+## ✅ Completion Checklist
 
-### Fase 1
-- [ ] `CategoryRef` value object creado y testeado
-- [ ] `FinancialType` enum creado
-- [ ] `CategoryResolver` creado con `fromLegacyString()` sin excepciones
-- [ ] Tabla `categories` creada en Supabase con seed de categorías sistema
-- [ ] Campo `category_id UUID` agregado a `expenses` en Supabase (nullable)
-- [ ] Drift schema actualizado con migration
-- [ ] Test: `CategoryResolver.resolve('CUALQUIER_COSA')` nunca lanza
+### Phase 1
+- [ ] `CategoryRef` value object created and tested
+- [ ] `FinancialType` enum created
+- [ ] `CategoryResolver` created with `fromLegacyString()` with no exceptions
+- [ ] `categories` table created in Supabase with system category seed
+- [ ] `category_id UUID` field added to `expenses` in Supabase (nullable)
+- [ ] Drift schema updated with migration
+- [ ] Test: `CategoryResolver.resolve('ANYTHING')` never throws
 
-### Fase 2
-- [ ] Backfill SQL ejecutado en Supabase
-- [ ] Verificación: 0 nulls en `category_id` post-backfill
-- [ ] `ExpenseRepository.insert()` guarda `category_id`
-- [ ] Test: expense nuevo tiene `category_id` NOT NULL
+### Phase 2
+- [ ] Backfill SQL executed in Supabase
+- [ ] Verification: 0 nulls in `category_id` post-backfill
+- [ ] `ExpenseRepository.insert()` saves `category_id`
+- [ ] Test: new expense has `category_id` NOT NULL
 
-### Fase 3
-- [ ] `CategoryRepository.watchCategories()` retorna `List<CategoryRef>`
-- [ ] `categoryProvider` en Riverpod funciona
-- [ ] Al menos 3 screens migrados a `CategoryRef`
-- [ ] Test: crear categoría custom → aparece en dropdown → crear expense → se muestra correctamente
+### Phase 3
+- [ ] `CategoryRepository.watchCategories()` returns `List<CategoryRef>`
+- [ ] `categoryProvider` in Riverpod works
+- [ ] At least 3 screens migrated to `CategoryRef`
+- [ ] Test: create custom category → appears in dropdown → create expense → displays correctly
 
-### Fase 4
-- [ ] 0 usos de `ExpenseCategory` enum en código
-- [ ] `category_id` NOT NULL en producción
-- [ ] Documentar decisión en `docs/decisions/001-category-unification.md`
+### Phase 4
+- [ ] 0 uses of `ExpenseCategory` enum in code
+- [ ] `category_id` NOT NULL in production
+- [ ] Document decision in `docs/decisions/001-category-unification.md`
 
 ---
 
-## 📎 Referencias
+## 📎 References
 
-- Análisis detallado: `FAROL_PREDICTIVE_ENGINE.md` → Sección 3
-- ADR pendiente: `docs/decisions/001-category-unification.md`
-- Depende de: ningún otro plan
-- Desbloquea: `financial_engine.md`, `forecasting.md`
+- Detailed analysis: `FAROL_PREDICTIVE_ENGINE.md` → Section 3
+- Pending ADR: `docs/decisions/001-category-unification.md`
+- Depends on: no other plans
+- Unblocks: `financial_engine.md`, `forecasting.md`

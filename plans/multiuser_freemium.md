@@ -1,5 +1,5 @@
 # Plan: Multiusuário (Workspace) + Freemium
-**Área**: Arquitetura · DB · Auth · UI · Produto
+**Area**: Arquitetura · DB · Auth · UI · Produto
 **Prioridade**: P0 estratégico — define o modelo de negócio futuro
 **Dependências**: Todas as migrações V1–V25 aplicadas ✅
 **Status**: 🟡 Em planejamento
@@ -372,7 +372,7 @@ enum PremiumFeature {
 
 ## 🗺️ Estratégia de Implementação (fases)
 
-### FASE 1 — Fundação invisível (sem breaking changes)
+### PHASE 1 — Fundação invisível (sem breaking changes)
 **Objetivo**: Infraestrutura criada, UX idêntica para usuários existentes.
 **Risco**: Baixo — nada quebra, nenhuma feature removida.
 
@@ -394,7 +394,7 @@ enum PremiumFeature {
 
 ---
 
-### FASE 2 — Workspace switcher + convites
+### PHASE 2 — Workspace switcher + convites
 **Objetivo**: Usuário pode criar e compartilhar workspaces.
 **Risco**: Médio — nova UX, mas aditiva (não remove nada).
 
@@ -414,7 +414,7 @@ ver as despesas um do outro em tempo real, e convidar via link.
 
 ---
 
-### FASE 3 — Permissões + Feature gating
+### PHASE 3 — Permissões + Feature gating
 **Objetivo**: Controle fino de quem pode fazer o quê + infraestrutura freemium.
 **Risco**: Baixo — é additive.
 
@@ -433,7 +433,7 @@ Feature gates existem no código mas tudo permanece desbloqueado.
 
 ---
 
-### FASE 4 — Monetização (futuro, quando decidir)
+### PHASE 4 — Monetização (futuro, quando decidir)
 **Objetivo**: Ativar paywall para features premium.
 **Risco**: Alto para retenção — fazer gradualmente.
 
@@ -483,7 +483,7 @@ Feature gates existem no código mas tudo permanece desbloqueado.
 
 | Risco | Probabilidade | Impacto | Mitigação |
 |---|---|---|---|
-| Backfill incompleto (V28) | Média | Dados perdidos | Verificar COUNT IS NULL antes de V29 |
+| Backfill incomplete (V28) | Média | Dados perdidos | Verificar COUNT IS NULL antes de V29 |
 | RLS atualizado quebrando queries (V30) | Alta | App offline | Testar em staging com usuário real primeiro |
 | Flutter repositories sem workspaceId | Alta | Crash / empty data | Rodar em ordem: DB → providers → repositories → UI |
 | Conflito de dados em workspace compartilhado | Média | UX ruim | Usar `created_by UUID` nos registros para atribuição |
@@ -528,7 +528,7 @@ CREATE TRIGGER on_user_created
 ## 📊 Mudanças no CLAUDE.md
 
 Após cada fase, atualizar:
-- Status da fase (🔴 pendente → 🟡 em progresso → 🟢 completo)
+- Status da phase (🔴 pendente → 🟡 em progresso → 🟢 complete)
 - Migrações aplicadas (V26–V30)
 - Providers adicionados
 
@@ -536,15 +536,15 @@ Após cada fase, atualizar:
 
 ## ✅ Checklist por Fase
 
-### Fase 1 — Fundação
+### Phase 1 — Fundação
 - [x] V26 escrita (workspaces + workspace_members + invites + trigger) ✅ 2026-05-09
 - [x] V27 escrita (workspace_id nullable em 14 tabelas) ✅ 2026-05-09
 - [x] V28 escrita (backfill — workspace pessoal + linkar dados) ✅ 2026-05-09
 - [x] V29 escrita (NOT NULL + índices) ✅ 2026-05-09
 - [x] V30 escrita (RLS atualizado — 4 políticas × 14 tabelas) ✅ 2026-05-09
-- [ ] V26–V30 aplicadas em produção (executar no Supabase SQL Editor)
-- [ ] V28 verificada em produção (COUNT IS NULL = 0 em todas as tabelas)
-- [ ] Trigger `create_personal_workspace` ativo
+- [x] V26–V30 aplicadas em produção (executar no Supabase SQL Editor)
+- [x] V28 verificada em produção (COUNT IS NULL = 0 em todas as tabelas)
+- [x] Trigger `create_personal_workspace` ativo
 - [x] Workspace model Dart criado (`lib/core/models/workspace.dart`) ✅ 2026-05-09
 - [x] WorkspaceRepository criado (`lib/core/repositories/workspace_repository.dart`) ✅ 2026-05-09
 - [x] workspaceRepositoryProvider criado (`lib/core/providers/workspace_providers.dart`) ✅ 2026-05-09
@@ -558,7 +558,7 @@ Após cada fase, atualizar:
 - [x] `Category` model tem campo `workspaceId` (aditivo, nullable) ✅ 2026-05-09
 - [ ] App funciona igual para usuário solo (testar após aplicar V26–V30)
 
-### Fase 2 — Workspace sharing
+### Phase 2 — Workspace sharing
 - [ ] WorkspaceSwitcherSheet
 - [ ] CreateWorkspaceSheet
 - [ ] InviteMemberSheet + email via Edge Function
@@ -568,7 +568,7 @@ Após cada fase, atualizar:
 - [ ] Badge no AppBar (multi-workspace)
 - [ ] Teste: casal compartilhando workspace em tempo real
 
-### Fase 3 — Permissões + Feature gating
+### Phase 3 — Permissões + Feature gating
 - [ ] FeatureGate widget
 - [ ] canWriteProvider
 - [ ] Viewers não conseguem editar
@@ -576,7 +576,7 @@ Após cada fase, atualizar:
 - [ ] _UpgradePrompt placeholder
 - [ ] workspaces.plan ativo no Supabase
 
-### Fase 4 — Monetização (quando decidir)
+### Phase 4 — Monetização (quando decidir)
 - [ ] RevenueCat integrado
 - [ ] Webhook Stripe → plan update
 - [ ] PaywallScreen

@@ -1,14 +1,15 @@
-# Plan: Forecasting Engine (Motor Predictivo)
-**Área**: Domain · Analytics · UI
-**Prioridad**: P2 — el "momento wow" del producto
-**Dependencias**: `financial_engine.md` (Fases 1-4 completas) · `categories_redesign.md` (completo)
-**Archivos impactados**: Nuevos en `lib/core/domain/`, nuevos widgets en dashboard
+# Plan: Forecasting Engine
+
+**Area**: Domain · Analytics · UI  
+**Priority**: P2 — the "wow moment" of the product  
+**Dependencies**: `financial_engine.md` (Phases 1-4 complete) · `categories_redesign.md` (complete)  
+**Files impacted**: New in `lib/core/domain/`, new dashboard widgets
 
 ---
 
-## 🔍 Contexto del Problema
+## 🔍 Problem Context
 
-### Estado actual (confirmado en código)
+### Current state (confirmed in code)
 
 ```dart
 // ÚNICO forecasting real que existe:
@@ -29,15 +30,15 @@ static int calculateHealthScore({...}) {
 }
 ```
 
-### ¿Por qué es la parte más importante?
+### Why is this the most important part?
 
 Un usuario que puede ver "si sigues así, terminas el período con -R$120" **cambia su comportamiento**. Un usuario que solo ve "gastaste R$800 hasta ahora" no tiene información accionable. El forecasting es el salto de contador a copiloto.
 
 ---
 
-## 📐 Arquitectura del Forecasting Engine
+## 📐 Forecasting Engine Architecture
 
-### Jerarquía de métricas (de más simple a más compleja)
+### Metric hierarchy (from simplest to most complex)
 
 ```
 Nivel 1: Estado actual (ya existe en FinancialEngine)
@@ -45,17 +46,17 @@ Nivel 1: Estado actual (ya existe en FinancialEngine)
   ├── totalSpent
   └── healthScore (estático)
 
-Nivel 2: Velocidad (nuevo — requiere historial)
+Nivel 2: Velocidad (new — requiere historial)
   ├── BurnRate (gasto/día)
   ├── DailyRate (promedio diario real)
   └── PaceVsBudget (relación entre velocidad y plan)
 
-Nivel 3: Proyección a corto plazo (nuevo — requiere obligaciones)
+Nivel 3: Proyección a corto plazo (new — requiere obligaciones)
   ├── ProjectedClosingBalance
   ├── DaysUntilEmpty
   └── LiquidityRisk
 
-Nivel 4: Proyección a largo plazo (nuevo — requiere historial + ML futuro)
+Nivel 4: Proyección a largo plazo (new — requiere historial + ML futuro)
   ├── CashflowForecast (90 días)
   ├── CategoryVelocity por categoría
   └── SavingsPrediction
@@ -66,7 +67,7 @@ Nivel 5: Intelligence (plan separado: Intelligence Layer)
   └── Recommendations
 ```
 
-### Nuevos archivos a crear
+### News archivos a create
 
 ```
 lib/core/domain/
@@ -82,12 +83,12 @@ lib/core/domain/
 
 ---
 
-## ⚡ Análisis de Impacto
+## ⚡ Impact Analysis
 
 ### Lo que se necesita del plan anterior (`financial_engine.md`)
-- `Money` value object (Fase 1) → prerequisito
-- `FinancialSnapshot` (Fase 2-3) → el forecasting extiende el snapshot
-- `ScheduledPayment` entity (Fase 2) → prerequisito para obligaciones
+- `Money` value object (Phase 1) → prerequisito
+- `FinancialSnapshot` (Phase 2-3) → el forecasting extiende el snapshot
+- `ScheduledPayment` entity (Phase 2) → prerequisito para obligaciones
 
 ### Lo que se necesita de `categories_redesign.md`
 - `CategoryRef` → para CategoryVelocity por categoría
@@ -101,21 +102,21 @@ El `FinancialSnapshot` se extiende con campos opcionales de forecasting.
 class FinancialSnapshot {
   // ... campos existentes ...
 
-  // Nuevos campos opcionales (null = forecasting no disponible todavía)
+  // News campos opcionales (null = forecasting no disponible todavía)
   final FinancialProjection? projection; // null hasta que Forecasting Engine esté listo
 }
 ```
 
 ---
 
-## 🗺️ Estrategia Incremental
+## 🗺️ Incremental Strategy
 
-### FASE 1 — BurnRate (la métrica más simple y de mayor impacto inmediato)
+### PHASE 1 — BurnRate (la métrica más simple y de mayor impacto inmediato)
 **Objetivo**: Calcular y mostrar la velocidad de gasto actual.
-**Reversibilidad**: 100% — widget nuevo, no modifica nada.
+**Reversibilidad**: 100% — widget new, no modifica nada.
 
 ```
-Tarea 1.1: Crear lib/core/domain/entities/burn_rate.dart
+Task 1.1: Create lib/core/domain/entities/burn_rate.dart
   - totalSpent: Money
   - daysElapsed: int
   - daysRemaining: int
@@ -123,42 +124,42 @@ Tarea 1.1: Crear lib/core/domain/entities/burn_rate.dart
   - projectedTotalSpend: Money (computed: totalSpent + dailyRate * daysRemaining)
   - paceVsBudget: double (projected / allocated)
 
-Tarea 1.2: Integrar BurnRate en FinancialEngine.buildSnapshot()
+Task 1.2: Integrar BurnRate en FinancialEngine.buildSnapshot()
   - Calcular daysElapsed desde period.start hasta hoy
   - Calcular dailyRate = totalSpent / daysElapsed
   - snapshot.burnRate = BurnRate(...)
 
-Tarea 1.3: Widget BurnRateCard en dashboard
+Task 1.3: Widget BurnRateCard en dashboard
   - Muestra: "R$ X/día promedio"
   - Muestra: "Proyección al cierre: R$ Y"
   - Semáforo: verde si paceVsBudget < 0.8, amarillo < 1.0, rojo >= 1.0
 ```
 
-**Test de éxito**: El dashboard muestra la velocidad de gasto actualizada al registrar un nuevo gasto.
+**Test de éxito**: El dashboard muestra la velocidad de gasto actualizada al registrar un new gasto.
 
 ---
 
-### FASE 2 — DaysUntilEmpty + LiquidityRisk
+### PHASE 2 — DaysUntilEmpty + LiquidityRisk
 **Objetivo**: La métrica más emocionalmente impactante.
-**Pre-condición**: Fase 1 completa. `InstallmentPlan` de `categories_redesign.md` Fase 3.
+**Pre-condición**: Phase 1 completa. `InstallmentPlan` de `categories_redesign.md` Phase 3.
 
 ```
-Tarea 2.1: Crear ObligationEngine
+Task 2.1: Create ObligationEngine
   - lib/core/domain/services/obligation_engine.dart
   - getScheduledPayments(userId, dateRange) → List<ScheduledPayment>
   - Fuentes: installment_payments pending + recurring_occurrences pending
   - Ordenados por due_date
 
-Tarea 2.2: Implementar DaysUntilEmpty algorithm
+Task 2.2: Implementar DaysUntilEmpty algorithm
   - Input: currentBalance, dailyBurnRate, List<ScheduledPayment>
   - Algoritmo iterativo día por día
   - Returns: int días (o -1 si >365 días, solvente)
 
-Tarea 2.3: Implementar LiquidityRisk assessment
+Task 2.3: Implementar LiquidityRisk assessment
   - Inputs: currentBalance, upcoming7Days obligations, dailyBurnRate
   - Returns: LiquidityRisk enum (none | low | medium | high | critical)
 
-Tarea 2.4: Widget de alerta en dashboard (condicional)
+Task 2.4: Widget de alerta en dashboard (condicional)
   - Solo visible si LiquidityRisk >= medium
   - "Semana apertada: R$580 em compromissos esta semana"
   - Tap → ver breakdown de obligaciones
@@ -166,43 +167,43 @@ Tarea 2.4: Widget de alerta en dashboard (condicional)
 
 ---
 
-### FASE 3 — ProjectedClosingBalance
+### PHASE 3 — ProjectedClosingBalance
 **Objetivo**: Responder "¿cómo voy a terminar el período?"
 
 ```
-Tarea 3.1: Implementar calculateProjectedClosingBalance()
+Task 3.1: Implementar calculateProjectedClosingBalance()
   - currentBalance + projectedIncome - projectedVariableSpend - confirmedObligations
   - projectedIncome: ingresos esperados antes del cierre (salary si no llegó)
   - projectedVariableSpend: dailyBurnRate * daysRemaining
 
-Tarea 3.2: UI — extender PeriodBalanceHero
+Task 3.2: UI — extender PeriodBalanceHero
   - Línea adicional: "Proyección: R$X al cierre"
   - Color según positivo/negativo
   - Tooltip explicativo en tap
 
-Tarea 3.3: Alerta de balance negativo proyectado
+Task 3.3: Alerta de balance negativo proyectado
   - Si projectedClosingBalance < 0: InsightCard crítica en dashboard
   - Acción: "Ver compromisos del período"
 ```
 
 ---
 
-### FASE 4 — CashflowForecast (Chart 90 días)
+### PHASE 4 — CashflowForecast (Chart 90 días)
 **Objetivo**: Visualización predictiva completa.
 **Pre-condición**: Fases 1-3 completas. Datos de recurrentes disponibles.
 
 ```
-Tarea 4.1: Algoritmo CashflowForecast
+Task 4.1: Algoritmo CashflowForecast
   - buildCashflowForecast(userId, period, days: 90)
   - List<CashflowDataPoint> con { date, balance, hasObligation, dailyExpense, dailyIncome }
   - Cada día: balance anterior - dailyBurnRate - obligaciones_del_día + ingresos_del_día
 
-Tarea 4.2: ForecastingEngine con cache
+Task 4.2: ForecastingEngine con cache
   - Cache TTL 5 minutos
   - Invalidar por evento: TransactionCreated | ObligationChanged
   - Cálculo asíncrono en background (no bloquear UI)
 
-Tarea 4.3: Chart widget
+Task 4.3: Chart widget
   - fl_chart LineChart
   - Línea sólida: balance real (pasado)
   - Línea punteada: proyección (futuro)
@@ -213,21 +214,21 @@ Tarea 4.3: Chart widget
 
 ---
 
-### FASE 5 — CategoryVelocity
+### PHASE 5 — CategoryVelocity
 **Objetivo**: Detectar qué categorías están "fuera de control".
 **Pre-condición**: Historial de al menos 2 períodos.
 
 ```
-Tarea 5.1: Calcular historial por categoría
+Task 5.1: Calcular historial por categoría
   - Últimos 3 períodos → promedio de gasto por CategoryRef
   - Período actual → gasto actual
 
-Tarea 5.2: CategoryVelocity per category
+Task 5.2: CategoryVelocity per category
   - deviationPercent = (current - avg) / avg * 100
   - isOverPace: deviation > 20%
   - isUnderPace: deviation < -20%
 
-Tarea 5.3: UI CategoryVelocity indicator
+Task 5.3: UI CategoryVelocity indicator
   - Chip en cada EnvelopeCard: "↑23% vs promedio"
   - En Analytics: tabla "Categorías fuera de ritmo"
 ```
@@ -238,11 +239,11 @@ Tarea 5.3: UI CategoryVelocity indicator
 **Objetivo**: Responder "¿cuánto voy a ahorrar este período?"
 
 ```
-Tarea 6.1: predictSavings()
+Task 6.1: predictSavings()
   - projectedIncome - projectedSpend - totalObligations
   - Con factor de corrección histórica (si el usuario tiende a gastar X% más de lo proyectado)
 
-Tarea 6.2: UI en dashboard
+Task 6.2: UI en dashboard
   - Card: "Previsão de poupança: R$847 este período"
   - Solo mostrar si confidence > 60% (requiere historial)
   - Primer período: no mostrar (sin historial)
@@ -285,11 +286,11 @@ double deviation = historicalAvg.amount > 0
 
 ---
 
-## 🚨 Riesgos y Mitigaciones
+## 🚨 Risks and Mitigations
 
 | Riesgo | Probabilidad | Impacto | Mitigación |
 |---|---|---|---|
-| Proyección incorrecta sin historial suficiente | Alta (usuarios nuevos) | Confusión | No mostrar proyección en primer período |
+| Proyección incorrecta sin historial suficiente | Alta (usuarios news) | Confusión | No mostrar proyección en primer período |
 | Lenguaje del forecast genera ansiedad | Media | Abandono | Usar lenguaje humano, no estadístico |
 | Recálculo del forecast en cada render | Alta | Performance | Cache TTL 5min + invalidación por evento |
 | Obligaciones no sincronizadas (offline) | Media | Proyección incorrecta | Proyectar con datos locales, reconciliar al reconectar |
@@ -297,45 +298,45 @@ double deviation = historicalAvg.amount > 0
 
 ---
 
-## ✅ Checklist de Completitud
+## ✅ Completion Checklist
 
-### Fase 1 — BurnRate
+### Phase 1 — BurnRate
 - [ ] `BurnRate` entity con dailyRate y paceVsBudget
 - [ ] Integrado en `FinancialSnapshot`
 - [ ] Widget BurnRateCard en dashboard
 - [ ] Test: BurnRate correcto con datos sintéticos
 
-### Fase 2 — DaysUntilEmpty
+### Phase 2 — DaysUntilEmpty
 - [ ] `ObligationEngine` con fuentes: installments + recurrentes
 - [ ] Algoritmo DaysUntilEmpty iterativo
 - [ ] `LiquidityRisk` assessment
 - [ ] Widget alerta condicional en dashboard
 
-### Fase 3 — ProjectedClosingBalance
+### Phase 3 — ProjectedClosingBalance
 - [ ] `calculateProjectedClosingBalance()` implementado
 - [ ] PeriodBalanceHero muestra proyección
 - [ ] Alerta de balance negativo proyectado
 
-### Fase 4 — CashflowForecast
+### Phase 4 — CashflowForecast
 - [ ] `buildCashflowForecast()` con 90 días
 - [ ] `ForecastingEngine` con cache TTL 5min
 - [ ] Chart en Analytics screen (sólido=real, punteado=proyección)
 
-### Fase 5 — CategoryVelocity
+### Phase 5 — CategoryVelocity
 - [ ] `CategoryVelocity` calculado para todas las categorías
 - [ ] Indicator en EnvelopeCard
 - [ ] Tabla en Analytics
 
-### Fase 6 — SavingsPrediction
+### Phase 6 — SavingsPrediction
 - [ ] `predictSavings()` con corrección histórica
 - [ ] Solo se muestra si hay historial (>1 período)
 - [ ] Documentar en `docs/decisions/003-forecasting-engine.md`
 
 ---
 
-## 📎 Referencias
+## 📎 References
 
 - Análisis detallado: `FAROL_PREDICTIVE_ENGINE.md` → Sección 7
 - ADR pendiente: `docs/decisions/003-forecasting-engine.md`
-- Depende de: `categories_redesign.md` + `financial_engine.md`
-- Desbloquea: Intelligence Layer (no planificado aún, siguiente iteración)
+- Depends on: `categories_redesign.md` + `financial_engine.md`
+- Unblocks: Intelligence Layer (no planificado aún, siguiente iteración)

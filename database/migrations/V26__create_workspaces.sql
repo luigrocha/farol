@@ -135,6 +135,9 @@ CREATE TRIGGER workspace_updated_at
 
 -- ─── Trigger: personal workspace for every new user ───────────
 
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+DROP FUNCTION IF EXISTS create_personal_workspace();
+
 CREATE OR REPLACE FUNCTION create_personal_workspace()
 RETURNS TRIGGER AS $$
 DECLARE

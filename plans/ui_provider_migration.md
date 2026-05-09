@@ -1,5 +1,5 @@
 # Plan: UI Provider Migration — Resolução do ui_audit_2026_05_08
-**Área**: UI · Providers · Domain
+**Area**: UI · Providers · Domain
 **Prioridade**: P1 — UI polish, sem breaking changes
 **Dependências**: Nenhuma (domínio já implementado)
 **Origem**: `docs/architecture/ui_audit_2026_05_08.md`
@@ -8,7 +8,7 @@
 
 ## 🔍 Contexto
 
-O motor preditivo está completo. A auditoria identificou 4 pontos onde a UI ainda usa providers/lógica legada em vez do novo domínio. Este plano os resolve de forma incremental, um arquivo por vez.
+O motor preditivo está complete. A auditoria identificou 4 pontos onde a UI ainda usa providers/lógica legada em vez do novo domínio. Este plano os resolve de forma incremental, um arquivo por vez.
 
 ### Mapa do problema
 
@@ -36,10 +36,10 @@ transactions_screen.dart      → isFixed branch + deleteFixedSeriesFrom()
 
 ### Por que essa ordem?
 
-- **Fase 1** (category pickers) — maior impacto no fluxo mais crítico (criar gasto), menor risco
-- **Fase 2** (expense_breakdown) — isolado num widget sem efeitos colaterais
-- **Fase 3** (health_screen) — requer análise dos sub-scores que dependem de dados adicionais
-- **Fase 4** (isFixed cleanup) — requer verificação de dados em produção antes de remover
+- **Phase 1** (category pickers) — maior impacto no fluxo mais crítico (criar gasto), menor risco
+- **Phase 2** (expense_breakdown) — isolado num widget sem efeitos colaterais
+- **Phase 3** (health_screen) — requer análise dos sub-scores que dependem de dados adicionais
+- **Phase 4** (isFixed cleanup) — requer verificação de dados em produção antes de remover
 
 ---
 
@@ -65,7 +65,7 @@ transactions_screen.dart      → isFixed branch + deleteFixedSeriesFrom()
 
 ---
 
-### FASE 1 — Category Pickers: quick_add + edit_expense
+### PHASE 1 — Category Pickers: quick_add + edit_expense
 **Objetivo**: Trocar `categoriesStreamProvider` por `categoriesRefProvider` nos dois bottom sheets.
 **Reversibilidade**: 100% — mudança de provider, sem alteração de schema ou lógica de negócio.
 
@@ -145,7 +145,7 @@ static const _subcategories = {
 
 ---
 
-### FASE 2 — expense_breakdown: categoriesMapProvider → categoriesRefProvider
+### PHASE 2 — expense_breakdown: categoriesMapProvider → categoriesRefProvider
 **Objetivo**: Widget do dashboard usa `CategoryRef` para nomes/emojis.
 **Reversibilidade**: 100% — apenas display.
 
@@ -176,7 +176,7 @@ final emoji = catRef?.emoji ?? '💰';
 
 ---
 
-### FASE 3 — health_screen: migração para financialSnapshotProvider
+### PHASE 3 — health_screen: migração para financialSnapshotProvider
 **Objetivo**: Eliminar o recálculo manual do healthScore e os providers legados.
 **Reversibilidade**: Alta — dados estão todos no snapshot.
 
@@ -236,7 +236,7 @@ final installmentsRate = net > 0
 
 ---
 
-### FASE 4 — transactions_screen: aposentar deleteFixedSeriesFrom
+### PHASE 4 — transactions_screen: aposentar deleteFixedSeriesFrom
 **Objetivo**: Remover o padrão `isFixed + deleteFixedSeriesFrom` da UI de transações.
 **Reversibilidade**: Média — requer verificação de dados em produção antes.
 **Pré-condição**: Verificar quantos expenses ainda têm `is_fixed=true` e `recurring_rule_id IS NULL` em produção.
@@ -296,9 +296,9 @@ if (isFixed && expense.recurringRuleId == null) {
 
 ---
 
-## ✅ Checklist de Completitude
+## ✅ Completion Checkliste
 
-### Fase 1 — Category Pickers ✅ 2026-05-08
+### Phase 1 — Category Pickers ✅ 2026-05-08
 - [x] `quick_add_bottom_sheet.dart`: `categoriesStreamProvider` → `categoriesRefProvider`
 - [x] `quick_add_bottom_sheet.dart`: `_catChip` recebe `CategoryRef`
 - [x] `quick_add_bottom_sheet.dart`: `_save` usa `CategoryRef.uncategorized()` como fallback
@@ -306,12 +306,12 @@ if (isFixed && expense.recurringRuleId == null) {
 - [x] `edit_expense_bottom_sheet.dart`: chaves `_subcategories` convertidas para lowercase (bug fix: lookup nunca encontrava com UPPERCASE)
 - [ ] Teste manual: criar gasto com categoria custom → aparece corretamente
 
-### Fase 2 — expense_breakdown ✅ 2026-05-08
+### Phase 2 — expense_breakdown ✅ 2026-05-08
 - [x] `expense_breakdown.dart`: `categoriesMapProvider` → `categoriesRefProvider` (mapa inline)
 - [ ] Verificar em produção: categorias custom exibem nome e emoji corretos
 - [ ] Sem regressão: categorias do sistema (housing, transport...) continuam exibindo
 
-### Fase 3 — health_screen ✅ 2026-05-08
+### Phase 3 — health_screen ✅ 2026-05-08
 - [x] `health_screen.dart`: `financialSnap.healthScore` em vez de `calculateHealthScore()`
 - [x] `financialSnap.savingsRate * 100` e `financialSnap.currentBalance.amount` para sub-scores
 - [x] `installmentsProvider` (CardInstallment legado) removido da tela
@@ -319,7 +319,7 @@ if (isFixed && expense.recurringRuleId == null) {
 - [x] `byCategory['HOUSING']` corrigido para `byCategory['housing']`
 - [ ] Verificar em produção: score idêntico ao `HealthGaugeCard` do dashboard
 
-### Fase 4 — isFixed cleanup ✅ 2026-05-08 (Cenário B)
+### Phase 4 — isFixed cleanup ✅ 2026-05-08 (Cenário B)
 - [ ] Query SQL no Supabase ainda pendente (para decidir se migrar para Cenário A)
 - [x] Branch `isFixed`: Cenário B aplicado — dialog de aviso, exclusão individual apenas
 - [x] `deleteFixedSeriesFrom` marcado como `@Deprecated` no repositório
@@ -333,7 +333,7 @@ if (isFixed && expense.recurringRuleId == null) {
 |---|---|---|
 | `categoriesRefProvider` retorna lista vazia momentaneamente | Baixa | Já tem fallback `CategoryRef.uncategorized()` |
 | `installmentsRate` via `totalFutureObligations` inclui recorrentes (não só parcelas) | Média | Documentar diferença; considerar exposição de `activeInstallmentsTotal` separado no snapshot |
-| expenses com `is_fixed=true` em produção sem RecurringRule → delete silencioso | Alta se Cenário B | Verificar SQL antes de implementar Fase 4 |
+| expenses com `is_fixed=true` em produção sem RecurringRule → delete silencioso | Alta se Cenário B | Verificar SQL antes de implementar Phase 4 |
 
 ---
 

@@ -82,29 +82,37 @@ SET workspace_id = w.id
 FROM public.workspaces w
 WHERE w.owner_id = c.user_id AND c.workspace_id IS NULL;
 
-UPDATE salary_settings ss
-SET workspace_id = w.id
-FROM public.workspaces w
-WHERE w.owner_id = ss.user_id AND ss.workspace_id IS NULL;
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables
+    WHERE table_name = 'salary_settings'
+  ) THEN
+    UPDATE salary_settings ss
+    SET workspace_id = w.id
+    FROM public.workspaces w
+    WHERE w.owner_id = ss.user_id AND ss.workspace_id IS NULL;
+  END IF;
+END $$;
 
 UPDATE installment_plans ip
 SET workspace_id = w.id
 FROM public.workspaces w
 WHERE w.owner_id = ip.user_id AND ip.workspace_id IS NULL;
 
--- installment_payments has no user_id — join through installment_plans
+-- installment_payments has user_id; join through installment_plans for workspace lookup
 UPDATE installment_payments ipy
 SET workspace_id = w.id
 FROM installment_plans ip
 JOIN public.workspaces w ON w.owner_id = ip.user_id
-WHERE ipy.installment_plan_id = ip.id AND ipy.workspace_id IS NULL;
+WHERE ipy.plan_id = ip.id AND ipy.workspace_id IS NULL;
 
 UPDATE recurring_rules rr
 SET workspace_id = w.id
 FROM public.workspaces w
 WHERE w.owner_id = rr.user_id AND rr.workspace_id IS NULL;
 
--- recurring_occurrences has no user_id — join through recurring_rules
+-- recurring_occurrences join through recurring_rules for workspace lookup
 UPDATE recurring_occurrences ro
 SET workspace_id = w.id
 FROM recurring_rules rr
@@ -121,7 +129,7 @@ WHERE ro.rule_id = rr.id AND ro.workspace_id IS NULL;
 -- UNION ALL SELECT 'budget_goals',         COUNT(*) FROM budget_goals           WHERE workspace_id IS NULL
 -- UNION ALL SELECT 'period_budgets',       COUNT(*) FROM period_budgets         WHERE workspace_id IS NULL
 -- UNION ALL SELECT 'categories',           COUNT(*) FROM categories             WHERE workspace_id IS NULL
--- UNION ALL SELECT 'salary_settings',      COUNT(*) FROM salary_settings        WHERE workspace_id IS NULL
+-- (salary_settings omitted if it doesn't exist in schema)
 -- UNION ALL SELECT 'installment_plans',    COUNT(*) FROM installment_plans      WHERE workspace_id IS NULL
 -- UNION ALL SELECT 'installment_payments', COUNT(*) FROM installment_payments   WHERE workspace_id IS NULL
 -- UNION ALL SELECT 'recurring_rules',      COUNT(*) FROM recurring_rules        WHERE workspace_id IS NULL

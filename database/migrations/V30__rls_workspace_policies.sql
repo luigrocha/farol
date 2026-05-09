@@ -184,22 +184,30 @@ CREATE POLICY "workspace_delete_categories" ON categories FOR DELETE
 
 -- ─── SALARY SETTINGS ──────────────────────────────────────────
 
-DROP POLICY IF EXISTS "Users can only see their own salary_settings" ON salary_settings;
-DROP POLICY IF EXISTS "Users can insert their own salary_settings"   ON salary_settings;
-DROP POLICY IF EXISTS "Users can update their own salary_settings"   ON salary_settings;
-DROP POLICY IF EXISTS "Users can delete their own salary_settings"   ON salary_settings;
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables
+    WHERE table_name = 'salary_settings'
+  ) THEN
+    DROP POLICY IF EXISTS "Users can only see their own salary_settings" ON salary_settings;
+    DROP POLICY IF EXISTS "Users can insert their own salary_settings"   ON salary_settings;
+    DROP POLICY IF EXISTS "Users can update their own salary_settings"   ON salary_settings;
+    DROP POLICY IF EXISTS "Users can delete their own salary_settings"   ON salary_settings;
 
-CREATE POLICY "workspace_select_salary_settings" ON salary_settings FOR SELECT
-  USING (workspace_id IN (SELECT workspace_id FROM workspace_members WHERE user_id = auth.uid()));
+    CREATE POLICY "workspace_select_salary_settings" ON salary_settings FOR SELECT
+      USING (workspace_id IN (SELECT workspace_id FROM workspace_members WHERE user_id = auth.uid()));
 
-CREATE POLICY "workspace_insert_salary_settings" ON salary_settings FOR INSERT
-  WITH CHECK (workspace_id IN (SELECT workspace_id FROM workspace_members WHERE user_id = auth.uid() AND role IN ('owner','admin','member')));
+    CREATE POLICY "workspace_insert_salary_settings" ON salary_settings FOR INSERT
+      WITH CHECK (workspace_id IN (SELECT workspace_id FROM workspace_members WHERE user_id = auth.uid() AND role IN ('owner','admin','member')));
 
-CREATE POLICY "workspace_update_salary_settings" ON salary_settings FOR UPDATE
-  USING (workspace_id IN (SELECT workspace_id FROM workspace_members WHERE user_id = auth.uid() AND role IN ('owner','admin','member')));
+    CREATE POLICY "workspace_update_salary_settings" ON salary_settings FOR UPDATE
+      USING (workspace_id IN (SELECT workspace_id FROM workspace_members WHERE user_id = auth.uid() AND role IN ('owner','admin','member')));
 
-CREATE POLICY "workspace_delete_salary_settings" ON salary_settings FOR DELETE
-  USING (workspace_id IN (SELECT workspace_id FROM workspace_members WHERE user_id = auth.uid() AND role IN ('owner','admin','member')));
+    CREATE POLICY "workspace_delete_salary_settings" ON salary_settings FOR DELETE
+      USING (workspace_id IN (SELECT workspace_id FROM workspace_members WHERE user_id = auth.uid() AND role IN ('owner','admin','member')));
+  END IF;
+END $$;
 
 -- ─── INSTALLMENT PLANS ────────────────────────────────────────
 
@@ -282,8 +290,9 @@ CREATE POLICY "workspace_delete_recurring_occurrences" ON recurring_occurrences 
 -- WHERE tablename IN (
 --   'expenses','incomes','investments','net_worth_snapshots','accounts',
 --   'account_transfers','budget_goals','period_budgets','categories',
---   'salary_settings','installment_plans','installment_payments',
+--   'installment_plans','installment_payments',
 --   'recurring_rules','recurring_occurrences'
 -- )
 -- ORDER BY tablename, policyname;
 -- Expect 4 policies per table (select, insert, update, delete) named workspace_*.
+-- (salary_settings omitted if it doesn't exist in schema)

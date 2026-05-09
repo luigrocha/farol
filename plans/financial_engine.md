@@ -1,55 +1,56 @@
 # Plan: Financial Engine Central
-**Área**: Domain · Services · Providers
-**Prioridad**: P1
-**Dependencias**: `categories_redesign.md` (Fase 3 completa)
-**Archivos impactados**: Nuevos archivos en `lib/core/domain/`, refactor de `DashboardScreen`, providers
+
+**Area**: Domain · Services · Providers  
+**Priority**: P1  
+**Dependencies**: `categories_redesign.md` (Phase 3 complete)  
+**Files impacted**: New files in `lib/core/domain/`, refactor of `DashboardScreen`, providers
 
 ---
 
-## 🔍 Contexto del Problema
+## 🔍 Problem Context
 
-### Estado actual (confirmado en código)
+### Current state (confirmed in code)
 
 ```dart
-// PROBLEMA: Cada widget calcula su propia versión de la verdad financiera
+// PROBLEM: Each widget calculates its own version of financial truth
 
-// Widget A: calcula totalExpenses de una forma
+// Widget A: calculates totalExpenses one way
 class KpiGrid extends ConsumerWidget {
-  // ref.watch(expenseProvider) → suma expenses del período
+  // ref.watch(expenseProvider) → sums expenses for period
 }
 
-// Widget B: calcula el balance de otra forma
+// Widget B: calculates balance a different way
 class PeriodBalanceHero extends ConsumerWidget {
   // ref.watch(incomeProvider) - ref.watch(expenseProvider)
-  // usa lógica diferente, diferente filtrado
+  // uses different logic, different filtering
 }
 
-// Widget C: calcula health score con sus propios inputs
+// Widget C: calculates health score with its own inputs
 class HealthGaugeCard extends ConsumerWidget {
-  // llama FinancialCalculatorService.calculateHealthScore(...)
-  // con datos que puede no tener completos
+  // calls FinancialCalculatorService.calculateHealthScore(...)
+  // with data that may be incomplete
 }
 
-// RESULTADO: 3 widgets, 3 fuentes de verdad, posibles inconsistencias
+// RESULT: 3 widgets, 3 sources of truth, possible inconsistencies
 ```
 
 ```dart
-// FinancialCalculatorService es un conjunto de funciones estáticas
-// No tiene estado, no produce un snapshot coherente
-// No hay "el estado financiero del período" — solo cálculos aislados
+// FinancialCalculatorService is a set of static functions
+// Has no state, doesn't produce a coherent snapshot
+// No "the financial state of the period" — just isolated calculations
 class FinancialCalculatorService {
-  static double calculateSavingsRate(...)   // solo esto
-  static int calculateHealthScore(...)       // solo esto
+  static double calculateSavingsRate(...)   // just this
+  static int calculateHealthScore(...)       // just this
   // etc.
 }
 ```
 
-### ¿Qué se necesita?
+### What's needed?
 
-Un único observable que produzca **el estado financiero completo del período**. Todos los widgets consumen este observable — una sola fuente de verdad.
+A single observable that produces **the complete financial state of the period**. All widgets consume this observable — one source of truth.
 
 ```dart
-// OBJETIVO: esto
+// GOAL: this
 final snapshot = ref.watch(financialSnapshotProvider(period));
 // snapshot.totalIncome, snapshot.totalSpent, snapshot.healthScore,
 // snapshot.envelopes, snapshot.burnRate, ...
@@ -57,42 +58,42 @@ final snapshot = ref.watch(financialSnapshotProvider(period));
 
 ---
 
-## 📐 Arquitectura Propuesta
+## 📐 Proposed Architecture
 
-### Estructura de archivos nuevos
+### New file structure
 
 ```
 lib/core/domain/
 ├── entities/
-│   ├── financial_snapshot.dart      ← el objeto central
-│   ├── envelope.dart                ← presupuesto por categoría
-│   └── scheduled_payment.dart       ← cuotas + recurrentes futuros
+│   ├── financial_snapshot.dart      ← central object
+│   ├── envelope.dart                ← budget per category
+│   └── scheduled_payment.dart       ← installments + future recurring
 ├── value_objects/
-│   ├── money.dart                   ← tipo seguro para dinero
-│   ├── category_ref.dart            ← (del plan categories_redesign)
-│   └── burn_rate.dart               ← velocidad de gasto
+│   ├── money.dart                   ← safe currency type
+│   ├── category_ref.dart            ← (from categories_redesign plan)
+│   └── burn_rate.dart               ← spending velocity
 └── services/
-    ├── financial_engine.dart        ← orquestador central
-    └── envelope_engine.dart         ← lógica de envelopes
+    ├── financial_engine.dart        ← central orchestrator
+    └── envelope_engine.dart         ← envelope logic
 ```
 
-### El `FinancialSnapshot`
+### The `FinancialSnapshot`
 
 ```dart
-/// La única fuente de verdad financiera del período.
-/// Producida por FinancialEngine, consumida por toda la UI.
+/// The single source of financial truth for the period.
+/// Produced by FinancialEngine, consumed by all UI.
 class FinancialSnapshot {
   final FinancialPeriod period;
   final DateTime generatedAt;
 
-  // ── Ingresos ──────────────────────────────────────
+  // ── Income ────────────────────────────────────────
   final Money totalIncome;
-  final Money cashIncome;      // excluye Swile
+  final Money cashIncome;      // excludes Swile
   final Money swileIncome;
 
-  // ── Gastos ────────────────────────────────────────
+  // ── Expenses ──────────────────────────────────────
   final Money totalSpent;
-  final Money cashSpent;       // excluye Swile
+  final Money cashSpent;       // excludes Swile
   final Money swileSpent;
 
   // ── Balance ───────────────────────────────────────
@@ -104,12 +105,12 @@ class FinancialSnapshot {
   final Money totalAllocated;
   final Money totalBudgeted;
 
-  // ── Salud financiera ──────────────────────────────
+  // ── Financial health ──────────────────────────────
   final int healthScore;           // 0-10
   final String healthColor;        // 'green' | 'amber' | 'red'
   final double savingsRate;        // %
 
-  // ── Compromisos futuros ───────────────────────────
+  // ── Future obligations ────────────────────────────
   final List<ScheduledPayment> upcomingPayments;
   final Money totalFutureObligations;
 
@@ -122,11 +123,11 @@ class FinancialSnapshot {
 ### Value Object: `Money`
 
 ```dart
-/// Tipo seguro para moneda. Evita errores de double arithmetic.
-/// Internamente trabaja con centavos (int) para precisión exacta.
+/// Safe type for currency. Avoids double arithmetic errors.
+/// Internally works with cents (int) for exact precision.
 class Money {
   final int _cents;
-  final String currencyCode; // 'BRL' por default
+  final String currencyCode; // 'BRL' by default
 
   static const Money zero = Money._(0);
 
@@ -155,190 +156,190 @@ class Money {
 
 ---
 
-## ⚡ Análisis de Impacto
+## ⚡ Impact Analysis
 
-### Archivos a crear (sin tocar código existente)
+### Files to create (without touching existing code)
 ```
-lib/core/domain/entities/financial_snapshot.dart  ← NUEVO
-lib/core/domain/entities/envelope.dart             ← NUEVO
-lib/core/domain/value_objects/money.dart           ← NUEVO
-lib/core/domain/services/financial_engine.dart     ← NUEVO
-lib/core/domain/services/envelope_engine.dart      ← NUEVO
-lib/core/providers/financial_snapshot_provider.dart← NUEVO
+lib/core/domain/entities/financial_snapshot.dart  ← NEW
+lib/core/domain/entities/envelope.dart             ← NEW
+lib/core/domain/value_objects/money.dart           ← NEW
+lib/core/domain/services/financial_engine.dart     ← NEW
+lib/core/domain/services/envelope_engine.dart      ← NEW
+lib/core/providers/financial_snapshot_provider.dart← NEW
 ```
 
-### Archivos a modificar (con backward compat)
+### Files to modify (with backward compat)
 ```
-lib/features/dashboard/dashboard_screen.dart       ← agregar watch del snapshot
-lib/features/dashboard/widgets/kpi_grid.dart       ← migrar a snapshot
+lib/features/dashboard/dashboard_screen.dart       ← add snapshot watch
+lib/features/dashboard/widgets/kpi_grid.dart       ← migrate to snapshot
 lib/features/dashboard/widgets/period_balance_hero.dart
 lib/features/dashboard/widgets/health_gauge_card.dart
 ```
 
 ### Breaking Changes
-| Change | Severidad | Mitigación |
+| Change | Severity | Mitigation |
 |---|---|---|
-| Providers del dashboard refactorizados | 🟡 MEDIO | Migrar widget por widget, no todo a la vez |
-| `FinancialCalculatorService` → métodos internos del engine | 🟢 BAJO | Mantener métodos estáticos como wrappers |
+| Dashboard providers refactored | 🟡 MEDIUM | Migrate widget by widget, not all at once |
+| `FinancialCalculatorService` → internal engine methods | 🟢 LOW | Keep static methods as wrappers |
 
 ---
 
-## 🗺️ Estrategia Incremental
+## 🗺️ Incremental Strategy
 
-### FASE 1 — Money Value Object (sin UI)
-**Objetivo**: Tipo seguro para dinero. Prerequisito de todo.
-**Reversibilidad**: 100%.
+### PHASE 1 — Money Value Object (no UI)
+**Goal**: Safe type for currency. Prerequisite for everything.
+**Reversibility**: 100%.
 
 ```
-Tarea 1.1: Crear lib/core/domain/value_objects/money.dart
+Task 1.1: Create lib/core/domain/value_objects/money.dart
   - Money.fromDouble(), Money.fromCents()
-  - Operadores aritméticos (+, -, *)
-  - Comparadores (>, <, ==)
-  - money.formatted → usa FinancialCalculatorService.formatBRL()
-  - Money.zero como constante
+  - Arithmetic operators (+, -, *)
+  - Comparators (>, <, ==)
+  - money.formatted → uses FinancialCalculatorService.formatBRL()
+  - Money.zero as constant
 
-Tarea 1.2: Tests de Money
+Task 1.2: Money tests
   - Money(100.00) + Money(50.50) == Money(150.50)
   - Money(10.00) * 3 == Money(30.00)
-  - Sin errores de floating point: Money(0.1) + Money(0.2) == Money(0.3)
+  - No floating point errors: Money(0.1) + Money(0.2) == Money(0.3)
 ```
 
-**Test de éxito**: `dart test test/core/money_test.dart` → todos pasan.
+**Success test**: `dart test test/core/money_test.dart` → all pass.
 
 ---
 
-### FASE 2 — FinancialSnapshot Entity (sin lógica de calculo)
-**Objetivo**: Definir el contrato del objeto central.
-**Reversibilidad**: 100%.
+### PHASE 2 — FinancialSnapshot Entity (no calculation logic)
+**Goal**: Define the contract for the central object.
+**Reversibility**: 100%.
 
 ```
-Tarea 2.1: Crear lib/core/domain/entities/financial_snapshot.dart
-  - Definir todos los campos con Money y tipos correctos
-  - Factory FinancialSnapshot.empty(period) para loading states
-  - copyWith() para actualizaciones parciales
+Task 2.1: Create lib/core/domain/entities/financial_snapshot.dart
+  - Define all fields with Money and correct types
+  - Factory FinancialSnapshot.empty(period) for loading states
+  - copyWith() for partial updates
 
-Tarea 2.2: Crear lib/core/domain/entities/envelope.dart
+Task 2.2: Create lib/core/domain/entities/envelope.dart
   - EnvelopeStatus (ok | warning | overspent)
-  - Campos: category, allocated, spent, remaining, rolloverPolicy
+  - Fields: category, allocated, spent, remaining, rolloverPolicy
 
-Tarea 2.3: Crear lib/core/domain/entities/scheduled_payment.dart
-  - Para cuotas e recurrentes futuros
+Task 2.3: Create lib/core/domain/entities/scheduled_payment.dart
+  - For future installments and recurring
   - daysFromNow computed property
 ```
 
 ---
 
-### FASE 3 — FinancialEngine Service
-**Objetivo**: El servicio que produce el FinancialSnapshot.
-**Reversibilidad**: Alta — el engine es nuevo, no reemplaza nada todavía.
+### PHASE 3 — FinancialEngine Service
+**Goal**: The service that produces FinancialSnapshot.
+**Reversibility**: High — engine is new, doesn't replace anything yet.
 
 ```
-Tarea 3.1: Crear lib/core/domain/services/financial_engine.dart
-  - Inyecta: ExpenseRepository, IncomeRepository, InstallmentRepository
+Task 3.1: Create lib/core/domain/services/financial_engine.dart
+  - Injects: ExpenseRepository, IncomeRepository, InstallmentRepository
   - buildSnapshot(period, userId) → Future<FinancialSnapshot>
-  - Internamente usa FinancialCalculatorService para health score
-  - Cache simple: Map<String, FinancialSnapshot> por período
+  - Internally uses FinancialCalculatorService for health score
+  - Simple cache: Map<String, FinancialSnapshot> per period
 
-Tarea 3.2: Crear financialSnapshotProvider en Riverpod
+Task 3.2: Create financialSnapshotProvider in Riverpod
   - @riverpod Future<FinancialSnapshot> financialSnapshot(period)
   - autoDispose
-  - Invalida cuando cambian expenses o incomes del período
+  - Invalidates when expenses or incomes of period change
 
-Tarea 3.3: Test de integración del engine
-  - Datos sintéticos en test
-  - Verificar que totalIncome + totalSpent + balance son coherentes
+Task 3.3: Engine integration test
+  - Synthetic data in test
+  - Verify that totalIncome + totalSpent + balance are coherent
 ```
 
 ---
 
-### FASE 4 — Migración del Dashboard
-**Objetivo**: El dashboard consume un único observable.
-**Reversibilidad**: Media — cambios en UI visibles.
+### PHASE 4 — Dashboard Migration
+**Goal**: Dashboard consumes a single observable.
+**Reversibility**: Medium — visible UI changes.
 
 ```
-Tarea 4.1: Dashboard consume financialSnapshotProvider
-  - Agregar ref.watch(financialSnapshotProvider(period)) en DashboardScreen
-  - Pasar snapshot como parámetro a widgets hijos
+Task 4.1: Dashboard consumes financialSnapshotProvider
+  - Add ref.watch(financialSnapshotProvider(period)) in DashboardScreen
+  - Pass snapshot as parameter to child widgets
 
-Tarea 4.2: Migrar KpiGrid a snapshot
-  - KpiGrid(snapshot: snapshot) en vez de queries individuales
+Task 4.2: Migrate KpiGrid to snapshot
+  - KpiGrid(snapshot: snapshot) instead of individual queries
 
-Tarea 4.3: Migrar PeriodBalanceHero a snapshot
+Task 4.3: Migrate PeriodBalanceHero to snapshot
   - PeriodBalanceHero(snapshot: snapshot)
 
-Tarea 4.4: Migrar HealthGaugeCard a snapshot
+Task 4.4: Migrate HealthGaugeCard to snapshot
   - HealthGaugeCard(snapshot: snapshot)
-  - healthScore viene del snapshot, no calculado en el widget
+  - healthScore comes from snapshot, not calculated in widget
 ```
 
 ---
 
-### FASE 5 — EnvelopeEngine
-**Objetivo**: Lógica de presupuesto por categoría con rollover.
-**Reversibilidad**: Alta.
-**Pre-condición**: `categories_redesign.md` Fase 3 completa.
+### PHASE 5 — EnvelopeEngine
+**Goal**: Budget per category logic with rollover.
+**Reversibility**: High.
+**Pre-condition**: `categories_redesign.md` Phase 3 complete.
 
 ```
-Tarea 5.1: Crear lib/core/domain/services/envelope_engine.dart
+Task 5.1: Create lib/core/domain/services/envelope_engine.dart
   - getEnvelopes(period, userId) → Future<List<EnvelopeStatus>>
   - calculateRollover(envelope) → Money
   - suggestAllocation(category, history) → Money
 
-Tarea 5.2: Integrar envelopes en FinancialSnapshot
-  - snapshot.envelopes viene del EnvelopeEngine
+Task 5.2: Integrate envelopes in FinancialSnapshot
+  - snapshot.envelopes comes from EnvelopeEngine
 
-Tarea 5.3: UI: EnvelopeCard en period_budget_screen.dart
-  - Mostrar rollover si existe
-  - Badge "Acumulado: +R$120" en envelopes con saldo positivo
+Task 5.3: UI: EnvelopeCard in period_budget_screen.dart
+  - Display rollover if exists
+  - Badge "Carried over: +R$120" on envelopes with positive balance
 ```
 
 ---
 
-## 🚨 Riesgos y Mitigaciones
+## 🚨 Risks and Mitigations
 
-| Riesgo | Probabilidad | Impacto | Mitigación |
+| Risk | Probability | Impact | Mitigation |
 |---|---|---|---|
-| Double arithmetic en Money | Alta | Datos incorrectos | Usar centavos internamente (int) |
-| FinancialSnapshot inconsistente si queries parciales | Media | UI incorrecta | Factory FinancialSnapshot.empty() para loading |
-| Provider rebuild en cascada | Media | Performance | autoDispose + select() para campos específicos |
-| Migración del dashboard rompe UI temporalmente | Media | UX degradada | Migrar widget por widget, no todo de golpe |
+| Double arithmetic in Money | High | Incorrect data | Use cents internally (int) |
+| FinancialSnapshot inconsistent if partial queries | Medium | Incorrect UI | Factory FinancialSnapshot.empty() for loading |
+| Provider rebuild cascade | Medium | Performance | autoDispose + select() for specific fields |
+| Dashboard migration breaks UI temporarily | Medium | Degraded UX | Migrate widget by widget, not all at once |
 
 ---
 
-## ✅ Checklist de Completitud
+## ✅ Completion Checklist
 
-### Fase 1 — Money
-- [ ] `Money` value object con centavos internos
-- [ ] Operadores aritméticos correctos
-- [ ] Test: 0.1 + 0.2 == 0.3 (sin floating point error)
+### Phase 1 — Money
+- [ ] `Money` value object with internal cents
+- [ ] Arithmetic operators correct
+- [ ] Test: 0.1 + 0.2 == 0.3 (no floating point error)
 
-### Fase 2 — Entities
-- [ ] `FinancialSnapshot` con todos los campos
+### Phase 2 — Entities
+- [ ] `FinancialSnapshot` with all fields
 - [ ] `FinancialSnapshot.empty(period)` factory
 - [ ] `EnvelopeStatus` entity
 - [ ] `ScheduledPayment` entity
 
-### Fase 3 — Engine
-- [ ] `FinancialEngine.buildSnapshot()` funcional
-- [ ] `financialSnapshotProvider` en Riverpod
-- [ ] Test de integración con datos sintéticos
+### Phase 3 — Engine
+- [ ] `FinancialEngine.buildSnapshot()` functional
+- [ ] `financialSnapshotProvider` in Riverpod
+- [ ] Integration test with synthetic data
 
-### Fase 4 — Dashboard
-- [ ] Dashboard usa único `financialSnapshotProvider`
-- [ ] KpiGrid, PeriodBalanceHero, HealthGaugeCard usan snapshot
-- [ ] 0 queries duplicadas entre widgets del dashboard
+### Phase 4 — Dashboard
+- [ ] Dashboard uses single `financialSnapshotProvider`
+- [ ] KpiGrid, PeriodBalanceHero, HealthGaugeCard use snapshot
+- [ ] 0 duplicate queries between dashboard widgets
 
-### Fase 5 — Envelopes
-- [ ] `EnvelopeEngine` con rollover
-- [ ] Envelopes integrados en snapshot
-- [ ] UI muestra rollover en budget screen
-- [ ] Documentar en `docs/decisions/002-financial-snapshot.md`
+### Phase 5 — Envelopes
+- [ ] `EnvelopeEngine` with rollover
+- [ ] Envelopes integrated in snapshot
+- [ ] UI displays rollover in budget screen
+- [ ] Document in `docs/decisions/002-financial-snapshot.md`
 
 ---
 
-## 📎 Referencias
+## 📎 References
 
-- Análisis detallado: `FAROL_PREDICTIVE_ENGINE.md` → Secciones 2 y 4
-- ADR pendiente: `docs/decisions/002-financial-snapshot.md`
-- Depende de: `categories_redesign.md`
-- Desbloquea: `forecasting.md`
+- Detailed analysis: `FAROL_PREDICTIVE_ENGINE.md` → Sections 2 and 4
+- Pending ADR: `docs/decisions/002-financial-snapshot.md`
+- Depends on: `categories_redesign.md`
+- Unblocks: `forecasting.md`
