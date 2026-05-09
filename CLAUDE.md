@@ -185,7 +185,7 @@ flutter test
 | `offline_sync.md` | ✅ `SyncManager`, `OperationQueue`, `ConflictResolver` | ✅ (Drift `sync_queue`) | ✅ `syncStatusProvider`, `isOfflineProvider` | ✅ `ConnectivityBanner` no dashboard | ✅ 29 testes (sync/) | 🟢 **Completo** |
 | `intelligence_layer.md` | ✅ `IntelligenceLayer` (12 regras), `DismissedInsightsRepository` | ✅ (Drift UserSettings) | ✅ `insightsProvider`, `dismissedInsightsProvider` | ✅ `InsightsPanel`, `insight_card`, `insights_screen` | ✅ 22 testes | 🟢 **Completo** |
 
-### O que realmente está pendente
+### Implementações recentes (2026-05-08)
 
 - **Dismiss rate tracking** ✅ **Concluído 2026-05-08**
   - `InsightStats` entity em `core/domain/entities/insight_stats.dart`
