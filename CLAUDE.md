@@ -146,16 +146,17 @@ farol/
    - `InsightsPanel`: loading → 2 shimmer boxes com label (antes: `SizedBox.shrink`)
    - `HealthGaugeCard`, `InstallmentsSummaryCard`: já tinham `DashboardCardSkeleton` ✅
 
-## ⚠️ Shim de Compatibilidade (card_installments — intencional)
+## ✅ Migração card_installments — Concluída (2026-05-08)
 
-A migração de UI está **completa**. Todos os consumers usam `activeInstallmentPlansProvider` / `InstallmentPlan`:
+A migração está **totalmente completa**. Todos os consumers usam `activeInstallmentPlansProvider` / `InstallmentPlan`:
 - `InstallmentsSummaryCard`, `HealthGaugeCard`, `NetWorthSettingsSheet`, `PdfReportService` → ✅ `activeInstallmentPlansProvider`
 - `totalMonthlyInstallmentsProvider`, `totalRemainingInstallmentsProvider` → ✅ derivados de `activeInstallmentPlansProvider`
 
-Ainda existe um **shim intencional** de 12 linhas:
-- `InstallmentRepository.delete(int id)` → apaga da tabela `card_installments` no Supabase
-- Usado **apenas** em `transactions_screen.dart` como fallback para expenses que têm `installmentPlanId` (int legado) sem `installmentPlanUuid` (novo)
-- **Não remover** até que todos os dados de produção estejam migrados para `installment_plans` ou a coluna `installment_plan_id` seja dropada dos expenses.
+O shim foi **removido** após confirmação de migração de dados de produção:
+- `InstallmentRepository` — classe removida
+- `installmentRepositoryProvider` — removido de `providers.dart`
+- `transactions_screen.dart` — fallback `legacyPlanId` removido; delete agora usa apenas `planUuid`
+- O campo `Expense.installmentPlanId` (int?) permanece no modelo/DB por compatibilidade mas não é mais usado na lógica de negócio
 
 ## 🛠️ Dev Commands
 
@@ -203,4 +204,4 @@ flutter test
   - `AnalyticsScreen`: textos em espanhol corrigidos → pt_BR ("Tendência Mensal", "Receita", "Distribuição por Categoria", "Comparativo Mensal", "MÉDIA/MÊS", subtítulo da tela)
   - `CashflowChart`: loading state → `ShimmerBox` (antes: `CircularProgressIndicator`); card de saldo mínimo projetado adicionado abaixo do gráfico
 
-O único item de compatibilidade remanescente é o shim `InstallmentRepository` (ver seção acima) — deve permanecer até migração de dados de produção deliberada.
+Nenhum débito técnico de UI ou infraestrutura em aberto. O shim `InstallmentRepository` foi removido em 2026-05-08 após confirmação de migração de dados de produção.

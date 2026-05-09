@@ -17,7 +17,6 @@ import '../models/financial_period.dart';
 import '../models/period_budget.dart';
 import '../repositories/income_repository.dart';
 import '../repositories/expense_repository.dart';
-import '../repositories/installment_repository.dart';
 import '../repositories/investment_repository.dart';
 import '../repositories/net_worth_repository.dart';
 import '../repositories/budget_goals_repository.dart';
@@ -178,10 +177,6 @@ final incomeRepositoryProvider = Provider<IncomeRepository>((ref) {
 final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
   final syncManager = ref.read(syncManagerProvider);
   return ExpenseRepository(Supabase.instance.client, syncManager: syncManager);
-});
-
-final installmentRepositoryProvider = Provider<InstallmentRepository>((ref) {
-  return InstallmentRepository(Supabase.instance.client);
 });
 
 final investmentRepositoryProvider = Provider<InvestmentRepository>((ref) {
