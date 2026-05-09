@@ -9,24 +9,24 @@
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                   FLUTTER UI                         │
+│                   FLUTTER UI                        │
 │  lib/features/*/presentation/                       │
 │  Screens · Widgets · Bottom Sheets                  │
 ├─────────────────────────────────────────────────────┤
-│              PROVIDERS (Riverpod 2)                  │
+│              PROVIDERS (Riverpod 2)                 │
 │  lib/core/providers/                                │
 │  autoDispose · StreamProvider · FutureProvider      │
 ├─────────────────────────────────────────────────────┤
-│              REPOSITORIES                            │
-│  lib/core/repositories/ + lib/features/*/data/     │
+│              REPOSITORIES                           │
+│  lib/core/repositories/ + lib/features/*/data/      │
 │  SupabaseClient directo (mayoría)                   │
 │  AppDatabase/Drift (algunos)                        │
 ├─────────────────────────────────────────────────────┤
-│              SERVICIOS CORE                          │
+│              SERVICIOS CORE                         │
 │  FinancialCalculatorService (estático)              │
 │  ExportService · CltCalculatorService               │
 ├─────────────────────────────────────────────────────┤
-│              PERSISTENCIA                            │
+│              PERSISTENCIA                           │
 │  Supabase PostgreSQL (fuente de verdad)             │
 │  Drift/SQLite (mirror parcial, sin sync coherente)  │
 └─────────────────────────────────────────────────────┘
@@ -36,10 +36,10 @@
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                   FLUTTER UI                         │
+│                   FLUTTER UI                        │
 │  Screens · Widgets (consumen solo FinancialSnapshot)│
 ├─────────────────────────────────────────────────────┤
-│              APPLICATION LAYER                       │
+│              APPLICATION LAYER                      │
 │  UseCases · Commands · Queries                      │
 ├─────────────────────────────────────────────────────┤
 │               DOMAIN LAYER                          │
@@ -48,7 +48,7 @@
 │  IntelligenceLayer                                  │
 ├─────────────────────────────────────────────────────┤
 │            INFRASTRUCTURE LAYER                     │
-│  Repositories (Drift + Supabase via SyncManager)   │
+│  Repositories (Drift + Supabase via SyncManager)    │
 │  OperationQueue · ConflictResolver                  │
 └─────────────────────────────────────────────────────┘
 ```

@@ -146,15 +146,16 @@ farol/
    - `InsightsPanel`: loading → 2 shimmer boxes com label (antes: `SizedBox.shrink`)
    - `HealthGaugeCard`, `InstallmentsSummaryCard`: já tinham `DashboardCardSkeleton` ✅
 
-## ⚠️ Débito Técnico Pendente (card_installments)
+## ⚠️ Shim de Compatibilidade (card_installments — intencional)
 
-O sistema de parcelamento tem **dois layers coexistentes**:
-- **Legado**: tabela `card_installments` (Supabase) → `CardInstallment` model → `installmentsProvider`
-  - Ainda usado por: `InstallmentsSummaryCard`, `HealthGaugeCard`, `NetWorthSettingsSheet`, `PdfReportService`
-- **Novo**: tabela `installment_plans/payments` (V21–V23) → `InstallmentPlan` entity → `installmentPlansStreamProvider`
-  - Usado por: `installments_screen`
+A migração de UI está **completa**. Todos os consumers usam `activeInstallmentPlansProvider` / `InstallmentPlan`:
+- `InstallmentsSummaryCard`, `HealthGaugeCard`, `NetWorthSettingsSheet`, `PdfReportService` → ✅ `activeInstallmentPlansProvider`
+- `totalMonthlyInstallmentsProvider`, `totalRemainingInstallmentsProvider` → ✅ derivados de `activeInstallmentPlansProvider`
 
-Para remover o layer legado, é necessário um plano de migração dedicado que substitua `installmentsProvider` pelo novo sistema em todos os consumers.
+Ainda existe um **shim intencional** de 12 linhas:
+- `InstallmentRepository.delete(int id)` → apaga da tabela `card_installments` no Supabase
+- Usado **apenas** em `transactions_screen.dart` como fallback para expenses que têm `installmentPlanId` (int legado) sem `installmentPlanUuid` (novo)
+- **Não remover** até que todos os dados de produção estejam migrados para `installment_plans` ou a coluna `installment_plan_id` seja dropada dos expenses.
 
 ## 🛠️ Dev Commands
 
@@ -176,7 +177,7 @@ flutter test
 | Plano | Domínio | DB (Migrations) | Providers | UI Screens | Testes | Status Real |
 |---|---|---|---|---|---|---|
 | `categories_redesign.md` | ✅ `CategoryRef`, `CategoryResolver` | ✅ V12, V17–V20 | ✅ `categoriesRefProvider` | ✅ `categories_management_screen` | ⚠️ parcial | 🟡 **UI polish** |
-| `installments_redesign.md` | ✅ `InstallmentPlan/Payment`, `InstallmentService` | ✅ V21–V23 | ✅ `installmentPlansStreamProvider` | ✅ `installments_screen` | ✅ `installment_service_test` | 🟢 **Completo** |
+| `installments_redesign.md` | ✅ `InstallmentPlan/Payment`, `InstallmentService` | ✅ V21–V23 | ✅ `installmentPlansStreamProvider`, `activeInstallmentPlansProvider` | ✅ `installments_screen`, `InstallmentsSummaryCard`, `HealthGaugeCard` | ✅ `installment_service_test` | 🟢 **Completo** |
 | `financial_engine.md` | ✅ `Money`, `FinancialSnapshot`, `FinancialEngine`, `EnvelopeEngine` | ✅ (sem schema próprio) | ✅ `financialSnapshotProvider`, `envelopesProvider` | ✅ dashboard widgets: `BurnRateCard`, `PeriodBalanceHero`, `HealthGaugeCard` | ⚠️ parcial | 🟡 **UI polish** |
 | `recurring_rules.md` | ✅ `RecurringRule/Occurrence`, `RecurrenceResolver`, `RecurringDetector` | ✅ V24–V25 | ✅ `recurringRulesStreamProvider`, `generateRecurringOccurrencesProvider` | ✅ `recurring_screen`, `add_recurring_bottom_sheet`, `recurring_suggestions_screen` | ✅ `recurrence_resolver_test` | 🟢 **Completo** |
 | `forecasting.md` | ✅ `ForecastingEngine`, `ObligationEngine`, `BurnRate`, `LiquidityRisk`, `CashflowForecast` | ✅ (lê tabelas existentes) | ✅ `financialProjectionProvider`, `cashflowForecastProvider` | ✅ `analytics_screen` + `cashflow_chart` | ⚠️ parcial | 🟡 **UI polish** |
@@ -185,12 +186,6 @@ flutter test
 
 ### O que realmente está pendente
 
-```
-Débito Técnico:
-  └── Migrar consumers de installmentsProvider (CardInstallment legacy) para installmentPlansStreamProvider
-      Afetados: InstallmentsSummaryCard, HealthGaugeCard, NetWorthSettingsSheet, PdfReportService
-```
+Nenhum débito técnico de UI ou testes em aberto.
 
-### Comandos de próxima sessão
-
-- `"Migra InstallmentsSummaryCard para installmentPlansStreamProvider"` → remove layer legado card_installments
+O único item remanescente é o shim de compatibilidade `InstallmentRepository` (ver seção acima) — que deve permanecer até uma migração de dados de produção deliberada.
