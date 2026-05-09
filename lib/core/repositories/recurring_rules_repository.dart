@@ -3,38 +3,49 @@ import '../domain/entities/recurring_rule.dart';
 
 class RecurringRulesRepository {
   final SupabaseClient _supabase;
-  const RecurringRulesRepository(this._supabase);
+  final String? workspaceId;
+
+  const RecurringRulesRepository(this._supabase, {this.workspaceId});
 
   String? get _userId => _supabase.auth.currentUser?.id;
 
   Stream<List<RecurringRule>> watchAll() {
+    final wsId = workspaceId;
     final userId = _userId;
-    if (userId == null) return Stream.value([]);
+    final filterKey = wsId != null ? 'workspace_id' : 'user_id';
+    final filterVal = wsId ?? userId;
+    if (filterVal == null) return Stream.value([]);
     return _supabase
         .from('recurring_rules')
         .stream(primaryKey: ['id'])
-        .eq('user_id', userId)
+        .eq(filterKey, filterVal)
         .map((rows) => rows.map(RecurringRule.fromJson).toList());
   }
 
   Future<List<RecurringRule>> getActive() async {
+    final wsId = workspaceId;
     final userId = _userId;
-    if (userId == null) return [];
+    final filterKey = wsId != null ? 'workspace_id' : 'user_id';
+    final filterVal = wsId ?? userId;
+    if (filterVal == null) return [];
     final data = await _supabase
         .from('recurring_rules')
         .select()
-        .eq('user_id', userId)
+        .eq(filterKey, filterVal)
         .eq('status', 'active');
     return data.map(RecurringRule.fromJson).toList();
   }
 
   Future<List<RecurringRule>> getAll() async {
+    final wsId = workspaceId;
     final userId = _userId;
-    if (userId == null) return [];
+    final filterKey = wsId != null ? 'workspace_id' : 'user_id';
+    final filterVal = wsId ?? userId;
+    if (filterVal == null) return [];
     final data = await _supabase
         .from('recurring_rules')
         .select()
-        .eq('user_id', userId)
+        .eq(filterKey, filterVal)
         .order('created_at', ascending: false);
     return data.map(RecurringRule.fromJson).toList();
   }
@@ -42,9 +53,11 @@ class RecurringRulesRepository {
   Future<RecurringRule> create(RecurringRule rule) async {
     final userId = _userId;
     if (userId == null) throw Exception('Not authenticated');
+    final payload = rule.toJson()..['user_id'] = userId;
+    if (workspaceId != null) payload['workspace_id'] = workspaceId;
     final row = await _supabase
         .from('recurring_rules')
-        .insert(rule.toJson()..['user_id'] = userId)
+        .insert(payload)
         .select()
         .single();
     return RecurringRule.fromJson(row);

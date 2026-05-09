@@ -3,17 +3,22 @@ import '../domain/entities/installment_plan.dart';
 
 class InstallmentPlanRepository {
   final SupabaseClient _supabase;
-  const InstallmentPlanRepository(this._supabase);
+  final String? workspaceId;
+
+  const InstallmentPlanRepository(this._supabase, {this.workspaceId});
 
   String? get _userId => _supabase.auth.currentUser?.id;
 
   Stream<List<InstallmentPlan>> watchAll() {
+    final wsId = workspaceId;
     final userId = _userId;
-    if (userId == null) return Stream.value([]);
+    final filterKey = wsId != null ? 'workspace_id' : 'user_id';
+    final filterVal = wsId ?? userId;
+    if (filterVal == null) return Stream.value([]);
     return _supabase
         .from('installment_plans')
         .stream(primaryKey: ['id'])
-        .eq('user_id', userId)
+        .eq(filterKey, filterVal)
         .order('created_at', ascending: false)
         .asyncMap((rows) async {
           final plans = rows.map(InstallmentPlan.fromJson).toList();
@@ -22,12 +27,15 @@ class InstallmentPlanRepository {
   }
 
   Stream<List<InstallmentPlan>> watchActive() {
+    final wsId = workspaceId;
     final userId = _userId;
-    if (userId == null) return Stream.value([]);
+    final filterKey = wsId != null ? 'workspace_id' : 'user_id';
+    final filterVal = wsId ?? userId;
+    if (filterVal == null) return Stream.value([]);
     return _supabase
         .from('installment_plans')
         .stream(primaryKey: ['id'])
-        .eq('user_id', userId)
+        .eq(filterKey, filterVal)
         .order('first_due_date', ascending: true)
         .asyncMap((rows) async {
           final plans = rows
@@ -39,12 +47,15 @@ class InstallmentPlanRepository {
   }
 
   Future<List<InstallmentPlan>> getActive() async {
+    final wsId = workspaceId;
     final userId = _userId;
-    if (userId == null) return [];
+    final filterKey = wsId != null ? 'workspace_id' : 'user_id';
+    final filterVal = wsId ?? userId;
+    if (filterVal == null) return [];
     final data = await _supabase
         .from('installment_plans')
         .select()
-        .eq('user_id', userId)
+        .eq(filterKey, filterVal)
         .eq('status', 'active')
         .order('first_due_date', ascending: true);
     final plans = data.map(InstallmentPlan.fromJson).toList();
@@ -66,9 +77,11 @@ class InstallmentPlanRepository {
   Future<InstallmentPlan> create(InstallmentPlan plan) async {
     final userId = _userId;
     if (userId == null) throw Exception('Not authenticated');
+    final payload = plan.toJson()..remove('id');
+    if (workspaceId != null) payload['workspace_id'] = workspaceId;
     final data = await _supabase
         .from('installment_plans')
-        .insert(plan.toJson()..remove('id'))
+        .insert(payload)
         .select()
         .single();
     return InstallmentPlan.fromJson(data);

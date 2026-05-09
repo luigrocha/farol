@@ -64,6 +64,7 @@ import '../domain/entities/recurring_rule.dart';
 import '../domain/entities/recurring_occurrence.dart';
 import '../repositories/recurring_rules_repository.dart';
 import '../repositories/recurring_occurrences_repository.dart';
+import 'workspace_providers.dart' show activeWorkspaceIdProvider;
 
 // ═══════════════════════════════════════════
 // LOCAL-DEVICE PROVIDERS (Drift)
@@ -171,12 +172,18 @@ class PrivacyModeNotifier extends Notifier<bool> {
 // ═══════════════════════════════════════════
 
 final incomeRepositoryProvider = Provider<IncomeRepository>((ref) {
-  return IncomeRepository(Supabase.instance.client);
+  final wsId = ref.watch(activeWorkspaceIdProvider);
+  return IncomeRepository(Supabase.instance.client, workspaceId: wsId);
 });
 
 final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
   final syncManager = ref.read(syncManagerProvider);
-  return ExpenseRepository(Supabase.instance.client, syncManager: syncManager);
+  final wsId = ref.watch(activeWorkspaceIdProvider);
+  return ExpenseRepository(
+    Supabase.instance.client,
+    syncManager: syncManager,
+    workspaceId: wsId,
+  );
 });
 
 final investmentRepositoryProvider = Provider<InvestmentRepository>((ref) {
@@ -192,12 +199,14 @@ final budgetGoalsRepositoryProvider = Provider<BudgetGoalsRepository>((ref) {
 });
 
 final categoryRepositoryProvider = Provider<CategoryRepository>((ref) {
-  return CategoryRepository(Supabase.instance.client);
+  final wsId = ref.watch(activeWorkspaceIdProvider);
+  return CategoryRepository(Supabase.instance.client, workspaceId: wsId);
 });
 
 final installmentPlanRepositoryProvider =
     Provider<InstallmentPlanRepository>((ref) {
-  return InstallmentPlanRepository(Supabase.instance.client);
+  final wsId = ref.watch(activeWorkspaceIdProvider);
+  return InstallmentPlanRepository(Supabase.instance.client, workspaceId: wsId);
 });
 
 final installmentPaymentRepositoryProvider =
@@ -1380,7 +1389,8 @@ final financialSnapshotProvider = Provider.autoDispose<FinancialSnapshot>((ref) 
 
 final recurringRulesRepositoryProvider =
     Provider<RecurringRulesRepository>((ref) {
-  return RecurringRulesRepository(Supabase.instance.client);
+  final wsId = ref.watch(activeWorkspaceIdProvider);
+  return RecurringRulesRepository(Supabase.instance.client, workspaceId: wsId);
 });
 
 final recurringOccurrencesRepositoryProvider =

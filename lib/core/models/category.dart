@@ -2,6 +2,7 @@
 class Category {
   final String id;
   final String? userId;
+  final String? workspaceId;
   final String? parentId;
   final String slug;
   final String name;
@@ -17,6 +18,7 @@ class Category {
   const Category({
     this.id = '',
     this.userId,
+    this.workspaceId,
     this.parentId,
     required this.slug,
     required this.name,
@@ -36,6 +38,7 @@ class Category {
   Category copyWith({
     String? id,
     String? userId,
+    String? workspaceId,
     String? parentId,
     String? slug,
     String? name,
@@ -51,6 +54,7 @@ class Category {
     return Category(
       id: id ?? this.id,
       userId: userId ?? this.userId,
+      workspaceId: workspaceId ?? this.workspaceId,
       parentId: parentId ?? this.parentId,
       slug: slug ?? this.slug,
       name: name ?? this.name,
@@ -69,6 +73,7 @@ class Category {
     return Category(
       id: json['id'] as String,
       userId: json['user_id'] as String?,
+      workspaceId: json['workspace_id'] as String?,
       parentId: json['parent_id'] as String?,
       slug: json['slug'] as String,
       name: json['name'] as String,

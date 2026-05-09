@@ -6,15 +6,24 @@
 
 ---
 
-## 🎯 Posicionamento Estratégico (atualizado 2026-05-08)
+## 🎯 Posicionamento Estratégico (atualizado 2026-05-09)
 
 ```
 ❌ "controla tus gastos"
 ✅ "entiende el futuro de tu dinero"
 ```
 
-**Próxima grande fase**: Multiusuário (Workspace model) + Freemium
+**Fase em progresso**: Multiusuário (Workspace model) + Freemium
 → Ver `plans/multiuser_freemium.md` — plano completo com 4 fases e migrações V26–V30
+
+**Fase 1 Flutter — COMPLETA (2026-05-09)**:
+- SQLs V26–V30 em `supabase/migrations/` — prontas para aplicar em produção
+- Modelos: `Workspace`, `WorkspaceMember`, `WorkspaceInvite` → `lib/core/models/workspace.dart`
+- `WorkspaceRepository` → `lib/core/repositories/workspace_repository.dart`
+- Providers: `activeWorkspaceProvider`, `workspacePlanProvider`, `canWriteProvider` → `lib/core/providers/workspace_providers.dart`
+- `FeatureGate` widget + `PremiumFeature` enum → `lib/core/widgets/feature_gate.dart`
+- 5 repositories com `workspaceId`: Expense, Income, Category, InstallmentPlan, RecurringRules
+- **Próximo passo**: Aplicar V26–V30 no Supabase SQL Editor (produção)
 
 ---
 
@@ -66,6 +75,7 @@ Cada plan en `plans/` sigue este flujo. **No saltear pasos.**
 ```
 ✅ SIEMPRE:
   - Leer el plan completo antes de comenzar
+  - Codigo y comentarios en ingles
   - Mostrar qué archivos se van a modificar antes de modificarlos
   - Mantener compatibilidad backward con código existente
   - Implementar cambios aditivos primero (add before replace)

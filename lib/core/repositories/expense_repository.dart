@@ -9,9 +9,15 @@ import '../infrastructure/sync/sync_operations.dart';
 class ExpenseRepository {
   final SupabaseClient _supabase;
   final SyncManager? _syncManager;
+  /// Workspace ativo. Quando presente, é incluído em INSERT/UPDATE/SELECT.
+  /// RLS continua sendo a fonte de verdade de segurança.
+  final String? workspaceId;
 
-  const ExpenseRepository(this._supabase, {SyncManager? syncManager})
-      : _syncManager = syncManager;
+  const ExpenseRepository(
+    this._supabase, {
+    SyncManager? syncManager,
+    this.workspaceId,
+  }) : _syncManager = syncManager;
 
   String? get _userId => _supabase.auth.currentUser?.id;
 
@@ -39,7 +45,16 @@ class ExpenseRepository {
   }
 
   Stream<List<Expense>> watchAll() {
+    final wsId = workspaceId;
     final userId = _userId;
+    if (wsId != null) {
+      return _supabase
+          .from('expenses')
+          .stream(primaryKey: ['id'])
+          .eq('workspace_id', wsId)
+          .order('transaction_date', ascending: false)
+          .map((rows) => rows.map(Expense.fromJson).toList());
+    }
     if (userId != null) {
       return _supabase
           .from('expenses')
@@ -64,7 +79,12 @@ class ExpenseRepository {
   }
 
   Future<List<Expense>> getAll() async {
+    final wsId = workspaceId;
     final userId = _userId;
+    if (wsId != null) {
+      final data = await _supabase.from('expenses').select().eq('workspace_id', wsId);
+      return data.map((r) => Expense.fromJson(r)).toList();
+    }
     if (userId == null) return [];
     final data = await _supabase.from('expenses').select().eq('user_id', userId);
     return data.map((r) => Expense.fromJson(r)).toList();
@@ -72,15 +92,26 @@ class ExpenseRepository {
 
   Future<List<Expense>> getByRange(
       int startMonth, int startYear, int endMonth, int endYear) async {
+    final wsId = workspaceId;
     final userId = _userId;
-    if (userId == null) return [];
-    // Push year range filter to Supabase; trim edge months in Dart.
-    final data = await _supabase
-        .from('expenses')
-        .select()
-        .eq('user_id', userId)
-        .gte('year', startYear)
-        .lte('year', endYear);
+    final List<Map<String, dynamic>> data;
+    if (wsId != null) {
+      data = await _supabase
+          .from('expenses')
+          .select()
+          .eq('workspace_id', wsId)
+          .gte('year', startYear)
+          .lte('year', endYear);
+    } else if (userId != null) {
+      data = await _supabase
+          .from('expenses')
+          .select()
+          .eq('user_id', userId)
+          .gte('year', startYear)
+          .lte('year', endYear);
+    } else {
+      return [];
+    }
     return data
         .map((r) => Expense.fromJson(r))
         .where((e) => _inRange(e.month, e.year, startMonth, startYear, endMonth, endYear))
@@ -113,6 +144,7 @@ class ExpenseRepository {
     final categoryId = await _resolveCategoryId(category);
     final row = <String, dynamic>{
       'user_id': userId,
+      if (workspaceId != null) 'workspace_id': workspaceId,
       'transaction_date': transactionDate.toIso8601String().substring(0, 10),
       'month': month,
       'year': year,
@@ -311,6 +343,7 @@ class ExpenseRepository {
         final maxDay = DateUtils.getDaysInMonth(toYear, toMonth);
         return {
           'user_id': userId,
+          if (workspaceId != null) 'workspace_id': workspaceId,
           'transaction_date':
               DateTime(toYear, toMonth, day.clamp(1, maxDay)).toIso8601String().substring(0, 10),
           'month': toMonth,

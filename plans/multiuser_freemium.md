@@ -537,18 +537,26 @@ Após cada fase, atualizar:
 ## ✅ Checklist por Fase
 
 ### Fase 1 — Fundação
-- [ ] V26 aplicada (workspaces + workspace_members + invites)
-- [ ] V27 aplicada (workspace_id nullable em 14 tabelas)
-- [ ] V28 executada (backfill — todos os dados linkados)
-- [ ] V28 verificada (COUNT IS NULL = 0 em todas as tabelas)
-- [ ] V29 aplicada (NOT NULL + índices)
-- [ ] V30 aplicada (RLS atualizado)
+- [x] V26 escrita (workspaces + workspace_members + invites + trigger) ✅ 2026-05-09
+- [x] V27 escrita (workspace_id nullable em 14 tabelas) ✅ 2026-05-09
+- [x] V28 escrita (backfill — workspace pessoal + linkar dados) ✅ 2026-05-09
+- [x] V29 escrita (NOT NULL + índices) ✅ 2026-05-09
+- [x] V30 escrita (RLS atualizado — 4 políticas × 14 tabelas) ✅ 2026-05-09
+- [ ] V26–V30 aplicadas em produção (executar no Supabase SQL Editor)
+- [ ] V28 verificada em produção (COUNT IS NULL = 0 em todas as tabelas)
 - [ ] Trigger `create_personal_workspace` ativo
-- [ ] Workspace model Dart criado
-- [ ] workspaceRepositoryProvider criado
-- [ ] activeWorkspaceProvider criado
-- [ ] Todos os repositories aceitam workspaceId
-- [ ] App funciona igual para usuário solo
+- [x] Workspace model Dart criado (`lib/core/models/workspace.dart`) ✅ 2026-05-09
+- [x] WorkspaceRepository criado (`lib/core/repositories/workspace_repository.dart`) ✅ 2026-05-09
+- [x] workspaceRepositoryProvider criado (`lib/core/providers/workspace_providers.dart`) ✅ 2026-05-09
+- [x] activeWorkspaceProvider criado (persiste em Drift UserSettings) ✅ 2026-05-09
+- [x] workspacePlanProvider + currentUserRoleProvider + canWriteProvider ✅ 2026-05-09
+- [x] FeatureGate widget + PremiumFeature enum (`lib/core/widgets/feature_gate.dart`) ✅ 2026-05-09
+- [x] Repositories críticos aceitam workspaceId via construtor ✅ 2026-05-09
+  - `ExpenseRepository`, `IncomeRepository`, `CategoryRepository`
+  - `InstallmentPlanRepository`, `RecurringRulesRepository`
+- [x] Providers em providers.dart passam `activeWorkspaceIdProvider` ✅ 2026-05-09
+- [x] `Category` model tem campo `workspaceId` (aditivo, nullable) ✅ 2026-05-09
+- [ ] App funciona igual para usuário solo (testar após aplicar V26–V30)
 
 ### Fase 2 — Workspace sharing
 - [ ] WorkspaceSwitcherSheet

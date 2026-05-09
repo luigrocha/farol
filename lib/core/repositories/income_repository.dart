@@ -5,11 +5,21 @@ import '../services/supabase_realtime_manager.dart';
 
 class IncomeRepository {
   final SupabaseClient _supabase;
-  const IncomeRepository(this._supabase);
+  final String? workspaceId;
+
+  const IncomeRepository(this._supabase, {this.workspaceId});
 
   String? get _userId => _supabase.auth.currentUser?.id;
 
   Stream<List<Income>> watchAll() {
+    final wsId = workspaceId;
+    if (wsId != null) {
+      return _supabase
+          .from('incomes')
+          .stream(primaryKey: ['id'])
+          .eq('workspace_id', wsId)
+          .map((rows) => rows.map(Income.fromJson).toList());
+    }
     final userId = _userId;
     if (userId != null) {
       return _supabase
@@ -32,6 +42,11 @@ class IncomeRepository {
   }
 
   Future<List<Income>> getAll() async {
+    final wsId = workspaceId;
+    if (wsId != null) {
+      final data = await _supabase.from('incomes').select().eq('workspace_id', wsId);
+      return data.map((r) => Income.fromJson(r)).toList();
+    }
     final userId = _userId;
     if (userId == null) return [];
     final data = await _supabase.from('incomes').select().eq('user_id', userId);
@@ -40,15 +55,25 @@ class IncomeRepository {
 
   Future<List<Income>> getByRange(
       int startMonth, int startYear, int endMonth, int endYear) async {
+    final wsId = workspaceId;
     final userId = _userId;
-    if (userId == null) return [];
-    // Push year range filter to Supabase; trim edge months in Dart.
-    final data = await _supabase
-        .from('incomes')
-        .select()
-        .eq('user_id', userId)
-        .gte('year', startYear)
-        .lte('year', endYear);
+    final data = await () {
+      if (wsId != null) {
+        return _supabase
+            .from('incomes')
+            .select()
+            .eq('workspace_id', wsId)
+            .gte('year', startYear)
+            .lte('year', endYear);
+      }
+      if (userId == null) return Future.value(<Map<String, dynamic>>[]);
+      return _supabase
+          .from('incomes')
+          .select()
+          .eq('user_id', userId)
+          .gte('year', startYear)
+          .lte('year', endYear);
+    }();
     return data
         .map((r) => Income.fromJson(r))
         .where((i) => _inRange(i.month, i.year, startMonth, startYear, endMonth, endYear))
@@ -69,6 +94,7 @@ class IncomeRepository {
     if (userId == null) throw Exception('Not authenticated');
     await _supabase.from('incomes').insert({
       'user_id': userId,
+      if (workspaceId != null) 'workspace_id': workspaceId,
       'month': month,
       'year': year,
       'income_type': incomeType,

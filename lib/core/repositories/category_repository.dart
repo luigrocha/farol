@@ -3,13 +3,27 @@ import '../models/category.dart';
 
 class CategoryRepository {
   final SupabaseClient _supabase;
-  const CategoryRepository(this._supabase);
+  final String? workspaceId;
+
+  const CategoryRepository(this._supabase, {this.workspaceId});
 
   String? get _userId => _supabase.auth.currentUser?.id;
 
   // Returns system categories (user_id IS NULL) + user's custom categories
   Stream<List<Category>> watchAll() {
+    final wsId = workspaceId;
     final userId = _userId;
+    if (wsId != null) {
+      return _supabase
+          .from('categories')
+          .stream(primaryKey: ['id'])
+          .order('display_order', ascending: true)
+          .map((rows) => rows
+              .map(Category.fromJson)
+              .where((c) => c.workspaceId == null || c.workspaceId == wsId)
+              .where((c) => !c.isArchived)
+              .toList());
+    }
     if (userId == null) return Stream.value([]);
     return _supabase
         .from('categories')
@@ -23,7 +37,17 @@ class CategoryRepository {
   }
 
   Future<List<Category>> getAll() async {
+    final wsId = workspaceId;
     final userId = _userId;
+    if (wsId != null) {
+      final data = await _supabase
+          .from('categories')
+          .select()
+          .or('workspace_id.is.null,workspace_id.eq.$wsId')
+          .eq('is_archived', false)
+          .order('display_order', ascending: true);
+      return data.map((r) => Category.fromJson(r)).toList();
+    }
     if (userId == null) return [];
     final data = await _supabase
         .from('categories')
@@ -40,6 +64,7 @@ class CategoryRepository {
 
     final data = await _supabase.from('categories').insert({
       'user_id': userId,
+      if (workspaceId != null) 'workspace_id': workspaceId,
       'slug': category.slug,
       'name': category.name,
       'emoji': category.emoji,
