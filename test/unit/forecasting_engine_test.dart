@@ -8,7 +8,6 @@ import 'package:farol/core/domain/entities/liquidity_risk.dart';
 import 'package:farol/core/domain/entities/burn_rate.dart';
 import 'package:farol/core/domain/value_objects/money.dart';
 import 'package:farol/core/models/financial_period.dart';
-import 'package:farol/core/models/expense.dart';
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -35,31 +34,6 @@ ScheduledPayment _payment({
     amount: Money.fromDouble(amount),
     dueDate: due,
     type: type,
-  );
-}
-
-Expense _expense({
-  required double amount,
-  String category = 'food_grocery',
-  String payType = 'Cash',
-  bool isProjected = false,
-  DateTime? date,
-}) {
-  final d = date ?? DateTime.now();
-  return Expense(
-    id: DateTime.now().microsecondsSinceEpoch,
-    userId: 'u1',
-    month: d.month,
-    year: d.year,
-    transactionDate: d,
-    payType: payType,
-    category: category,
-    amount: amount,
-    paymentMethod: 'DEBIT',
-    installments: 1,
-    isFixed: false,
-    createdAt: d,
-    isProjected: isProjected,
   );
 }
 

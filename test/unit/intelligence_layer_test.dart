@@ -3,7 +3,6 @@ import 'package:farol/core/domain/services/intelligence_layer.dart';
 import 'package:farol/core/domain/entities/financial_insight.dart';
 import 'package:farol/core/domain/entities/financial_snapshot.dart';
 import 'package:farol/core/domain/entities/financial_projection.dart';
-import 'package:farol/core/domain/entities/envelope.dart';
 import 'package:farol/core/domain/entities/burn_rate.dart';
 import 'package:farol/core/domain/entities/liquidity_risk.dart';
 import 'package:farol/core/domain/entities/scheduled_payment.dart';
@@ -23,7 +22,6 @@ FinancialSnapshot _snapshot({
   Money? totalIncome,
   Money? totalSpent,
   Money? totalFutureObligations,
-  List<Envelope> envelopes = const [],
 }) =>
     FinancialSnapshot(
       period: _period(),

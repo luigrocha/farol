@@ -1538,8 +1538,8 @@ final cashflowForecastProvider =
   );
 
   // Persist the chart to cache (burnRate/liquidityRisk are cheap to recompute).
-  if (result?.cashflowForecast != null) {
-    await cache.put(periodKey, result!.cashflowForecast!);
+  if (result.cashflowForecast != null) {
+    await cache.put(periodKey, result.cashflowForecast!);
   }
 
   return result;

@@ -367,7 +367,7 @@ class _CategoryDialogState extends ConsumerState<_CategoryDialog> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _financialType,
+                initialValue: _financialType,
                 decoration: const InputDecoration(labelText: 'Tipo financeiro'),
                 items: _typeOptions
                     .map((t) => DropdownMenuItem(value: t.$1, child: Text(t.$2)))

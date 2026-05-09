@@ -59,7 +59,6 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
 
   bool get _onExpensesTab => _tabController.index == 0;
 
-  @override
   static const double _desktopBreakpoint = 900;
 
   @override
@@ -152,8 +151,6 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
   Widget _buildMobile(BuildContext context) {
     final month = ref.watch(selectedMonthProvider);
     final year = ref.watch(selectedYearProvider);
-    final filteredAsync = ref.watch(expensesProvider);
-    final filteredExpenses = ref.watch(filteredExpensesProvider);
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (context, _) => [
