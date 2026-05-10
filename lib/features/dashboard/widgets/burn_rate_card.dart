@@ -65,17 +65,21 @@ class BurnRateCard extends ConsumerWidget {
               ]),
               const SizedBox(height: 14),
               Row(children: [
-                _Metric(
-                  label: l10n.burnDailyRateLabel,
-                  value: FinancialCalculatorService.formatBRL(br.dailyRate.amount),
-                  color: color,
+                Expanded(
+                  child: _Metric(
+                    label: l10n.burnDailyRateLabel,
+                    value: FinancialCalculatorService.formatBRL(br.dailyRate.amount),
+                    color: color,
+                  ),
                 ),
                 const SizedBox(width: 24),
-                _Metric(
-                  label: l10n.burnProjectionLabel,
-                  value: FinancialCalculatorService.formatBRL(
-                      br.projectedTotalSpend.amount),
-                  color: br.pace == BurnPace.overspending ? Colors.red : null,
+                Expanded(
+                  child: _Metric(
+                    label: l10n.burnProjectionLabel,
+                    value: FinancialCalculatorService.formatBRL(
+                        br.projectedTotalSpend.amount),
+                    color: br.pace == BurnPace.overspending ? Colors.red : null,
+                  ),
                 ),
                 const Spacer(),
                 _Metric(
@@ -105,6 +109,7 @@ class _Metric extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(value,
+              overflow: TextOverflow.ellipsis,
               style: GoogleFonts.manrope(
                   fontSize: 15,
                   fontWeight: FontWeight.w800,

@@ -96,11 +96,11 @@ class WorkspaceSwitcherSheet extends ConsumerWidget {
 
                   final items = <_ListItem>[
                     if (personal.isNotEmpty) ...[
-                      const _SectionHeader('Your space'),
+                      _SectionHeader('Your space'),
                       ...personal.map((w) => _WorkspaceItem(w)),
                     ],
                     if (shared.isNotEmpty) ...[
-                      const _SectionHeader('Shared spaces'),
+                      _SectionHeader('Shared spaces'),
                       ...shared.map((w) => _WorkspaceItem(w)),
                     ],
                   ];
@@ -148,12 +148,12 @@ abstract class _ListItem {}
 
 class _SectionHeader extends _ListItem {
   final String label;
-  const _SectionHeader(this.label);
+  _SectionHeader(this.label);
 }
 
 class _WorkspaceItem extends _ListItem {
   final Workspace workspace;
-  const _WorkspaceItem(this.workspace);
+  _WorkspaceItem(this.workspace);
 }
 
 // ─────────────────────────────────────────────────────────────

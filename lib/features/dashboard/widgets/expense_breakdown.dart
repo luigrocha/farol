@@ -71,14 +71,16 @@ class ExpenseBreakdown extends ConsumerWidget {
           children: [
             Row(
               children: [
-                Text(
-                  l10n.translate('expense_by_cat'),
-                  style: GoogleFonts.manrope(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
+                Expanded(
+                  child: Text(
+                    l10n.translate('expense_by_cat'),
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.manrope(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
-                const Spacer(),
                 Text(
                   'ACTUAL VS PRESUPUESTO',
                   style: TextStyle(

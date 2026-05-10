@@ -87,7 +87,7 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
         type:  _type,
         emoji: _selectedEmoji,
         color: _selectedColor != null
-            ? '#${_selectedColor!.value.toRadixString(16).substring(2).toUpperCase()}'
+            ? '#${_selectedColor!.toARGB32().toRadixString(16).substring(2).toUpperCase()}'
             : null,
       );
       await ref.read(activeWorkspaceProvider.notifier).select(ws);
@@ -149,7 +149,7 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
             const SizedBox(height: 24),
 
             // ── Type picker ────────────────────────────────────────
-            _SectionLabel(label: 'Type'),
+            const _SectionLabel(label: 'Type'),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -177,7 +177,7 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
             const SizedBox(height: 24),
 
             // ── Name field ─────────────────────────────────────────
-            _SectionLabel(label: 'Name'),
+            const _SectionLabel(label: 'Name'),
             const SizedBox(height: 8),
             TextFormField(
               controller: _nameController,
@@ -200,7 +200,7 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
             const SizedBox(height: 24),
 
             // ── Emoji picker ───────────────────────────────────────
-            _SectionLabel(label: 'Icon'),
+            const _SectionLabel(label: 'Icon'),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -231,12 +231,12 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
             const SizedBox(height: 24),
 
             // ── Color picker ───────────────────────────────────────
-            _SectionLabel(label: 'Color'),
+            const _SectionLabel(label: 'Color'),
             const SizedBox(height: 8),
             Wrap(
               spacing: 10,
               children: _kAccentColors.map((c) {
-                final selected = _selectedColor?.value == c.value;
+                final selected = _selectedColor == c;
                 return GestureDetector(
                   onTap: () => setState(() => _selectedColor = c),
                   child: AnimatedContainer(
