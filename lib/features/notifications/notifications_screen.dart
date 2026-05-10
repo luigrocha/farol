@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/i18n/app_localizations.dart';
 import '../../core/models/budget_alert.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
@@ -12,6 +13,7 @@ class NotificationsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final colors = context.colors;
     final alerts = ref.watch(budgetAlertsProvider);
 
@@ -26,26 +28,26 @@ class NotificationsScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Notificaciones', style: GoogleFonts.manrope(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -0.7)),
+            Text(l10n.notificationsTitle, style: GoogleFonts.manrope(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -0.7)),
             const SizedBox(height: 6),
-            Text('Alertas de presupuesto en tiempo real', style: TextStyle(fontSize: 13, color: colors.onSurfaceSoft)),
+            Text(l10n.notificationsSubtitle, style: TextStyle(fontSize: 13, color: colors.onSurfaceSoft)),
 
             if (alerts.isEmpty) ...[
               const SizedBox(height: 40),
               _EmptyState(),
             ] else ...[
-              _buildAlertGroup(context, alerts, AlertLevel.exceeded, 'Límite superado', tokens.FarolColors.coral),
-              _buildAlertGroup(context, alerts, AlertLevel.critical, 'Alerta crítica', const Color(0xFFFF6B35)),
-              _buildAlertGroup(context, alerts, AlertLevel.warning, 'Aviso', tokens.FarolColors.beam),
+              _buildAlertGroup(context, alerts, AlertLevel.exceeded, l10n.notificationsLevelExceeded, tokens.FarolColors.coral),
+              _buildAlertGroup(context, alerts, AlertLevel.critical, l10n.notificationsLevelCritical, const Color(0xFFFF6B35)),
+              _buildAlertGroup(context, alerts, AlertLevel.warning, l10n.notificationsLevelWarning, tokens.FarolColors.beam),
             ],
 
-            const _CategoryLabel(label: 'Tips', color: tokens.FarolColors.tide),
-            const _NotifCard(
+            _CategoryLabel(label: l10n.notificationsTips, color: tokens.FarolColors.tide),
+            _NotifCard(
               icon: Icons.lightbulb_outline,
-              iconBg: Color(0xFFE8F5E9),
+              iconBg: const Color(0xFFE8F5E9),
               time: '',
-              title: 'Consejo del mes',
-              body: 'Revisar tus presupuestos por categoría te ayuda a identificar patrones y tomar mejores decisiones financieras.',
+              title: l10n.notificationsTipTitle,
+              body: l10n.notificationsTipBody,
               accent: tokens.FarolColors.tide,
             ),
 
@@ -80,6 +82,7 @@ class _AlertCard extends ConsumerWidget {
     final label = catModel?.name ?? alert.category;
     final emoji = catModel?.emoji ?? '📊';
 
+    final l10n = AppLocalizations.of(context);
     final color = switch (alert.level) {
       AlertLevel.exceeded => tokens.FarolColors.coral,
       AlertLevel.critical => const Color(0xFFFF6B35),
@@ -91,9 +94,9 @@ class _AlertCard extends ConsumerWidget {
       AlertLevel.warning  => Icons.info_outline,
     };
     final bodyText = switch (alert.level) {
-      AlertLevel.exceeded => 'Superaste el límite de ${FinancialCalculatorService.formatBRL(alert.limit)} en $label. Gastado: ${FinancialCalculatorService.formatBRL(alert.spent)}.',
-      AlertLevel.critical => 'Llevas el ${alert.percentageLabel} del presupuesto de $label (${FinancialCalculatorService.formatBRL(alert.spent)} de ${FinancialCalculatorService.formatBRL(alert.limit)}).',
-      AlertLevel.warning  => 'Ya usaste el ${alert.percentageLabel} del presupuesto de $label. Quedan ${FinancialCalculatorService.formatBRL(alert.limit - alert.spent)}.',
+      AlertLevel.exceeded => l10n.alertExceededBody(FinancialCalculatorService.formatBRL(alert.limit), label, FinancialCalculatorService.formatBRL(alert.spent)),
+      AlertLevel.critical => l10n.alertCriticalBody(alert.percentageLabel, label, FinancialCalculatorService.formatBRL(alert.spent), FinancialCalculatorService.formatBRL(alert.limit)),
+      AlertLevel.warning  => l10n.alertWarningBody(alert.percentageLabel, label, FinancialCalculatorService.formatBRL(alert.limit - alert.spent)),
     };
 
     return Column(children: [
@@ -114,14 +117,15 @@ class _AlertCard extends ConsumerWidget {
 class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colors = context.colors;
     return Center(
       child: Column(children: [
         Icon(Icons.check_circle_outline, size: 48, color: tokens.FarolColors.tide.withValues(alpha: 0.5)),
         const SizedBox(height: 16),
-        Text('Todo bajo control', style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700, color: colors.onSurface)),
+        Text(l10n.notificationsAllGood, style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700, color: colors.onSurface)),
         const SizedBox(height: 6),
-        Text('Ninguna categoría supera el 75% del presupuesto', style: TextStyle(fontSize: 13, color: colors.onSurfaceSoft), textAlign: TextAlign.center),
+        Text(l10n.notificationsNoCategoryOver, style: TextStyle(fontSize: 13, color: colors.onSurfaceSoft), textAlign: TextAlign.center),
       ]),
     );
   }

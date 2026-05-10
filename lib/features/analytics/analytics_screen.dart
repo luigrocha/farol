@@ -39,7 +39,7 @@ class AnalyticsScreen extends ConsumerWidget {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(l10n.analytics, style: GoogleFonts.manrope(fontSize: 32, fontWeight: FontWeight.w800, letterSpacing: -0.9, height: 1.1)),
               const SizedBox(height: 6),
-              Text('Seus dados, analisados ao longo do tempo.', style: TextStyle(fontSize: 13, color: context.colors.onSurfaceSoft)),
+              Text(l10n.analyticsSubtitle, style: TextStyle(fontSize: 13, color: context.colors.onSurfaceSoft)),
             ]),
           )),
           SliverToBoxAdapter(child: _RangePicker(
@@ -236,16 +236,17 @@ class _SummaryCards extends ConsumerWidget {
     final topCatDbValue = byCat.isEmpty ? null : byCat.entries.reduce((a, b) => a.value > b.value ? a : b).key;
     final catsMap = ref.watch(categoriesMapProvider);
 
+    final l10n = context.l10n;
     return Row(children: [
       Expanded(child: _MetricCard(
-        label: 'TOTAL',
+        label: l10n.total.toUpperCase(),
         value: FinancialCalculatorService.formatBRL(total),
         icon: Icons.receipt_long_outlined,
         color: tokens.FarolColors.navy,
       )),
       const SizedBox(width: 10),
       Expanded(child: _MetricCard(
-        label: 'MÉDIA/MÊS',
+        label: l10n.analyticsAvgPerMonth,
         value: FinancialCalculatorService.formatBRL(avg),
         icon: Icons.calendar_month_outlined,
         color: tokens.FarolColors.beam,
@@ -257,7 +258,7 @@ class _SummaryCards extends ConsumerWidget {
           final emoji = cat?.emoji ?? '📦';
           final label = cat?.name ?? topCatDbValue;
           return Expanded(child: _MetricCard(
-            label: 'TOP CAT.',
+            label: l10n.analyticsTopCategory,
             value: emoji,
             subvalue: label,
             icon: Icons.star_outline,
@@ -319,10 +320,10 @@ class _MonthlyTrendCard extends StatelessWidget {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text('Tendência Mensal', style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
+        Text(l10n.analyticsMonthlyTrend, style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
         Row(children: [
-          const _Legend(color: tokens.FarolColors.beam, label: 'Gasto'),
-          if (hasIncome) ...[const SizedBox(width: 12), const _Legend(color: tokens.FarolColors.navy, label: 'Receita')],
+          _Legend(color: tokens.FarolColors.beam, label: l10n.analyticsSpendingLegend),
+          if (hasIncome) ...[const SizedBox(width: 12), _Legend(color: tokens.FarolColors.navy, label: l10n.income)],
         ]),
       ]),
       const SizedBox(height: 12),
@@ -394,7 +395,7 @@ class _CategoryBreakdown extends ConsumerWidget {
     if (sorted.isEmpty) return const SizedBox.shrink();
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text('Distribuição por Categoria', style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
+      Text(context.l10n.analyticsCategoryDistribution, style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
       const SizedBox(height: 16),
       Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
         _DonutChart(data: byCat, total: total),
@@ -430,7 +431,7 @@ class _DonutChart extends StatelessWidget {
     return SizedBox(width: 130, height: 130, child: Stack(alignment: Alignment.center, children: [
       PieChart(PieChartData(sectionsSpace: 0, centerSpaceRadius: 48, sections: data.entries.map((e) => PieChartSectionData(color: tokens.FarolColors.getCategoryColor(e.key), value: e.value, radius: 16, showTitle: false)).toList())),
       Column(mainAxisSize: MainAxisSize.min, children: [
-        Text('TOTAL', style: TextStyle(fontSize: 8, color: colors.onSurfaceSoft, fontWeight: FontWeight.w600, letterSpacing: 0.8)),
+        Text(context.l10n.total.toUpperCase(), style: TextStyle(fontSize: 8, color: colors.onSurfaceSoft, fontWeight: FontWeight.w600, letterSpacing: 0.8)),
         Text(FinancialCalculatorService.formatBRL(total).split(',')[0], style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w800, color: colors.onSurface)),
       ]),
     ]));
@@ -455,7 +456,7 @@ class _MonthlyBarsCard extends StatelessWidget {
     final avgVal = sorted.fold(0.0, (s, e) => s + e.value) / sorted.length;
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text('Comparativo Mensal', style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
+      Text(l10n.analyticsMonthlyComparison, style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
       const SizedBox(height: 12),
       ...sorted.map((entry) {
         final pct = maxVal > 0 ? entry.value / maxVal : 0.0;

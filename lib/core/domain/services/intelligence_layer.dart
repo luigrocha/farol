@@ -63,6 +63,9 @@ class IntelligenceLayer {
       id: 'overdraft_${snap.period.start.millisecondsSinceEpoch}',
       type: InsightType.overdraftRisk,
       priority: InsightPriority.critical,
+      titleKey: 'insight_overdraft_title',
+      bodyKey: 'insight_overdraft_body',
+      actionKey: 'insight_overdraft_action',
       title: 'Risco de saldo negativo',
       body:
           'Com o ritmo atual, você fechará o período com ${projected.formatted}. '
@@ -71,7 +74,11 @@ class IntelligenceLayer {
       actionRoute: '/analytics',
       confidence: 0.85,
       expiresAt: snap.period.end,
-      data: {'projectedAmount': projected.amount},
+      data: {
+        'projectedAmount': projected.amount,
+        'projectedFormatted': projected.formatted,
+        'obligationsFormatted': snap.totalFutureObligations.formatted,
+      },
     );
   }
 
@@ -87,13 +94,19 @@ class IntelligenceLayer {
       type: InsightType.liquidityAlert,
       priority:
           isCritical ? InsightPriority.critical : InsightPriority.warning,
+      titleKey: isCritical ? 'insight_liquidity_critical_title' : 'insight_liquidity_warning_title',
+      bodyKey: 'insight_liquidity_body',
       title: isCritical ? 'Semana muito apertada' : 'Semana apertada',
       body:
           'Você tem ${snap.currentBalance.formatted} disponível e '
           '${risk.obligationsNext7Days.formatted} em pagamentos esta semana.',
       confidence: 0.95,
       expiresAt: DateTime.now().add(const Duration(days: 7)),
-      data: {'riskLevel': risk.level.name},
+      data: {
+        'riskLevel': risk.level.name,
+        'balanceFormatted': snap.currentBalance.formatted,
+        'obligationsFormatted': risk.obligationsNext7Days.formatted,
+      },
     );
   }
 
@@ -108,6 +121,9 @@ class IntelligenceLayer {
               id: 'spike_${v.categorySlug}_${snap.period.start.millisecondsSinceEpoch}',
               type: InsightType.spendingSpike,
               priority: InsightPriority.warning,
+              titleKey: 'insight_spike_title',
+              bodyKey: 'insight_spike_body',
+              actionKey: 'insight_spike_action',
               title: 'Aceleração em ${v.categoryName}',
               body:
                   '${v.currentSpend.formatted} até agora vs. média de '
@@ -117,7 +133,10 @@ class IntelligenceLayer {
               confidence: 0.80,
               data: {
                 'category': v.categorySlug,
-                'deviation': v.deviationPercent
+                'deviation': v.deviationPercent,
+                'currentFormatted': v.currentSpend.formatted,
+                'averageFormatted': v.historicalAverage.formatted,
+                'deviationPct': '${v.deviationPercent.round()}',
               },
             ))
         .toList();
@@ -150,6 +169,9 @@ class IntelligenceLayer {
         id: 'dup_${desc}_${sorted.first.transactionDate.millisecondsSinceEpoch}',
         type: InsightType.duplicateCharge,
         priority: InsightPriority.warning,
+        titleKey: 'insight_duplicate_title',
+        bodyKey: 'insight_duplicate_body',
+        actionKey: 'insight_duplicate_action',
         title: 'Possível cobrança duplicada',
         body:
             '${group.length}x "$desc" por '
@@ -158,7 +180,12 @@ class IntelligenceLayer {
         confidence: confidence,
         isDismissable: true,
         dismissGroup: 'dup_$desc',
-        data: {'count': group.length, 'days': days},
+        data: {
+          'count': group.length,
+          'days': days,
+          'desc': desc,
+          'amountFormatted': group.first.amount.toStringAsFixed(2),
+        },
       ));
     }
     return insights;
@@ -196,6 +223,9 @@ class IntelligenceLayer {
       id: 'sub_creep_${now.year}_${now.month}',
       type: InsightType.subscriptionCreep,
       priority: InsightPriority.info,
+      titleKey: 'insight_subscription_title',
+      bodyKey: 'insight_subscription_body',
+      actionKey: 'insight_subscription_action',
       title: 'Assinaturas crescendo',
       body:
           'Seus gastos com assinaturas aumentaram '
@@ -203,7 +233,10 @@ class IntelligenceLayer {
       actionLabel: 'Ver assinaturas',
       confidence: 0.75,
       isDismissable: true,
-      data: {'growth': growth},
+      data: {
+        'growth': growth,
+        'growthFormatted': growth.toStringAsFixed(2),
+      },
     );
   }
 
@@ -220,12 +253,19 @@ class IntelligenceLayer {
             id: 'save_${e.category.slug}_${snap.period.start.millisecondsSinceEpoch}',
             type: InsightType.savingsOpportunity,
             priority: InsightPriority.info,
+            titleKey: 'insight_savings_title',
+            bodyKey: 'insight_savings_body',
+            actionKey: 'insight_savings_action',
             title: 'Economia possível em ${e.category.name}',
             body: '${e.category.name} está ${overspent.formatted} '
                 'acima do orçamento. Ajustar pode liberar essa quantia por período.',
             actionLabel: 'Ajustar orçamento',
             confidence: 0.65,
-            data: {'category': e.category.slug},
+            data: {
+              'category': e.category.slug,
+              'categoryName': e.category.name,
+              'overspentFormatted': overspent.formatted,
+            },
           );
         })
         .toList();
@@ -241,6 +281,9 @@ class IntelligenceLayer {
       id: 'invest_${snap.period.start.millisecondsSinceEpoch}',
       type: InsightType.investmentOpportunity,
       priority: InsightPriority.info,
+      titleKey: 'insight_invest_title',
+      bodyKey: 'insight_invest_body',
+      actionKey: 'insight_invest_action',
       title: 'Você vai sobrar ${closing.formatted}',
       body:
           'Com base no ritmo atual, você terá ${closing.formatted} '
@@ -248,7 +291,10 @@ class IntelligenceLayer {
       actionLabel: 'Ver opções',
       confidence: 0.70,
       isDismissable: true,
-      data: {'amount': closing.amount},
+      data: {
+        'amount': closing.amount,
+        'amountFormatted': closing.formatted,
+      },
     );
   }
 
@@ -260,6 +306,8 @@ class IntelligenceLayer {
       id: 'streak_$streakCount',
       type: InsightType.budgetStreak,
       priority: InsightPriority.achievement,
+      titleKey: 'insight_streak_title',
+      bodyKey: 'insight_streak_body',
       title: '$streakCount períodos dentro do orçamento! 🎉',
       body:
           'Você está mantendo suas finanças sob controle por '
@@ -282,13 +330,18 @@ class IntelligenceLayer {
       id: 'debt_reduction_${snap.period.start.millisecondsSinceEpoch}',
       type: InsightType.debtReduction,
       priority: InsightPriority.achievement,
+      titleKey: 'insight_debt_title',
+      bodyKey: 'insight_debt_body',
       title: 'Parcelas reduzindo!',
       body:
           'Suas parcelas ativas caíram '
           'R\$ ${reduction.toStringAsFixed(2)} em relação ao período anterior.',
       confidence: 0.90,
       isDismissable: true,
-      data: {'reduction': reduction},
+      data: {
+        'reduction': reduction,
+        'reductionFormatted': reduction.toStringAsFixed(2),
+      },
     );
   }
 
@@ -310,6 +363,9 @@ class IntelligenceLayer {
         id: 'unusual_${e.id}',
         type: InsightType.unusualMerchant,
         priority: InsightPriority.info,
+        titleKey: 'insight_unusual_title',
+        bodyKey: 'insight_unusual_body',
+        actionKey: 'insight_unusual_action',
         title: 'Nova compra de alto valor',
         body:
             '"${e.storeDescription}" por R\$ ${e.amount.toStringAsFixed(2)} — '
@@ -318,7 +374,11 @@ class IntelligenceLayer {
         confidence: 0.85,
         isDismissable: true,
         dismissGroup: 'unusual_${e.storeDescription}',
-        data: {'expenseId': e.id},
+        data: {
+          'expenseId': e.id,
+          'desc': e.storeDescription ?? '',
+          'amountFormatted': e.amount.toStringAsFixed(2),
+        },
       ));
     }
     return insights;

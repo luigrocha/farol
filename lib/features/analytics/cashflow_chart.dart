@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/i18n/app_localizations.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/widgets/shimmer_box.dart';
@@ -15,12 +16,12 @@ class CashflowChart extends ConsumerWidget {
 
     return projAsync.when(
       loading: () => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Fluxo de Caixa (90 dias)',
+        Text(context.l10n.cashflowTitle,
             style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w700)),
         const SizedBox(height: 8),
         const ShimmerBox(width: double.infinity, height: 200, borderRadius: 12),
       ]),
-      error: (e, _) => Text('Erro: $e'),
+      error: (e, _) => Text('${context.l10n.error}: $e'),
       data: (proj) {
         if (proj == null || proj.cashflowForecast == null) {
           return const SizedBox.shrink();
@@ -32,7 +33,7 @@ class CashflowChart extends ConsumerWidget {
         final minBalanceFormatted = FinancialCalculatorService.formatBRL(minBalance.amount);
 
         return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Fluxo de Caixa (90 dias)',
+          Text(context.l10n.cashflowTitle,
               style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w700)),
           const SizedBox(height: 4),
           if (forecast.goesNegative)
@@ -47,7 +48,7 @@ class CashflowChart extends ConsumerWidget {
                 const Icon(Icons.warning_amber_rounded, size: 14, color: Colors.red),
                 const SizedBox(width: 6),
                 Text(
-                  'Saldo previsto negativo em algum ponto',
+                  context.l10n.cashflowNegativeWarning,
                   style: GoogleFonts.manrope(fontSize: 12, color: Colors.red),
                 ),
               ]),
@@ -161,12 +162,12 @@ class CashflowChart extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            const Row(children: [
-              _Legend(color: Color(0xFF00897B), label: 'Real', dashed: false),
-              SizedBox(width: 16),
-              _Legend(color: Color(0xFFF59E0B), label: 'Projeção', dashed: true),
-              SizedBox(width: 16),
-              _Legend(color: Colors.red, label: 'Compromisso', isDot: true),
+            Row(children: [
+              _Legend(color: const Color(0xFF00897B), label: context.l10n.cashflowLegendReal, dashed: false),
+              const SizedBox(width: 16),
+              _Legend(color: const Color(0xFFF59E0B), label: context.l10n.cashflowLegendProjection, dashed: true),
+              const SizedBox(width: 16),
+              _Legend(color: Colors.red, label: context.l10n.cashflowLegendCommitment, isDot: true),
             ]),
           ]),
           const SizedBox(height: 10),
@@ -189,7 +190,7 @@ class CashflowChart extends ConsumerWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                'Saldo mínimo projetado: ',
+                context.l10n.cashflowMinBalanceLabel,
                 style: GoogleFonts.manrope(fontSize: 11, color: Colors.grey.shade600),
               ),
               Text(

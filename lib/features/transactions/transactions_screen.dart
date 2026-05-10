@@ -284,10 +284,10 @@ class _IncomeTab extends ConsumerWidget {
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
                     Icon(Icons.account_balance_wallet_outlined, size: 56, color: colors.onSurfaceFaint),
                     const SizedBox(height: 12),
-                    Text('Nenhum ingresso neste mês',
+                    Text(context.l10n.noIncomeThisMonth,
                         style: GoogleFonts.manrope(fontSize: 15, color: colors.onSurfaceSoft)),
                     const SizedBox(height: 6),
-                    Text('Toca + para registrar salário, bonus, etc.',
+                    Text(context.l10n.noIncomeHint,
                         style: TextStyle(fontSize: 12, color: colors.onSurfaceFaint)),
                   ]),
                 ),
@@ -512,7 +512,7 @@ class _AddIncomeSheetState extends ConsumerState<_AddIncomeSheet> {
             ),
             const SizedBox(height: 12),
             Row(children: [
-              Expanded(child: Text('Valor líquido (ya descontado INSS/IRRF)',
+              Expanded(child: Text(context.l10n.netValueDescription,
                   style: TextStyle(fontSize: 13, color: colors.onSurfaceMuted))),
               Switch(
                 value: _isNet,

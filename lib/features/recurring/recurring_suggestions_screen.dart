@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/domain/entities/recurring_rule.dart';
 import '../../core/domain/services/recurring_detector.dart';
+import '../../core/i18n/app_localizations.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/widgets/farol_snackbar.dart';
@@ -24,7 +25,7 @@ class RecurringSuggestionsScreen extends ConsumerWidget {
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
             onPressed: () => Navigator.pop(context),
           ),
-          title: Text('Sugestões de recorrentes',
+          title: Text(context.l10n.recurringSuggestionsTitle,
               style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w800)),
         ),
         SliverPadding(
@@ -32,7 +33,7 @@ class RecurringSuggestionsScreen extends ConsumerWidget {
           sliver: SliverList(
             delegate: SliverChildListDelegate([
               Text(
-                'Identifiquei padrões no seu histórico de gastos.\nConfirme os que forem recorrentes.',
+                context.l10n.recurringSuggestionsSubtitle,
                 style: GoogleFonts.manrope(fontSize: 13, color: Colors.grey, height: 1.5),
               ),
               const SizedBox(height: 16),
@@ -41,7 +42,7 @@ class RecurringSuggestionsScreen extends ConsumerWidget {
                     child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 48),
                         child: CircularProgressIndicator())),
-                error: (e, _) => Text('Erro: $e'),
+                error: (e, _) => Text(context.l10n.recurringError(e.toString())),
                 data: (List<RecurringRuleCandidate> candidates) {
                   if (candidates.isEmpty) {
                     return const _EmptyState();
@@ -97,7 +98,7 @@ class _CandidateTileState extends ConsumerState<_CandidateTile> {
                         fontSize: 15, fontWeight: FontWeight.w700)),
                 const SizedBox(height: 2),
                 Text(
-                  '${c.frequency.label}  ·  dia ${c.dayOfMonth}  ·  ${c.sourceExpenses.length} ocorrências',
+                  '${c.frequency.localizedLabel(context.l10n.locale.languageCode)}  ·  dia ${c.dayOfMonth}  ·  ${context.l10n.recurringOccurrencesCount(c.sourceExpenses.length)}',
                   style: GoogleFonts.manrope(fontSize: 12, color: Colors.grey),
                 ),
               ]),
@@ -120,7 +121,7 @@ class _CandidateTileState extends ConsumerState<_CandidateTile> {
                   side: BorderSide(color: Colors.grey.shade300),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
-                child: Text('Ignorar',
+                child: Text(context.l10n.recurringBtnIgnore,
                     style: GoogleFonts.manrope(fontSize: 13, color: Colors.grey)),
               ),
             ),
@@ -137,7 +138,7 @@ class _CandidateTileState extends ConsumerState<_CandidateTile> {
                     ? const SizedBox(
                         height: 18, width: 18,
                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                    : Text('Confirmar',
+                    : Text(context.l10n.recurringBtnConfirm,
                         style: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w700)),
               ),
             ),
@@ -174,7 +175,7 @@ class _CandidateTileState extends ConsumerState<_CandidateTile> {
       await service.createRule(rule);
       if (mounted) {
         setState(() => _ignored = true); // hide after confirm
-        context.showSuccessSnackBar('Recorrente "${c.name}" criado');
+        context.showSuccessSnackBar(context.l10n.recurringConfirmedSnack(c.name));
       }
     } catch (e) {
       if (mounted) {
@@ -200,7 +201,7 @@ class _ConfidenceBadge extends StatelessWidget {
         color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Text('$pct% confiança',
+      child: Text(context.l10n.recurringConfidencePct(pct),
           style: GoogleFonts.manrope(
               fontSize: 10, color: color, fontWeight: FontWeight.w700)),
     );
@@ -213,11 +214,11 @@ class _EmptyState extends StatelessWidget {
   const _EmptyState();
 
   @override
-  Widget build(BuildContext context) => const Padding(
-        padding: EdgeInsets.symmetric(vertical: 60),
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 60),
         child: Center(
           child: Text(
-            'Nenhum padrão recorrente encontrado\nno seu histórico.',
+            context.l10n.recurringSuggestionsEmpty,
             textAlign: TextAlign.center,
           ),
         ),

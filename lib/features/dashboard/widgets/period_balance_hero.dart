@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/i18n/app_localizations.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';
 import '../../../design/farol_colors.dart' as tokens;
@@ -10,6 +11,7 @@ class PeriodBalanceHero extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final snap = ref.watch(financialSnapshotProvider);
     final projAsync = ref.watch(financialProjectionProvider);
     final balance = snap.currentBalance.amount;
@@ -35,12 +37,12 @@ class PeriodBalanceHero extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
                 Expanded(
                   child: Text(
-                    'BALANCE DEL PERÍODO',
-                    style: TextStyle(
+                    l10n.periodBalanceTitle,
+                    style: const TextStyle(
                       fontSize: 10,
                       letterSpacing: 1.5,
                       fontWeight: FontWeight.w700,
@@ -48,7 +50,7 @@ class PeriodBalanceHero extends ConsumerWidget {
                     ),
                   ),
                 ),
-                Icon(Icons.chevron_right, size: 14, color: Colors.white30),
+                const Icon(Icons.chevron_right, size: 14, color: Colors.white30),
               ],
             ),
             const SizedBox(height: 6),
@@ -59,7 +61,7 @@ class PeriodBalanceHero extends ConsumerWidget {
                 const Icon(Icons.trending_flat, size: 12, color: Colors.white38),
                 const SizedBox(width: 4),
                 Text(
-                  'Projeção ao fechamento: ${FinancialCalculatorService.formatBRL(projectedClosing.amount)}',
+                  l10n.periodProjectionClosing(FinancialCalculatorService.formatBRL(projectedClosing.amount)),
                   style: TextStyle(
                     fontSize: 11,
                     color: projectedClosing.isNegative
@@ -73,13 +75,13 @@ class PeriodBalanceHero extends ConsumerWidget {
             Row(
               children: [
                 MiniStat(
-                  label: 'Receitas',
+                  label: l10n.periodIncomes,
                   value: income,
                   color: Colors.white,
                 ),
                 const SizedBox(width: 10),
                 MiniStat(
-                  label: 'Despesas',
+                  label: l10n.periodExpenses,
                   value: expenses,
                   color: tokens.FarolColors.coral,
                 ),

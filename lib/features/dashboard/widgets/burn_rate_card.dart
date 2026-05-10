@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/domain/entities/burn_rate.dart';
+import '../../../core/i18n/app_localizations.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';
 import '../../../core/widgets/shimmer_box.dart';
@@ -11,6 +12,7 @@ class BurnRateCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final projAsync = ref.watch(financialProjectionProvider);
 
     return projAsync.when(
@@ -22,9 +24,9 @@ class BurnRateCard extends ConsumerWidget {
         if (br.daysElapsed == 0) return const SizedBox.shrink();
 
         final (color, label) = switch (br.pace) {
-          BurnPace.comfortable => (const Color(0xFF00897B), 'No ritmo certo'),
-          BurnPace.onTrack => (const Color(0xFFF59E0B), 'Atenção ao ritmo'),
-          BurnPace.overspending => (Colors.red, 'Ritmo acima do orçamento'),
+          BurnPace.comfortable => (const Color(0xFF00897B), l10n.burnPaceComfortable),
+          BurnPace.onTrack => (const Color(0xFFF59E0B), l10n.burnPaceOnTrack),
+          BurnPace.overspending => (Colors.red, l10n.burnPaceOverspending),
         };
 
         return Card(
@@ -46,7 +48,7 @@ class BurnRateCard extends ConsumerWidget {
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text('Velocidade de gasto',
+                  child: Text(l10n.burnRateTitle,
                       style: GoogleFonts.manrope(
                           fontSize: 14, fontWeight: FontWeight.w700)),
                 ),
@@ -64,20 +66,20 @@ class BurnRateCard extends ConsumerWidget {
               const SizedBox(height: 14),
               Row(children: [
                 _Metric(
-                  label: 'R\$/dia',
+                  label: l10n.burnDailyRateLabel,
                   value: FinancialCalculatorService.formatBRL(br.dailyRate.amount),
                   color: color,
                 ),
                 const SizedBox(width: 24),
                 _Metric(
-                  label: 'Projeção ao fechamento',
+                  label: l10n.burnProjectionLabel,
                   value: FinancialCalculatorService.formatBRL(
                       br.projectedTotalSpend.amount),
                   color: br.pace == BurnPace.overspending ? Colors.red : null,
                 ),
                 const Spacer(),
                 _Metric(
-                  label: 'Dias restantes',
+                  label: l10n.burnDaysRemaining,
                   value: '${br.daysRemaining}',
                   color: Colors.grey,
                 ),
@@ -123,7 +125,7 @@ class _PaceBar extends StatelessWidget {
     final pct = (pace * 100).round();
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
-        Text('Ritmo vs orçamento',
+        Text(context.l10n.burnPaceVsBudget,
             style: GoogleFonts.manrope(fontSize: 10, color: Colors.grey)),
         const Spacer(),
         Text('$pct%',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/i18n/app_localizations.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../design/farol_colors.dart' as tokens;
@@ -13,6 +14,7 @@ class HealthScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final colors = context.colors;
     final month = ref.watch(selectedMonthProvider);
     final year = ref.watch(selectedYearProvider);
@@ -30,13 +32,13 @@ class HealthScreen extends ConsumerWidget {
     final installmentsRate = net > 0 ? financialSnap.totalFutureObligations.amount / net * 100 : 0.0;
     final score = financialSnap.healthScore;
 
-    String statusLabel;
+    final String statusLabel;
     if (score < 4) {
-      statusLabel = 'CRÍTICO';
+      statusLabel = l10n.healthCritical;
     } else if (score < 7) {
-      statusLabel = 'ALERTA';
+      statusLabel = l10n.healthWarning;
     } else {
-      statusLabel = 'SALUDABLE';
+      statusLabel = l10n.healthHealthy;
     }
 
     return Scaffold(
@@ -49,7 +51,7 @@ class HealthScreen extends ConsumerWidget {
               onPressed: () => Navigator.of(context).pop(),
             ),
             title: Text(
-              'Salud Financiera',
+              l10n.healthScreenTitle,
               style: GoogleFonts.manrope(fontWeight: FontWeight.w700, fontSize: 17),
             ),
             centerTitle: false,
@@ -72,7 +74,7 @@ class HealthScreen extends ConsumerWidget {
                   ),
                   child: Column(children: [
                     Text(
-                      '${_monthName(month)} $year',
+                      '${_monthName(context, month)} $year',
                       style: const TextStyle(fontSize: 11, letterSpacing: 1.2, fontWeight: FontWeight.w600, color: Colors.white60),
                     ),
                     const SizedBox(height: 20),
@@ -87,56 +89,56 @@ class HealthScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 20),
                 // ── Sub-score breakdown ──
-                Text('Desglose', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
+                Text(l10n.healthSubScores, style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
                 const SizedBox(height: 10),
                 _SubScoreRow(
                   icon: Icons.savings_outlined,
-                  label: 'Tasa de ahorro',
+                  label: l10n.healthSavingsRateLabel,
                   value: '${savingsRate.toStringAsFixed(1)}%',
                   maxPoints: 2,
                   earned: savingsRate >= 20 ? 2 : savingsRate >= 10 ? 1 : 0,
                 ),
                 _SubScoreRow(
                   icon: Icons.home_outlined,
-                  label: 'Vivienda / salario',
+                  label: l10n.healthHousingVsSalary,
                   value: '${housingRate.toStringAsFixed(1)}%',
                   maxPoints: 2,
                   earned: housingRate <= 30 ? 2 : housingRate <= 40 ? 1 : 0,
                 ),
                 _SubScoreRow(
                   icon: Icons.account_balance_wallet_outlined,
-                  label: 'Balance mensual',
+                  label: l10n.healthMonthlyBalance,
                   value: FinancialCalculatorService.formatBRL(balance),
                   maxPoints: 2,
                   earned: balance >= 0 ? 2 : 0,
                 ),
                 _SubScoreRow(
                   icon: Icons.shield_outlined,
-                  label: 'Fondo de emergencia',
-                  value: '${efMonths.toStringAsFixed(1)} meses',
+                  label: l10n.healthEmergencyFundLabel,
+                  value: l10n.healthEmergencyMonths(efMonths.toStringAsFixed(1)),
                   maxPoints: 2,
                   earned: efMonths >= 3 ? 2 : 0,
                 ),
                 _SubScoreRow(
                   icon: Icons.credit_card_outlined,
-                  label: 'Parcelas / salario',
+                  label: l10n.healthInstallmentsVsSalary,
                   value: '${installmentsRate.toStringAsFixed(1)}%',
                   maxPoints: 1,
                   earned: installmentsRate <= 30 ? 1 : 0,
                 ),
                 const SizedBox(height: 24),
                 // ── History ──
-                Text('Historial', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
+                Text(l10n.healthHistory, style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
                 const SizedBox(height: 10),
                 ref.watch(healthHistoryProvider).when(
                   loading: () => const Center(child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator())),
-                  error: (e, _) => Text('Error: $e', style: TextStyle(color: colors.onSurfaceSoft)),
+                  error: (e, _) => Text(l10n.healthError(e.toString()), style: TextStyle(color: colors.onSurfaceSoft)),
                   data: (history) {
                     if (history.isEmpty) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 24),
                         child: Center(
-                          child: Text('Sin historial aún', style: TextStyle(color: colors.onSurfaceSoft, fontSize: 13)),
+                          child: Text(l10n.healthNoHistoryYet, style: TextStyle(color: colors.onSurfaceSoft, fontSize: 13)),
                         ),
                       );
                     }
@@ -154,8 +156,13 @@ class HealthScreen extends ConsumerWidget {
     );
   }
 
-  String _monthName(int month) {
-    const names = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+  String _monthName(BuildContext context, int month) {
+    // Use abbreviated month names from the locale
+    final locale = AppLocalizations.of(context).locale.languageCode;
+    const namesEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const namesEs = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const namesPt = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    final names = locale == 'pt' ? namesPt : locale == 'es' ? namesEs : namesEn;
     return names[month - 1];
   }
 }
@@ -230,6 +237,7 @@ class _HistoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colors = context.colors;
     final Color scoreColor;
     if (snapshot.score >= 7) {
@@ -239,6 +247,13 @@ class _HistoryTile extends StatelessWidget {
     } else {
       scoreColor = tokens.FarolColors.coral;
     }
+
+    final locale = AppLocalizations.of(context).locale.languageCode;
+    const namesEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const namesEs = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const namesPt = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    final names = locale == 'pt' ? namesPt : locale == 'es' ? namesEs : namesEn;
+    final monthName = names[snapshot.month - 1];
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -250,11 +265,14 @@ class _HistoryTile extends StatelessWidget {
       child: Row(children: [
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(
-            '${_monthName(snapshot.month)} ${snapshot.year}',
+            '$monthName ${snapshot.year}',
             style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface),
           ),
           Text(
-            'Ahorro ${snapshot.savingsRate.toStringAsFixed(1)}%  ·  Balance ${FinancialCalculatorService.formatBRL(snapshot.monthlyBalance)}',
+            l10n.healthHistorySubtitle(
+              snapshot.savingsRate.toStringAsFixed(1),
+              FinancialCalculatorService.formatBRL(snapshot.monthlyBalance),
+            ),
             style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
           ),
         ])),
@@ -272,10 +290,5 @@ class _HistoryTile extends StatelessWidget {
         ),
       ]),
     );
-  }
-
-  String _monthName(int month) {
-    const names = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-    return names[month - 1];
   }
 }

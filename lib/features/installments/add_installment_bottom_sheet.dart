@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/domain/services/installment_service.dart';
+import '../../core/i18n/app_localizations.dart';
 import '../../core/models/enums.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
@@ -72,7 +73,7 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
                           borderRadius: BorderRadius.circular(2)))),
               const SizedBox(height: 16),
               Center(
-                  child: Text('Nova compra parcelada',
+                  child: Text(context.l10n.installmentsAddTitle,
                       style: Theme.of(context)
                           .textTheme
                           .titleLarge
@@ -84,10 +85,10 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
                 controller: _descCtrl,
                 autofocus: true,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  labelText: 'Descrição *',
-                  prefixIcon: Icon(Icons.label_outline),
-                  hintText: 'iPhone 15, Sofá, Notebook...',
+                decoration: InputDecoration(
+                  labelText: context.l10n.installmentsFieldDescription,
+                  prefixIcon: const Icon(Icons.label_outline),
+                  hintText: context.l10n.installmentsFieldDescriptionHint,
                 ),
               ),
               const SizedBox(height: 12),
@@ -97,7 +98,7 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
                 controller: _storeCtrl,
                 textCapitalization: TextCapitalization.sentences,
                 decoration: InputDecoration(
-                  labelText: 'Loja (opcional)',
+                  labelText: context.l10n.installmentsFieldStore,
                   prefixIcon:
                       Icon(Icons.store_outlined, color: colors.onSurfaceMuted),
                 ),
@@ -105,7 +106,7 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
               const SizedBox(height: 20),
 
               // Total amount
-              Text('Valor total da compra',
+              Text(context.l10n.installmentsFieldTotal,
                   style: Theme.of(context).textTheme.labelLarge),
               const SizedBox(height: 8),
               TextField(
@@ -129,7 +130,7 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
               const SizedBox(height: 20),
 
               // Number of installments
-              _Label('Número de parcelas: $_numInstallments'),
+              _Label(context.l10n.installmentsFieldNum(_numInstallments)),
               const SizedBox(height: 8),
               Row(children: [
                 _StepButton(
@@ -158,7 +159,7 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
               const SizedBox(height: 12),
 
               // Payment method
-              Text('Forma de pagamento',
+              Text(context.l10n.paymentMethod,
                   style: Theme.of(context).textTheme.labelLarge),
               const SizedBox(height: 8),
               Wrap(
@@ -182,7 +183,7 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
               const SizedBox(height: 16),
 
               // Category (optional)
-              Text('Categoria (opcional)',
+              Text(context.l10n.installmentsFieldCategory,
                   style: Theme.of(context).textTheme.labelLarge),
               const SizedBox(height: 8),
               categoriesAsync.when(
@@ -196,8 +197,8 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
                     hintText: 'Selecionar...',
                   ),
                   items: [
-                    const DropdownMenuItem(
-                        value: null, child: Text('Sem categoria')),
+                    DropdownMenuItem(
+                        value: null, child: Text(context.l10n.installmentsNoCategory)),
                     ...cats.map((c) => DropdownMenuItem(
                         value: c.slug,
                         child: Text('${c.emoji}  ${c.name}',
@@ -212,14 +213,14 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
               Row(children: [
                 Expanded(
                     child: _DatePicker(
-                  label: 'Data da compra',
+                  label: context.l10n.installmentsFieldPurchaseDate,
                   date: _purchaseDate,
                   onPicked: (d) => setState(() => _purchaseDate = d),
                 )),
                 const SizedBox(width: 12),
                 Expanded(
                     child: _DatePicker(
-                  label: '1º vencimento',
+                  label: context.l10n.installmentsFieldFirstDue,
                   date: _firstDueDate,
                   onPicked: (d) => setState(() => _firstDueDate = d),
                 )),
@@ -255,8 +256,8 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
                           height: 22,
                           child: CircularProgressIndicator(
                               strokeWidth: 2, color: Colors.white))
-                      : const Text('CRIAR PLANO DE PARCELAS',
-                          style: TextStyle(
+                      : Text(context.l10n.installmentsBtnCreate,
+                          style: const TextStyle(
                               fontSize: 14, fontWeight: FontWeight.w700)),
                 ),
               ),
@@ -270,11 +271,11 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
     final total = _totalAmount;
 
     if (desc.isEmpty) {
-      context.showSuccessSnackBar('Informe a descrição');
+      context.showSuccessSnackBar(context.l10n.installmentsValidationDesc);
       return;
     }
     if (total == null || total <= 0) {
-      context.showSuccessSnackBar('Informe o valor total da compra');
+      context.showSuccessSnackBar(context.l10n.installmentsValidationAmount);
       return;
     }
 
@@ -313,7 +314,7 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
 
       if (mounted) {
         Navigator.pop(context);
-        context.showSuccessSnackBar('✅ Plano de parcelas criado');
+        context.showSuccessSnackBar(context.l10n.installmentsCreatedSnack);
       }
     } catch (e) {
       if (mounted) context.showErrorSnackBar(e);
@@ -354,7 +355,7 @@ class _PreviewCard extends StatelessWidget {
         border: Border.all(color: _purple.withValues(alpha: 0.2)),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Prévia',
+        Text(context.l10n.installmentsPreview,
             style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
@@ -363,20 +364,20 @@ class _PreviewCard extends StatelessWidget {
         const SizedBox(height: 10),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           _PreviewStat(
-              label: 'Por parcela',
+              label: context.l10n.installmentsPerInstallment,
               value: FinancialCalculatorService.formatBRL(installmentAmount)),
           _PreviewStat(
-              label: 'Última',
+              label: context.l10n.installmentsPreviewLast,
               value: FinancialCalculatorService.formatBRL(lastAmount)),
           _PreviewStat(
-              label: 'Termina em',
+              label: context.l10n.installmentsPreviewEnds,
               value:
                   '${lastDue.month.toString().padLeft(2, '0')}/${lastDue.year}'),
         ]),
         if ((lastAmount - installmentAmount).abs() > 0.001) ...[
           const SizedBox(height: 8),
           Text(
-            '* Última parcela ajustada por arredondamento',
+            context.l10n.installmentsPreviewRoundingNote,
             style:
                 TextStyle(fontSize: 10, color: colors.onSurfaceFaint),
           ),

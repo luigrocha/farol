@@ -7,6 +7,7 @@ import '../../core/domain/entities/installment_payment.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../design/farol_colors.dart' as tokens;
+import '../../core/i18n/app_localizations.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../core/providers/workspace_providers.dart' show canWriteProvider;
 import 'add_installment_bottom_sheet.dart';
@@ -48,7 +49,7 @@ class _InstallmentsScreenState extends ConsumerState<InstallmentsScreen> {
             padding: EdgeInsets.symmetric(vertical: 48),
             child: Center(child: CircularProgressIndicator()),
           ),
-          error: (e, _) => Center(child: Text('Erro: $e')),
+          error: (e, _) => Center(child: Text('${context.l10n.error}: $e')),
           data: (all) {
             final plans = _filtered(all, _filter);
             if (plans.isEmpty) return _EmptyState(filter: _filter);
@@ -69,7 +70,7 @@ class _InstallmentsScreenState extends ConsumerState<InstallmentsScreen> {
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
             onPressed: () => Navigator.pop(context),
           ),
-          title: Text('Parcelas',
+          title: Text(context.l10n.installments,
               style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w800)),
         ),
         if (isDesktop)
@@ -147,8 +148,8 @@ class _HeroCard extends StatelessWidget {
         ),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('COMPROMISSO MENSAL',
-            style: TextStyle(
+        Text(context.l10n.installmentsMonthlyCommitment,
+            style: const TextStyle(
                 fontSize: 10,
                 letterSpacing: 1.8,
                 fontWeight: FontWeight.w700,
@@ -157,10 +158,10 @@ class _HeroCard extends StatelessWidget {
         _BRLBig(value: monthly, size: 32, color: Colors.white),
         const SizedBox(height: 18),
         Row(children: [
-          _HeroPill(label: 'PLANOS ATIVOS', value: '${plans.length}'),
+          _HeroPill(label: context.l10n.installmentsActivePlans, value: '${plans.length}'),
           const SizedBox(width: 8),
           _HeroPill(
-              label: 'SALDO RESTANTE',
+              label: context.l10n.remainingBalance,
               value: FinancialCalculatorService.formatBRL(remaining)),
         ]),
       ]),
@@ -209,12 +210,13 @@ class _FilterChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Row(children: [
-      _Chip(label: 'Ativos', value: _Filter.active, selected: selected, onTap: onChanged),
+      _Chip(label: l10n.installmentsFilterActive, value: _Filter.active, selected: selected, onTap: onChanged),
       const SizedBox(width: 8),
-      _Chip(label: 'Concluídos', value: _Filter.completed, selected: selected, onTap: onChanged),
+      _Chip(label: l10n.installmentsFilterCompleted, value: _Filter.completed, selected: selected, onTap: onChanged),
       const SizedBox(width: 8),
-      _Chip(label: 'Todos', value: _Filter.all, selected: selected, onTap: onChanged),
+      _Chip(label: l10n.installmentsFilterAll, value: _Filter.all, selected: selected, onTap: onChanged),
     ]);
   }
 }
@@ -316,7 +318,7 @@ class _PlanTile extends ConsumerWidget {
             Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
               _BRLSmall(value: plan.installmentAmount, size: 14),
               const SizedBox(height: 2),
-              Text('por parcela',
+              Text(context.l10n.installmentsPerInstallment,
                   style: TextStyle(
                       fontSize: 10, color: colors.onSurfaceFaint)),
             ]),
@@ -325,11 +327,11 @@ class _PlanTile extends ConsumerWidget {
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Text(
-                  '${plan.paidCount} de ${plan.numInstallments} pagas',
+                  context.l10n.installmentsPaidOf(plan.paidCount, plan.numInstallments),
                   style:
                       TextStyle(fontSize: 10, color: colors.onSurfaceSoft)),
               Text(
-                  'Restam ${FinancialCalculatorService.formatBRL(plan.remainingAmount)}',
+                  context.l10n.installmentsRemainingAmount(FinancialCalculatorService.formatBRL(plan.remainingAmount)),
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
@@ -460,11 +462,11 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
         ),
         const SizedBox(height: 6),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text('${(plan.progressPercent * 100).toInt()}% concluído',
+          Text(context.l10n.installmentsPctComplete((plan.progressPercent * 100).toInt()),
               style:
                   TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
           Text(
-              '${plan.remainingPayments} parcela${plan.remainingPayments == 1 ? '' : 's'} restante${plan.remainingPayments == 1 ? '' : 's'}',
+              context.l10n.installmentsRemainingPayments(plan.remainingPayments),
               style:
                   TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
         ]),
@@ -478,19 +480,19 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
               borderRadius: BorderRadius.circular(16)),
           child: Row(children: [
             _StatBox(
-                label: 'POR PARCELA',
+                label: context.l10n.installmentsPerInstallmentLabel,
                 value: FinancialCalculatorService.formatBRL(
                     plan.installmentAmount),
                 color: _purple),
             _StatDivider(),
             _StatBox(
-                label: 'RESTANTE',
+                label: context.l10n.remaining.toUpperCase(),
                 value: FinancialCalculatorService.formatBRL(
                     plan.remainingAmount),
                 color: colors.onSurface),
             _StatDivider(),
             _StatBox(
-                label: 'TOTAL',
+                label: context.l10n.total.toUpperCase(),
                 value: FinancialCalculatorService.formatBRL(plan.totalAmount),
                 color: colors.onSurface),
           ]),
@@ -501,7 +503,7 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
         if (_payments != null && _payments!.isNotEmpty) ...[
           Align(
             alignment: Alignment.centerLeft,
-            child: Text('Parcelas',
+            child: Text(context.l10n.installments,
                 style: GoogleFonts.manrope(
                     fontSize: 13, fontWeight: FontWeight.w700)),
           ),
@@ -539,8 +541,10 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
                   : const Icon(Icons.check_circle_outline, size: 20),
               label: Text(
                 nextPending.installmentNum >= plan.numInstallments
-                    ? 'Concluir parcelas'
-                    : 'Registrar ${nextPending.installmentNum}ª parcela paga  •  ${FinancialCalculatorService.formatBRL(nextPending.amount)}',
+                    ? context.l10n.installmentsBtnComplete
+                    : context.l10n.installmentsBtnRegisterNth(
+                        '${nextPending.installmentNum}',
+                        FinancialCalculatorService.formatBRL(nextPending.amount)),
                 style: const TextStyle(
                     fontSize: 13, fontWeight: FontWeight.w700),
               ),
@@ -561,7 +565,7 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
               onPressed: _loading ? null : () => _skip(nextPending),
               icon: const Icon(Icons.skip_next_outlined, size: 18),
               label: Text(
-                  'Pular ${nextPending.installmentNum}ª parcela',
+                  context.l10n.installmentsBtnSkipNth('${nextPending.installmentNum}'),
                   style: const TextStyle(
                       fontSize: 13, fontWeight: FontWeight.w600)),
               style: OutlinedButton.styleFrom(
@@ -582,9 +586,9 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
           child: OutlinedButton.icon(
             onPressed: () => _confirmDelete(context),
             icon: const Icon(Icons.delete_outline, size: 18),
-            label: const Text('Excluir plano',
+            label: Text(context.l10n.installmentsBtnDeletePlan,
                 style:
-                    TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                    const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.red.shade600,
               side: BorderSide(color: Colors.red.shade200),
@@ -611,8 +615,8 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
         Navigator.pop(context);
         context.showSuccessSnackBar(
             payment.installmentNum >= widget.plan.numInstallments
-                ? '🎉 "${widget.plan.description}" concluída!'
-                : '✅ ${payment.installmentNum}ª parcela registrada');
+                ? context.l10n.installmentsCompletedSnack(widget.plan.description)
+                : context.l10n.installmentsRegisteredSnack('${payment.installmentNum}'));
       }
     } catch (e) {
       if (mounted) context.showErrorSnackBar(e);
@@ -628,7 +632,7 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
       await _loadPayments();
       if (mounted) {
         context.showSuccessSnackBar(
-            '⏭ ${payment.installmentNum}ª parcela pulada');
+            context.l10n.installmentsSkippedSnack('${payment.installmentNum}'));
       }
     } catch (e) {
       if (mounted) context.showErrorSnackBar(e);
@@ -640,9 +644,8 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
   Future<void> _confirmDelete(BuildContext context) async {
     final confirmed = await showConfirmDeleteDialog(
       context,
-      title: 'Plano de parcelas',
-      body:
-          'Remover "${widget.plan.description}"? Todas as parcelas serão excluídas.',
+      title: context.l10n.installmentsPlanTitle,
+      body: context.l10n.installmentsDeleteConfirm(widget.plan.description),
     );
     if (confirmed && context.mounted) {
       try {
@@ -708,7 +711,7 @@ class _PaymentRow extends StatelessWidget {
       if (isSkipped)
         Padding(
           padding: const EdgeInsets.only(left: 6),
-          child: Text('pulada',
+          child: Text(context.l10n.installmentsSkippedLabel,
               style: TextStyle(
                   fontSize: 9,
                   color: colors.onSurfaceFaint,
@@ -729,9 +732,10 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final l10n = context.l10n;
     final msg = filter == _Filter.completed
-        ? 'Nenhum plano concluído ainda'
-        : 'Sem planos de parcelas ativos';
+        ? l10n.installmentsEmptyCompleted
+        : l10n.installmentsEmptyActive;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 48),
       child: Center(
@@ -752,7 +756,7 @@ class _EmptyState extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 color: colors.onSurface)),
         const SizedBox(height: 6),
-        Text('Toque em + para adicionar uma compra parcelada',
+        Text(l10n.installmentsEmptyHint,
             style: TextStyle(fontSize: 13, color: colors.onSurfaceSoft)),
       ])),
     );
@@ -772,7 +776,7 @@ class _ProgressBadge extends StatelessWidget {
         color: _purple.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Text('$paid/$total parcelas',
+      child: Text(context.l10n.installmentsPaidOf(paid, total),
           style: const TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w700,

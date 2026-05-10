@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../core/i18n/app_localizations.dart';
 import '../../../core/models/account.dart';
 import '../../../core/models/enums.dart';
 import '../../../core/providers/providers.dart';
@@ -23,18 +24,18 @@ class AccountsScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: colors.surface,
         elevation: 0,
-        title: Text('Contas',
+        title: Text(context.l10n.accountsLabel,
             style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700, color: colors.onSurface)),
         iconTheme: IconThemeData(color: colors.onSurface),
         actions: [
           IconButton(
             icon: Icon(Icons.swap_horiz_rounded, color: colors.onSurface),
-            tooltip: 'Transferência entre contas',
+            tooltip: context.l10n.accountsTransferTooltip,
             onPressed: () {
               final accounts = accountsAsync.value ?? [];
               if (accounts.length < 2) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Adicione ao menos 2 contas para transferir')),
+                  SnackBar(content: Text(context.l10n.accountsTransferNeedTwo)),
                 );
                 return;
               }
@@ -49,7 +50,7 @@ class AccountsScreen extends ConsumerWidget {
       ),
       body: accountsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Erro: $e')),
+        error: (e, _) => Center(child: Text('${context.l10n.error}: $e')),
         data: (accounts) {
           if (accounts.isEmpty) return const _EmptyState();
           final liquid = accounts.where((a) => a.accountType.isLiquid).toList();
@@ -58,7 +59,7 @@ class AccountsScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             children: [
               if (liquid.isNotEmpty) ...[
-                const _SectionHeader(label: 'Contas Bancárias'),
+                _SectionHeader(label: context.l10n.accountsSectionBank),
                 const SizedBox(height: 8),
                 ...liquid.map((a) => _AccountTile(account: a)),
               ],
@@ -116,10 +117,10 @@ class _EmptyState extends StatelessWidget {
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         Icon(Icons.account_balance_outlined, size: 64, color: colors.onSurfaceFaint),
         const SizedBox(height: 16),
-        Text('Nenhuma conta cadastrada',
+        Text(context.l10n.accountsEmptyTitle,
             style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w600, color: colors.onSurfaceMuted)),
         const SizedBox(height: 8),
-        Text('Adicione suas contas para acompanhar\nseu patrimônio em tempo real.',
+        Text(context.l10n.accountsEmptyHint,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 13, color: colors.onSurfaceSoft)),
       ]),
@@ -161,7 +162,7 @@ class _AccountTile extends ConsumerWidget {
               'R\$ ${account.currentBalance.toStringAsFixed(2).replaceAll('.', ',')}',
               style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w700, color: colors.onSurface),
             ),
-            Text(account.accountType.label,
+            Text(account.accountType.localizedLabel(context),
                 style: GoogleFonts.manrope(fontSize: 11, color: colors.onSurfaceSoft)),
           ]),
           const SizedBox(width: 4),
@@ -178,16 +179,16 @@ class _AccountTile extends ConsumerWidget {
                 showDialog(
                   context: context,
                   builder: (_) => AlertDialog(
-                    title: const Text('Excluir conta?'),
-                    content: Text('A conta "${account.name}" será removida.'),
+                    title: Text(context.l10n.accountsDeleteTitle),
+                    content: Text(context.l10n.accountsDeleteBody(account.name)),
                     actions: [
-                      TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+                      TextButton(onPressed: () => Navigator.pop(context), child: Text(context.l10n.cancel)),
                       TextButton(
                         onPressed: () {
                           ref.read(accountNotifierProvider.notifier).delete(account.id);
                           Navigator.pop(context);
                         },
-                        child: const Text('Excluir', style: TextStyle(color: tokens.FarolColors.coral)),
+                        child: Text(context.l10n.delete, style: const TextStyle(color: tokens.FarolColors.coral)),
                       ),
                     ],
                   ),
@@ -195,8 +196,8 @@ class _AccountTile extends ConsumerWidget {
               }
             },
             itemBuilder: (_) => [
-              const PopupMenuItem(value: 'edit', child: Text('Atualizar saldo')),
-              const PopupMenuItem(value: 'delete', child: Text('Excluir')),
+              PopupMenuItem(value: 'edit', child: Text(context.l10n.accountsActionUpdateBalance)),
+              PopupMenuItem(value: 'delete', child: Text(context.l10n.delete)),
             ],
           ),
         ]),
@@ -262,27 +263,27 @@ class _AddAccountSheetState extends ConsumerState<_AddAccountSheet> {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Nova Conta',
+            Text(context.l10n.accountsAddTitle,
                 style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700, color: colors.onSurface)),
             const SizedBox(height: 20),
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Nome da conta', hintText: 'ex: Conta Corrente'),
+              decoration: InputDecoration(labelText: context.l10n.accountsFieldName, hintText: context.l10n.accountsFieldNameHint),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               initialValue: _institution,
-              decoration: const InputDecoration(labelText: 'Instituição'),
+              decoration: InputDecoration(labelText: context.l10n.accountsFieldInstitution),
               items: _institutions.map((i) => DropdownMenuItem(value: i, child: Text(i))).toList(),
               onChanged: (v) => setState(() => _institution = v!),
             ),
             const SizedBox(height: 12),
-            Text('Tipo de conta', style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
+            Text(context.l10n.accountsFieldType, style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
             const SizedBox(height: 6),
             SegmentedButton<AccountType>(
               segments: AccountType.values.map((t) => ButtonSegment(
                 value: t,
-                label: Text(t.label, style: const TextStyle(fontSize: 11)),
+                label: Text(t.localizedLabel(context), style: const TextStyle(fontSize: 11)),
               )).toList(),
               selected: {_type},
               onSelectionChanged: (s) => setState(() => _type = s.first),
@@ -292,14 +293,14 @@ class _AddAccountSheetState extends ConsumerState<_AddAccountSheet> {
               controller: _balanceController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))],
-              decoration: const InputDecoration(labelText: 'Saldo inicial', prefixText: 'R\$ '),
+              decoration: InputDecoration(labelText: context.l10n.accountsFieldInitialBalance, prefixText: 'R\$ '),
             ),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
                 onPressed: _saving ? null : _save,
-                child: _saving ? const CircularProgressIndicator(strokeWidth: 2) : const Text('Salvar'),
+                child: _saving ? const CircularProgressIndicator(strokeWidth: 2) : Text(context.l10n.save),
               ),
             ),
           ]),
@@ -359,7 +360,7 @@ class _EditBalanceSheetState extends ConsumerState<_EditBalanceSheet> {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Atualizar Saldo', style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700, color: colors.onSurface)),
+            Text(context.l10n.accountsUpdateBalanceTitle, style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700, color: colors.onSurface)),
             Text(widget.account.name, style: TextStyle(fontSize: 13, color: colors.onSurfaceSoft)),
             const SizedBox(height: 20),
             TextField(
@@ -367,14 +368,14 @@ class _EditBalanceSheetState extends ConsumerState<_EditBalanceSheet> {
               autofocus: true,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))],
-              decoration: const InputDecoration(labelText: 'Saldo atual', prefixText: 'R\$ '),
+              decoration: InputDecoration(labelText: context.l10n.accountsFieldCurrentBalance, prefixText: 'R\$ '),
             ),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
                 onPressed: _saving ? null : _save,
-                child: _saving ? const CircularProgressIndicator(strokeWidth: 2) : const Text('Salvar'),
+                child: _saving ? const CircularProgressIndicator(strokeWidth: 2) : Text(context.l10n.save),
               ),
             ),
           ]),
@@ -432,11 +433,11 @@ class _TransferSheetState extends ConsumerState<_TransferSheet> {
           );
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Transferência registrada')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.accountsTransferSuccess)));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -454,21 +455,21 @@ class _TransferSheetState extends ConsumerState<_TransferSheet> {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Transferência Interna',
+            Text(context.l10n.accountsTransferTitle,
                 style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700, color: colors.onSurface)),
             const SizedBox(height: 4),
-            Text('Não aparece em receitas/despesas', style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
+            Text(context.l10n.accountsTransferSubtitle, style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
             const SizedBox(height: 20),
             DropdownButtonFormField<int>(
               initialValue: _fromId,
-              decoration: const InputDecoration(labelText: 'De'),
+              decoration: InputDecoration(labelText: context.l10n.accountsTransferFrom),
               items: items,
               onChanged: (v) => setState(() => _fromId = v!),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<int>(
               initialValue: _toId,
-              decoration: const InputDecoration(labelText: 'Para'),
+              decoration: InputDecoration(labelText: context.l10n.accountsTransferTo),
               items: items,
               onChanged: (v) => setState(() => _toId = v!),
             ),
@@ -477,19 +478,19 @@ class _TransferSheetState extends ConsumerState<_TransferSheet> {
               controller: _amountController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))],
-              decoration: const InputDecoration(labelText: 'Valor', prefixText: 'R\$ '),
+              decoration: InputDecoration(labelText: context.l10n.amount, prefixText: 'R\$ '),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _descController,
-              decoration: const InputDecoration(labelText: 'Descrição (opcional)'),
+              decoration: InputDecoration(labelText: context.l10n.accountsFieldDescriptionOptional),
             ),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
                 onPressed: _saving ? null : _save,
-                child: _saving ? const CircularProgressIndicator(strokeWidth: 2) : const Text('Transferir'),
+                child: _saving ? const CircularProgressIndicator(strokeWidth: 2) : Text(context.l10n.accountsBtnTransfer),
               ),
             ),
           ]),

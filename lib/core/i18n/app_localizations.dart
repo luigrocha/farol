@@ -232,6 +232,259 @@ class AppLocalizations {
       'health_fair': 'Fair. There is room for improvement.',
       'health_warning_desc': 'Warning! Review your spending.',
       'health_critical_desc': 'Critical! Urgent action is needed.',
+      // Health Screen
+      'health_screen_title': 'Financial Health',
+      'health_sub_scores': 'Breakdown',
+      'health_savings_rate_label': 'Savings Rate',
+      'health_housing_vs_salary': 'Housing / Salary',
+      'health_monthly_balance': 'Monthly Balance',
+      'health_emergency_fund_label': 'Emergency Fund',
+      'health_installments_vs_salary': 'Installments / Salary',
+      'health_history': 'History',
+      'health_no_history_yet': 'No history yet',
+      'health_error': 'Error: %s',
+      'health_emergency_months': '%s months',
+      'health_history_subtitle': 'Savings %s%%  ·  Balance %s',
+      // Notifications Screen
+      'notifications_title': 'Notifications',
+      'notifications_subtitle': 'Real-time budget alerts',
+      'notifications_all_good': 'All under control',
+      'notifications_no_category_over': 'No category exceeds 75% of the budget',
+      'notifications_tips': 'Tips',
+      'notifications_tip_title': 'Tip of the month',
+      'notifications_tip_body': 'Reviewing your budgets by category helps you identify patterns and make better financial decisions.',
+      'notifications_level_exceeded': 'Limit exceeded',
+      'notifications_level_critical': 'Critical alert',
+      'notifications_level_warning': 'Warning',
+      'alert_exceeded_body': 'You exceeded the limit of %s in %s. Spent: %s.',
+      'alert_critical_body': 'You have used %s of the %s budget (%s of %s).',
+      'alert_warning_body': 'You have used %s of the %s budget. Remaining: %s.',
+      // Investments Screen
+      // Dashboard widgets
+      'burn_rate_title': 'Spending velocity',
+      'burn_pace_comfortable': 'On track',
+      'burn_pace_on_track': 'Watch spending',
+      'burn_pace_overspending': 'Over budget',
+      'burn_daily_rate_label': 'R\$/day',
+      'burn_projection_label': 'Projection at close',
+      'burn_days_remaining': 'Days remaining',
+      'burn_pace_vs_budget': 'Pace vs budget',
+      'liquidity_critical_title': 'Critical liquidity risk',
+      'liquidity_high_title': 'Tight week',
+      'liquidity_medium_title': 'Watch your commitments',
+      'liquidity_days_to_zero': 'Balance expected to zero in %s days',
+      'liquidity_obligations_this_week': '%s in %s commitment%s this week',
+      'liquidity_check_upcoming': 'Check your upcoming commitments',
+      'liquidity_sheet_title': 'This week\'s commitments',
+      'liquidity_no_commitments': 'No commitments in the next 7 days.',
+      'liquidity_total': 'Total',
+      'period_balance_title': 'PERIOD BALANCE',
+      'period_projection_closing': 'Projection at close: %s',
+      'period_incomes': 'Income',
+      'period_expenses': 'Expenses',
+      'recurring_card_title': 'Recurring',
+      'recurring_pending': 'Pending',
+      'recurring_total_expected': 'Total expected',
+      'recurring_active_rules': 'Active rules',
+      // Recurring screen
+      'recurring_screen_title': 'Recurring',
+      'recurring_total_monthly': 'Total monthly in recurring',
+      'recurring_active_count_one': '%s active recurring',
+      'recurring_active_count_other': '%s active recurring rules',
+      'recurring_filter_active': 'Active',
+      'recurring_filter_paused': 'Paused',
+      'recurring_filter_cancelled': 'Cancelled',
+      'recurring_status_active': 'Active',
+      'recurring_status_paused': 'Paused',
+      'recurring_status_cancelled': 'Cancelled',
+      'recurring_upcoming_occurrences': 'Upcoming occurrences',
+      'recurring_no_pending': 'No pending occurrences',
+      'recurring_error': 'Error: %s',
+      'recurring_empty_active': 'No active recurring.\nTap + to add one.',
+      'recurring_empty_paused': 'No paused recurring rules.',
+      'recurring_empty_cancelled': 'No cancelled recurring rules.',
+      'recurring_action_edit': 'Edit',
+      'recurring_action_pause': 'Pause',
+      'recurring_action_resume': 'Resume',
+      'recurring_action_cancel': 'Cancel',
+      'recurring_cancel_dialog_title': 'Cancel recurring?',
+      'recurring_cancel_dialog_body': 'Future occurrences will be removed.',
+      'recurring_cancel_dialog_no': 'No',
+      'recurring_paused_snack': 'Recurring paused',
+      'recurring_resumed_snack': 'Recurring resumed',
+      'recurring_cancelled_snack': 'Recurring cancelled',
+      // Add/Edit recurring sheet
+      'recurring_add_title': 'New recurring',
+      'recurring_edit_title': 'Edit recurring',
+      'recurring_field_name': 'Name',
+      'recurring_field_name_hint': 'E.g.: Netflix, Rent...',
+      'recurring_field_amount': 'Amount (R\$)',
+      'recurring_field_frequency': 'Frequency',
+      'recurring_field_day_of_month': 'Day of month',
+      'recurring_field_category': 'Category',
+      'recurring_field_category_hint': 'Select',
+      'recurring_field_start': 'Start date',
+      'recurring_btn_save': 'Save',
+      'recurring_btn_create': 'Create recurring',
+      'recurring_updated_snack': 'Recurring updated',
+      'recurring_created_snack': 'Recurring created',
+      // Suggestions screen
+      'recurring_suggestions_title': 'Recurring suggestions',
+      'recurring_suggestions_subtitle': 'I found patterns in your spending history.\nConfirm the ones that are recurring.',
+      'recurring_suggestions_empty': 'No recurring pattern found\nin your history.',
+      'recurring_confidence_pct': '%s%% confidence',
+      'recurring_btn_ignore': 'Ignore',
+      'recurring_btn_confirm': 'Confirm',
+      'recurring_confirmed_snack': 'Recurring "%s" created',
+      'recurring_occurrences_count': '%s occurrences',
+      // investments_vs_last_month
+      'investments_vs_last_month': 'vs. last month',
+      'investments_strategic_distribution': 'Strategic portfolio distribution',
+      'investments_low_exposure': 'Your portfolio has low exposure to real estate assets. Consider brick FIIs.',
+      'investments_explore_fiis': 'Explore FIIs',
+      'investments_header': 'Investments',
+      'investments_detail_by_asset': 'Detail by asset',
+      'investments_view_history': 'View History',
+      'investments_diversified': 'Diversified',
+      // Transactions Screen
+      'no_income_this_month': 'No income this month',
+      'no_income_hint': 'Tap + to record salary, bonus, etc.',
+      'net_value_description': 'Net value (INSS/IRRF already deducted)',
+      // Insights
+      'insights_label': 'Insights',
+      'insights_see_all': 'See all (%s)',
+      'insights_subtitle': 'Analyses based on your real data.',
+      'insights_group_critical': 'Critical alerts',
+      'insights_group_warning': 'Attention',
+      'insights_group_info': 'Opportunities',
+      'insights_group_achievement': 'Achievements',
+      'insights_most_ignored': 'Most ignored types',
+      'insights_empty': 'No insights right now.\nKeep recording your expenses!',
+      // Insight rule strings
+      'insight_overdraft_title': 'Negative balance risk',
+      'insight_overdraft_body': 'At the current pace, you will close the period with %s. There are %s in confirmed commitments.',
+      'insight_overdraft_action': 'See projection',
+      'insight_liquidity_critical_title': 'Very tight week',
+      'insight_liquidity_warning_title': 'Tight week',
+      'insight_liquidity_body': 'You have %s available and %s in payments this week.',
+      'insight_spike_title': 'Acceleration in %s',
+      'insight_spike_body': '%s so far vs. average of %s. %s%% above usual.',
+      'insight_spike_action': 'See %s',
+      'insight_duplicate_title': 'Possible duplicate charge',
+      'insight_duplicate_body': '%sx "%s" for R\$ %s in %s day(s).',
+      'insight_duplicate_action': 'Check',
+      'insight_subscription_title': 'Subscriptions growing',
+      'insight_subscription_body': 'Your subscription spending increased R\$ %s over the last 3 months.',
+      'insight_subscription_action': 'See subscriptions',
+      'insight_savings_title': 'Savings possible in %s',
+      'insight_savings_body': '%s is %s over budget. Adjusting could free up that amount per period.',
+      'insight_savings_action': 'Adjust budget',
+      'insight_invest_title': 'You will have %s left over',
+      'insight_invest_body': 'At the current pace, you will have %s free at the end of the period. How about setting some aside?',
+      'insight_invest_action': 'See options',
+      'insight_streak_title': '%s periods within budget! 🎉',
+      'insight_streak_body': 'You have been keeping your finances in check for %s consecutive periods. Keep it up!',
+      'insight_debt_title': 'Installments decreasing!',
+      'insight_debt_body': 'Your active installments dropped R\$ %s compared to the previous period.',
+      'insight_unusual_title': 'New high-value purchase',
+      'insight_unusual_body': '"%s" for R\$ %s — first time it appears in your history.',
+      'insight_unusual_action': 'See expense',
+      // Recurring frequency labels
+      'freq_weekly': 'Weekly',
+      'freq_biweekly': 'Biweekly',
+      'freq_monthly': 'Monthly',
+      'freq_quarterly': 'Quarterly',
+      'freq_semiannual': 'Semiannual',
+      'freq_yearly': 'Yearly',
+      // Account types
+      'account_type_checking': 'Checking Account',
+      'account_type_savings': 'Savings Account',
+      'account_type_investment': 'Investment Account',
+      'account_type_fgts': 'FGTS',
+      // Accounts screen
+      'accounts_transfer_tooltip': 'Transfer between accounts',
+      'accounts_transfer_need_two': 'Add at least 2 accounts to transfer',
+      'accounts_section_bank': 'Bank Accounts',
+      'accounts_empty_title': 'No accounts registered',
+      'accounts_empty_hint': 'Add your accounts to track\nyour net worth in real time.',
+      'accounts_delete_title': 'Delete account?',
+      'accounts_delete_body': 'The account "%s" will be removed.',
+      'accounts_action_update_balance': 'Update balance',
+      'accounts_add_title': 'New Account',
+      'accounts_field_name': 'Account name',
+      'accounts_field_name_hint': 'e.g. Checking Account',
+      'accounts_field_institution': 'Institution',
+      'accounts_field_type': 'Account type',
+      'accounts_field_initial_balance': 'Initial balance',
+      'accounts_update_balance_title': 'Update Balance',
+      'accounts_field_current_balance': 'Current balance',
+      'accounts_transfer_title': 'Internal Transfer',
+      'accounts_transfer_subtitle': 'Does not appear in income/expenses',
+      'accounts_transfer_from': 'From',
+      'accounts_transfer_to': 'To',
+      'accounts_field_description_optional': 'Description (optional)',
+      'accounts_btn_transfer': 'Transfer',
+      'accounts_transfer_success': 'Transfer registered',
+      // Analytics screen
+      'analytics_subtitle': 'Your data, analyzed over time.',
+      'analytics_avg_per_month': 'AVG/MONTH',
+      'analytics_top_category': 'TOP CAT.',
+      'analytics_monthly_trend': 'Monthly Trend',
+      'analytics_spending_legend': 'Spending',
+      'analytics_category_distribution': 'Category Distribution',
+      'analytics_monthly_comparison': 'Monthly Comparison',
+      // Cashflow chart
+      'cashflow_title': 'Cash Flow (90 days)',
+      'cashflow_negative_warning': 'Projected balance goes negative at some point',
+      'cashflow_legend_real': 'Actual',
+      'cashflow_legend_projection': 'Projection',
+      'cashflow_legend_commitment': 'Commitment',
+      'cashflow_min_balance_label': 'Projected minimum balance: ',
+      // Installments screen
+      'installments_monthly_commitment': 'MONTHLY COMMITMENT',
+      'installments_active_plans': 'ACTIVE PLANS',
+      'installments_filter_active': 'Active',
+      'installments_filter_completed': 'Completed',
+      'installments_filter_all': 'All',
+      'installments_per_installment': 'per installment',
+      'installments_per_installment_label': 'PER INSTALL.',
+      'installments_paid_of': '%s of %s paid',
+      'installments_remaining_amount': 'Remaining %s',
+      'installments_pct_complete': '%s%% complete',
+      'installments_remaining_payments_one': '%s installment left',
+      'installments_remaining_payments_other': '%s installments left',
+      'installments_btn_complete': 'Complete installments',
+      'installments_btn_register_nth': 'Register %s installment paid  •  %s',
+      'installments_btn_skip_nth': 'Skip %s installment',
+      'installments_btn_delete_plan': 'Delete plan',
+      'installments_plan_title': 'Installment plan',
+      'installments_delete_confirm': 'Remove "%s"? All installments will be deleted.',
+      'installments_completed_snack': '🎉 "%s" completed!',
+      'installments_registered_snack': '✅ %s installment registered',
+      'installments_skipped_snack': '⏭ %s installment skipped',
+      'installments_empty_completed': 'No completed plans yet',
+      'installments_empty_active': 'No active installment plans',
+      'installments_empty_hint': 'Tap + to add an installment purchase',
+      'installments_skipped_label': 'skipped',
+      // Add installment sheet
+      'installments_add_title': 'New installment purchase',
+      'installments_field_description': 'Description *',
+      'installments_field_description_hint': 'iPhone 15, Sofa, Laptop...',
+      'installments_field_store': 'Store (optional)',
+      'installments_field_total': 'Total purchase amount',
+      'installments_field_num': 'Number of installments: %s',
+      'installments_field_category': 'Category (optional)',
+      'installments_no_category': 'No category',
+      'installments_field_purchase_date': 'Purchase date',
+      'installments_field_first_due': '1st due date',
+      'installments_btn_create': 'CREATE INSTALLMENT PLAN',
+      'installments_validation_desc': 'Please enter a description',
+      'installments_validation_amount': 'Please enter the total purchase amount',
+      'installments_created_snack': '✅ Installment plan created',
+      'installments_preview': 'Preview',
+      'installments_preview_last': 'Last',
+      'installments_preview_ends': 'Ends on',
+      'installments_preview_rounding_note': '* Last installment adjusted for rounding',
       // Authentication
       'sign_in': 'Sign In',
       'sign_up': 'Sign Up',
@@ -627,6 +880,259 @@ class AppLocalizations {
       'health_fair': 'Razonable. Hay espacio para mejorar.',
       'health_warning_desc': '¡Atención! Revisa tus gastos.',
       'health_critical_desc': '¡Crítico! Es necesario actuar ahora.',
+      // Health Screen
+      'health_screen_title': 'Salud Financiera',
+      'health_sub_scores': 'Desglose',
+      'health_savings_rate_label': 'Tasa de ahorro',
+      'health_housing_vs_salary': 'Vivienda / salario',
+      'health_monthly_balance': 'Balance mensual',
+      'health_emergency_fund_label': 'Fondo de emergencia',
+      'health_installments_vs_salary': 'Parcelas / salario',
+      'health_history': 'Historial',
+      'health_no_history_yet': 'Sin historial aún',
+      'health_error': 'Error: %s',
+      'health_emergency_months': '%s meses',
+      'health_history_subtitle': 'Ahorro %s%%  ·  Balance %s',
+      // Notifications Screen
+      'notifications_title': 'Notificaciones',
+      'notifications_subtitle': 'Alertas de presupuesto en tiempo real',
+      'notifications_all_good': 'Todo bajo control',
+      'notifications_no_category_over': 'Ninguna categoría supera el 75% del presupuesto',
+      'notifications_tips': 'Tips',
+      'notifications_tip_title': 'Consejo del mes',
+      'notifications_tip_body': 'Revisar tus presupuestos por categoría te ayuda a identificar patrones y tomar mejores decisiones financieras.',
+      'notifications_level_exceeded': 'Límite superado',
+      'notifications_level_critical': 'Alerta crítica',
+      'notifications_level_warning': 'Aviso',
+      'alert_exceeded_body': 'Superaste el límite de %s en %s. Gastado: %s.',
+      'alert_critical_body': 'Llevas el %s del presupuesto de %s (%s de %s).',
+      'alert_warning_body': 'Ya usaste el %s del presupuesto de %s. Quedan %s.',
+      // Investments Screen
+      // Dashboard widgets
+      'burn_rate_title': 'Velocidad de gasto',
+      'burn_pace_comfortable': 'Al ritmo correcto',
+      'burn_pace_on_track': 'Atención al ritmo',
+      'burn_pace_overspending': 'Ritmo sobre presupuesto',
+      'burn_daily_rate_label': 'R\$/día',
+      'burn_projection_label': 'Proyección al cierre',
+      'burn_days_remaining': 'Días restantes',
+      'burn_pace_vs_budget': 'Ritmo vs presupuesto',
+      'liquidity_critical_title': 'Riesgo crítico de liquidez',
+      'liquidity_high_title': 'Semana ajustada',
+      'liquidity_medium_title': 'Atención a los compromisos',
+      'liquidity_days_to_zero': 'Saldo previsto para cero en %s días',
+      'liquidity_obligations_this_week': '%s en %s compromiso%s esta semana',
+      'liquidity_check_upcoming': 'Revisa tus compromisos próximos',
+      'liquidity_sheet_title': 'Compromisos de esta semana',
+      'liquidity_no_commitments': 'Ningún compromiso en los próximos 7 días.',
+      'liquidity_total': 'Total',
+      'period_balance_title': 'BALANCE DEL PERÍODO',
+      'period_projection_closing': 'Proyección al cierre: %s',
+      'period_incomes': 'Ingresos',
+      'period_expenses': 'Gastos',
+      'recurring_card_title': 'Recurrentes',
+      'recurring_pending': 'Pendientes',
+      'recurring_total_expected': 'Total previsto',
+      'recurring_active_rules': 'Reglas activas',
+      // Recurring screen
+      'recurring_screen_title': 'Recurrentes',
+      'recurring_total_monthly': 'Total mensual en recurrentes',
+      'recurring_active_count_one': '%s recurrente activo',
+      'recurring_active_count_other': '%s recurrentes activos',
+      'recurring_filter_active': 'Activos',
+      'recurring_filter_paused': 'Pausados',
+      'recurring_filter_cancelled': 'Cancelados',
+      'recurring_status_active': 'Activo',
+      'recurring_status_paused': 'Pausado',
+      'recurring_status_cancelled': 'Cancelado',
+      'recurring_upcoming_occurrences': 'Próximas ocurrencias',
+      'recurring_no_pending': 'Sin ocurrencias pendientes',
+      'recurring_error': 'Error: %s',
+      'recurring_empty_active': 'Ningún recurrente activo.\nToca + para agregar uno.',
+      'recurring_empty_paused': 'Ningún recurrente pausado.',
+      'recurring_empty_cancelled': 'Ningún recurrente cancelado.',
+      'recurring_action_edit': 'Editar',
+      'recurring_action_pause': 'Pausar',
+      'recurring_action_resume': 'Reanudar',
+      'recurring_action_cancel': 'Cancelar',
+      'recurring_cancel_dialog_title': '¿Cancelar recurrente?',
+      'recurring_cancel_dialog_body': 'Las ocurrencias futuras serán eliminadas.',
+      'recurring_cancel_dialog_no': 'No',
+      'recurring_paused_snack': 'Recurrente pausado',
+      'recurring_resumed_snack': 'Recurrente reanudado',
+      'recurring_cancelled_snack': 'Recurrente cancelado',
+      // Add/Edit recurring sheet
+      'recurring_add_title': 'Nuevo recurrente',
+      'recurring_edit_title': 'Editar recurrente',
+      'recurring_field_name': 'Nombre',
+      'recurring_field_name_hint': 'Ej.: Netflix, Alquiler...',
+      'recurring_field_amount': 'Monto (R\$)',
+      'recurring_field_frequency': 'Frecuencia',
+      'recurring_field_day_of_month': 'Día del mes',
+      'recurring_field_category': 'Categoría',
+      'recurring_field_category_hint': 'Seleccionar',
+      'recurring_field_start': 'Fecha de inicio',
+      'recurring_btn_save': 'Guardar',
+      'recurring_btn_create': 'Crear recurrente',
+      'recurring_updated_snack': 'Recurrente actualizado',
+      'recurring_created_snack': 'Recurrente creado',
+      // Suggestions screen
+      'recurring_suggestions_title': 'Sugerencias de recurrentes',
+      'recurring_suggestions_subtitle': 'Encontré patrones en tu historial de gastos.\nConfirma los que son recurrentes.',
+      'recurring_suggestions_empty': 'Ningún patrón recurrente encontrado\nen tu historial.',
+      'recurring_confidence_pct': '%s%% confianza',
+      'recurring_btn_ignore': 'Ignorar',
+      'recurring_btn_confirm': 'Confirmar',
+      'recurring_confirmed_snack': 'Recurrente "%s" creado',
+      'recurring_occurrences_count': '%s ocurrencias',
+      // investments_vs_last_month
+      'investments_vs_last_month': 'vs. último mes',
+      'investments_strategic_distribution': 'Distribución estratégica de la cartera',
+      'investments_low_exposure': 'Su cartera tiene baja exposición en activos inmobiliarios. Considere FIIs de tijolo.',
+      'investments_explore_fiis': 'Explorar FIIs',
+      'investments_header': 'Inversiones',
+      'investments_detail_by_asset': 'Detalle por activo',
+      'investments_view_history': 'Ver Historial',
+      'investments_diversified': 'Diversificada',
+      // Transactions Screen
+      'no_income_this_month': 'Ningún ingreso este mes',
+      'no_income_hint': 'Toca + para registrar salario, bonus, etc.',
+      'net_value_description': 'Valor neto (INSS/IRRF ya descontado)',
+      // Insights
+      'insights_label': 'Insights',
+      'insights_see_all': 'Ver todos (%s)',
+      'insights_subtitle': 'Análisis basados en tus datos reales.',
+      'insights_group_critical': 'Alertas críticas',
+      'insights_group_warning': 'Atención',
+      'insights_group_info': 'Oportunidades',
+      'insights_group_achievement': 'Logros',
+      'insights_most_ignored': 'Tipos más ignorados',
+      'insights_empty': 'Ningún insight por ahora.\n¡Sigue registrando tus gastos!',
+      // Insight rule strings
+      'insight_overdraft_title': 'Riesgo de saldo negativo',
+      'insight_overdraft_body': 'Al ritmo actual, cerrarás el período con %s. Hay %s en compromisos confirmados.',
+      'insight_overdraft_action': 'Ver proyección',
+      'insight_liquidity_critical_title': 'Semana muy apretada',
+      'insight_liquidity_warning_title': 'Semana apretada',
+      'insight_liquidity_body': 'Tienes %s disponible y %s en pagos esta semana.',
+      'insight_spike_title': 'Aceleración en %s',
+      'insight_spike_body': '%s hasta ahora vs. promedio de %s. %s%% por encima de lo usual.',
+      'insight_spike_action': 'Ver %s',
+      'insight_duplicate_title': 'Posible cobro duplicado',
+      'insight_duplicate_body': '%sx "%s" por R\$ %s en %s día(s).',
+      'insight_duplicate_action': 'Verificar',
+      'insight_subscription_title': 'Suscripciones creciendo',
+      'insight_subscription_body': 'Tu gasto en suscripciones aumentó R\$ %s en los últimos 3 meses.',
+      'insight_subscription_action': 'Ver suscripciones',
+      'insight_savings_title': 'Ahorro posible en %s',
+      'insight_savings_body': '%s está %s por encima del presupuesto. Ajustar podría liberar esa cantidad por período.',
+      'insight_savings_action': 'Ajustar presupuesto',
+      'insight_invest_title': 'Te sobrarán %s',
+      'insight_invest_body': 'Al ritmo actual, tendrás %s libres al final del período. ¿Qué tal destinar una parte?',
+      'insight_invest_action': 'Ver opciones',
+      'insight_streak_title': '¡%s períodos dentro del presupuesto! 🎉',
+      'insight_streak_body': 'Llevas %s períodos consecutivos manteniendo tus finanzas bajo control. ¡Sigue así!',
+      'insight_debt_title': '¡Cuotas reduciendo!',
+      'insight_debt_body': 'Tus cuotas activas bajaron R\$ %s respecto al período anterior.',
+      'insight_unusual_title': 'Nueva compra de alto valor',
+      'insight_unusual_body': '"%s" por R\$ %s — primera vez que aparece en tu historial.',
+      'insight_unusual_action': 'Ver gasto',
+      // Recurring frequency labels
+      'freq_weekly': 'Semanal',
+      'freq_biweekly': 'Quincenal',
+      'freq_monthly': 'Mensual',
+      'freq_quarterly': 'Trimestral',
+      'freq_semiannual': 'Semestral',
+      'freq_yearly': 'Anual',
+      // Account types
+      'account_type_checking': 'Cuenta Corriente',
+      'account_type_savings': 'Cuenta de Ahorros',
+      'account_type_investment': 'Cuenta Inversión',
+      'account_type_fgts': 'FGTS',
+      // Accounts screen
+      'accounts_transfer_tooltip': 'Transferencia entre cuentas',
+      'accounts_transfer_need_two': 'Agrega al menos 2 cuentas para transferir',
+      'accounts_section_bank': 'Cuentas Bancarias',
+      'accounts_empty_title': 'Ninguna cuenta registrada',
+      'accounts_empty_hint': 'Agrega tus cuentas para seguir\ntu patrimonio en tiempo real.',
+      'accounts_delete_title': '¿Eliminar cuenta?',
+      'accounts_delete_body': 'La cuenta "%s" será eliminada.',
+      'accounts_action_update_balance': 'Actualizar saldo',
+      'accounts_add_title': 'Nueva Cuenta',
+      'accounts_field_name': 'Nombre de la cuenta',
+      'accounts_field_name_hint': 'ej: Cuenta Corriente',
+      'accounts_field_institution': 'Institución',
+      'accounts_field_type': 'Tipo de cuenta',
+      'accounts_field_initial_balance': 'Saldo inicial',
+      'accounts_update_balance_title': 'Actualizar Saldo',
+      'accounts_field_current_balance': 'Saldo actual',
+      'accounts_transfer_title': 'Transferencia Interna',
+      'accounts_transfer_subtitle': 'No aparece en ingresos/gastos',
+      'accounts_transfer_from': 'De',
+      'accounts_transfer_to': 'Para',
+      'accounts_field_description_optional': 'Descripción (opcional)',
+      'accounts_btn_transfer': 'Transferir',
+      'accounts_transfer_success': 'Transferencia registrada',
+      // Analytics screen
+      'analytics_subtitle': 'Tus datos, analizados a lo largo del tiempo.',
+      'analytics_avg_per_month': 'PROM/MES',
+      'analytics_top_category': 'TOP CAT.',
+      'analytics_monthly_trend': 'Tendencia Mensual',
+      'analytics_spending_legend': 'Gasto',
+      'analytics_category_distribution': 'Distribución por Categoría',
+      'analytics_monthly_comparison': 'Comparativo Mensual',
+      // Cashflow chart
+      'cashflow_title': 'Flujo de Caja (90 días)',
+      'cashflow_negative_warning': 'El saldo proyectado se vuelve negativo en algún punto',
+      'cashflow_legend_real': 'Real',
+      'cashflow_legend_projection': 'Proyección',
+      'cashflow_legend_commitment': 'Compromiso',
+      'cashflow_min_balance_label': 'Saldo mínimo proyectado: ',
+      // Installments screen
+      'installments_monthly_commitment': 'COMPROMISO MENSUAL',
+      'installments_active_plans': 'PLANES ACTIVOS',
+      'installments_filter_active': 'Activos',
+      'installments_filter_completed': 'Completados',
+      'installments_filter_all': 'Todos',
+      'installments_per_installment': 'por cuota',
+      'installments_per_installment_label': 'POR CUOTA',
+      'installments_paid_of': '%s de %s pagadas',
+      'installments_remaining_amount': 'Restan %s',
+      'installments_pct_complete': '%s%% completado',
+      'installments_remaining_payments_one': '%s cuota restante',
+      'installments_remaining_payments_other': '%s cuotas restantes',
+      'installments_btn_complete': 'Completar cuotas',
+      'installments_btn_register_nth': 'Registrar %s cuota pagada  •  %s',
+      'installments_btn_skip_nth': 'Saltar %s cuota',
+      'installments_btn_delete_plan': 'Eliminar plan',
+      'installments_plan_title': 'Plan de cuotas',
+      'installments_delete_confirm': '¿Eliminar "%s"? Todas las cuotas serán borradas.',
+      'installments_completed_snack': '🎉 "%s" ¡completado!',
+      'installments_registered_snack': '✅ %s cuota registrada',
+      'installments_skipped_snack': '⏭ %s cuota saltada',
+      'installments_empty_completed': 'Ningún plan completado aún',
+      'installments_empty_active': 'Sin planes de cuotas activos',
+      'installments_empty_hint': 'Toca + para añadir una compra en cuotas',
+      'installments_skipped_label': 'saltada',
+      // Add installment sheet
+      'installments_add_title': 'Nueva compra en cuotas',
+      'installments_field_description': 'Descripción *',
+      'installments_field_description_hint': 'iPhone 15, Sofá, Laptop...',
+      'installments_field_store': 'Tienda (opcional)',
+      'installments_field_total': 'Valor total de la compra',
+      'installments_field_num': 'Número de cuotas: %s',
+      'installments_field_category': 'Categoría (opcional)',
+      'installments_no_category': 'Sin categoría',
+      'installments_field_purchase_date': 'Fecha de compra',
+      'installments_field_first_due': '1º vencimiento',
+      'installments_btn_create': 'CREAR PLAN DE CUOTAS',
+      'installments_validation_desc': 'Ingresa la descripción',
+      'installments_validation_amount': 'Ingresa el valor total de la compra',
+      'installments_created_snack': '✅ Plan de cuotas creado',
+      'installments_preview': 'Vista previa',
+      'installments_preview_last': 'Última',
+      'installments_preview_ends': 'Termina en',
+      'installments_preview_rounding_note': '* Última cuota ajustada por redondeo',
       // Authentication
       'sign_in': 'Iniciar Sesión',
       'sign_up': 'Registrarse',
@@ -1022,6 +1528,259 @@ class AppLocalizations {
       'health_fair': 'Razoável. Há espaço para melhorar.',
       'health_warning_desc': 'Atenção! Revise seus gastos.',
       'health_critical_desc': 'Crítico! É preciso agir agora.',
+      // Health Screen
+      'health_screen_title': 'Saúde Financeira',
+      'health_sub_scores': 'Detalhamento',
+      'health_savings_rate_label': 'Taxa de poupança',
+      'health_housing_vs_salary': 'Moradia / salário',
+      'health_monthly_balance': 'Saldo mensal',
+      'health_emergency_fund_label': 'Fundo de emergência',
+      'health_installments_vs_salary': 'Parcelas / salário',
+      'health_history': 'Histórico',
+      'health_no_history_yet': 'Sem histórico ainda',
+      'health_error': 'Erro: %s',
+      'health_emergency_months': '%s meses',
+      'health_history_subtitle': 'Poupança %s%%  ·  Saldo %s',
+      // Notifications Screen
+      'notifications_title': 'Notificações',
+      'notifications_subtitle': 'Alertas de orçamento em tempo real',
+      'notifications_all_good': 'Tudo sob controle',
+      'notifications_no_category_over': 'Nenhuma categoria supera 75% do orçamento',
+      'notifications_tips': 'Dicas',
+      'notifications_tip_title': 'Dica do mês',
+      'notifications_tip_body': 'Revisar seus orçamentos por categoria ajuda a identificar padrões e tomar melhores decisões financeiras.',
+      'notifications_level_exceeded': 'Limite ultrapassado',
+      'notifications_level_critical': 'Alerta crítico',
+      'notifications_level_warning': 'Aviso',
+      'alert_exceeded_body': 'Você ultrapassou o limite de %s em %s. Gasto: %s.',
+      'alert_critical_body': 'Você usou %s do orçamento de %s (%s de %s).',
+      'alert_warning_body': 'Você usou %s do orçamento de %s. Restam %s.',
+      // Investments Screen
+      // Dashboard widgets
+      'burn_rate_title': 'Velocidade de gasto',
+      'burn_pace_comfortable': 'No ritmo certo',
+      'burn_pace_on_track': 'Atenção ao ritmo',
+      'burn_pace_overspending': 'Ritmo acima do orçamento',
+      'burn_daily_rate_label': 'R\$/dia',
+      'burn_projection_label': 'Projeção ao fechamento',
+      'burn_days_remaining': 'Dias restantes',
+      'burn_pace_vs_budget': 'Ritmo vs orçamento',
+      'liquidity_critical_title': 'Risco crítico de liquidez',
+      'liquidity_high_title': 'Semana apertada',
+      'liquidity_medium_title': 'Atenção aos compromissos',
+      'liquidity_days_to_zero': 'Saldo previsto para zerar em %s dias',
+      'liquidity_obligations_this_week': '%s em %s compromisso%s esta semana',
+      'liquidity_check_upcoming': 'Verifique seus compromissos próximos',
+      'liquidity_sheet_title': 'Compromissos desta semana',
+      'liquidity_no_commitments': 'Nenhum compromisso nos próximos 7 dias.',
+      'liquidity_total': 'Total',
+      'period_balance_title': 'SALDO DO PERÍODO',
+      'period_projection_closing': 'Projeção ao fechamento: %s',
+      'period_incomes': 'Receitas',
+      'period_expenses': 'Despesas',
+      'recurring_card_title': 'Recorrentes',
+      'recurring_pending': 'Pendentes',
+      'recurring_total_expected': 'Total previsto',
+      'recurring_active_rules': 'Regras ativas',
+      // Recurring screen
+      'recurring_screen_title': 'Recorrentes',
+      'recurring_total_monthly': 'Total mensal em recorrentes',
+      'recurring_active_count_one': '%s recorrente ativo',
+      'recurring_active_count_other': '%s recorrentes ativos',
+      'recurring_filter_active': 'Ativos',
+      'recurring_filter_paused': 'Pausados',
+      'recurring_filter_cancelled': 'Cancelados',
+      'recurring_status_active': 'Ativo',
+      'recurring_status_paused': 'Pausado',
+      'recurring_status_cancelled': 'Cancelado',
+      'recurring_upcoming_occurrences': 'Próximas ocorrências',
+      'recurring_no_pending': 'Sem ocorrências pendentes',
+      'recurring_error': 'Erro: %s',
+      'recurring_empty_active': 'Nenhum recorrente ativo.\nToque em + para adicionar.',
+      'recurring_empty_paused': 'Nenhum recorrente pausado.',
+      'recurring_empty_cancelled': 'Nenhum recorrente cancelado.',
+      'recurring_action_edit': 'Editar',
+      'recurring_action_pause': 'Pausar',
+      'recurring_action_resume': 'Retomar',
+      'recurring_action_cancel': 'Cancelar',
+      'recurring_cancel_dialog_title': 'Cancelar recorrente?',
+      'recurring_cancel_dialog_body': 'As ocorrências futuras serão removidas.',
+      'recurring_cancel_dialog_no': 'Não',
+      'recurring_paused_snack': 'Recorrente pausado',
+      'recurring_resumed_snack': 'Recorrente retomado',
+      'recurring_cancelled_snack': 'Recorrente cancelado',
+      // Add/Edit recurring sheet
+      'recurring_add_title': 'Novo recorrente',
+      'recurring_edit_title': 'Editar recorrente',
+      'recurring_field_name': 'Nome',
+      'recurring_field_name_hint': 'Ex: Netflix, Aluguel...',
+      'recurring_field_amount': 'Valor (R\$)',
+      'recurring_field_frequency': 'Frequência',
+      'recurring_field_day_of_month': 'Dia do mês',
+      'recurring_field_category': 'Categoria',
+      'recurring_field_category_hint': 'Selecione',
+      'recurring_field_start': 'Início',
+      'recurring_btn_save': 'Salvar',
+      'recurring_btn_create': 'Criar recorrente',
+      'recurring_updated_snack': 'Recorrente atualizado',
+      'recurring_created_snack': 'Recorrente criado',
+      // Suggestions screen
+      'recurring_suggestions_title': 'Sugestões de recorrentes',
+      'recurring_suggestions_subtitle': 'Identifiquei padrões no seu histórico de gastos.\nConfirme os que forem recorrentes.',
+      'recurring_suggestions_empty': 'Nenhum padrão recorrente encontrado\nno seu histórico.',
+      'recurring_confidence_pct': '%s%% confiança',
+      'recurring_btn_ignore': 'Ignorar',
+      'recurring_btn_confirm': 'Confirmar',
+      'recurring_confirmed_snack': 'Recorrente "%s" criado',
+      'recurring_occurrences_count': '%s ocorrências',
+      // investments_vs_last_month
+      'investments_vs_last_month': 'vs. mês passado',
+      'investments_strategic_distribution': 'Distribuição estratégica da carteira',
+      'investments_low_exposure': 'Sua carteira tem baixa exposição em ativos imobiliários. Considere FIIs de tijolo.',
+      'investments_explore_fiis': 'Explorar FIIs',
+      'investments_header': 'Investimentos',
+      'investments_detail_by_asset': 'Detalhe por ativo',
+      'investments_view_history': 'Ver Histórico',
+      'investments_diversified': 'Diversificada',
+      // Transactions Screen
+      'no_income_this_month': 'Nenhum ingresso neste mês',
+      'no_income_hint': 'Toca + para registrar salário, bônus, etc.',
+      'net_value_description': 'Valor líquido (INSS/IRRF já descontado)',
+      // Insights
+      'insights_label': 'Insights',
+      'insights_see_all': 'Ver todos (%s)',
+      'insights_subtitle': 'Análises baseadas nos seus dados reais.',
+      'insights_group_critical': 'Alertas críticos',
+      'insights_group_warning': 'Atenção',
+      'insights_group_info': 'Oportunidades',
+      'insights_group_achievement': 'Conquistas',
+      'insights_most_ignored': 'Tipos mais ignorados',
+      'insights_empty': 'Nenhum insight no momento.\nContinue registrando seus gastos!',
+      // Insight rule strings
+      'insight_overdraft_title': 'Risco de saldo negativo',
+      'insight_overdraft_body': 'Com o ritmo atual, você fechará o período com %s. Há %s em compromissos confirmados.',
+      'insight_overdraft_action': 'Ver projeção',
+      'insight_liquidity_critical_title': 'Semana muito apertada',
+      'insight_liquidity_warning_title': 'Semana apertada',
+      'insight_liquidity_body': 'Você tem %s disponível e %s em pagamentos esta semana.',
+      'insight_spike_title': 'Aceleração em %s',
+      'insight_spike_body': '%s até agora vs. média de %s. %s%% acima do usual.',
+      'insight_spike_action': 'Ver %s',
+      'insight_duplicate_title': 'Possível cobrança duplicada',
+      'insight_duplicate_body': '%sx "%s" por R\$ %s em %s dia(s).',
+      'insight_duplicate_action': 'Verificar',
+      'insight_subscription_title': 'Assinaturas crescendo',
+      'insight_subscription_body': 'Seus gastos com assinaturas aumentaram R\$ %s nos últimos 3 meses.',
+      'insight_subscription_action': 'Ver assinaturas',
+      'insight_savings_title': 'Economia possível em %s',
+      'insight_savings_body': '%s está %s acima do orçamento. Ajustar pode liberar essa quantia por período.',
+      'insight_savings_action': 'Ajustar orçamento',
+      'insight_invest_title': 'Você vai sobrar %s',
+      'insight_invest_body': 'Com base no ritmo atual, você terá %s livres no final do período. Que tal destinar uma parte?',
+      'insight_invest_action': 'Ver opções',
+      'insight_streak_title': '%s períodos dentro do orçamento! 🎉',
+      'insight_streak_body': 'Você está mantendo suas finanças sob controle por %s períodos consecutivos. Continue assim!',
+      'insight_debt_title': 'Parcelas reduzindo!',
+      'insight_debt_body': 'Suas parcelas ativas caíram R\$ %s em relação ao período anterior.',
+      'insight_unusual_title': 'Nova compra de alto valor',
+      'insight_unusual_body': '"%s" por R\$ %s — primeira vez que aparece no seu histórico.',
+      'insight_unusual_action': 'Ver gasto',
+      // Recurring frequency labels
+      'freq_weekly': 'Semanal',
+      'freq_biweekly': 'Quinzenal',
+      'freq_monthly': 'Mensal',
+      'freq_quarterly': 'Trimestral',
+      'freq_semiannual': 'Semestral',
+      'freq_yearly': 'Anual',
+      // Account types
+      'account_type_checking': 'Conta Corrente',
+      'account_type_savings': 'Poupança',
+      'account_type_investment': 'Conta Investimento',
+      'account_type_fgts': 'FGTS',
+      // Accounts screen
+      'accounts_transfer_tooltip': 'Transferência entre contas',
+      'accounts_transfer_need_two': 'Adicione ao menos 2 contas para transferir',
+      'accounts_section_bank': 'Contas Bancárias',
+      'accounts_empty_title': 'Nenhuma conta cadastrada',
+      'accounts_empty_hint': 'Adicione suas contas para acompanhar\nseu patrimônio em tempo real.',
+      'accounts_delete_title': 'Excluir conta?',
+      'accounts_delete_body': 'A conta "%s" será removida.',
+      'accounts_action_update_balance': 'Atualizar saldo',
+      'accounts_add_title': 'Nova Conta',
+      'accounts_field_name': 'Nome da conta',
+      'accounts_field_name_hint': 'ex: Conta Corrente',
+      'accounts_field_institution': 'Instituição',
+      'accounts_field_type': 'Tipo de conta',
+      'accounts_field_initial_balance': 'Saldo inicial',
+      'accounts_update_balance_title': 'Atualizar Saldo',
+      'accounts_field_current_balance': 'Saldo atual',
+      'accounts_transfer_title': 'Transferência Interna',
+      'accounts_transfer_subtitle': 'Não aparece em receitas/despesas',
+      'accounts_transfer_from': 'De',
+      'accounts_transfer_to': 'Para',
+      'accounts_field_description_optional': 'Descrição (opcional)',
+      'accounts_btn_transfer': 'Transferir',
+      'accounts_transfer_success': 'Transferência registrada',
+      // Analytics screen
+      'analytics_subtitle': 'Seus dados, analisados ao longo do tempo.',
+      'analytics_avg_per_month': 'MÉDIA/MÊS',
+      'analytics_top_category': 'TOP CAT.',
+      'analytics_monthly_trend': 'Tendência Mensal',
+      'analytics_spending_legend': 'Gasto',
+      'analytics_category_distribution': 'Distribuição por Categoria',
+      'analytics_monthly_comparison': 'Comparativo Mensal',
+      // Cashflow chart
+      'cashflow_title': 'Fluxo de Caixa (90 dias)',
+      'cashflow_negative_warning': 'Saldo previsto negativo em algum ponto',
+      'cashflow_legend_real': 'Real',
+      'cashflow_legend_projection': 'Projeção',
+      'cashflow_legend_commitment': 'Compromisso',
+      'cashflow_min_balance_label': 'Saldo mínimo projetado: ',
+      // Installments screen
+      'installments_monthly_commitment': 'COMPROMISSO MENSAL',
+      'installments_active_plans': 'PLANOS ATIVOS',
+      'installments_filter_active': 'Ativos',
+      'installments_filter_completed': 'Concluídos',
+      'installments_filter_all': 'Todos',
+      'installments_per_installment': 'por parcela',
+      'installments_per_installment_label': 'POR PARCELA',
+      'installments_paid_of': '%s de %s pagas',
+      'installments_remaining_amount': 'Restam %s',
+      'installments_pct_complete': '%s%% concluído',
+      'installments_remaining_payments_one': '%s parcela restante',
+      'installments_remaining_payments_other': '%s parcelas restantes',
+      'installments_btn_complete': 'Concluir parcelas',
+      'installments_btn_register_nth': 'Registrar %sª parcela paga  •  %s',
+      'installments_btn_skip_nth': 'Pular %sª parcela',
+      'installments_btn_delete_plan': 'Excluir plano',
+      'installments_plan_title': 'Plano de parcelas',
+      'installments_delete_confirm': 'Remover "%s"? Todas as parcelas serão excluídas.',
+      'installments_completed_snack': '🎉 "%s" concluída!',
+      'installments_registered_snack': '✅ %sª parcela registrada',
+      'installments_skipped_snack': '⏭ %sª parcela pulada',
+      'installments_empty_completed': 'Nenhum plano concluído ainda',
+      'installments_empty_active': 'Sem planos de parcelas ativos',
+      'installments_empty_hint': 'Toque em + para adicionar uma compra parcelada',
+      'installments_skipped_label': 'pulada',
+      // Add installment sheet
+      'installments_add_title': 'Nova compra parcelada',
+      'installments_field_description': 'Descrição *',
+      'installments_field_description_hint': 'iPhone 15, Sofá, Notebook...',
+      'installments_field_store': 'Loja (opcional)',
+      'installments_field_total': 'Valor total da compra',
+      'installments_field_num': 'Número de parcelas: %s',
+      'installments_field_category': 'Categoria (opcional)',
+      'installments_no_category': 'Sem categoria',
+      'installments_field_purchase_date': 'Data da compra',
+      'installments_field_first_due': '1º vencimento',
+      'installments_btn_create': 'CRIAR PLANO DE PARCELAS',
+      'installments_validation_desc': 'Informe a descrição',
+      'installments_validation_amount': 'Informe o valor total da compra',
+      'installments_created_snack': '✅ Plano de parcelas criado',
+      'installments_preview': 'Prévia',
+      'installments_preview_last': 'Última',
+      'installments_preview_ends': 'Termina em',
+      'installments_preview_rounding_note': '* Última parcela ajustada por arredondamento',
       // Authentication
       'sign_in': 'Fazer Login',
       'sign_up': 'Criar Conta',
@@ -1417,6 +2176,286 @@ class AppLocalizations {
   String get healthFairDesc => translate('health_fair');
   String get healthWarningDesc => translate('health_warning_desc');
   String get healthCriticalDesc => translate('health_critical_desc');
+  // Health Screen
+  String get healthScreenTitle => translate('health_screen_title');
+  String get healthSubScores => translate('health_sub_scores');
+  String get healthSavingsRateLabel => translate('health_savings_rate_label');
+  String get healthHousingVsSalary => translate('health_housing_vs_salary');
+  String get healthMonthlyBalance => translate('health_monthly_balance');
+  String get healthEmergencyFundLabel => translate('health_emergency_fund_label');
+  String get healthInstallmentsVsSalary => translate('health_installments_vs_salary');
+  String get healthHistory => translate('health_history');
+  String get healthNoHistoryYet => translate('health_no_history_yet');
+  String healthError(String e) => translate('health_error').replaceFirst('%s', e);
+  String healthEmergencyMonths(String months) => translate('health_emergency_months').replaceFirst('%s', months);
+  String healthHistorySubtitle(String savings, String balance) =>
+      translate('health_history_subtitle').replaceFirst('%s', savings).replaceFirst('%s', balance);
+  // Notifications Screen
+  String get notificationsTitle => translate('notifications_title');
+  String get notificationsSubtitle => translate('notifications_subtitle');
+  String get notificationsAllGood => translate('notifications_all_good');
+  String get notificationsNoCategoryOver => translate('notifications_no_category_over');
+  String get notificationsTips => translate('notifications_tips');
+  String get notificationsTipTitle => translate('notifications_tip_title');
+  String get notificationsTipBody => translate('notifications_tip_body');
+  String get notificationsLevelExceeded => translate('notifications_level_exceeded');
+  String get notificationsLevelCritical => translate('notifications_level_critical');
+  String get notificationsLevelWarning => translate('notifications_level_warning');
+  String alertExceededBody(String limit, String category, String spent) =>
+      translate('alert_exceeded_body').replaceFirst('%s', limit).replaceFirst('%s', category).replaceFirst('%s', spent);
+  String alertCriticalBody(String pct, String category, String spent, String limit) =>
+      translate('alert_critical_body').replaceFirst('%s', pct).replaceFirst('%s', category).replaceFirst('%s', spent).replaceFirst('%s', limit);
+  String alertWarningBody(String pct, String category, String remaining) =>
+      translate('alert_warning_body').replaceFirst('%s', pct).replaceFirst('%s', category).replaceFirst('%s', remaining);
+  // Investments Screen
+  String get investmentsVsLastMonth => translate('investments_vs_last_month');
+  String get investmentsStrategicDistribution => translate('investments_strategic_distribution');
+  String get investmentsLowExposure => translate('investments_low_exposure');
+  String get investmentsExploreFiis => translate('investments_explore_fiis');
+  String get investmentsHeader => translate('investments_header');
+  String get investmentsDetailByAsset => translate('investments_detail_by_asset');
+  String get investmentsViewHistory => translate('investments_view_history');
+  String get investmentsDiversified => translate('investments_diversified');
+  // Dashboard widgets
+  String get burnRateTitle => translate('burn_rate_title');
+  String get burnPaceComfortable => translate('burn_pace_comfortable');
+  String get burnPaceOnTrack => translate('burn_pace_on_track');
+  String get burnPaceOverspending => translate('burn_pace_overspending');
+  String get burnDailyRateLabel => translate('burn_daily_rate_label');
+  String get burnProjectionLabel => translate('burn_projection_label');
+  String get burnDaysRemaining => translate('burn_days_remaining');
+  String get burnPaceVsBudget => translate('burn_pace_vs_budget');
+  String get liquidityCriticalTitle => translate('liquidity_critical_title');
+  String get liquidityHighTitle => translate('liquidity_high_title');
+  String get liquidityMediumTitle => translate('liquidity_medium_title');
+  String liquidityDaysToZero(String days) => translate('liquidity_days_to_zero').replaceFirst('%s', days);
+  String liquidityObligationsThisWeek(String amount, int count) {
+    final plural = count == 1 ? '' : 's';
+    return translate('liquidity_obligations_this_week')
+        .replaceFirst('%s', amount)
+        .replaceFirst('%s', '$count')
+        .replaceFirst('%s', plural);
+  }
+  String get liquidityCheckUpcoming => translate('liquidity_check_upcoming');
+  String get liquiditySheetTitle => translate('liquidity_sheet_title');
+  String get liquidityNoCommitments => translate('liquidity_no_commitments');
+  String get liquidityTotal => translate('liquidity_total');
+  String get periodBalanceTitle => translate('period_balance_title');
+  String periodProjectionClosing(String amount) => translate('period_projection_closing').replaceFirst('%s', amount);
+  String get periodIncomes => translate('period_incomes');
+  String get periodExpenses => translate('period_expenses');
+  String get recurringCardTitle => translate('recurring_card_title');
+  String get recurringPending => translate('recurring_pending');
+  String get recurringTotalExpected => translate('recurring_total_expected');
+  String get recurringActiveRules => translate('recurring_active_rules');
+  // Recurring screen
+  String get recurringScreenTitle => translate('recurring_screen_title');
+  String get recurringTotalMonthly => translate('recurring_total_monthly');
+  String recurringActiveCount(int n) => n == 1
+      ? translate('recurring_active_count_one').replaceFirst('%s', '$n')
+      : translate('recurring_active_count_other').replaceFirst('%s', '$n');
+  String get recurringFilterActive => translate('recurring_filter_active');
+  String get recurringFilterPaused => translate('recurring_filter_paused');
+  String get recurringFilterCancelled => translate('recurring_filter_cancelled');
+  String get recurringStatusActive => translate('recurring_status_active');
+  String get recurringStatusPaused => translate('recurring_status_paused');
+  String get recurringStatusCancelled => translate('recurring_status_cancelled');
+  String get recurringUpcomingOccurrences => translate('recurring_upcoming_occurrences');
+  String get recurringNoPending => translate('recurring_no_pending');
+  String recurringError(String e) => translate('recurring_error').replaceFirst('%s', e);
+  String get recurringEmptyActive => translate('recurring_empty_active');
+  String get recurringEmptyPaused => translate('recurring_empty_paused');
+  String get recurringEmptyCancelled => translate('recurring_empty_cancelled');
+  String get recurringActionEdit => translate('recurring_action_edit');
+  String get recurringActionPause => translate('recurring_action_pause');
+  String get recurringActionResume => translate('recurring_action_resume');
+  String get recurringActionCancel => translate('recurring_action_cancel');
+  String get recurringCancelDialogTitle => translate('recurring_cancel_dialog_title');
+  String get recurringCancelDialogBody => translate('recurring_cancel_dialog_body');
+  String get recurringCancelDialogNo => translate('recurring_cancel_dialog_no');
+  String get recurringPausedSnack => translate('recurring_paused_snack');
+  String get recurringResumedSnack => translate('recurring_resumed_snack');
+  String get recurringCancelledSnack => translate('recurring_cancelled_snack');
+  // Add/Edit recurring sheet
+  String get recurringAddTitle => translate('recurring_add_title');
+  String get recurringEditTitle => translate('recurring_edit_title');
+  String get recurringFieldName => translate('recurring_field_name');
+  String get recurringFieldNameHint => translate('recurring_field_name_hint');
+  String get recurringFieldAmount => translate('recurring_field_amount');
+  String get recurringFieldFrequency => translate('recurring_field_frequency');
+  String get recurringFieldDayOfMonth => translate('recurring_field_day_of_month');
+  String get recurringFieldCategory => translate('recurring_field_category');
+  String get recurringFieldCategoryHint => translate('recurring_field_category_hint');
+  String get recurringFieldStart => translate('recurring_field_start');
+  String get recurringBtnSave => translate('recurring_btn_save');
+  String get recurringBtnCreate => translate('recurring_btn_create');
+  String get recurringUpdatedSnack => translate('recurring_updated_snack');
+  String get recurringCreatedSnack => translate('recurring_created_snack');
+  // Suggestions screen
+  String get recurringSuggestionsTitle => translate('recurring_suggestions_title');
+  String get recurringSuggestionsSubtitle => translate('recurring_suggestions_subtitle');
+  String get recurringSuggestionsEmpty => translate('recurring_suggestions_empty');
+  String recurringConfidencePct(int pct) => translate('recurring_confidence_pct').replaceFirst('%s', '$pct');
+  String get recurringBtnIgnore => translate('recurring_btn_ignore');
+  String get recurringBtnConfirm => translate('recurring_btn_confirm');
+  String recurringConfirmedSnack(String name) => translate('recurring_confirmed_snack').replaceFirst('%s', name);
+  String recurringOccurrencesCount(int n) => translate('recurring_occurrences_count').replaceFirst('%s', '$n');
+  // Insights
+  String get insightsLabel => translate('insights_label');
+  String insightsSeeAll(int n) => translate('insights_see_all').replaceFirst('%s', '$n');
+  String get insightsSubtitle => translate('insights_subtitle');
+  String get insightsGroupCritical => translate('insights_group_critical');
+  String get insightsGroupWarning => translate('insights_group_warning');
+  String get insightsGroupInfo => translate('insights_group_info');
+  String get insightsGroupAchievement => translate('insights_group_achievement');
+  String get insightsMostIgnored => translate('insights_most_ignored');
+  String get insightsEmpty => translate('insights_empty');
+  // Insight rule strings
+  String get insightOverdraftTitle => translate('insight_overdraft_title');
+  String insightOverdraftBody(String closing, String obligations) =>
+      translate('insight_overdraft_body').replaceFirst('%s', closing).replaceFirst('%s', obligations);
+  String get insightOverdraftAction => translate('insight_overdraft_action');
+  String get insightLiquidityCriticalTitle => translate('insight_liquidity_critical_title');
+  String get insightLiquidityWarningTitle => translate('insight_liquidity_warning_title');
+  String insightLiquidityBody(String balance, String obligations) =>
+      translate('insight_liquidity_body').replaceFirst('%s', balance).replaceFirst('%s', obligations);
+  String insightSpikeTitle(String category) => translate('insight_spike_title').replaceFirst('%s', category);
+  String insightSpikeBody(String current, String average, String pct) =>
+      translate('insight_spike_body').replaceFirst('%s', current).replaceFirst('%s', average).replaceFirst('%s', pct);
+  String insightSpikeAction(String category) => translate('insight_spike_action').replaceFirst('%s', category);
+  String get insightDuplicateTitle => translate('insight_duplicate_title');
+  String insightDuplicateBody(String count, String desc, String amount, String days) =>
+      translate('insight_duplicate_body').replaceFirst('%s', count).replaceFirst('%s', desc).replaceFirst('%s', amount).replaceFirst('%s', days);
+  String get insightDuplicateAction => translate('insight_duplicate_action');
+  String get insightSubscriptionTitle => translate('insight_subscription_title');
+  String insightSubscriptionBody(String growth) => translate('insight_subscription_body').replaceFirst('%s', growth);
+  String get insightSubscriptionAction => translate('insight_subscription_action');
+  String insightSavingsTitle(String category) => translate('insight_savings_title').replaceFirst('%s', category);
+  String insightSavingsBody(String category, String overspent) =>
+      translate('insight_savings_body').replaceFirst('%s', category).replaceFirst('%s', overspent);
+  String get insightSavingsAction => translate('insight_savings_action');
+  String insightInvestTitle(String amount) => translate('insight_invest_title').replaceFirst('%s', amount);
+  String insightInvestBody(String amount) => translate('insight_invest_body').replaceFirst('%s', amount);
+  String get insightInvestAction => translate('insight_invest_action');
+  String insightStreakTitle(int n) => translate('insight_streak_title').replaceFirst('%s', '$n');
+  String insightStreakBody(int n) => translate('insight_streak_body').replaceFirst('%s', '$n');
+  String get insightDebtTitle => translate('insight_debt_title');
+  String insightDebtBody(String reduction) => translate('insight_debt_body').replaceFirst('%s', reduction);
+  String get insightUnusualTitle => translate('insight_unusual_title');
+  String insightUnusualBody(String desc, String amount) =>
+      translate('insight_unusual_body').replaceFirst('%s', desc).replaceFirst('%s', amount);
+  String get insightUnusualAction => translate('insight_unusual_action');
+  // Recurring frequency labels
+  String get freqWeekly => translate('freq_weekly');
+  String get freqBiweekly => translate('freq_biweekly');
+  String get freqMonthly => translate('freq_monthly');
+  String get freqQuarterly => translate('freq_quarterly');
+  String get freqSemiannual => translate('freq_semiannual');
+  String get freqYearly => translate('freq_yearly');
+  // Account types
+  String get accountTypeChecking => translate('account_type_checking');
+  String get accountTypeSavings => translate('account_type_savings');
+  String get accountTypeInvestment => translate('account_type_investment');
+  String get accountTypeFgts => translate('account_type_fgts');
+  // Accounts screen
+  String get accountsTransferTooltip => translate('accounts_transfer_tooltip');
+  String get accountsTransferNeedTwo => translate('accounts_transfer_need_two');
+  String get accountsSectionBank => translate('accounts_section_bank');
+  String get accountsEmptyTitle => translate('accounts_empty_title');
+  String get accountsEmptyHint => translate('accounts_empty_hint');
+  String get accountsDeleteTitle => translate('accounts_delete_title');
+  String accountsDeleteBody(String name) => translate('accounts_delete_body').replaceFirst('%s', name);
+  String get accountsActionUpdateBalance => translate('accounts_action_update_balance');
+  String get accountsAddTitle => translate('accounts_add_title');
+  String get accountsFieldName => translate('accounts_field_name');
+  String get accountsFieldNameHint => translate('accounts_field_name_hint');
+  String get accountsFieldInstitution => translate('accounts_field_institution');
+  String get accountsFieldType => translate('accounts_field_type');
+  String get accountsFieldInitialBalance => translate('accounts_field_initial_balance');
+  String get accountsUpdateBalanceTitle => translate('accounts_update_balance_title');
+  String get accountsFieldCurrentBalance => translate('accounts_field_current_balance');
+  String get accountsTransferTitle => translate('accounts_transfer_title');
+  String get accountsTransferSubtitle => translate('accounts_transfer_subtitle');
+  String get accountsTransferFrom => translate('accounts_transfer_from');
+  String get accountsTransferTo => translate('accounts_transfer_to');
+  String get accountsFieldDescriptionOptional => translate('accounts_field_description_optional');
+  String get accountsBtnTransfer => translate('accounts_btn_transfer');
+  String get accountsTransferSuccess => translate('accounts_transfer_success');
+  // Analytics screen
+  String get analyticsSubtitle => translate('analytics_subtitle');
+  String get analyticsAvgPerMonth => translate('analytics_avg_per_month');
+  String get analyticsTopCategory => translate('analytics_top_category');
+  String get analyticsMonthlyTrend => translate('analytics_monthly_trend');
+  String get analyticsSpendingLegend => translate('analytics_spending_legend');
+  String get analyticsCategoryDistribution => translate('analytics_category_distribution');
+  String get analyticsMonthlyComparison => translate('analytics_monthly_comparison');
+  // Cashflow chart
+  String get cashflowTitle => translate('cashflow_title');
+  String get cashflowNegativeWarning => translate('cashflow_negative_warning');
+  String get cashflowLegendReal => translate('cashflow_legend_real');
+  String get cashflowLegendProjection => translate('cashflow_legend_projection');
+  String get cashflowLegendCommitment => translate('cashflow_legend_commitment');
+  String get cashflowMinBalanceLabel => translate('cashflow_min_balance_label');
+  // Installments screen
+  String get installmentsMonthlyCommitment => translate('installments_monthly_commitment');
+  String get installmentsActivePlans => translate('installments_active_plans');
+  String get installmentsFilterActive => translate('installments_filter_active');
+  String get installmentsFilterCompleted => translate('installments_filter_completed');
+  String get installmentsFilterAll => translate('installments_filter_all');
+  String get installmentsPerInstallment => translate('installments_per_installment');
+  String get installmentsPerInstallmentLabel => translate('installments_per_installment_label');
+  String installmentsPaidOf(int paid, int total) =>
+      translate('installments_paid_of').replaceFirst('%s', '$paid').replaceFirst('%s', '$total');
+  String installmentsRemainingAmount(String amount) =>
+      translate('installments_remaining_amount').replaceFirst('%s', amount);
+  String installmentsPctComplete(int pct) =>
+      translate('installments_pct_complete').replaceFirst('%s', '$pct');
+  String installmentsRemainingPayments(int n) => n == 1
+      ? translate('installments_remaining_payments_one').replaceFirst('%s', '$n')
+      : translate('installments_remaining_payments_other').replaceFirst('%s', '$n');
+  String get installmentsBtnComplete => translate('installments_btn_complete');
+  String installmentsBtnRegisterNth(String nth, String amount) =>
+      translate('installments_btn_register_nth').replaceFirst('%s', nth).replaceFirst('%s', amount);
+  String installmentsBtnSkipNth(String nth) =>
+      translate('installments_btn_skip_nth').replaceFirst('%s', nth);
+  String get installmentsBtnDeletePlan => translate('installments_btn_delete_plan');
+  String get installmentsPlanTitle => translate('installments_plan_title');
+  String installmentsDeleteConfirm(String name) =>
+      translate('installments_delete_confirm').replaceFirst('%s', name);
+  String installmentsCompletedSnack(String name) =>
+      translate('installments_completed_snack').replaceFirst('%s', name);
+  String installmentsRegisteredSnack(String nth) =>
+      translate('installments_registered_snack').replaceFirst('%s', nth);
+  String installmentsSkippedSnack(String nth) =>
+      translate('installments_skipped_snack').replaceFirst('%s', nth);
+  String get installmentsEmptyCompleted => translate('installments_empty_completed');
+  String get installmentsEmptyActive => translate('installments_empty_active');
+  String get installmentsEmptyHint => translate('installments_empty_hint');
+  String get installmentsSkippedLabel => translate('installments_skipped_label');
+  // Add installment sheet
+  String get installmentsAddTitle => translate('installments_add_title');
+  String get installmentsFieldDescription => translate('installments_field_description');
+  String get installmentsFieldDescriptionHint => translate('installments_field_description_hint');
+  String get installmentsFieldStore => translate('installments_field_store');
+  String get installmentsFieldTotal => translate('installments_field_total');
+  String installmentsFieldNum(int n) =>
+      translate('installments_field_num').replaceFirst('%s', '$n');
+  String get installmentsFieldCategory => translate('installments_field_category');
+  String get installmentsNoCategory => translate('installments_no_category');
+  String get installmentsFieldPurchaseDate => translate('installments_field_purchase_date');
+  String get installmentsFieldFirstDue => translate('installments_field_first_due');
+  String get installmentsBtnCreate => translate('installments_btn_create');
+  String get installmentsValidationDesc => translate('installments_validation_desc');
+  String get installmentsValidationAmount => translate('installments_validation_amount');
+  String get installmentsCreatedSnack => translate('installments_created_snack');
+  String get installmentsPreview => translate('installments_preview');
+  String get installmentsPreviewLast => translate('installments_preview_last');
+  String get installmentsPreviewEnds => translate('installments_preview_ends');
+  String get installmentsPreviewRoundingNote => translate('installments_preview_rounding_note');
+  // Transactions Screen
+  String get noIncomeThisMonth => translate('no_income_this_month');
+  String get noIncomeHint => translate('no_income_hint');
+  String get netValueDescription => translate('net_value_description');
   // Authentication
   String get signIn => translate('sign_in');
   String get signUp => translate('sign_up');

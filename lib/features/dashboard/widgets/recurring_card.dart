@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../core/i18n/app_localizations.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';
 import '../../recurring/recurring_screen.dart';
@@ -12,6 +13,7 @@ class RecurringCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final pendingAsync = ref.watch(pendingRecurringOccurrencesProvider);
     final activeRules = ref.watch(activeRecurringRulesProvider);
 
@@ -39,7 +41,7 @@ class RecurringCard extends ConsumerWidget {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Text('Recorrentes',
+                child: Text(l10n.recurringCardTitle,
                     style: GoogleFonts.manrope(
                         fontSize: 14, fontWeight: FontWeight.w700)),
               ),
@@ -54,7 +56,7 @@ class RecurringCard extends ConsumerWidget {
                     0, (s, o) => s + o.expectedAmount);
                 return Row(children: [
                   _Stat(
-                    label: 'Pendentes',
+                    label: l10n.recurringPending,
                     value: '${pending.length}',
                     color: pending.any((o) => o.isOverdue)
                         ? Colors.red
@@ -62,13 +64,13 @@ class RecurringCard extends ConsumerWidget {
                   ),
                   const SizedBox(width: 24),
                   _Stat(
-                    label: 'Total previsto',
+                    label: l10n.recurringTotalExpected,
                     value: FinancialCalculatorService.formatBRL(total),
                     color: _teal,
                   ),
                   const Spacer(),
                   _Stat(
-                    label: 'Regras ativas',
+                    label: l10n.recurringActiveRules,
                     value: '${activeRules.length}',
                     color: Colors.grey,
                   ),

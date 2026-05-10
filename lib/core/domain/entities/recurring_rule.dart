@@ -1,3 +1,5 @@
+import '../../i18n/app_localizations.dart';
+
 enum RecurringFrequency {
   weekly,
   biweekly,
@@ -9,13 +11,14 @@ enum RecurringFrequency {
   static RecurringFrequency fromString(String v) =>
       RecurringFrequency.values.firstWhere((e) => e.name == v);
 
-  String get label => switch (this) {
-        weekly => 'Semanal',
-        biweekly => 'Quinzenal',
-        monthly => 'Mensal',
-        quarterly => 'Trimestral',
-        semiannual => 'Semestral',
-        yearly => 'Anual',
+  /// Localized label — use in widget build() methods.
+  String localizedLabel(String languageCode) => switch (this) {
+        weekly => AppLocalizations.translateStatic(languageCode, 'freq_weekly'),
+        biweekly => AppLocalizations.translateStatic(languageCode, 'freq_biweekly'),
+        monthly => AppLocalizations.translateStatic(languageCode, 'freq_monthly'),
+        quarterly => AppLocalizations.translateStatic(languageCode, 'freq_quarterly'),
+        semiannual => AppLocalizations.translateStatic(languageCode, 'freq_semiannual'),
+        yearly => AppLocalizations.translateStatic(languageCode, 'freq_yearly'),
       };
 }
 

@@ -85,7 +85,7 @@ class _ConsolidatedHero extends ConsumerWidget {
           const SizedBox(width: 4),
           const Text('+12.4%', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFFFCD37D))),
           const SizedBox(width: 4),
-          Text('vs. último mes', style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.5))),
+          Text(AppLocalizations.of(context).investmentsVsLastMonth, style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.5))),
         ]),
         const SizedBox(height: 18),
         const Row(children: [
@@ -134,12 +134,12 @@ class _AllocationCard extends ConsumerWidget {
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(AppLocalizations.of(context).translate('asset_allocation'), style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700)),
-            Text('Distribución estratégica de la cartera', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+            Text(AppLocalizations.of(context).investmentsStrategicDistribution, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
           ]),
           Icon(Icons.more_horiz, color: colors.onSurfaceSoft, size: 18),
         ]),
         const SizedBox(height: 16),
-        Center(child: FarolDonutChart(data: byType, total: total, centerLabel: 'Diversificada')),
+        Center(child: FarolDonutChart(data: byType, total: total, centerLabel: AppLocalizations.of(context).investmentsDiversified)),
         const SizedBox(height: 14),
         ...byType.entries.map((e) {
           String label; try { label = InvestmentType.fromDb(e.key).label; } catch (_) { label = e.key; }
@@ -167,12 +167,12 @@ class _IASuggestionCard extends StatelessWidget {
         const SizedBox(height: 10),
         Text(AppLocalizations.of(context).translate('ia_suggestion'), style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700)),
         const SizedBox(height: 4),
-        Text('Su cartera tiene baja exposición en activos inmobiliarios. Considere FIIs de tijolo.', style: TextStyle(fontSize: 12, color: colors.onSurfaceMuted, height: 1.5)),
+        Text(AppLocalizations.of(context).investmentsLowExposure, style: TextStyle(fontSize: 12, color: colors.onSurfaceMuted, height: 1.5)),
         const SizedBox(height: 12),
         ElevatedButton(
           onPressed: () {},
           style: ElevatedButton.styleFrom(backgroundColor: tokens.FarolColors.beam, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0, padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10)),
-          child: const Text('Explorar FIIs', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+          child: Text(AppLocalizations.of(context).investmentsExploreFiis, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
         ),
       ]),
     );
@@ -184,14 +184,15 @@ class _InversionesHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final l10n = AppLocalizations.of(context);
     return Padding(padding: const EdgeInsets.fromLTRB(4, 0, 4, 10), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Inversiones', style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w800)),
-        Text('Detalle por activo', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+        Text(l10n.investmentsHeader, style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w800)),
+        Text(l10n.investmentsDetailByAsset, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
       ]),
-      const Row(children: [
-        Text('Ver Historial', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: tokens.FarolColors.beam)),
-        Icon(Icons.chevron_right, size: 14, color: tokens.FarolColors.beam),
+      Row(children: [
+        Text(l10n.investmentsViewHistory, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: tokens.FarolColors.beam)),
+        const Icon(Icons.chevron_right, size: 14, color: tokens.FarolColors.beam),
       ]),
     ]));
   }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/domain/entities/liquidity_risk.dart';
 import '../../../core/domain/entities/scheduled_payment.dart';
+import '../../../core/i18n/app_localizations.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';
 
@@ -11,6 +12,7 @@ class LiquidityAlertCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final projAsync = ref.watch(financialProjectionProvider);
 
     return projAsync.when(
@@ -25,17 +27,17 @@ class LiquidityAlertCard extends ConsumerWidget {
           LiquidityRiskLevel.critical => (
               Colors.red,
               Icons.warning_amber_rounded,
-              'Risco crítico de liquidez'
+              l10n.liquidityCriticalTitle,
             ),
           LiquidityRiskLevel.high => (
               Colors.deepOrange,
               Icons.warning_outlined,
-              'Semana apertada'
+              l10n.liquidityHighTitle,
             ),
           LiquidityRiskLevel.medium => (
               const Color(0xFFF59E0B),
               Icons.info_outline,
-              'Atenção aos compromissos'
+              l10n.liquidityMediumTitle,
             ),
           _ => (Colors.grey, Icons.info_outline, ''),
         };
@@ -60,7 +62,7 @@ class LiquidityAlertCard extends ConsumerWidget {
                             fontSize: 13, fontWeight: FontWeight.w700, color: color)),
                     const SizedBox(height: 2),
                     Text(
-                      _subtitle(risk),
+                      _subtitle(l10n, risk),
                       style: GoogleFonts.manrope(fontSize: 12, color: Colors.grey),
                     ),
                   ]),
@@ -74,17 +76,17 @@ class LiquidityAlertCard extends ConsumerWidget {
     );
   }
 
-  String _subtitle(LiquidityRisk risk) {
+  String _subtitle(AppLocalizations l10n, LiquidityRisk risk) {
     final total = FinancialCalculatorService.formatBRL(
         risk.obligationsNext7Days.amount);
     final n = risk.upcomingObligations.length;
     if (risk.daysUntilEmpty >= 0 && risk.daysUntilEmpty <= 14) {
-      return 'Saldo previsto para zerar em ${risk.daysUntilEmpty} dias';
+      return l10n.liquidityDaysToZero('${risk.daysUntilEmpty}');
     }
     if (n > 0) {
-      return '$total em $n compromisso${n == 1 ? '' : 's'} esta semana';
+      return l10n.liquidityObligationsThisWeek(total, n);
     }
-    return 'Verifique seus compromissos próximos';
+    return l10n.liquidityCheckUpcoming;
   }
 
   void _showBreakdown(BuildContext context, LiquidityRisk risk) {
@@ -118,18 +120,18 @@ class _ObligationsSheet extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Text('Compromissos desta semana',
+        Text(context.l10n.liquiditySheetTitle,
             style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w800)),
         const SizedBox(height: 12),
         if (obligations.isEmpty)
-          Text('Nenhum compromisso nos próximos 7 dias.',
+          Text(context.l10n.liquidityNoCommitments,
               style: GoogleFonts.manrope(color: Colors.grey))
         else
           ...obligations.map((p) => _ObligationRow(payment: p)),
         const SizedBox(height: 8),
         Divider(color: Colors.grey.shade200),
         Row(children: [
-          Text('Total',
+          Text(context.l10n.liquidityTotal,
               style: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w700)),
           const Spacer(),
           Text(

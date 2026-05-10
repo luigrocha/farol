@@ -132,6 +132,16 @@ enum AccountType {
       AccountType.values.firstWhere((e) => e.dbValue == value);
 
   bool get isLiquid => this != AccountType.fgts;
+
+  String localizedLabel(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    switch (this) {
+      case AccountType.checking: return l10n.accountTypeChecking;
+      case AccountType.savings: return l10n.accountTypeSavings;
+      case AccountType.investment: return l10n.accountTypeInvestment;
+      case AccountType.fgts: return l10n.accountTypeFgts;
+    }
+  }
 }
 
 // ═══════════════════════════════════════════

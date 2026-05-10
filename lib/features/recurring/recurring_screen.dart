@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/domain/entities/recurring_rule.dart';
 import '../../core/domain/entities/recurring_occurrence.dart';
+import '../../core/i18n/app_localizations.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/widgets/farol_snackbar.dart';
@@ -44,7 +45,7 @@ class _RecurringScreenState extends ConsumerState<RecurringScreen> {
             padding: EdgeInsets.symmetric(vertical: 48),
             child: Center(child: CircularProgressIndicator()),
           ),
-          error: (e, _) => Center(child: Text('Erro: $e')),
+          error: (e, _) => Center(child: Text(context.l10n.recurringError(e.toString()))),
           data: (all) {
             final rules = _filtered(all, _filter);
             if (rules.isEmpty) return _EmptyState(filter: _filter);
@@ -65,7 +66,7 @@ class _RecurringScreenState extends ConsumerState<RecurringScreen> {
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
             onPressed: () => Navigator.pop(context),
           ),
-          title: Text('Recorrentes',
+          title: Text(context.l10n.recurringScreenTitle,
               style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w800)),
         ),
         if (isDesktop)
@@ -130,22 +131,25 @@ class _HeroCard extends StatelessWidget {
         color: _teal,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Total mensal em recorrentes',
+      child: Builder(builder: (context) {
+        final l10n = context.l10n;
+        return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(l10n.recurringTotalMonthly,
+              style: GoogleFonts.manrope(
+                  fontSize: 12, color: Colors.white70, fontWeight: FontWeight.w500)),
+          const SizedBox(height: 4),
+          Text(
+            FinancialCalculatorService.formatBRL(monthlyTotal),
             style: GoogleFonts.manrope(
-                fontSize: 12, color: Colors.white70, fontWeight: FontWeight.w500)),
-        const SizedBox(height: 4),
-        Text(
-          FinancialCalculatorService.formatBRL(monthlyTotal),
-          style: GoogleFonts.manrope(
-              fontSize: 28, color: Colors.white, fontWeight: FontWeight.w800),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          '${active.length} recorrente${active.length == 1 ? '' : 's'} ativo${active.length == 1 ? '' : 's'}',
-          style: GoogleFonts.manrope(fontSize: 13, color: Colors.white70),
-        ),
-      ]),
+                fontSize: 28, color: Colors.white, fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.recurringActiveCount(active.length),
+            style: GoogleFonts.manrope(fontSize: 13, color: Colors.white70),
+          ),
+        ]);
+      }),
     );
   }
 
@@ -170,10 +174,11 @@ class _FilterChips extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: _Filter.values.map((f) {
+        final l10n = context.l10n;
         final label = switch (f) {
-          _Filter.active => 'Ativos',
-          _Filter.paused => 'Pausados',
-          _Filter.cancelled => 'Cancelados',
+          _Filter.active => l10n.recurringFilterActive,
+          _Filter.paused => l10n.recurringFilterPaused,
+          _Filter.cancelled => l10n.recurringFilterCancelled,
         };
         final isSelected = f == selected;
         return Padding(
@@ -221,7 +226,7 @@ class _RuleTile extends ConsumerWidget {
                         fontSize: 14, fontWeight: FontWeight.w700)),
                 const SizedBox(height: 2),
                 Text(
-                  '${rule.frequency.label}  ·  dia ${rule.dayOfMonth ?? '—'}',
+                  '${rule.frequency.localizedLabel(context.l10n.locale.languageCode)}  ·  dia ${rule.dayOfMonth ?? '—'}',
                   style: GoogleFonts.manrope(fontSize: 12, color: Colors.grey),
                 ),
               ]),
@@ -290,7 +295,7 @@ class _RuleDetailSheet extends ConsumerWidget {
                     style: GoogleFonts.manrope(
                         fontSize: 18, fontWeight: FontWeight.w800)),
                 Text(
-                  '${rule.frequency.label}  ·  ${FinancialCalculatorService.formatBRL(rule.baseAmount)}',
+                  '${rule.frequency.localizedLabel(context.l10n.locale.languageCode)}  ·  ${FinancialCalculatorService.formatBRL(rule.baseAmount)}',
                   style: GoogleFonts.manrope(fontSize: 13, color: Colors.grey),
                 ),
               ]),
@@ -300,13 +305,13 @@ class _RuleDetailSheet extends ConsumerWidget {
           const SizedBox(height: 20),
           _ActionRow(rule: rule),
           const SizedBox(height: 20),
-          Text('Próximas ocorrências',
+          Text(context.l10n.recurringUpcomingOccurrences,
               style: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.grey)),
           const SizedBox(height: 8),
           Expanded(
             child: occurrencesAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Text('Erro: $e'),
+              error: (e, _) => Text(context.l10n.recurringError(e.toString())),
               data: (occ) {
                 final pending = occ
                     .where((o) => o.status.name == 'pending')
@@ -314,7 +319,7 @@ class _RuleDetailSheet extends ConsumerWidget {
                     .toList();
                 if (pending.isEmpty) {
                   return Center(
-                    child: Text('Sem ocorrências pendentes',
+                    child: Text(context.l10n.recurringNoPending,
                         style: GoogleFonts.manrope(color: Colors.grey)),
                   );
                 }
@@ -340,10 +345,11 @@ class _ActionRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     return Row(children: [
       _ActionBtn(
         icon: Icons.edit_outlined,
-        label: 'Editar',
+        label: l10n.recurringActionEdit,
         onTap: () {
           Navigator.pop(context);
           showModalBottomSheet(
@@ -357,41 +363,41 @@ class _ActionRow extends ConsumerWidget {
       if (rule.status == RecurringStatus.active)
         _ActionBtn(
           icon: Icons.pause_outlined,
-          label: 'Pausar',
+          label: l10n.recurringActionPause,
           onTap: () async {
             Navigator.pop(context);
             await ref.read(recurringServiceProvider).pauseRule(rule.id);
-            if (context.mounted) context.showSuccessSnackBar('Recorrente pausado');
+            if (context.mounted) context.showSuccessSnackBar(context.l10n.recurringPausedSnack);
           },
         ),
       if (rule.status == RecurringStatus.paused) ...[
         _ActionBtn(
           icon: Icons.play_arrow_outlined,
-          label: 'Retomar',
+          label: l10n.recurringActionResume,
           onTap: () async {
             Navigator.pop(context);
             await ref.read(recurringServiceProvider).resumeRule(rule.id);
-            if (context.mounted) context.showSuccessSnackBar('Recorrente retomado');
+            if (context.mounted) context.showSuccessSnackBar(context.l10n.recurringResumedSnack);
           },
         ),
       ],
       const SizedBox(width: 8),
       _ActionBtn(
         icon: Icons.cancel_outlined,
-        label: 'Cancelar',
+        label: l10n.recurringActionCancel,
         color: Colors.red,
         onTap: () async {
           final confirmed = await showDialog<bool>(
             context: context,
             builder: (ctx) => AlertDialog(
-              title: const Text('Cancelar recorrente?'),
-              content: const Text('As ocorrências futuras serão removidas.'),
+              title: Text(ctx.l10n.recurringCancelDialogTitle),
+              content: Text(ctx.l10n.recurringCancelDialogBody),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Não')),
+                TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(ctx.l10n.recurringCancelDialogNo)),
                 TextButton(
                   onPressed: () => Navigator.pop(ctx, true),
                   style: TextButton.styleFrom(foregroundColor: Colors.red),
-                  child: const Text('Cancelar'),
+                  child: Text(ctx.l10n.recurringActionCancel),
                 ),
               ],
             ),
@@ -400,7 +406,7 @@ class _ActionRow extends ConsumerWidget {
           if (!context.mounted) return;
           Navigator.pop(context);
           await ref.read(recurringServiceProvider).cancelRule(rule.id);
-          if (context.mounted) context.showSuccessSnackBar('Recorrente cancelado');
+          if (context.mounted) context.showSuccessSnackBar(context.l10n.recurringCancelledSnack);
         },
       ),
     ]);
@@ -504,10 +510,11 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final (label, color) = switch (status) {
-      RecurringStatus.active => ('Ativo', _teal),
-      RecurringStatus.paused => ('Pausado', Colors.orange),
-      RecurringStatus.cancelled => ('Cancelado', Colors.red),
+      RecurringStatus.active => (l10n.recurringStatusActive, _teal),
+      RecurringStatus.paused => (l10n.recurringStatusPaused, Colors.orange),
+      RecurringStatus.cancelled => (l10n.recurringStatusCancelled, Colors.red),
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -530,10 +537,11 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final msg = switch (filter) {
-      _Filter.active => 'Nenhum recorrente ativo.\nToque em + para adicionar.',
-      _Filter.paused => 'Nenhum recorrente pausado.',
-      _Filter.cancelled => 'Nenhum recorrente cancelado.',
+      _Filter.active => l10n.recurringEmptyActive,
+      _Filter.paused => l10n.recurringEmptyPaused,
+      _Filter.cancelled => l10n.recurringEmptyCancelled,
     };
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 60),

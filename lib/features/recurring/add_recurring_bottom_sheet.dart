@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/domain/entities/recurring_rule.dart';
 import '../../core/domain/services/recurrence_resolver.dart';
+import '../../core/i18n/app_localizations.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/widgets/farol_snackbar.dart';
@@ -60,6 +61,7 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final bottom = MediaQuery.of(context).viewInsets.bottom;
     final categoriesAsync = ref.watch(categoriesStreamProvider);
     final isEdit = widget.editRule != null;
@@ -81,21 +83,21 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
             ),
           ),
           const SizedBox(height: 16),
-          Text(isEdit ? 'Editar recorrente' : 'Novo recorrente',
+          Text(isEdit ? l10n.recurringEditTitle : l10n.recurringAddTitle,
               style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w800)),
           const SizedBox(height: 20),
 
-          // Nome
-          const _Label('Nome'),
+          // Name
+          _Label(l10n.recurringFieldName),
           TextField(
             controller: _nameCtrl,
             onChanged: (_) => setState(() {}),
-            decoration: _inputDec('Ex: Netflix, Aluguel...'),
+            decoration: _inputDec(l10n.recurringFieldNameHint),
           ),
           const SizedBox(height: 16),
 
-          // Valor
-          const _Label('Valor (R\$)'),
+          // Amount
+          _Label(l10n.recurringFieldAmount),
           TextField(
             controller: _amountCtrl,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -105,25 +107,27 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
           ),
           const SizedBox(height: 16),
 
-          // Frequência
-          const _Label('Frequência'),
+          // Frequency
+          _Label(l10n.recurringFieldFrequency),
           DropdownButtonFormField<RecurringFrequency>(
             // ignore: deprecated_member_use
             value: _frequency,
             decoration: _inputDec(null),
             items: RecurringFrequency.values
-                .map((f) => DropdownMenuItem(value: f, child: Text(f.label)))
+                .map((f) => DropdownMenuItem(
+                    value: f,
+                    child: Text(f.localizedLabel(l10n.locale.languageCode))))
                 .toList(),
             onChanged: (v) => setState(() => _frequency = v!),
           ),
           const SizedBox(height: 16),
 
-          // Dia do mês
+          // Day of month
           if (_frequency == RecurringFrequency.monthly ||
               _frequency == RecurringFrequency.quarterly ||
               _frequency == RecurringFrequency.semiannual ||
               _frequency == RecurringFrequency.yearly) ...[
-            const _Label('Dia do mês'),
+            _Label(l10n.recurringFieldDayOfMonth),
             DropdownButtonFormField<int>(
               // ignore: deprecated_member_use
               value: _dayOfMonth,
@@ -136,15 +140,15 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
             const SizedBox(height: 16),
           ],
 
-          // Categoria
-          const _Label('Categoria'),
+          // Category
+          _Label(l10n.recurringFieldCategory),
           categoriesAsync.when(
             loading: () => const LinearProgressIndicator(),
             error: (_, __) => const SizedBox(),
             data: (cats) => DropdownButtonFormField<String>(
               // ignore: deprecated_member_use
               value: _categorySlug,
-              decoration: _inputDec('Selecione'),
+              decoration: _inputDec(l10n.recurringFieldCategoryHint),
               items: cats
                   .map((c) => DropdownMenuItem(value: c.slug, child: Text(c.name)))
                   .toList(),
@@ -153,8 +157,8 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
           ),
           const SizedBox(height: 16),
 
-          // Data de início
-          const _Label('Início'),
+          // Start date
+          _Label(l10n.recurringFieldStart),
           InkWell(
             onTap: _pickStartDate,
             child: InputDecorator(
@@ -191,7 +195,7 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
                   ? const SizedBox(
                       height: 20, width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : Text(isEdit ? 'Salvar' : 'Criar recorrente',
+                  : Text(isEdit ? l10n.recurringBtnSave : l10n.recurringBtnCreate,
                       style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
             ),
           ),
@@ -252,7 +256,7 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
       if (mounted) {
         Navigator.pop(context);
         context.showSuccessSnackBar(
-            edit != null ? 'Recorrente atualizado' : 'Recorrente criado');
+            edit != null ? context.l10n.recurringUpdatedSnack : context.l10n.recurringCreatedSnack);
       }
     } catch (e) {
       if (mounted) context.showErrorSnackBar(e);
@@ -312,7 +316,7 @@ class _PreviewSection extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Próximas ocorrências',
+        Text(context.l10n.recurringUpcomingOccurrences,
             style: GoogleFonts.manrope(
                 fontSize: 11, color: _teal, fontWeight: FontWeight.w700)),
         const SizedBox(height: 6),

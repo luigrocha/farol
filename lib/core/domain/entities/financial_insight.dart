@@ -27,9 +27,19 @@ class FinancialInsight {
   final String id;
   final InsightType type;
   final InsightPriority priority;
+
+  /// Localization key for the title (resolved in InsightCard via l10n).
+  final String titleKey;
+  /// Localization key for the body text.
+  final String bodyKey;
+  /// Localization key for the action label (null = no action).
+  final String? actionKey;
+
+  /// Fallback PT-BR strings — used in tests and as safety net.
   final String title;
   final String body;
   final String? actionLabel;
+
   final String? actionRoute;
   final double confidence;
   final Map<String, dynamic> data;
@@ -42,6 +52,9 @@ class FinancialInsight {
     required this.id,
     required this.type,
     required this.priority,
+    required this.titleKey,
+    required this.bodyKey,
+    this.actionKey,
     required this.title,
     required this.body,
     this.actionLabel,

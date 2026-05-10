@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/i18n/app_localizations.dart';
 import '../../core/providers/providers.dart';
 import '../../core/widgets/shimmer_box.dart';
 import 'insight_card.dart';
@@ -17,7 +18,7 @@ class InsightsPanel extends ConsumerWidget {
       loading: () => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Insights',
+          Text(context.l10n.insightsLabel,
               style: GoogleFonts.manrope(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
@@ -37,7 +38,7 @@ class InsightsPanel extends ConsumerWidget {
 
         return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
-            Text('Insights',
+            Text(context.l10n.insightsLabel,
                 style: GoogleFonts.manrope(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
@@ -50,7 +51,7 @@ class InsightsPanel extends ConsumerWidget {
                   MaterialPageRoute(builder: (_) => const InsightsScreen()),
                 ),
                 child: Text(
-                  'Ver todos (${insights.length})',
+                  context.l10n.insightsSeeAll(insights.length),
                   style: GoogleFonts.manrope(
                       fontSize: 12,
                       color: const Color(0xFF2196F3),

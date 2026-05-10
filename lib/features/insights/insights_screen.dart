@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/domain/entities/financial_insight.dart';
 import '../../core/domain/entities/insight_stats.dart';
+import '../../core/i18n/app_localizations.dart';
 import '../../core/providers/providers.dart';
 import 'insight_card.dart';
 
@@ -21,7 +22,7 @@ class InsightsScreen extends ConsumerWidget {
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
             onPressed: () => Navigator.pop(context),
           ),
-          title: Text('Insights',
+          title: Text(context.l10n.insightsLabel,
               style: GoogleFonts.manrope(
                   fontSize: 17, fontWeight: FontWeight.w800)),
         ),
@@ -30,7 +31,7 @@ class InsightsScreen extends ConsumerWidget {
           sliver: SliverList(
             delegate: SliverChildListDelegate([
               Text(
-                'Análises baseadas nos seus dados reais.',
+                context.l10n.insightsSubtitle,
                 style: GoogleFonts.manrope(fontSize: 13, color: Colors.grey),
               ),
               const SizedBox(height: 16),
@@ -39,7 +40,7 @@ class InsightsScreen extends ConsumerWidget {
                     child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 48),
                         child: CircularProgressIndicator())),
-                error: (e, _) => Text('Erro: $e'),
+                error: (e, _) => Text('${context.l10n.error}: $e'),
                 data: (insights) {
                   if (insights.isEmpty) {
                     return const _EmptyState();
@@ -74,11 +75,12 @@ class _GroupedInsights extends StatelessWidget {
       groups[i.priority]!.add(i);
     }
 
+    final l10n = context.l10n;
     final labels = {
-      InsightPriority.critical: 'Alertas críticos',
-      InsightPriority.warning: 'Atenção',
-      InsightPriority.info: 'Oportunidades',
-      InsightPriority.achievement: 'Conquistas',
+      InsightPriority.critical: l10n.insightsGroupCritical,
+      InsightPriority.warning: l10n.insightsGroupWarning,
+      InsightPriority.info: l10n.insightsGroupInfo,
+      InsightPriority.achievement: l10n.insightsGroupAchievement,
     };
 
     final sections = <Widget>[];
@@ -125,7 +127,7 @@ class _DismissStats extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: Text(
-                'Tipos mais ignorados',
+                context.l10n.insightsMostIgnored,
                 style: GoogleFonts.manrope(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
@@ -181,11 +183,11 @@ class _EmptyState extends StatelessWidget {
   const _EmptyState();
 
   @override
-  Widget build(BuildContext context) => const Padding(
-        padding: EdgeInsets.symmetric(vertical: 60),
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 60),
         child: Center(
           child: Text(
-            'Nenhum insight no momento.\nContinue registrando seus gastos!',
+            context.l10n.insightsEmpty,
             textAlign: TextAlign.center,
           ),
         ),
