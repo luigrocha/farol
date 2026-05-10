@@ -4,6 +4,18 @@ enum WorkspacePlan { free, premium }
 
 enum WorkspaceRole { owner, admin, member, viewer }
 
+enum WorkspaceType { personal, shared }
+
+extension WorkspaceTypeX on WorkspaceType {
+  bool get isShared => this == WorkspaceType.shared;
+  bool get isPersonal => this == WorkspaceType.personal;
+
+  static WorkspaceType parse(String? value) => switch (value) {
+        'shared' => WorkspaceType.shared,
+        _        => WorkspaceType.personal,
+      };
+}
+
 // ─────────────────────────────────────────────────────────────
 // WorkspaceMember
 // ─────────────────────────────────────────────────────────────
@@ -127,6 +139,12 @@ class Workspace {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  // Phase 1: collaborative workspace identity
+  final WorkspaceType type;
+  final String? emoji;
+  final String? color;
+  final String? description;
+
   const Workspace({
     required this.id,
     required this.name,
@@ -138,6 +156,10 @@ class Workspace {
     this.members = const [],
     required this.createdAt,
     required this.updatedAt,
+    this.type = WorkspaceType.personal,
+    this.emoji,
+    this.color,
+    this.description,
   });
 
   bool get isPremium => plan == WorkspacePlan.premium &&
@@ -162,17 +184,25 @@ class Workspace {
                         .toList(),
       createdAt:      DateTime.parse(json['created_at'] as String),
       updatedAt:      DateTime.parse(json['updated_at'] as String),
+      type:           WorkspaceTypeX.parse(json['workspace_type'] as String?),
+      emoji:          json['emoji'] as String?,
+      color:          json['color'] as String?,
+      description:    json['description'] as String?,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id':       id,
-        'name':     name,
+        'id':             id,
+        'name':           name,
         if (slug != null) 'slug': slug,
-        'owner_id': ownerId,
-        'plan':     plan.name,
+        'owner_id':       ownerId,
+        'plan':           plan.name,
         if (planExpiresAt != null) 'plan_expires_at': planExpiresAt!.toIso8601String(),
-        'settings': settings,
+        'settings':       settings,
+        'workspace_type': type.name,
+        if (emoji != null) 'emoji': emoji,
+        if (color != null) 'color': color,
+        if (description != null) 'description': description,
       };
 
   Workspace copyWith({
@@ -181,6 +211,10 @@ class Workspace {
     DateTime? planExpiresAt,
     Map<String, dynamic>? settings,
     List<WorkspaceMember>? members,
+    WorkspaceType? type,
+    String? emoji,
+    String? color,
+    String? description,
   }) =>
       Workspace(
         id:             id,
@@ -193,6 +227,10 @@ class Workspace {
         members:        members ?? this.members,
         createdAt:      createdAt,
         updatedAt:      updatedAt,
+        type:           type ?? this.type,
+        emoji:          emoji ?? this.emoji,
+        color:          color ?? this.color,
+        description:    description ?? this.description,
       );
 
   /// Role do usuário neste workspace. Retorna viewer se não for membro.

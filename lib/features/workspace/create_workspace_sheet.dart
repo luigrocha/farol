@@ -1,9 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/models/workspace.dart';
 import '../../core/providers/workspace_providers.dart';
 
+// ─────────────────────────────────────────────────────────────
+// Emoji and color palettes
+// ─────────────────────────────────────────────────────────────
+
+const _kPersonalEmojis = ['🏠', '💼', '🎯', '🌱', '⭐', '🦋'];
+const _kSharedEmojis   = ['👥', '💑', '👨‍👩‍👧', '🏡', '🤝', '🚀'];
+const _kAccentColors   = [
+  Color(0xFF00695C), // teal
+  Color(0xFF1565C0), // blue
+  Color(0xFF6A1B9A), // purple
+  Color(0xFFE65100), // orange
+  Color(0xFF2E7D32), // green
+  Color(0xFFC62828), // red
+];
+
+// ─────────────────────────────────────────────────────────────
+// CreateWorkspaceSheet
+// ─────────────────────────────────────────────────────────────
+
 /// Bottom sheet for creating a new workspace.
+/// Phase 1: adds type picker (personal vs shared), emoji picker, color picker.
 class CreateWorkspaceSheet extends ConsumerStatefulWidget {
   const CreateWorkspaceSheet({super.key});
 
@@ -27,10 +48,32 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
   final _nameController = TextEditingController();
   bool _loading = false;
 
+  WorkspaceType _type = WorkspaceType.shared;
+  String? _selectedEmoji;
+  Color? _selectedColor;
+
+  List<String> get _emojis =>
+      _type == WorkspaceType.shared ? _kSharedEmojis : _kPersonalEmojis;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedEmoji = _kSharedEmojis.first;
+    _selectedColor = _kAccentColors.first;
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
     super.dispose();
+  }
+
+  void _onTypeChanged(WorkspaceType type) {
+    setState(() {
+      _type = type;
+      // Reset emoji to first in new type's list
+      _selectedEmoji = _emojis.first;
+    });
   }
 
   Future<void> _submit() async {
@@ -39,10 +82,15 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
 
     try {
       final repo = ref.read(workspaceRepositoryProvider);
-      final ws = await repo.create(name: _nameController.text.trim());
-      // Switch to the newly created workspace
+      final ws = await repo.create(
+        name:  _nameController.text.trim(),
+        type:  _type,
+        emoji: _selectedEmoji,
+        color: _selectedColor != null
+            ? '#${_selectedColor!.value.toRadixString(16).substring(2).toUpperCase()}'
+            : null,
+      );
       await ref.read(activeWorkspaceProvider.notifier).select(ws);
-      // Refresh the workspaces list
       ref.invalidate(userWorkspacesProvider);
       if (mounted) Navigator.pop(context);
     } catch (e) {
@@ -61,7 +109,7 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Padding(
+    return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(24, 16, 24, 24 + bottom),
       child: Form(
         key: _formKey,
@@ -69,7 +117,7 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Handle ──────────────────────────────────────────
+            // ── Handle ────────────────────────────────────────────
             Center(
               child: Container(
                 width: 36,
@@ -81,6 +129,8 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
                 ),
               ),
             ),
+
+            // ── Title ─────────────────────────────────────────────
             Text(
               'New workspace',
               style: GoogleFonts.manrope(
@@ -90,23 +140,54 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
             ),
             const SizedBox(height: 6),
             Text(
-              'Workspaces let you share finances with others — '
-              'a partner, family, or roommates.',
+              'Workspaces let you organize and share finances with others.',
               style: TextStyle(
                 color: colorScheme.onSurfaceVariant,
                 fontSize: 13,
               ),
             ),
             const SizedBox(height: 24),
+
+            // ── Type picker ────────────────────────────────────────
+            _SectionLabel(label: 'Type'),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: _TypeCard(
+                    icon: '🏠',
+                    title: 'Personal',
+                    subtitle: 'Just for you',
+                    selected: _type == WorkspaceType.personal,
+                    onTap: () => _onTypeChanged(WorkspaceType.personal),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _TypeCard(
+                    icon: '👥',
+                    title: 'Shared',
+                    subtitle: 'With others',
+                    selected: _type == WorkspaceType.shared,
+                    onTap: () => _onTypeChanged(WorkspaceType.shared),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // ── Name field ─────────────────────────────────────────
+            _SectionLabel(label: 'Name'),
+            const SizedBox(height: 8),
             TextFormField(
               controller: _nameController,
               autofocus: true,
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(
-                labelText: 'Workspace name',
-                hintText: 'e.g. Nossa Casa, Family, Freelance',
-                prefixIcon: Icon(Icons.group_outlined),
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: _type == WorkspaceType.shared
+                    ? 'e.g. Nossa Casa, Family, Freelance'
+                    : 'e.g. My Finances, Savings Plan',
+                border: const OutlineInputBorder(),
               ),
               validator: (v) {
                 if (v == null || v.trim().isEmpty) return 'Name is required';
@@ -117,6 +198,68 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
               onFieldSubmitted: (_) => _submit(),
             ),
             const SizedBox(height: 24),
+
+            // ── Emoji picker ───────────────────────────────────────
+            _SectionLabel(label: 'Icon'),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children: _emojis.map((e) {
+                final selected = _selectedEmoji == e;
+                return GestureDetector(
+                  onTap: () => setState(() => _selectedEmoji = e),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: selected
+                          ? colorScheme.primaryContainer
+                          : colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(10),
+                      border: selected
+                          ? Border.all(color: colorScheme.primary, width: 2)
+                          : null,
+                    ),
+                    child: Center(
+                      child: Text(e, style: const TextStyle(fontSize: 22)),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 24),
+
+            // ── Color picker ───────────────────────────────────────
+            _SectionLabel(label: 'Color'),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 10,
+              children: _kAccentColors.map((c) {
+                final selected = _selectedColor?.value == c.value;
+                return GestureDetector(
+                  onTap: () => setState(() => _selectedColor = c),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: c,
+                      shape: BoxShape.circle,
+                      border: selected
+                          ? Border.all(color: colorScheme.outline, width: 3)
+                          : null,
+                    ),
+                    child: selected
+                        ? const Icon(Icons.check, color: Colors.white, size: 16)
+                        : null,
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 32),
+
+            // ── Submit ─────────────────────────────────────────────
             SizedBox(
               width: double.infinity,
               child: FilledButton(
@@ -135,6 +278,93 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// _TypeCard
+// ─────────────────────────────────────────────────────────────
+
+class _TypeCard extends StatelessWidget {
+  const _TypeCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String icon;
+  final String title;
+  final String subtitle;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: selected
+              ? colorScheme.primaryContainer
+              : colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(12),
+          border: selected
+              ? Border.all(color: colorScheme.primary, width: 2)
+              : Border.all(color: colorScheme.outlineVariant, width: 1),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(icon, style: const TextStyle(fontSize: 24)),
+            const SizedBox(height: 6),
+            Text(
+              title,
+              style: GoogleFonts.manrope(
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+                color: selected
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onSurface,
+              ),
+            ),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 11,
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// _SectionLabel
+// ─────────────────────────────────────────────────────────────
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label,
+      style: GoogleFonts.manrope(
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
     );
   }

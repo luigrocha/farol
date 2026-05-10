@@ -50,11 +50,25 @@ class WorkspaceRepository {
   // Create / Update
   // ─────────────────────────────────────────────────────────────
 
-  Future<Workspace> create({required String name}) async {
+  Future<Workspace> create({
+    required String name,
+    WorkspaceType type = WorkspaceType.personal,
+    String? emoji,
+    String? color,
+    String? description,
+  }) async {
     final userId = _userId!;
     final wsRow = await _supabase
         .from('workspaces')
-        .insert({'name': name, 'owner_id': userId, 'plan': 'free'})
+        .insert({
+          'name':           name,
+          'owner_id':       userId,
+          'plan':           'free',
+          'workspace_type': type.name,
+          if (emoji != null) 'emoji': emoji,
+          if (color != null) 'color': color,
+          if (description != null) 'description': description,
+        })
         .select()
         .single();
 
@@ -71,6 +85,26 @@ class WorkspaceRepository {
     await _supabase
         .from('workspaces')
         .update({'name': name})
+        .eq('id', workspaceId);
+  }
+
+  Future<void> updateIdentity(
+    String workspaceId, {
+    String? name,
+    String? emoji,
+    String? color,
+    String? description,
+  }) async {
+    final updates = <String, dynamic>{
+      if (name != null) 'name': name,
+      if (emoji != null) 'emoji': emoji,
+      if (color != null) 'color': color,
+      if (description != null) 'description': description,
+    };
+    if (updates.isEmpty) return;
+    await _supabase
+        .from('workspaces')
+        .update(updates)
         .eq('id', workspaceId);
   }
 

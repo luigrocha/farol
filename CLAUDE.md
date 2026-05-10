@@ -39,6 +39,15 @@
   - `WorkspaceAppBarChip` — chip in dashboard AppBar, only visible when >1 workspace
   - Desktop NavRail header shows workspace chip when >1 workspace
   - `canWriteProvider` guards: FABs hidden for viewers in all screens (Dashboard, Transactions, Installments, Recurring, Budget, Categories, Accounts); swipe-to-delete disabled; edit `onTap` disabled
+- **Collaborative Workspace Foundation Polish — COMPLETE (2026-05-10)**:
+  - V33 migration: `workspace_type` (personal|shared), `emoji`, `color`, `description` columns; backfill; updated `create_personal_workspace()` trigger (default emoji 🏠, type 'personal')
+  - `WorkspaceType` enum + `WorkspaceTypeX` extension in `workspace.dart`
+  - `Workspace` model: new `type`, `emoji`, `color`, `description` fields; `fromJson`/`toJson`/`copyWith` updated
+  - `WorkspaceRepository.create()`: accepts type/emoji/color/description; `updateIdentity()` method added
+  - `WorkspaceAppBarChip`: always visible (removed `workspaces.length <= 1` guard); teal tint for shared, grey for personal; shows emoji if set
+  - `WorkspaceSwitcherSheet`: redesigned with "Your space" / "Shared spaces" sections; `_WorkspaceAvatar` shows emoji; type-based coloring
+  - `CreateWorkspaceSheet`: type picker (personal vs shared card UI), emoji palette, color picker (6 accent colors)
+  - Desktop NavRail `_NavRailHeader`: same always-visible + teal/grey tinting treatment, emoji support
 - **Next step**: Phase 4 — Monetization (future, when ready)
 
 ---

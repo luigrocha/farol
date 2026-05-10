@@ -36,6 +36,7 @@ import 'features/net_worth/presentation/patrimonio_screen.dart';
 import 'features/auth/presentation/auth_loading_screen.dart';
 import 'core/providers/workspace_providers.dart'
     show userWorkspacesProvider, activeWorkspaceProvider;
+import 'core/models/workspace.dart' show WorkspaceType;
 import 'features/workspace/workspace_switcher_sheet.dart';
 
 final themeModeProvider =
@@ -480,9 +481,17 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
 class _NavRailHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final workspaces = ref.watch(userWorkspacesProvider).valueOrNull ?? [];
     final activeWs = ref.watch(activeWorkspaceProvider).valueOrNull;
-    final hasMultiple = workspaces.length > 1;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    final isShared = activeWs?.type == WorkspaceType.shared;
+    final hasEmoji = activeWs?.emoji != null && activeWs!.emoji!.isNotEmpty;
+    final chipBg = isShared
+        ? const Color(0xFF00695C).withOpacity(0.15)
+        : colorScheme.secondaryContainer;
+    final chipFg = isShared
+        ? const Color(0xFF00695C)
+        : colorScheme.onSecondaryContainer;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
@@ -511,25 +520,28 @@ class _NavRailHeader extends ConsumerWidget {
               ),
             ],
           ),
-          // Show workspace chip on desktop when user has >1 workspace
-          if (hasMultiple && activeWs != null) ...[
+          // Workspace chip — always shown when data is loaded
+          if (activeWs != null) ...[
             const SizedBox(height: 12),
             GestureDetector(
               onTap: () => WorkspaceSwitcherSheet.show(context),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  color: chipBg,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.group_outlined,
-                      size: 13,
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                    ),
+                    if (hasEmoji)
+                      Text(activeWs.emoji!, style: const TextStyle(fontSize: 13))
+                    else
+                      Icon(
+                        isShared ? Icons.group_outlined : Icons.person_outline,
+                        size: 13,
+                        color: chipFg,
+                      ),
                     const SizedBox(width: 5),
                     Flexible(
                       child: Text(
@@ -537,18 +549,14 @@ class _NavRailHeader extends ConsumerWidget {
                         style: GoogleFonts.manrope(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onSecondaryContainer,
+                          color: chipFg,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const SizedBox(width: 2),
-                    Icon(
-                      Icons.unfold_more,
-                      size: 14,
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                    ),
+                    Icon(Icons.unfold_more, size: 14, color: chipFg),
                   ],
                 ),
               ),
