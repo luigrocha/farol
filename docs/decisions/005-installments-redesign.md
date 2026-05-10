@@ -1,66 +1,67 @@
-# ADR-005: Redesign de Cuotas — InstallmentPlan + InstallmentPayments
+# ADR-005: Installments Redesign — InstallmentPlan + InstallmentPayments
 
-**Fecha**: 2026-05-07
-**Estado**: Propuesto — pendiente de implementación
-**Área**: Domain · Database · Repositories
+**Date**: 2026-05-07
+**Status**: Implemented ✅
+**Area**: Domain · Database · Repositories
 
 ---
 
-## Contexto
+## Context
 
-`CardInstallment` e `Expense` são entidades completamente independentes. O `Expense.installmentPlanId` existe no modelo Dart mas `CardInstallments` não tem referência bidirecional para expenses. O avance é manual via `advance()`. Os meses futuros não têm expenses registradas até o usuário fazer `advance()` manualmente.
+`CardInstallment` and `Expense` were completely independent entities. `Expense.installmentPlanId` existed in the Dart model but `CardInstallments` had no bidirectional reference to expenses. Advance was manual via `advance()`. Future months had no recorded expenses until the user manually called `advance()`.
 
-Isso significa que o `ForecastingEngine` (planejado) não consegue ver compromissos futuros de parcelas — que podem somar R$5.000+/mês para usuários ativos. A projeção de saldo fica fundamentalmente incorreta.
+This meant the `ForecastingEngine` (planned) could not see future installment commitments — which can total R$5,000+/month for active users. The balance projection was fundamentally incorrect.
 
-## Decisão
+## Decision
 
-**Substituir `card_installments` por dois modelos relacionados**:
+**Replace `card_installments` with two related models**:
 
-1. `InstallmentPlan` — representa a compra original (a "cabeça" do parcelamento)
-2. `InstallmentPayment` — representa cada parcela individual, **gerada automaticamente** ao criar o plano
+1. `InstallmentPlan` — represents the original purchase (the "head" of the installment plan)
+2. `InstallmentPayment` — represents each individual installment, **generated automatically** when creating the plan
 
-Ao criar uma compra de R$1.200 em 12x, o sistema gera imediatamente 12 `InstallmentPayment` com `due_date` correto para cada mês. O `ForecastingEngine` lê esses registros com status `pending` para calcular obrigações futuras.
+When creating a R$1,200 purchase in 12 installments, the system immediately generates 12 `InstallmentPayment` records with the correct `due_date` for each month. The `ForecastingEngine` reads these records with `pending` status to calculate future obligations.
 
-Ao marcar uma parcela como paga, o sistema cria automaticamente um `Expense` vinculado — não o contrário.
+When marking an installment as paid, the system automatically creates a linked `Expense` — not the other way around.
 
-## Consequências
+## Consequences
 
-### Positivas
-- `ForecastingEngine` tem visibilidade completa de obrigações futuras
-- Sem necessidade de `advance()` manual — o sistema sabe quais parcelas vencem quando
-- Histórico completo de pagamentos por plano (pagas, puladas, atrasadas)
-- Arredondamento correto: última parcela absorbe diferença de centavos
-- Relatórios precisos: "você tem R$X em parcelas para os próximos 6 meses"
+### Positive
+- `ForecastingEngine` has complete visibility of future obligations
+- No need for manual `advance()` — the system knows which installments are due when
+- Complete payment history per plan (paid, skipped, overdue)
+- Correct rounding: last installment absorbs cent differences
+- Precise reports: "you have R$X in installments for the next 6 months"
 
-### Negativas / Trade-offs
-- Migração de dados existentes (`card_installments` → novo modelo) com risco de inconsistências
-- `first_due_date` na migração precisa ser estimado (não existe no modelo antigo)
-- A UI de installments precisa ser refeita — mais trabalho de design
+### Negative / Trade-offs
+- Migration of existing data (`card_installments` → new model) with risk of inconsistencies
+- `first_due_date` in migration needs to be estimated (doesn't exist in old model)
+- The installments UI needs to be rebuilt — more design work
 
-### Riscos aceitos
-- **Migração incompleta**: planos migrados sem firstDueDate correto → parcelas nos meses errados. Mitigado com campo `legacy_card_installment_id` para rastreabilidade e opção de editar a data após migração.
+### Accepted Risks
+- **Incomplete migration**: plans migrated without correct firstDueDate → installments in wrong months. Mitigated with `legacy_card_installment_id` field for traceability and option to edit the date after migration.
 
-## Alternativas Consideradas
+## Alternatives Considered
 
-### Manter `card_installments` com melhorias
-Adicionar `due_date` e `expense_id` ao modelo existente.
+### Keep `card_installments` with improvements
+Add `due_date` and `expense_id` to the existing model.
 
-**Descartada porque**: O modelo `card_installments` é plano (flat) — não tem relação pai/filho. Adicionar parcelas individuais exigiria a mesma nova tabela `installment_payments`, tornando o modelo antigo desnecessário.
+**Discarded because**: The `card_installments` model is flat — it has no parent/child relationship. Adding individual installments would require the same new `installment_payments` table, making the old model unnecessary.
 
-### Gerar expenses futuras (uma por mês)
-Criar automaticamente um `Expense` futuro com `isProjected = true` para cada parcela.
+### Generate future expenses (one per month)
+Automatically create a future `Expense` with `isProjected = true` for each installment.
 
-**Descartada porque**: Polui a lista de transações com dados projetados. O campo `isProjected` já existe mas nunca foi usado coerentemente. `InstallmentPayment` é um conceito distinto de `Expense` — misturá-los cria ambiguidade.
+**Discarded because**: Pollutes the transaction list with projected data. The `isProjected` field already existed but was never used coherently. `InstallmentPayment` is a distinct concept from `Expense` — mixing them creates ambiguity.
 
-## Critérios de Sucesso
+## Success Criteria
 
-- [ ] Criar compra parcelada → N pagamentos gerados automaticamente com due_dates corretos
-- [ ] Soma de todos os `installment_payments.amount` == `installment_plans.total_amount`
-- [ ] `ForecastingEngine` lê `getPendingInRange()` e retorna obrigações corretas
-- [ ] `advance()` antigo redireciona para `payInstallment()` sem breaking changes na UI
+- [x] Create installment purchase → N payments generated automatically with correct due_dates
+- [x] Sum of all `installment_payments.amount` == `installment_plans.total_amount`
+- [x] `ForecastingEngine` reads `getPendingInRange()` and returns correct obligations
+- [x] Old `advance()` redirects to `payInstallment()` without breaking UI changes
 
-## Referências
+## References
 
-- Plano: `plans/installments_redesign.md`
-- Desbloqueia: `plans/forecasting.md` (ObligationEngine)
-- Depende de: ADR-001 (category_id disponível para installment_plans)
+- Plan: `plans/installments_redesign.md`
+- Enables: `plans/forecasting.md` (ObligationEngine)
+- Depends on: ADR-001 (category_id available for installment_plans)
+- Migrations: V21 (schema), V22–V23 (data migration from card_installments)

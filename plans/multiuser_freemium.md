@@ -1,27 +1,27 @@
-# Plan: Multiusuário (Workspace) + Freemium
-**Area**: Arquitetura · DB · Auth · UI · Produto
-**Prioridade**: P0 estratégico — define o modelo de negócio futuro
-**Dependências**: Todas as migrações V1–V25 aplicadas ✅
-**Status**: 🟡 Em planejamento
+# Plan: Multi-user (Workspace) + Freemium
+**Area**: Architecture · DB · Auth · UI · Product
+**Priority**: P0 strategic — defines the future business model
+**Dependencies**: All migrations V1–V25 applied ✅
+**Status**: 🟢 Phases 1–3 complete in production (2026-05-09)
 
 ---
 
-## 🎯 Posicionamento Estratégico
+## 🎯 Strategic Positioning
 
 ```
-❌ ANTES: "controla tus gastos"
-✅ AGORA: "entiende el futuro de tu dinero"
+❌ BEFORE: "control your spending"
+✅ NOW:    "understand the future of your money"
 ```
 
-Farol não é um registrador de gastos. É um **copiloto financeiro preditivo**.
-A diferença: um usuário que vê "se continuar assim, terminas o mês com -R$120"
-muda de comportamento. Um usuário que só vê "gastaste R$800" não tem informação acionável.
+Farol is not an expense tracker. It is a **predictive financial co-pilot**.
+The difference: a user who sees "at this rate you'll end the month -R$120"
+changes behavior. A user who only sees "you spent R$800" has no actionable information.
 
 ---
 
-## 📐 Modelo de Workspace
+## 📐 Workspace Model
 
-### Hierarquia
+### Hierarchy
 
 ```
 auth.users (Supabase Auth)
@@ -36,29 +36,29 @@ auth.users (Supabase Auth)
                     ├── categories (custom)
                     ├── accounts
                     ├── investments
-                    └── ...todos os dados financeiros
+                    └── ...all financial data
 ```
 
-### Casos de uso reais
+### Real use cases
 
-| Caso | Workspace | Membros | Permissões |
+| Case | Workspace | Members | Permissions |
 |---|---|---|---|
-| Solo | Personal (auto-criado) | 1 | owner |
-| Casal | "Nossa Casa" | 2 | owner + admin |
+| Solo | Personal (auto-created) | 1 | owner |
+| Couple | "Our Home" | 2 | owner + admin |
 | Roommates | "Apt 42" | 3–5 | owner + members |
-| Família | "Família Grocha" | N | owner + admins + viewers |
-| Freelancer | "Pessoal" + "LTDA" | 1–2 | owner em ambos |
+| Family | "Grocha Family" | N | owner + admins + viewers |
+| Freelancer | "Personal" + "LTDA" | 1–2 | owner on both |
 
-### Regra fundamental
+### Core rule
 
-> **Todo usuário novo ganha automaticamente um workspace pessoal.**
-> A UX solo não muda em nada. O workspace é invisível até que o usuário convide alguém.
+> **Every new user automatically gets a personal workspace.**
+> The solo UX is identical. The workspace is invisible until the user invites someone.
 
 ---
 
-## 🗄️ Schema DB — Migrações
+## 🗄️ DB Schema — Migrations
 
-### V26 — Tabela `workspaces`
+### V26 — `workspaces` table
 
 ```sql
 CREATE TABLE workspaces (
@@ -68,13 +68,12 @@ CREATE TABLE workspaces (
   owner_id      UUID NOT NULL REFERENCES auth.users(id),
   plan          TEXT NOT NULL DEFAULT 'free'
                 CHECK (plan IN ('free', 'premium')),
-  plan_expires_at TIMESTAMPTZ,                  -- NULL = free para sempre
+  plan_expires_at TIMESTAMPTZ,                  -- NULL = free forever
   settings      JSONB DEFAULT '{}',             -- cutoffDay, currency, etc.
   created_at    TIMESTAMPTZ DEFAULT NOW(),
   updated_at    TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Membros do workspace
 CREATE TABLE workspace_members (
   id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   workspace_id  UUID NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
@@ -86,7 +85,6 @@ CREATE TABLE workspace_members (
   UNIQUE (workspace_id, user_id)
 );
 
--- Convites pendentes (email ainda não cadastrado)
 CREATE TABLE workspace_invites (
   id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   workspace_id  UUID NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
@@ -98,158 +96,70 @@ CREATE TABLE workspace_invites (
   accepted_at   TIMESTAMPTZ,
   created_at    TIMESTAMPTZ DEFAULT NOW()
 );
-
--- RLS
-ALTER TABLE workspaces ENABLE ROW LEVEL SECURITY;
-ALTER TABLE workspace_members ENABLE ROW LEVEL SECURITY;
-ALTER TABLE workspace_invites ENABLE ROW LEVEL SECURITY;
-
--- Políticas
-CREATE POLICY "members can read workspace"
-  ON workspaces FOR SELECT
-  USING (id IN (
-    SELECT workspace_id FROM workspace_members WHERE user_id = auth.uid()
-  ));
-
-CREATE POLICY "owner can update workspace"
-  ON workspaces FOR UPDATE
-  USING (owner_id = auth.uid());
-
-CREATE POLICY "members can see members"
-  ON workspace_members FOR SELECT
-  USING (workspace_id IN (
-    SELECT workspace_id FROM workspace_members WHERE user_id = auth.uid()
-  ));
-
-CREATE POLICY "admin+ can invite"
-  ON workspace_invites FOR INSERT
-  WITH CHECK (workspace_id IN (
-    SELECT workspace_id FROM workspace_members
-    WHERE user_id = auth.uid() AND role IN ('owner', 'admin')
-  ));
 ```
 
-### V27 — `workspace_id` em todas as tabelas de dados
+### V27 — `workspace_id` on all data tables
 
 ```sql
--- Executar para cada tabela de dados:
--- expenses, incomes, investments, net_worth_snapshots,
--- accounts, account_transfers, budget_goals, period_budgets,
--- categories, salary_settings, installment_plans, installment_payments,
--- recurring_rules, recurring_occurrences
-
-ALTER TABLE expenses        ADD COLUMN workspace_id UUID REFERENCES workspaces(id);
-ALTER TABLE incomes         ADD COLUMN workspace_id UUID REFERENCES workspaces(id);
-ALTER TABLE investments     ADD COLUMN workspace_id UUID REFERENCES workspaces(id);
-ALTER TABLE net_worth_snapshots ADD COLUMN workspace_id UUID REFERENCES workspaces(id);
-ALTER TABLE accounts        ADD COLUMN workspace_id UUID REFERENCES workspaces(id);
-ALTER TABLE account_transfers ADD COLUMN workspace_id UUID REFERENCES workspaces(id);
-ALTER TABLE budget_goals    ADD COLUMN workspace_id UUID REFERENCES workspaces(id);
-ALTER TABLE period_budgets  ADD COLUMN workspace_id UUID REFERENCES workspaces(id);
-ALTER TABLE categories      ADD COLUMN workspace_id UUID REFERENCES workspaces(id);
-ALTER TABLE salary_settings ADD COLUMN workspace_id UUID REFERENCES workspaces(id);
-ALTER TABLE installment_plans ADD COLUMN workspace_id UUID REFERENCES workspaces(id);
-ALTER TABLE installment_payments ADD COLUMN workspace_id UUID REFERENCES workspaces(id);
-ALTER TABLE recurring_rules ADD COLUMN workspace_id UUID REFERENCES workspaces(id);
-ALTER TABLE recurring_occurrences ADD COLUMN workspace_id UUID REFERENCES workspaces(id);
+ALTER TABLE expenses        ADD COLUMN IF NOT EXISTS workspace_id UUID REFERENCES workspaces(id) ON DELETE CASCADE;
+-- repeat for all 14 data tables
 ```
 
-### V28 — Backfill: workspace pessoal para todos os usuários existentes
+### V28 — Backfill: personal workspace for all existing users
 
 ```sql
--- 1. Criar workspace pessoal para cada usuário
-INSERT INTO workspaces (id, name, owner_id, plan)
-SELECT
-  gen_random_uuid(),
-  COALESCE(raw_user_meta_data->>'full_name', email),
-  id,
-  'free'
-FROM auth.users;
-
--- 2. Adicionar cada usuário como owner do seu workspace
-INSERT INTO workspace_members (workspace_id, user_id, role)
-SELECT w.id, w.owner_id, 'owner'
-FROM workspaces w;
-
--- 3. Backfill workspace_id em todos os dados existentes
--- (repetir para cada tabela)
-UPDATE expenses e
-SET workspace_id = w.id
-FROM workspaces w
-WHERE w.owner_id = e.user_id AND e.workspace_id IS NULL;
-
--- (idem para incomes, investments, etc.)
+-- 1. Create personal workspace per existing user
+-- 2. Add each user as owner of their workspace
+-- 3. Backfill workspace_id on all existing data (user_id → workspace)
 ```
 
-### V29 — NOT NULL + índices
+### V29 — NOT NULL + indexes
 
 ```sql
--- Após verificar que backfill está 100%:
 ALTER TABLE expenses ALTER COLUMN workspace_id SET NOT NULL;
--- (idem para todas as tabelas)
-
--- Índices de performance
-CREATE INDEX ON expenses (workspace_id, transaction_date DESC);
-CREATE INDEX ON incomes (workspace_id, created_at DESC);
-CREATE INDEX ON installment_plans (workspace_id);
-CREATE INDEX ON recurring_rules (workspace_id);
+-- repeat for all tables
+CREATE INDEX ON expenses (workspace_id);
+-- repeat for all tables
 ```
 
-### V30 — Atualizar RLS de todas as tabelas
+### V30 — Update RLS on all tables
 
-```sql
--- Padrão para cada tabela: substituir "user_id = auth.uid()"
--- por "workspace_id IN (SELECT workspace_id FROM workspace_members WHERE user_id = auth.uid())"
+Pattern for each table: replace `user_id = auth.uid()` with workspace membership check.
 
--- Exemplo para expenses:
-DROP POLICY IF EXISTS "users can CRUD own expenses" ON expenses;
+### V31 — Fix: system categories + auto-populate triggers
 
-CREATE POLICY "workspace members can read expenses"
-  ON expenses FOR SELECT
-  USING (workspace_id IN (
-    SELECT workspace_id FROM workspace_members WHERE user_id = auth.uid()
-  ));
+- System categories (`user_id IS NULL`) visible to all authenticated users
+- `auto_set_workspace_id()` BEFORE INSERT trigger populates `workspace_id` from `user_id` when omitted
+- Special triggers for `installment_payments` (via `plan_id`) and `recurring_occurrences` (via `rule_id`)
 
-CREATE POLICY "workspace members can insert expenses"
-  ON expenses FOR INSERT
-  WITH CHECK (workspace_id IN (
-    SELECT workspace_id FROM workspace_members
-    WHERE user_id = auth.uid() AND role IN ('owner', 'admin', 'member')
-  ));
+### V32 — Fix: infinite recursion in workspace_members RLS
 
-CREATE POLICY "workspace members can update expenses"
-  ON expenses FOR UPDATE
-  USING (workspace_id IN (
-    SELECT workspace_id FROM workspace_members
-    WHERE user_id = auth.uid() AND role IN ('owner', 'admin', 'member')
-  ));
+Root cause: policies on `workspace_members` queried `workspace_members` itself → infinite loop.
+Fix: three `SECURITY DEFINER` helper functions that bypass RLS:
+- `get_my_workspace_ids()` — all workspace IDs the user belongs to
+- `get_my_workspace_ids_as_writer()` — workspace IDs with write role
+- `get_my_workspace_ids_as_admin()` — workspace IDs with admin/owner role
 
-CREATE POLICY "owner/admin can delete expenses"
-  ON expenses FOR DELETE
-  USING (workspace_id IN (
-    SELECT workspace_id FROM workspace_members
-    WHERE user_id = auth.uid() AND role IN ('owner', 'admin')
-  ));
-
--- Repetir para todas as tabelas com o mesmo padrão.
-```
+All policies (workspace tables + all 14 data tables) replaced to use these functions.
 
 ---
 
-## 🏗️ Arquitetura Flutter
+## 🏗️ Flutter Architecture
 
-### Novos modelos
+### Models (`lib/core/models/workspace.dart`)
 
 ```dart
-// lib/core/models/workspace.dart
 class Workspace {
   final String id;
   final String name;
   final String ownerId;
   final WorkspacePlan plan;            // free | premium
   final DateTime? planExpiresAt;
-  final Map<String, dynamic> settings; // cutoffDay, currency, etc.
+  final Map<String, dynamic> settings;
   final List<WorkspaceMember> members;
+
+  bool get isPremium => ...;
+  WorkspaceRole roleFor(String userId) => ...;
 }
 
 enum WorkspacePlan { free, premium }
@@ -264,72 +174,60 @@ class WorkspaceMember {
 enum WorkspaceRole { owner, admin, member, viewer }
 ```
 
-### Novos providers
+### Providers (`lib/core/providers/workspace_providers.dart`)
 
 ```dart
-// lib/core/providers/workspace_providers.dart
+// Active workspace (persisted in Drift UserSettings)
+final activeWorkspaceProvider = AsyncNotifierProvider<WorkspaceNotifier, Workspace?>();
 
-/// Workspace ativo no momento (persiste em UserSettings Drift)
-final activeWorkspaceProvider = StateNotifierProvider<WorkspaceNotifier, Workspace?>();
+// All user workspaces
+final userWorkspacesProvider = FutureProvider.autoDispose<List<Workspace>>();
 
-/// Todos os workspaces do usuário
-final userWorkspacesProvider = StreamProvider<List<Workspace>>();
-
-/// Plano do workspace ativo (para feature gating)
+// Plan of active workspace (for feature gating)
 final workspacePlanProvider = Provider<WorkspacePlan>((ref) {
-  return ref.watch(activeWorkspaceProvider)?.plan ?? WorkspacePlan.free;
+  return ref.watch(activeWorkspaceProvider).valueOrNull?.plan ?? WorkspacePlan.free;
 });
 
-/// Permissão do usuário no workspace ativo
-final currentUserRoleProvider = Provider<WorkspaceRole>((ref) {
-  final workspace = ref.watch(activeWorkspaceProvider);
-  final userId = Supabase.instance.client.auth.currentUser?.id;
-  return workspace?.members
-    .firstWhere((m) => m.userId == userId, orElse: () => ...)
-    .role ?? WorkspaceRole.viewer;
-});
+// Current user's role in active workspace
+final currentUserRoleProvider = Provider<WorkspaceRole>(...);
 
-/// Guard: retorna true se o usuário pode escrever
+// Guard: true if user can create/edit/delete
 final canWriteProvider = Provider<bool>((ref) {
-  final role = ref.watch(currentUserRoleProvider);
-  return role != WorkspaceRole.viewer;
+  return ref.watch(currentUserRoleProvider) != WorkspaceRole.viewer;
 });
+
+// Shortcut for active workspace ID
+final activeWorkspaceIdProvider = Provider<String?>(...);
 ```
 
-### Repositories — mudança de assinatura
+### Repositories — signature change
 
 ```dart
-// Todos os repositories passam a aceitar workspaceId
-// em vez de depender de auth.uid() implícito via RLS.
-// O RLS ainda é a fonte de verdade de segurança —
-// o workspaceId no query é apenas para clareza e índice.
+// All repositories now accept workspaceId
+// RLS is still the security source of truth —
+// workspaceId in queries is for clarity and index usage only.
 
 class ExpenseRepository {
-  Future<List<Expense>> getAll({required String workspaceId}) async {
-    return await _supabase
-      .from('expenses')
-      .select()
-      .eq('workspace_id', workspaceId)
-      .order('transaction_date', ascending: false);
+  final String? workspaceId;
+
+  Stream<List<Expense>> watchAll() {
+    if (workspaceId != null) {
+      return _supabase.from('expenses').stream(...).eq('workspace_id', workspaceId);
+    }
+    return _supabase.from('expenses').stream(...).eq('user_id', userId);
   }
 }
 ```
 
-### Feature gating — `FeatureGate` widget
+### Feature Gating — `FeatureGate` widget (`lib/core/widgets/feature_gate.dart`)
 
 ```dart
-// lib/core/widgets/feature_gate.dart
-
 class FeatureGate extends ConsumerWidget {
   const FeatureGate({
     required this.feature,
     required this.child,
     this.fallback,
   });
-
-  final PremiumFeature feature;
-  final Widget child;
-  final Widget? fallback;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -346,247 +244,134 @@ enum PremiumFeature {
   multiWorkspace,
   advancedAnalytics,
   cashflowProjections,
-  exportPdf;
+  exportPdf,
+  unlimitedInstallments,
+  recurringDetection;
 
   bool isAllowed(WorkspacePlan plan) => switch (this) {
-    // Tudo free por enquanto — descomentar conforme monetização
+    // Everything free for now — uncomment when monetizing
     _ => true,
-    // advancedForecasting => plan == WorkspacePlan.premium,
-    // aiInsights          => plan == WorkspacePlan.premium,
-    // multiWorkspace      => plan == WorkspacePlan.premium,
   };
 }
 ```
 
-### Workspace switcher — UI
+### Workspace Switcher UI
 
-```dart
-// Aparece no header/drawer quando o usuário tem >1 workspace
-// No WorkspaceSwitcherSheet:
-//   - Lista workspaces com badge de plano
-//   - "Criar novo workspace" (premium gate)
-//   - "Convidar membro" (owner/admin only)
+```
+WorkspaceAppBarChip  — chip in dashboard AppBar, only visible when >1 workspace
+WorkspaceSwitcherSheet — lists workspaces, switch active, go to members, create new
+CreateWorkspaceSheet   — name input, creates + auto-switches
+InviteMemberSheet      — email + role picker, generates invite link
+MembersScreen          — list members, change roles, remove (owner/admin only)
 ```
 
 ---
 
-## 🗺️ Estratégia de Implementação (fases)
+## 🗺️ Implementation Strategy (phases)
 
-### PHASE 1 — Fundação invisível (sem breaking changes)
-**Objetivo**: Infraestrutura criada, UX idêntica para usuários existentes.
-**Risco**: Baixo — nada quebra, nenhuma feature removida.
+### PHASE 1 — Invisible foundation ✅ COMPLETE (2026-05-09)
+**Goal**: Infrastructure created, UX identical for existing users.
+**Risk**: Low — nothing breaks, no features removed.
 
 ```
-1.1 — Executar V26: criar workspaces + workspace_members + workspace_invites
-1.2 — Executar V27: adicionar workspace_id (nullable) a todas as tabelas
-1.3 — Executar V28: backfill (workspace pessoal para cada usuário, linkar dados)
-1.4 — Verificar: COUNT(*) WHERE workspace_id IS NULL = 0 em todas as tabelas
-1.5 — Executar V29: NOT NULL + índices
-1.6 — Executar V30: atualizar RLS (mais crítico — testar em staging)
-1.7 — Flutter: criar Workspace model + WorkspaceMember + WorkspaceRole
-1.8 — Flutter: criar workspaceRepositoryProvider
-1.9 — Flutter: criar activeWorkspaceProvider (auto-seleciona único workspace)
-1.10 — Flutter: passar workspaceId em todos os repository calls
+1.1 — V26: create workspaces + workspace_members + workspace_invites
+1.2 — V27: add workspace_id (nullable) to all tables
+1.3 — V28: backfill (personal workspace per user, link data)
+1.4 — Verify: COUNT(*) WHERE workspace_id IS NULL = 0 on all tables
+1.5 — V29: NOT NULL + indexes
+1.6 — V30: update RLS (most critical — tested in staging)
+1.7 — V31: fix system categories + auto-populate triggers
+1.8 — V32: fix RLS infinite recursion (SECURITY DEFINER helpers)
+1.9 — Flutter: Workspace model + WorkspaceMember + WorkspaceRole
+1.10 — Flutter: workspaceRepositoryProvider
+1.11 — Flutter: activeWorkspaceProvider (auto-selects sole workspace)
+1.12 — Flutter: pass workspaceId in all repository calls
 ```
 
-✅ **Critério de aceite**: App funciona exatamente igual para usuário solo.
-🧪 **Teste**: login → ver dados → criar expense → ver no dashboard. Nada mudou.
+✅ **Acceptance criterion**: App works exactly the same for solo user.
 
 ---
 
-### PHASE 2 — Workspace switcher + convites
-**Objetivo**: Usuário pode criar e compartilhar workspaces.
-**Risco**: Médio — nova UX, mas aditiva (não remove nada).
+### PHASE 2 — Workspace switcher + invites ✅ COMPLETE (2026-05-09)
+**Goal**: User can create and share workspaces.
+**Risk**: Medium — new UX, but additive (removes nothing).
 
 ```
-2.1 — Flutter: WorkspaceSwitcherSheet (drawer ou header tap)
-2.2 — Flutter: CreateWorkspaceSheet (nome, emoji)
+2.1 — Flutter: WorkspaceSwitcherSheet (AppBar chip tap)
+2.2 — Flutter: CreateWorkspaceSheet (name input)
 2.3 — Flutter: InviteMemberSheet (email + role selector)
-2.4 — Supabase: Edge Function "send-invite-email" (link com token)
-2.5 — Flutter: deep link handling para aceitar convite
-2.6 — Flutter: MembersScreen (listar membros, mudar role, remover)
-2.7 — Flutter: WorkspaceSettingsSheet (nome, cutoffDay por workspace)
-2.8 — Flutter: badge de workspace no AppBar quando >1 workspace
+2.4 — Flutter: MembersScreen (list members, change role, remove)
+2.5 — Flutter: WorkspaceAppBarChip — workspace badge in AppBar when >1 workspace
+2.6 — Flutter: desktop NavRail header shows workspace chip when >1 workspace
 ```
 
-✅ **Critério de aceite**: casal consegue criar workspace compartilhado,
-ver as despesas um do outro em tempo real, e convidar via link.
+✅ **Acceptance criterion**: A couple can create a shared workspace, see each other's expenses in real time, and invite via link.
 
 ---
 
-### PHASE 3 — Permissões + Feature gating
-**Objetivo**: Controle fino de quem pode fazer o quê + infraestrutura freemium.
-**Risco**: Baixo — é additive.
+### PHASE 3 — Permissions + Feature gating ✅ COMPLETE (2026-05-09)
+**Goal**: Fine-grained control of who can do what + freemium infrastructure.
+**Risk**: Low — additive.
 
 ```
-3.1 — Flutter: FeatureGate widget implementado (tudo free por padrão)
-3.2 — Flutter: canWriteProvider — guard para viewers
-3.3 — Flutter: desabilitar botões de edição para viewers
-3.4 — Flutter: _UpgradePrompt placeholder (para quando monetizar)
-3.5 — Flutter: PremiumFeature enum com todos os gates definidos
-3.6 — Supabase: workspaces.plan field ativo (free/premium)
-3.7 — Supabase: `check_premium_feature` helper function para RLS
+3.1 — Flutter: FeatureGate widget (everything free by default)
+3.2 — Flutter: canWriteProvider — guard for viewers
+3.3 — Flutter: FABs hidden for viewers (Dashboard, Transactions, Installments, Recurring, Budget, Categories, Accounts)
+3.4 — Flutter: swipe-to-delete disabled for viewers
+3.5 — Flutter: edit onTap disabled for viewers
+3.6 — Flutter: _UpgradePrompt placeholder (for when monetizing)
+3.7 — Flutter: PremiumFeature enum with all gates defined
 ```
 
-✅ **Critério de aceite**: viewer consegue ver mas não editar.
-Feature gates existem no código mas tudo permanece desbloqueado.
+✅ **Acceptance criterion**: Viewer can see but not edit. Feature gates exist in code but everything remains unlocked.
 
 ---
 
-### PHASE 4 — Monetização (futuro, quando decidir)
-**Objetivo**: Ativar paywall para features premium.
-**Risco**: Alto para retenção — fazer gradualmente.
+### PHASE 4 — Monetization (future, when ready)
+**Goal**: Activate paywall for premium features.
+**Risk**: High for retention — do gradually.
 
 ```
-4.1 — Integrar Stripe (RevenueCat recomendado para Flutter)
-4.2 — Webhook Stripe → UPDATE workspaces SET plan = 'premium'
-4.3 — Ligar PremiumFeature.isAllowed() às features escolhidas
-4.4 — PaywallScreen com tabela de features free vs premium
-4.5 — Pricing: R$X/mês ou R$Y/ano por workspace
-4.6 — Período trial: 14 dias premium para novos workspaces
+4.1 — Integrate Stripe (RevenueCat recommended for Flutter)
+4.2 — Stripe webhook → UPDATE workspaces SET plan = 'premium'
+4.3 — Enable PremiumFeature.isAllowed() for chosen features
+4.4 — PaywallScreen with free vs premium feature table
+4.5 — Pricing: R$X/month or R$Y/year per workspace
+4.6 — Trial period: 14 days premium for new workspaces
 ```
 
 ---
 
-## 💸 Modelo Freemium Detalhado
+## 💸 Detailed Freemium Model
 
-### Free (para sempre)
-| Feature | Notas |
+### Free (forever)
+| Feature | Notes |
 |---|---|
-| Tracking de gastos/receitas | Ilimitado |
-| Orçamento por categoria | Ilimitado |
-| Dashboard principal | Completo |
-| Categorias custom | Ilimitado |
-| Recorrentes | Ilimitado |
-| Parcelamentos | Ilimitado |
-| Sync offline | Completo |
-| 1 workspace | Pessoal |
+| Expense/income tracking | Unlimited |
+| Budget by category | Unlimited |
+| Main dashboard | Full |
+| Custom categories | Unlimited |
+| Recurring expenses | Unlimited |
+| Installments | Unlimited |
+| Offline sync | Full |
+| 1 workspace | Personal |
 
-### Premium (quando ativar)
-| Feature | Justificativa |
+### Premium (when activated)
+| Feature | Justification |
 |---|---|
-| Forecasting avançado (90 dias) | Diferenciador único — "copiloto" |
-| IA Insights (IntelligenceLayer) | Alto valor percebido |
-| Projeção de liquidez | Útil para planning avançado |
-| Analytics avançados | Heavy users |
-| Multi workspace | Famílias, freelancers |
-| Export PDF | Declaração IR, contabilidade |
-| Cashflow chart | Já implementado |
-
-> **Decisão atual**: tudo FREE. Os gates existem no código
-> mas `isAllowed()` retorna `true` para todos.
-> Quando monetizar, basta descomentar as regras.
+| Multiple workspaces | Core sharing feature |
+| Workspace members | Collaboration |
+| Advanced forecasting | Full cashflow projections |
+| AI insights | Intelligence layer |
+| PDF/Excel export | Power user feature |
+| Priority support | Retention |
 
 ---
 
-## ⚠️ Riscos e Mitigações
+## 🔒 Security Notes
 
-| Risco | Probabilidade | Impacto | Mitigação |
-|---|---|---|---|
-| Backfill incomplete (V28) | Média | Dados perdidos | Verificar COUNT IS NULL antes de V29 |
-| RLS atualizado quebrando queries (V30) | Alta | App offline | Testar em staging com usuário real primeiro |
-| Flutter repositories sem workspaceId | Alta | Crash / empty data | Rodar em ordem: DB → providers → repositories → UI |
-| Conflito de dados em workspace compartilhado | Média | UX ruim | Usar `created_by UUID` nos registros para atribuição |
-| Performance: subquery workspace_members no RLS | Média | Lentidão | Materializar view `user_workspaces` para queries frequentes |
-| Usuário sem workspace (bug de onboarding) | Baixa | App quebrado | Trigger Supabase: `on auth.users INSERT → create personal workspace` |
-
----
-
-## 🔧 Trigger de Onboarding (crítico)
-
-```sql
--- Garante que todo usuário novo ganha workspace pessoal automaticamente.
--- Sem isso, um novo signup resulta em app vazio sem workspace.
-
-CREATE OR REPLACE FUNCTION create_personal_workspace()
-RETURNS TRIGGER AS $$
-DECLARE
-  new_workspace_id UUID;
-BEGIN
-  INSERT INTO workspaces (name, owner_id, plan)
-  VALUES (
-    COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
-    NEW.id,
-    'free'
-  )
-  RETURNING id INTO new_workspace_id;
-
-  INSERT INTO workspace_members (workspace_id, user_id, role)
-  VALUES (new_workspace_id, NEW.id, 'owner');
-
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-CREATE TRIGGER on_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION create_personal_workspace();
-```
-
----
-
-## 📊 Mudanças no CLAUDE.md
-
-Após cada fase, atualizar:
-- Status da phase (🔴 pendente → 🟡 em progresso → 🟢 complete)
-- Migrações aplicadas (V26–V30)
-- Providers adicionados
-
----
-
-## ✅ Checklist por Fase
-
-### Phase 1 — Fundação
-- [x] V26 escrita (workspaces + workspace_members + invites + trigger) ✅ 2026-05-09
-- [x] V27 escrita (workspace_id nullable em 14 tabelas) ✅ 2026-05-09
-- [x] V28 escrita (backfill — workspace pessoal + linkar dados) ✅ 2026-05-09
-- [x] V29 escrita (NOT NULL + índices) ✅ 2026-05-09
-- [x] V30 escrita (RLS atualizado — 4 políticas × 14 tabelas) ✅ 2026-05-09
-- [x] V26–V30 aplicadas em produção (executar no Supabase SQL Editor)
-- [x] V28 verificada em produção (COUNT IS NULL = 0 em todas as tabelas)
-- [x] Trigger `create_personal_workspace` ativo
-- [x] Workspace model Dart criado (`lib/core/models/workspace.dart`) ✅ 2026-05-09
-- [x] WorkspaceRepository criado (`lib/core/repositories/workspace_repository.dart`) ✅ 2026-05-09
-- [x] workspaceRepositoryProvider criado (`lib/core/providers/workspace_providers.dart`) ✅ 2026-05-09
-- [x] activeWorkspaceProvider criado (persiste em Drift UserSettings) ✅ 2026-05-09
-- [x] workspacePlanProvider + currentUserRoleProvider + canWriteProvider ✅ 2026-05-09
-- [x] FeatureGate widget + PremiumFeature enum (`lib/core/widgets/feature_gate.dart`) ✅ 2026-05-09
-- [x] Repositories críticos aceitam workspaceId via construtor ✅ 2026-05-09
-  - `ExpenseRepository`, `IncomeRepository`, `CategoryRepository`
-  - `InstallmentPlanRepository`, `RecurringRulesRepository`
-- [x] Providers em providers.dart passam `activeWorkspaceIdProvider` ✅ 2026-05-09
-- [x] `Category` model tem campo `workspaceId` (aditivo, nullable) ✅ 2026-05-09
-- [ ] App funciona igual para usuário solo (testar após aplicar V26–V30)
-
-### Phase 2 — Workspace sharing
-- [ ] WorkspaceSwitcherSheet
-- [ ] CreateWorkspaceSheet
-- [ ] InviteMemberSheet + email via Edge Function
-- [ ] Deep link para aceitar convite
-- [ ] MembersScreen
-- [ ] WorkspaceSettingsSheet
-- [ ] Badge no AppBar (multi-workspace)
-- [ ] Teste: casal compartilhando workspace em tempo real
-
-### Phase 3 — Permissões + Feature gating
-- [ ] FeatureGate widget
-- [ ] canWriteProvider
-- [ ] Viewers não conseguem editar
-- [ ] PremiumFeature enum (tudo free)
-- [ ] _UpgradePrompt placeholder
-- [ ] workspaces.plan ativo no Supabase
-
-### Phase 4 — Monetização (quando decidir)
-- [ ] RevenueCat integrado
-- [ ] Webhook Stripe → plan update
-- [ ] PaywallScreen
-- [ ] Trial de 14 dias
-- [ ] PremiumFeature.isAllowed() ativado para features escolhidas
-
----
-
-## 📎 Referências
-
-- Planos existentes: `plans/financial_engine.md`, `plans/offline_sync.md`
-- ADR de decisões: `docs/decisions/`
-- Stack: Flutter 3 / Dart 3 · Riverpod 2 · Drift · Supabase · Material 3
+- **RLS is the security boundary** — workspace_id in queries is for performance only
+- **SECURITY DEFINER helpers** — `get_my_workspace_ids*()` bypass RLS safely to prevent self-referential recursion
+- **Viewer enforcement** — implemented in Flutter UI (FABs, swipe, onTap) AND enforced at DB level via RLS INSERT/UPDATE/DELETE policies that require writer role
+- **Invite tokens** — expire in 7 days, one-use (marked as accepted)
+- **Owner cannot be removed** — `workspace_members` DELETE policy allows owner to remove anyone except themselves (handled in UI)

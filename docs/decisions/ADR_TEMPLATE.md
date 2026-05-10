@@ -1,46 +1,46 @@
-# ADR-XXX: [Título de la Decisión]
+# ADR-XXX: [Decision Title]
 
-**Fecha**: YYYY-MM-DD
-**Estado**: Propuesto | Aceptado | Deprecado | Supersedido por ADR-XXX
-**Área**: Domain | Infrastructure | UI | Database | Architecture
+**Date**: YYYY-MM-DD
+**Status**: Proposed | Accepted | Deprecated | Superseded by ADR-XXX
+**Area**: Domain | Infrastructure | UI | Database | Architecture
 
 ---
 
-## Contexto
+## Context
 
-¿Qué problema se estaba enfrentando? ¿Qué fuerzas entraron en juego?
-¿Por qué era necesaria una decisión arquitectónica?
+What problem was being faced? What forces came into play?
+Why was an architectural decision necessary?
 
-## Decisión
+## Decision
 
-¿Qué se decidió hacer? Ser específico y concreto.
+What was decided? Be specific and concrete.
 
-## Consecuencias
+## Consequences
 
-### Positivas
+### Positive
 - ...
 
-### Negativas / Trade-offs
+### Negative / Trade-offs
 - ...
 
-### Riesgos aceptados
+### Accepted Risks
 - ...
 
-## Alternativas Consideradas
+## Alternatives Considered
 
-### Alternativa 1: [nombre]
-- ¿Por qué se descartó?
+### Alternative 1: [name]
+- Why it was discarded?
 
-### Alternativa 2: [nombre]
-- ¿Por qué se descartó?
+### Alternative 2: [name]
+- Why it was discarded?
 
-## Criterios de Éxito
+## Success Criteria
 
-¿Cómo sabremos que esta decisión fue correcta?
-- [ ] Criterio medible 1
-- [ ] Criterio medible 2
+How will we know this decision was correct?
+- [ ] Measurable criterion 1
+- [ ] Measurable criterion 2
 
-## Referencias
+## References
 
-- Plan relacionado: `plans/X.md`
-- Código afectado: `lib/...`
+- Related plan: `plans/X.md`
+- Affected code: `lib/...`

@@ -1,16 +1,16 @@
-# Planes Completados
+# Completed Plans
 
-Esta carpeta es el **archivo** de planes que ya fueron implementados en su totalidad.
-Los planes activos (en progreso o no iniciados) están en `plans/` en la raíz del proyecto.
+This folder is the **archive** of plans that have been fully implemented.
+Active plans (in progress or not yet started) are in `plans/` at the project root.
 
-## Convención
+## Convention
 
-Al completar un plan:
-1. Mover el archivo de `plans/X.md` a `docs/plans/X_completed.md`
-2. Agregar fecha de completitud y resumen de cambios al inicio del archivo
-3. Actualizar `docs/roadmaps/product_roadmap.md` → mover item a "Completado"
-4. Crear ADR si no existe en `docs/decisions/`
+When completing a plan:
+1. Move the file from `plans/X.md` to `docs/plans/X_completed.md`
+2. Add completion date and change summary at the beginning of the file
+3. Update `docs/roadmaps/product_roadmap.md` → move item to "Completed"
+4. Create an ADR if one doesn't exist in `docs/decisions/`
 
-## Archivo
+## Archive
 
-*(Vacío por ahora — se llenará con el tiempo)*
+*(Empty for now — will fill over time)*

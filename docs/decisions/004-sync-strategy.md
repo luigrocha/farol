@@ -1,79 +1,79 @@
 # ADR-004: Sync Strategy — Optimistic Updates + Persistent Queue
 
-**Fecha**: 2026-05-07
-**Estado**: Propuesto — pendiente de implementación
-**Área**: Infrastructure · Database
+**Date**: 2026-05-07
+**Status**: Implemented ✅
+**Area**: Infrastructure · Database
 
 ---
 
-## Contexto
+## Context
 
-Farol se define como "offline-first" en el CLAUDE.md original, pero en la práctica los repositories usan `SupabaseClient` directamente sin ninguna estrategia offline. Si el usuario está en el metro sin internet e intenta registrar un gasto, la operación falla silenciosamente.
+Farol is defined as "offline-first" in the original CLAUDE.md, but in practice the repositories use `SupabaseClient` directly without any offline strategy. If the user is on the subway without internet and tries to record an expense, the operation fails silently.
 
-El dilema: cuánta complejidad de sincronización justifica la base de usuarios actual?
+The dilemma: how much sync complexity justifies the current user base?
 
-## Decisión
+## Decision
 
-**Estrategia: Optimistic Updates + Persistent Operation Queue.**
+**Strategy: Optimistic Updates + Persistent Operation Queue.**
 
-No es offline-first extremo (tipo Notion con CRDTs). Es **offline-resilient realista**:
+This is not extreme offline-first (like Notion with CRDTs). It is **realistic offline-resilient**:
 
-1. **Aplicar inmediatamente al estado local** (Drift) → UI responde instantáneamente
-2. **Si hay red → ejecutar en Supabase** → confirmación remota
-3. **Si no hay red → encolar en Drift** → retry automático al reconectar
-4. **Idempotency keys (UUID)** → nunca duplicar en retry
-5. **Máx 3 retries con backoff exponencial** → si falla → marcar failed, notificar usuario
+1. **Apply immediately to local state** (Drift) → UI responds instantly
+2. **If network available → execute in Supabase** → remote confirmation
+3. **If no network → queue in Drift** → automatic retry on reconnection
+4. **Idempotency keys (UUID)** → never duplicate on retry
+5. **Max 3 retries with exponential backoff** → if fails → mark failed, notify user
 
-### Lo que NO incluye
+### What is NOT included
 
-- CRDTs (conflict-free replicated data types) → complejidad innecesaria para un único dispositivo
-- Sincronización bidireccional en tiempo real → polling al abrir + sync events es suficiente
-- Resolución de conflictos sofisticada → Last-Write-Wins para el 99% de casos
+- CRDTs (conflict-free replicated data types) → unnecessary complexity for a single device
+- Real-time bidirectional sync → polling on open + sync events is sufficient
+- Sophisticated conflict resolution → Last-Write-Wins for 99% of cases
 
-## Consecuencias
+## Consequences
 
-### Positivas
-- Usuario puede registrar gastos sin internet → datos no se pierden
-- UI siempre responde instantáneamente (optimistic)
-- Drift como cache coherente del período actual
-- Simple de entender e implementar
+### Positive
+- User can record expenses without internet → data is not lost
+- UI always responds instantly (optimistic)
+- Drift as a coherent cache of the current period
+- Simple to understand and implement
 
-### Negativas / Trade-offs
-- La queue puede crecer si el usuario está offline por mucho tiempo
-- Los datos locales y remotos pueden divergir temporalmente
-- Errores de sync tardan en ser visibles al usuario
+### Negative / Trade-offs
+- The queue can grow if the user is offline for a long time
+- Local and remote data may temporarily diverge
+- Sync errors take time to be visible to the user
 
-### Riesgos aceptados
-- **Queue overflow**: si el usuario registra >500 operaciones offline → trim oldest. Muy improbable.
-- **Idempotency key collisions**: UUID v4 → probabilidad astronómicamente baja.
-- **Supabase rate limiting en batch sync**: mitigado con 100ms delay entre requests.
+### Accepted Risks
+- **Queue overflow**: if the user records >500 operations offline → trim oldest. Very unlikely.
+- **Idempotency key collisions**: UUID v4 → astronomically low probability.
+- **Supabase rate limiting on batch sync**: mitigated with 100ms delay between requests.
 
-## Alternativas Consideradas
+## Alternatives Considered
 
-### Alternativa 1: Offline-first puro (CRDT/Automerge)
-Cada objeto tiene un CRDT. Sync bidireccional automático.
+### Alternative 1: Pure offline-first (CRDT/Automerge)
+Each object has a CRDT. Automatic bidirectional sync.
 
-**Descartada porque**: Complejidad de implementación muy alta (semanas), Drift no soporta CRDTs nativamente, overkill para un único dispositivo por usuario.
+**Discarded because**: Very high implementation complexity (weeks), Drift doesn't natively support CRDTs, overkill for a single device per user.
 
-### Alternativa 2: Solo online (estado actual)
-Mantener el estado actual: Supabase directo, sin cache local.
+### Alternative 2: Online-only (current state)
+Keep the current state: Supabase direct, no local cache.
 
-**Descartada porque**: Un usuario en el metro no puede registrar gastos. Los datos se pierden si hay falla de red. No acceptable para una app de finanzas personales.
+**Discarded because**: A user on the subway can't record expenses. Data is lost if there's a network failure. Unacceptable for a personal finance app.
 
-### Alternativa 3: Firebase Firestore (offline-first nativo)
-Migrar de Supabase a Firestore que tiene offline-first built-in.
+### Alternative 3: Firebase Firestore (native offline-first)
+Migrate from Supabase to Firestore which has offline-first built-in.
 
-**Descartada porque**: Migración masiva del backend, Supabase tiene ventajas (SQL real, RLS, RPCs), el costo de Firestore escala diferente, la app ya tiene inversión significativa en Supabase.
+**Discarded because**: Massive backend migration, Supabase has advantages (real SQL, RLS, RPCs), Firestore cost scales differently, the app already has significant investment in Supabase.
 
-## Criterios de Éxito
+## Success Criteria
 
-- [ ] Usuario puede registrar gasto sin internet → aparece inmediatamente en UI
-- [ ] Al reconectar → gasto aparece en Supabase → sin duplicados
-- [ ] 0 pérdida de datos en escenario: gasto offline → app cerrada → app abierta → reconexión
-- [ ] Queue se limpia automáticamente de items completados (no crece indefinidamente)
+- [x] User can record expense without internet → appears immediately in UI
+- [x] On reconnection → expense appears in Supabase → no duplicates
+- [x] 0 data loss in scenario: offline expense → app closed → app opened → reconnected
+- [x] Queue automatically clears completed items (doesn't grow indefinitely)
 
-## Referencias
+## References
 
-- Plan de implementación: `plans/offline_sync.md`
-- Depende de: `plans/financial_engine.md` (entidades del dominio)
-- Revisitar si hay usuarios con múltiples dispositivos
+- Implementation plan: `plans/offline_sync.md`
+- Depends on: `plans/financial_engine.md` (domain entities)
+- Revisit if there are users with multiple devices

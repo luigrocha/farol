@@ -1,87 +1,87 @@
-# ADR-002: FinancialSnapshot como Única Fuente de Verdad del Dashboard
+# ADR-002: FinancialSnapshot as the Single Source of Truth for the Dashboard
 
-**Fecha**: 2026-05-08
-**Estado**: Implementado ✅
-**Área**: Domain · Providers · UI
+**Date**: 2026-05-08
+**Status**: Implemented ✅
+**Area**: Domain · Providers · UI
 
 ---
 
-## Contexto
+## Context
 
-El dashboard actual tiene múltiples widgets que calculan sus propias versiones del estado financiero de forma independiente:
+The previous dashboard had multiple widgets that independently calculated their own version of the financial state:
 
-- `KpiGrid` calcula totales de expenses via su propio provider
-- `PeriodBalanceHero` calcula el balance con lógica propia
-- `HealthGaugeCard` llama directamente a `FinancialCalculatorService.calculateHealthScore()` con inputs que puede tener incompletos
+- `KpiGrid` calculated expense totals via its own provider
+- `PeriodBalanceHero` calculated the balance with its own logic
+- `HealthGaugeCard` called `FinancialCalculatorService.calculateHealthScore()` directly with potentially incomplete inputs
 
-El `FinancialCalculatorService` es una colección de métodos estáticos sin estado. No existe un "snapshot" del estado financiero del período — cada widget construye su propia visión parcial.
+`FinancialCalculatorService` was a collection of static methods with no state. There was no "snapshot" of the financial state of the period — each widget built its own partial view.
 
-Esto genera: posibles inconsistencias entre widgets, queries duplicadas a la misma fuente de datos, dificultad para agregar forecasting (¿en qué widget vive?), y complejidad para cachear el estado financiero.
+This caused: potential inconsistencies between widgets, duplicate queries to the same data source, difficulty adding forecasting (which widget owns it?), and complexity in caching the financial state.
 
-## Decisión
+## Decision
 
-**Crear `FinancialSnapshot` como la única fuente de verdad** del estado financiero de un período. El `FinancialEngine` produce este snapshot. Todos los widgets del dashboard lo consumen como único observable.
+**Create `FinancialSnapshot` as the single source of truth** of the financial state for a period. The `FinancialEngine` produces this snapshot. All dashboard widgets consume it as the single observable.
 
 ```dart
-// Antes: cada widget tiene su provider propio
+// Before: each widget has its own provider
 class KpiGrid extends ConsumerWidget {
   Widget build(context, ref) {
-    final expenses = ref.watch(expensesProvider(period)); // query propia
+    final expenses = ref.watch(expensesProvider(period)); // own query
     // ...
   }
 }
 
-// Después: todos consumen el mismo snapshot
+// After: all consume the same snapshot
 class KpiGrid extends ConsumerWidget {
   final FinancialSnapshot snapshot;
   Widget build(context, ref) {
-    // snapshot.totalSpent, snapshot.healthScore, etc. — ya calculados
+    // snapshot.totalSpent, snapshot.healthScore, etc. — already calculated
   }
 }
 ```
 
-El `FinancialSnapshot` incluye: balances (income/expenses/current), envelopes, health score, savings rate, obligaciones futuras. En versiones futuras: burn rate, projected balance, insights.
+The `FinancialSnapshot` includes: balances (income/expenses/current), envelopes, health score, savings rate, future obligations. In future versions: burn rate, projected balance, insights.
 
-## Consecuencias
+## Consequences
 
-### Positivas
-- Una sola fuente de verdad → imposible tener widgets mostrando números inconsistentes
-- Cache centralizado → un solo TTL, invalidación coordinada
-- Forecasting tiene un lugar natural de vivir (extiende FinancialSnapshot)
-- Tests más simples: testear el engine, no cada widget
-- Performance: N queries → 1 snapshot bien construido
+### Positive
+- Single source of truth → impossible for widgets to show inconsistent numbers
+- Centralized cache → single TTL, coordinated invalidation
+- Forecasting has a natural home (extends FinancialSnapshot)
+- Simpler tests: test the engine, not each widget
+- Performance: N queries → 1 well-constructed snapshot
 
-### Negativas / Trade-offs
-- Refactoring del dashboard requiere coordinar cambios en 4-5 widgets
-- El snapshot puede ser más pesado de calcular que los queries individuales simples
-- Si un campo del snapshot cambia, todos los widgets que lo usan necesitan actualización
+### Negative / Trade-offs
+- Dashboard refactoring requires coordinating changes across 4-5 widgets
+- The snapshot may be heavier to compute than individual simple queries
+- If one field of the snapshot changes, all widgets using it need updating
 
-### Riesgos aceptados
-- **Loading state**: mientras el snapshot carga, los widgets muestran skeleton. Mitigado con `FinancialSnapshot.empty()` factory.
-- **Granularidad de rebuild**: si un solo campo cambia, todos los widgets que usan el snapshot se rebuilden. Mitigado con `ref.select()` de Riverpod.
+### Accepted Risks
+- **Loading state**: while the snapshot loads, widgets show skeleton. Mitigated with `FinancialSnapshot.empty()` factory.
+- **Rebuild granularity**: if one field changes, all widgets using the snapshot rebuild. Mitigated with Riverpod's `ref.select()`.
 
-## Alternativas Consideradas
+## Alternatives Considered
 
-### Alternativa 1: Múltiples providers especializados (estado actual)
-Mantener un provider por tipo de dato (incomes, expenses, health, etc.).
+### Alternative 1: Multiple specialized providers (previous state)
+Keep one provider per data type (incomes, expenses, health, etc.).
 
-**Descartada porque**: No escala con forecasting. Los datos son interdependientes (el health score necesita income + expenses + installments + emergency fund). Mantenerlos separados garantiza inconsistencias eventuales.
+**Discarded because**: Doesn't scale with forecasting. The data is interdependent (health score needs income + expenses + installments + emergency fund). Keeping them separate guarantees eventual inconsistencies.
 
-### Alternativa 2: Un BLoC global de estado financiero
-Usar BLoC en vez de Riverpod para el estado del dashboard.
+### Alternative 2: A global financial state BLoC
+Use BLoC instead of Riverpod for dashboard state.
 
-**Descartada porque**: Farol usa Riverpod en todo el codebase. Introducir BLoC crea inconsistencia arquitectónica. El problema se resuelve con Riverpod correctamente.
+**Discarded because**: Farol uses Riverpod throughout the codebase. Introducing BLoC creates architectural inconsistency. The problem is solved with Riverpod correctly.
 
-## Criterios de Éxito
+## Success Criteria
 
-- [ ] `DashboardScreen` hace exactamente 1 `ref.watch()` para obtener el estado financiero
-- [ ] `KpiGrid`, `PeriodBalanceHero`, `HealthGaugeCard` reciben `FinancialSnapshot` como parámetro
-- [ ] 0 queries duplicadas entre widgets del dashboard para el mismo período
-- [ ] Test: `FinancialSnapshot.totalIncome - totalSpent == currentBalance` siempre verdadero
+- [x] `DashboardScreen` makes exactly 1 `ref.watch()` to get the financial state
+- [x] `KpiGrid`, `PeriodBalanceHero`, `HealthGaugeCard` receive `FinancialSnapshot` as a parameter
+- [x] 0 duplicate queries between dashboard widgets for the same period
+- [x] Test: `FinancialSnapshot.totalIncome - totalSpent == currentBalance` always true
 
-## Referencias
+## References
 
-- Plan de implementación: `plans/financial_engine.md`
-- Código afectado: `lib/features/dashboard/`
-- Depende de: ADR-001 (categorías unificadas)
-- Habilita: ADR-003 (forecasting)
+- Implementation plan: `plans/financial_engine.md`
+- Affected code: `lib/features/dashboard/`
+- Depends on: ADR-001 (unified categories)
+- Enables: ADR-003 (forecasting)

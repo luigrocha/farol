@@ -1,87 +1,88 @@
-# ADR-007: Intelligence Layer — Regras Deterministas, Não ML
+# ADR-007: Intelligence Layer — Deterministic Rules, Not ML
 
-**Fecha**: 2026-05-07
-**Estado**: Propuesto — pendiente de implementación
-**Área**: Domain · Analytics · UI
+**Date**: 2026-05-07
+**Status**: Implemented ✅
+**Area**: Domain · Analytics · UI
 
 ---
 
-## Contexto
+## Context
 
-Com o Financial Engine + Forecasting em funcionamento, o Farol tem todos os dados necessários para gerar insights financeiros contextuais. A questão arquitetônica é: como gerar esses insights de forma que sejam úteis, confiáveis e não-invasivos?
+With the Financial Engine + Forecasting running, Farol has all the data needed to generate contextual financial insights. The architectural question is: how to generate these insights in a way that is useful, reliable, and non-invasive?
 
-Duas abordagens possíveis: (1) Machine Learning / LLM, ou (2) regras deterministas baseadas em especialistas. A escolha afeta custo, latência, confiabilidade, offline support e complexidade de manutenção.
+Two possible approaches: (1) Machine Learning / LLM, or (2) deterministic expert rules. The choice affects cost, latency, reliability, offline support, and maintenance complexity.
 
-## Decisão
+## Decision
 
-**Intelligence Layer v1 é 100% determinista e baseada em regras**. Doze regras core operam sobre o `FinancialSnapshot` e dados históricos para produzir `List<FinancialInsight>`. Sem chamadas a APIs externas, sem modelos de ML, sem treinamento necessário.
+**Intelligence Layer v1 is 100% deterministic and rule-based**. Twelve core rules operate on the `FinancialSnapshot` and historical data to produce `List<FinancialInsight>`. No external API calls, no ML models, no training required.
 
-As regras são:
-1. Risco de saldo negativo ao fechar o período
-2. Liquidez crítica nos próximos 7 dias
-3. Categoria acima do ritmo histórico (spike)
-4. Cobrança duplicada provável
-5. Subscription creep (assinaturas crescendo)
-6. Oportunidade de economia (categoria cronicamente acima do orçamento)
-7. Oportunidade de investimento (saldo projetado > R$500)
-8. Conquista: streak de períodos dentro do orçamento
-9. Conquista: melhor poupança do histórico
-10. Redução de dívidas (parcelas ativas diminuíram)
-11. Categoria problemática voltou ao normal
-12. Merchant desconhecido por valor alto
+The rules are:
+1. Risk of negative balance at end of period
+2. Critical liquidity in the next 7 days
+3. Category above historical pace (spike)
+4. Probable duplicate charge
+5. Subscription creep (growing subscriptions)
+6. Savings opportunity (category chronically above budget)
+7. Investment opportunity (projected balance > R$500)
+8. Achievement: streak of periods within budget
+9. Achievement: best savings in history
+10. Debt reduction (active installments decreased)
+11. Problem category returned to normal
+12. Unknown merchant for a high value
 
-**UX**: máximo 3 insights visíveis simultaneamente. Prioridade: critical > warning > info > achievement. Usuário pode dispensar por 7/30/sempre.
+**UX**: maximum 3 insights visible simultaneously. Priority: critical > warning > info > achievement. User can dismiss for 7/30/always.
 
-## Consequências
+## Consequences
 
-### Positivas
-- Funciona 100% offline (sem APIs externas)
-- Resultados reproduzíveis e auditáveis — cada insight tem `data` de suporte
-- Zero custo por request
-- Sem alucinações ou outputs imprevisíveis
-- Pode ser testado com dados sintéticos de forma determinista
+### Positive
+- Works 100% offline (no external APIs)
+- Reproducible and auditable results — each insight has supporting `data`
+- Zero cost per request
+- No hallucinations or unpredictable outputs
+- Can be tested with synthetic data deterministically
 
-### Negativas / Trade-offs
-- Não aprende com o comportamento individual do usuário (sem personalização)
-- Thresholds são hardcoded — requerem ajuste manual baseado em dados reais
-- Não detecta padrões complexos que ML detectaria (ex: sazonalidade)
+### Negative / Trade-offs
+- Doesn't learn from individual user behavior (no personalization)
+- Thresholds are hardcoded — require manual adjustment based on real data
+- Doesn't detect complex patterns that ML would detect (e.g. seasonality)
 
-### Riscos aceitos
-- **Falso positivo na detecção de duplicatas**: transações legítimas podem ser flagradas como duplicatas. Mitigado com threshold de confidence conservador (0.70+) e opção de dispensar permanentemente.
-- **Insights irrelevantes geram desconfiança**: se o usuário dispensa insights frequentemente, a feature perde valor. Mitigado com tracking de dismiss rate e ajuste de thresholds.
+### Accepted Risks
+- **False positive in duplicate detection**: legitimate transactions may be flagged as duplicates. Mitigated with conservative confidence threshold (0.70+) and permanent dismiss option.
+- **Irrelevant insights generate distrust**: if the user dismisses insights frequently, the feature loses value. Mitigated with dismiss rate tracking and threshold adjustment.
 
-## Sobre ML/LLM em versões futuras
+## On ML/LLM in Future Versions
 
-A Intelligence Layer determinista é a **base correta** para v1. Quando houver:
-- >500 usuários com >6 meses de histórico
-- Infra para servir modelos (ou orçamento para APIs externas)
+The deterministic Intelligence Layer is the **correct foundation** for v1. When there are:
+- >500 users with >6 months of history
+- Infrastructure to serve models (or budget for external APIs)
 
-Então faz sentido adicionar:
-- **Classificação automática de transações**: NLP sobre `store_description` (OpenAI embeddings ou modelo local TFLite)
-- **Anomaly detection**: Isolation Forest sobre padrões de gasto histórico
-- **Previsão de gastos variáveis**: ARIMA sobre séries temporais mensais
-- **Copiloto conversacional**: LLM com contexto do `FinancialSnapshot` atual
+Then it makes sense to add:
+- **Automatic transaction classification**: NLP on `store_description` (OpenAI embeddings or local TFLite model)
+- **Anomaly detection**: Isolation Forest on historical spending patterns
+- **Variable expense prediction**: ARIMA on monthly time series
+- **Conversational copilot**: LLM with context of the current `FinancialSnapshot`
 
-O design da `IntelligenceLayer` como serviço isolado facilita essa evolução: ML pode ser adicionado como fonte adicional de `FinancialInsight` sem alterar a arquitetura de display.
+The design of `IntelligenceLayer` as an isolated service facilitates this evolution: ML can be added as an additional source of `FinancialInsight` without changing the display architecture.
 
-## Alternativas Consideradas
+## Alternatives Considered
 
-### LLM desde v1 (ex: Claude API com contexto financeiro)
-**Descartada**: Latência inaceitável para mobile (300–2000ms), custo por request, sem suporte offline, risco de alucinações em dados financeiros sensíveis.
+### LLM from v1 (e.g. Claude API with financial context)
+**Discarded**: Unacceptable latency for mobile (300–2000ms), per-request cost, no offline support, risk of hallucinations on sensitive financial data.
 
-### Biblioteca de analytics de terceiros (Mixpanel, Amplitude smart alerts)
-**Descartada**: Requer envio de dados financeiros para servidores externos, conflita com o posicionamento de privacidade do Farol, menos customizável para o contexto Brasil/CLT.
+### Third-party analytics library (Mixpanel, Amplitude smart alerts)
+**Discarded**: Requires sending financial data to external servers, conflicts with Farol's privacy positioning, less customizable for the Brazil/CLT context.
 
-## Critérios de Sucesso
+## Success Criteria
 
-- [ ] Dismiss rate de insights < 40% (indicador de relevância)
-- [ ] Tap rate em insights de warning > 25% (indicador de actionabilidade)
-- [ ] 0 falsos positivos críticos em 30 dias de uso real (ex: "cobrança duplicada" incorreta)
-- [ ] Nenhum insight exibe dados inconsistentes com o FinancialSnapshot
-- [ ] Usuários com Intelligence Layer têm retenção 30d superior ao grupo de controle
+- [ ] Insight dismiss rate < 40% (relevance indicator)
+- [ ] Tap rate on warning insights > 25% (actionability indicator)
+- [ ] 0 critical false positives in 30 days of real use (e.g. incorrect "duplicate charge")
+- [x] No insight displays data inconsistent with the FinancialSnapshot
+- [ ] Users with Intelligence Layer have higher 30d retention than control group
 
-## Referências
+## References
 
-- Plano: `plans/intelligence_layer.md`
-- Depende de: ADR-002 (FinancialSnapshot), ADR-003 (ForecastingEngine)
-- Revisitar para v2 quando houver dados de uso suficientes
+- Plan: `plans/intelligence_layer.md`
+- Depends on: ADR-002 (FinancialSnapshot), ADR-003 (ForecastingEngine)
+- Implemented: 2026-05-08 — all 12 rules, InsightsPanel, InsightsScreen, dismiss rate tracking
+- Revisit for v2 when there is sufficient usage data

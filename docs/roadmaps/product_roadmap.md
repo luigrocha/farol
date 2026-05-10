@@ -1,187 +1,195 @@
 # Farol — Product Roadmap
-> Última atualização: 2026-05-08 (auditado no código real)
-> Baseado em: `FAROL_PREDICTIVE_ENGINE.md`
+> Last updated: 2026-05-09 (workspace model complete)
+> Based on: `FAROL_PREDICTIVE_ENGINE.md`
 
 ---
 
-> ## 🚨 Status Revisado — 2026-05-08
+> ## 🚨 Revised Status — 2026-05-09
 >
-> Auditoria do código revelou que o **motor preditivo completo está implementado**.
-> Todos os planos P0–P6 estão concluídos no domínio, infraestrutura e providers.
-> O foco atual mudou para: **UI polish · Testes · Web/Desktop adaptation**.
+> Audit of the code revealed that the **complete predictive engine is implemented**.
+> All P0–P6 plans are complete in domain, infrastructure, and providers.
+> The multi-user workspace model (Phases 1–3) is also complete and in production.
+> Current focus: **Phase 4 Monetization (future, when ready)**.
 >
-> Ver `CLAUDE.md` → seção "Estado Real dos Planos" para status detalhado.
+> See `CLAUDE.md` → "Current Focus" section for detailed status.
 
 ---
 
-## Grafo de Dependências (histórico — todos concluídos)
+## Dependency Graph (historical — all complete)
 
 ```
-categories_redesign (P0)  ✅ CONCLUÍDO
-    ├──→ installments_redesign (P1)   ✅ CONCLUÍDO
-    └──→ financial_engine (P2)        ✅ CONCLUÍDO
-              ├──→ recurring_rules (P3)         ✅ CONCLUÍDO
-              │         └──→ forecasting (P4)   ✅ CONCLUÍDO
-              │                   └──→ intelligence_layer (P6)  ✅ CONCLUÍDO
-              └──→ offline_sync (P5)            ✅ CONCLUÍDO
+categories_redesign (P0)  ✅ COMPLETE
+    ├──→ installments_redesign (P1)   ✅ COMPLETE
+    └──→ financial_engine (P2)        ✅ COMPLETE
+              ├──→ recurring_rules (P3)         ✅ COMPLETE
+              │         └──→ forecasting (P4)   ✅ COMPLETE
+              │                   └──→ intelligence_layer (P6)  ✅ COMPLETE
+              └──→ offline_sync (P5)            ✅ COMPLETE
+
+multiuser_freemium (Strategic)
+    ├── Phase 1: DB schema + Flutter models   ✅ COMPLETE (2026-05-09)
+    ├── Phase 2: Workspace switcher + Invites  ✅ COMPLETE (2026-05-09)
+    ├── Phase 3: Permissions + Feature gating  ✅ COMPLETE (2026-05-09)
+    └── Phase 4: Monetization                 ⏳ FUTURE
 ```
 
 ---
 
-## P0 · categories_redesign · 🟢 Concluído
+## P0 · categories_redesign · 🟢 Complete
 
-**Plano**: `plans/categories_redesign.md`
-**Concluído**: Migrations V12, V17–V20 aplicadas. `CategoryRef` + `CategoryResolver` implementados. `category_id NOT NULL` em expenses.
-**Pendente**: UI polish em `categories_management_screen`.
+**Plan**: `plans/categories_redesign.md`
+**Completed**: Migrations V12, V17–V20 applied. `CategoryRef` + `CategoryResolver` implemented. `category_id NOT NULL` in expenses.
 
-| # | Fase | Objetivo | Status |
+| # | Phase | Goal | Status |
 |---|---|---|---|
-| 1 | CategoryRef + Resolver | Value object sem StateError | 🔴 |
-| 2 | Backfill de dados | category_id em expenses existentes | 🔴 |
-| 3 | Migração de Providers | UI usa CategoryRef | 🔴 |
-| 4 | Eliminação do enum | Cleanup final | 🔴 |
+| 1 | CategoryRef + Resolver | Type-safe value object, no StateError | ✅ |
+| 2 | Data backfill | category_id in existing expenses | ✅ |
+| 3 | Provider migration | UI uses CategoryRef | ✅ |
+| 4 | Enum removal | Final cleanup | ✅ |
 
 **ADR**: `docs/decisions/001-category-unification.md`
 
 ---
 
-## P1 · installments_redesign · 🔴 Não iniciado
+## P1 · installments_redesign · 🟢 Complete
 
-**Plano**: `plans/installments_redesign.md`
-**ETA estimada**: Semanas 3–7 (inicia com P0 Fase 1-2)
-**Crítico**: O ForecastingEngine é cego sem as parcelas futuras em DB.
+**Plan**: `plans/installments_redesign.md`
+**Completed**: Migrations V21–V23. `InstallmentPlan/Payment`, `InstallmentService` implemented. UI, forecasting integration, and legacy shim removal complete.
 
-| # | Fase | Objetivo | Status |
+| # | Phase | Goal | Status |
 |---|---|---|---|
-| 1 | Schema + Entidades | installment_plans + installment_payments | ✅ |
-| 2 | InstallmentService | createPurchase() gera N parcelas auto | ✅ |
-| 3 | Migração | card_installments → novo modelo (V21–V23) | ✅ |
-| 4 | Nova UI | `installments_screen` com timeline | ✅ |
-| 5 | Integração Forecasting | ObligationEngine lê parcelas pendentes | ✅ |
+| 1 | Schema + Entities | installment_plans + installment_payments | ✅ |
+| 2 | InstallmentService | createPurchase() generates N installments automatically | ✅ |
+| 3 | Migration | card_installments → new model (V22–V23) | ✅ |
+| 4 | New UI | `installments_screen` with timeline | ✅ |
+| 5 | Forecasting Integration | ObligationEngine reads pending installments | ✅ |
 
 **ADR**: `docs/decisions/005-installments-redesign.md`
 
 ---
 
-## P2 · financial_engine · 🟢 Concluído
+## P2 · financial_engine · 🟢 Complete
 
-**Plano**: `plans/financial_engine.md`
-**Concluído**: `Money`, `FinancialSnapshot`, `FinancialEngine`, `EnvelopeEngine` implementados e wired no `financialSnapshotProvider`. Dashboard usa `BurnRateCard`, `HealthGaugeCard`, `PeriodBalanceHero`.
+**Plan**: `plans/financial_engine.md`
+**Completed**: `Money`, `FinancialSnapshot`, `FinancialEngine`, `EnvelopeEngine` implemented and wired in `financialSnapshotProvider`. Dashboard uses `BurnRateCard`, `HealthGaugeCard`, `PeriodBalanceHero`.
 
-| # | Fase | Objetivo | Status |
+| # | Phase | Goal | Status |
 |---|---|---|---|
-| 1 | Money value object | Tipo seguro para dinheiro | ✅ |
-| 2 | FinancialSnapshot entity | Contrato do objeto central | ✅ |
-| 3 | FinancialEngine service | Produz o snapshot completo | ✅ |
-| 4 | Dashboard refactoring | 1 provider → todos os widgets | ✅ |
-| 5 | EnvelopeEngine | Rollover + alocação automática | ✅ |
+| 1 | Money value object | Type-safe money type | ✅ |
+| 2 | FinancialSnapshot entity | Central object contract | ✅ |
+| 3 | FinancialEngine service | Produces the complete snapshot | ✅ |
+| 4 | Dashboard refactoring | 1 provider → all widgets | ✅ |
+| 5 | EnvelopeEngine | Rollover + automatic allocation | ✅ |
 
 **ADR**: `docs/decisions/002-financial-snapshot.md`
 
 ---
 
-## P3 · recurring_rules · 🟢 Concluído
+## P3 · recurring_rules · 🟢 Complete
 
-**Plano**: `plans/recurring_rules.md`
-**Concluído**: `RecurringRule/Occurrence`, `RecurrenceResolver`, `RecurringDetector`, migrations V24–V25, UI screens completas.
+**Plan**: `plans/recurring_rules.md`
+**Completed**: `RecurringRule/Occurrence`, `RecurrenceResolver`, `RecurringDetector`, migrations V24–V25, complete UI screens.
 
-| # | Fase | Objetivo | Status |
+| # | Phase | Goal | Status |
 |---|---|---|---|
-| 1 | RecurrenceResolver | Gera ocorrências a partir da regra (puro Dart) | ✅ |
-| 2 | Schema + Repositórios | recurring_rules + recurring_occurrences | ✅ |
-| 3 | Migração isFixed | gastos isFixed=true → RecurringRule | ✅ |
-| 4 | UI de Recorrentes | `recurring_screen`, `add_recurring_bottom_sheet` | ✅ |
-| 5 | Detecção automática | `RecurringDetector` + `recurring_suggestions_screen` | ✅ |
+| 1 | RecurrenceResolver | Generates occurrences from rule (pure Dart) | ✅ |
+| 2 | Schema + Repositories | recurring_rules + recurring_occurrences | ✅ |
+| 3 | isFixed migration | isFixed=true expenses → RecurringRule | ✅ |
+| 4 | Recurring UI | `recurring_screen`, `add_recurring_bottom_sheet` | ✅ |
+| 5 | Auto detection | `RecurringDetector` + `recurring_suggestions_screen` | ✅ |
 
 **ADR**: `docs/decisions/006-recurring-rules.md`
 
 ---
 
-## P4 · forecasting · 🟡 Domínio completo — falta testes
+## P4 · forecasting · 🟢 Complete
 
-**Plano**: `plans/forecasting.md`
-**Concluído**: `ForecastingEngine`, `ObligationEngine`, todos os providers wired. `analytics_screen` + `cashflow_chart` existem.
-**Pendente**: testes unitários para algoritmos críticos.
+**Plan**: `plans/forecasting.md`
+**Completed**: `ForecastingEngine`, `ObligationEngine`, all providers wired. `analytics_screen` + `cashflow_chart`. Tests: `forecasting_engine_test.dart` (30 tests).
 
-| # | Fase | Objetivo | Status |
+| # | Phase | Goal | Status |
 |---|---|---|---|
-| 1 | BurnRate | Widget no dashboard (`BurnRateCard`) | ✅ |
-| 2 | DaysUntilEmpty + LiquidityRisk | `LiquidityAlertCard` no dashboard | ✅ |
+| 1 | BurnRate | Dashboard widget (`BurnRateCard`) | ✅ |
+| 2 | DaysUntilEmpty + LiquidityRisk | `LiquidityAlertCard` in dashboard | ✅ |
 | 3 | ProjectedClosingBalance | `financialProjectionProvider` | ✅ |
-| 4 | CashflowForecast 90 dias | `cashflow_chart.dart` na analytics screen | ✅ |
-| 5 | CategoryVelocity | Implementado em `ForecastingEngine` | ✅ |
-| 6 | Testes unitários | BurnRate, DaysUntilEmpty, ProjectedBalance | 🔴 |
+| 4 | CashflowForecast 90 days | `cashflow_chart.dart` in analytics screen | ✅ |
+| 5 | CategoryVelocity | Implemented in `ForecastingEngine` | ✅ |
+| 6 | Unit tests | BurnRate, DaysUntilEmpty, ProjectedBalance | ✅ |
 
 **ADR**: `docs/decisions/003-forecasting-deterministic.md`
 
 ---
 
-## P5 · offline_sync · 🟡 Domínio completo — falta testes
+## P5 · offline_sync · 🟢 Complete
 
-**Plano**: `plans/offline_sync.md`
-**Concluído**: `SyncManager`, `OperationQueue`, `ConflictResolver`, `ConnectivityBanner`, providers wired.
-**Pendente**: testes dos cenários offline→online.
+**Plan**: `plans/offline_sync.md`
+**Completed**: `SyncManager`, `OperationQueue`, `ConflictResolver`, `ConnectivityBanner`, providers wired. Tests: 29 tests (sync/).
 
-| # | Fase | Objetivo | Status |
+| # | Phase | Goal | Status |
 |---|---|---|---|
-| 1 | Connectivity detection | `ConnectivityBanner` no dashboard | ✅ |
-| 2 | OperationQueue | Queue persistente em Drift com retry | ✅ |
-| 3 | SyncManager | Orquestrador online/offline | ✅ |
-| 4 | Expense Repository | Wrap com SyncManager | ✅ |
-| 5 | Conflict Resolution | Last-Write-Wins + merge semântico | ✅ |
-| 6 | Testes de integração | Cenários offline→online, retry, conflito | 🔴 |
+| 1 | Connectivity detection | `ConnectivityBanner` in dashboard | ✅ |
+| 2 | OperationQueue | Persistent queue in Drift with retry | ✅ |
+| 3 | SyncManager | Online/offline orchestrator | ✅ |
+| 4 | Expense Repository | Wrap with SyncManager | ✅ |
+| 5 | Conflict Resolution | Last-Write-Wins + semantic merge | ✅ |
+| 6 | Integration tests | Offline→online, retry, conflict scenarios | ✅ |
 
 **ADR**: `docs/decisions/004-sync-strategy.md`
 
 ---
 
-## P6 · intelligence_layer · 🟡 Domínio completo — falta testes
+## P6 · intelligence_layer · 🟢 Complete
 
-**Plano**: `plans/intelligence_layer.md`
-**Concluído**: `IntelligenceLayer` com 12 regras, `InsightsPanel`, `insights_screen`, `insightsProvider`, `DismissedInsightsRepository`.
-**Pendente**: testes das 12 regras com dados sintéticos, dismiss rate tracking.
+**Plan**: `plans/intelligence_layer.md`
+**Completed**: `IntelligenceLayer` with 12 rules, `InsightsPanel`, `insights_screen`, `insightsProvider`, `DismissedInsightsRepository`, dismiss rate tracking (2026-05-08).
 
-| # | Fase | Objetivo | Status |
+| # | Phase | Goal | Status |
 |---|---|---|---|
-| 1 | Foundation + 4 regras core | Overdraft, Liquidez, Spike, Investimento | ✅ |
-| 2 | InsightsPanel no dashboard | UI não-invasiva, max 3 insights | ✅ |
-| 3 | 8 regras avançadas | Duplicatas, Assinaturas, Conquistas, etc. | ✅ |
-| 4 | Analytics de insights | Testes + dismiss rate tracking | 🔴 |
+| 1 | Foundation + 4 core rules | Overdraft, Liquidity, Spike, Investment | ✅ |
+| 2 | InsightsPanel in dashboard | Non-invasive UI, max 3 insights | ✅ |
+| 3 | 8 advanced rules | Duplicates, Subscriptions, Achievements, etc. | ✅ |
+| 4 | Insight analytics | Dismiss rate tracking via `insightStatsProvider` | ✅ |
 
 **ADR**: `docs/decisions/007-intelligence-layer.md`
 
 ---
 
-## Próximos Passos Reais (pós-auditoria)
+## Strategic · multiuser_freemium · 🟡 Phase 4 Pending
 
-| Prioridade | Tarefa | Impacto |
-|---|---|---|
-| 🔴 P1 | Testes: `ForecastingEngine` (BurnRate, DaysUntilEmpty) | Confiabilidade do motor |
-| 🔴 P1 | Testes: `IntelligenceLayer` (12 regras com dados sintéticos) | Confiabilidade dos insights |
-| 🔴 P1 | Confirmar migrations V21–V25 no Supabase de produção | Sem isso: crash em produção |
-| 🟡 P2 | Audit UI: quais screens ainda usam providers legados | Consistência de dados |
-| 🟡 P2 | Web/Desktop: sidebar nav + layouts adaptativos | Usuários avançados |
-| 🟢 P3 | Testes: `SyncManager` (offline→online, conflito) | Resiliência offline |
+**Plan**: `plans/multiuser_freemium.md`
+**Completed phases**: 1 (DB schema V26–V32 + Flutter models), 2 (workspace switcher + invites), 3 (permission guards + feature gating)
 
----
+| # | Phase | Goal | Status |
+|---|---|---|---|
+| 1 | Invisible foundation | V26–V32 migrations + Flutter models + providers | ✅ 2026-05-09 |
+| 2 | Workspace switcher + Invites | WorkspaceSwitcherSheet, InviteMemberSheet, MembersScreen | ✅ 2026-05-09 |
+| 3 | Permissions + Feature gating | FeatureGate widget, canWriteProvider guards | ✅ 2026-05-09 |
+| 4 | Monetization | Stripe/RevenueCat, paywall, pricing | ⏳ Future |
 
-## Métricas de Sucesso
-
-| Plano | Métrica | Status |
-|---|---|---|
-| categories_redesign | 0 `StateError` em produção | ✅ Resolvido |
-| installments_redesign | Parcelas futuras visíveis no ForecastingEngine | ✅ Implementado |
-| financial_engine | Dashboard com 1 único `ref.watch()` para estado financeiro | ✅ `financialSnapshotProvider` |
-| recurring_rules | Recorrentes projetados 3 meses à frente automaticamente | ✅ Implementado |
-| forecasting | Usuário responde "quanto vou poupar?" olhando o app | 🟡 Funcional, sem testes |
-| offline_sync | 0 perda de dados no cenário offline → online | 🟡 Funcional, sem testes |
-| intelligence_layer | Dismiss rate de insights < 40% | 🔴 Sem tracking ainda |
+**Plan**: `plans/multiuser_freemium.md`
 
 ---
 
-## Histórico de Versões
+## Success Metrics
 
-| Data | Mudança |
+| Plan | Metric | Status |
+|---|---|---|
+| categories_redesign | 0 `StateError` in production | ✅ Resolved |
+| installments_redesign | Future installments visible in ForecastingEngine | ✅ Implemented |
+| financial_engine | Dashboard with 1 single `ref.watch()` for financial state | ✅ `financialSnapshotProvider` |
+| recurring_rules | Recurrings projected 3 months ahead automatically | ✅ Implemented |
+| forecasting | User answers "how much will I save?" by looking at the app | ✅ Functional + tested |
+| offline_sync | 0 data loss in offline → online scenario | ✅ Functional + tested |
+| intelligence_layer | Insight dismiss rate < 40% | ⏳ Tracking implemented, awaiting real data |
+| multiuser_freemium | Couple can share a workspace in real time | ✅ Phase 1–3 complete |
+
+---
+
+## Version History
+
+| Date | Change |
 |---|---|
-| 2026-05-07 | Roadmap inicial (4 planos: P0–P3) |
-| 2026-05-07 | Revisão completa: 7 planos, grafo de dependências, prioridades redefinidas |
+| 2026-05-07 | Initial roadmap (4 plans: P0–P3) |
+| 2026-05-07 | Full revision: 7 plans, dependency graph, priorities redefined |
+| 2026-05-08 | All P0–P6 complete. Focus shifted to UI polish + tests + web adaptation |
+| 2026-05-09 | Multi-user workspace model (Phases 1–3) complete and in production |

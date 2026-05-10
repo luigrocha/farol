@@ -153,7 +153,7 @@ farol/
 
 ## 🗄️ Database
 
-- Supabase schema: 25 migrations applied (V1–V25) — source of truth in production
+- Supabase schema: 32 migrations applied (V1–V32) — source of truth in production
 - Drift schema: `lib/core/database/app_database.dart` — device-local (UserSettings, OperationQueue, dismissed insights)
 - Drift: local mirror + offline operation queue (`OperationQueue`)
 - **Rule**: always have migration strategy before changing schema

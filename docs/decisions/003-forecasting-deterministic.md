@@ -1,79 +1,79 @@
-# ADR-003: Forecasting Engine Determinista (No ML en v1)
+# ADR-003: Deterministic Forecasting Engine (No ML in v1)
 
-**Fecha**: 2026-05-07
-**Estado**: Propuesto — pendiente de implementación
-**Área**: Domain · Analytics
+**Date**: 2026-05-07
+**Status**: Implemented ✅
+**Area**: Domain · Analytics
 
 ---
 
-## Contexto
+## Context
 
-El objetivo de Farol es ser un "Predictive Financial Engine". Existe la tentación de implementar Machine Learning (regresión, redes neuronales, etc.) para predecir gastos futuros. Alternativas como Copilot Money usan ML para categorización automática y predicciones. ¿Debería Farol hacer lo mismo en v1?
+Farol's goal is to be a "Predictive Financial Engine". There is a temptation to implement Machine Learning (regression, neural networks, etc.) to predict future expenses. Alternatives like Copilot Money use ML for automatic categorization and predictions. Should Farol do the same in v1?
 
-## Decisión
+## Decision
 
-**El Forecasting Engine v1 es completamente determinista y matemático.** No usa ML, no usa modelos estadísticos complejos, no usa APIs de IA externas. Usa:
+**The Forecasting Engine v1 is completely deterministic and mathematical.** It uses no ML, no complex statistical models, no external AI APIs. It uses:
 
-1. **Burn Rate**: gasto / días transcurridos → proyección lineal
-2. **Obligaciones conocidas**: installment_payments + recurring_occurrences → datos exactos en DB
-3. **Promedio histórico ponderado**: los últimos 3 períodos tienen diferente peso
-4. **Reglas heurísticas explícitas**: umbrales hardcodeados (>20% de desviación = spike)
+1. **Burn Rate**: spending / elapsed days → linear projection
+2. **Known obligations**: installment_payments + recurring_occurrences → exact data in DB
+3. **Weighted historical average**: the last 3 periods have different weights
+4. **Explicit heuristic rules**: hardcoded thresholds (>20% deviation = spike)
 
-### ¿Por qué no ML?
+### Why no ML?
 
-- **Sin datos**: un usuario nuevo tiene 0 períodos de historial. ML necesita mínimo 6-12 meses.
-- **Explicabilidad**: "gastaste R$180 en 10 días a R$18/día → proyección de R$540/mes" es comprensible. Un modelo de regresión no lo es.
-- **Complejidad operacional**: modelos ML necesitan infrastructure (training, serving, versionamiento). Overkill para v1.
-- **Precisión**: con pocos datos, la proyección lineal supera a modelos ML en RMSE.
+- **No data**: a new user has 0 periods of history. ML needs a minimum of 6-12 months.
+- **Explainability**: "you spent R$180 in 10 days at R$18/day → projection of R$540/month" is understandable. A regression model is not.
+- **Operational complexity**: ML models need infrastructure (training, serving, versioning). Overkill for v1.
+- **Accuracy**: with limited data, linear projection outperforms ML models in RMSE.
 
-### ¿Cuándo agregar ML?
+### When to add ML?
 
-En v2/v3, con suficiente historial:
-- Clasificación automática de transacciones (NLP sobre store_description)
-- Detección de anomalías (isolation forest sobre patrones de gasto)
-- Predicción de gastos variables (ARIMA sobre historial mensual)
+In v2/v3, with sufficient history:
+- Automatic transaction classification (NLP on store_description)
+- Anomaly detection (isolation forest on spending patterns)
+- Variable expense prediction (ARIMA on monthly historical series)
 
-Candidatos: Vertex AI (Google Cloud), OpenAI embeddings, modelos locales en dispositivo (TFLite).
+Candidates: Vertex AI (Google Cloud), OpenAI embeddings, on-device models (TFLite).
 
-## Consecuencias
+## Consequences
 
-### Positivas
-- Funciona desde el día 1 con 0 datos históricos (burn rate = datos actuales)
-- Resultados completamente explicables al usuario
-- Sin dependencies externas, sin latencia de API
-- Tests deterministas: mismo input → mismo output, siempre
-- Implementable en Dart puro, en el cliente
+### Positive
+- Works from day 1 with 0 historical data (burn rate = current data)
+- Results completely explainable to the user
+- No external dependencies, no API latency
+- Deterministic tests: same input → same output, always
+- Implementable in pure Dart, on the client
 
-### Negativas / Trade-offs
-- Proyección lineal asume ritmo constante (no detecta estacionalidad)
-- Sin categorización automática de transacciones (el usuario clasifica manualmente)
-- La precisión mejora lentamente con historial (vs ML que mejora exponencialmente)
+### Negative / Trade-offs
+- Linear projection assumes constant pace (doesn't detect seasonality)
+- No automatic transaction categorization (user classifies manually)
+- Accuracy improves slowly with history (vs ML that improves exponentially)
 
-### Riesgos aceptados
-- **Proyección incompleta**: si hay pocos datos, la proyección es menos precisa. Mitigado mostrando "confidence" en la UI (solo mostrar proyección si hay ≥7 días de datos).
+### Accepted Risks
+- **Incomplete projection**: if there are few data points, the projection is less accurate. Mitigated by showing "confidence" in the UI (only show projection if there are ≥7 days of data).
 
-## Alternativas Consideradas
+## Alternatives Considered
 
-### Alternativa 1: ML desde v1 con API externa
-Usar OpenAI/Claude API para análisis financiero conversacional y predicción.
+### Alternative 1: ML from v1 with external API
+Use OpenAI/Claude API for conversational financial analysis and prediction.
 
-**Descartada porque**: Latencia inaceptable para UI mobile, costo por request acumula con uso, sin datos históricos el modelo hallucina, complejidad de integración.
+**Discarded because**: Unacceptable latency for mobile UI, per-request cost accumulates with use, without historical data the model hallucinates, integration complexity.
 
-### Alternativa 2: TFLite local con modelo pre-entrenado
-Modelo de regresión entrenado con datos financieros generales (no del usuario).
+### Alternative 2: On-device TFLite with pre-trained model
+A regression model trained on generic financial data (not the user's).
 
-**Descartada porque**: Un modelo genérico no conoce el cutoffDay personalizado del usuario, ni el Swile, ni el patrón CLT brasileño específico. La proyección lineal sobre los datos reales del usuario supera a un modelo genérico.
+**Discarded because**: A generic model doesn't know the user's custom cutoffDay, nor Swile, nor the specific Brazilian CLT pattern. Linear projection over the user's real data outperforms a generic model.
 
-## Criterios de Éxito
+## Success Criteria
 
-- [ ] `ForecastingEngine.projectPeriod()` retorna resultado en <500ms
-- [ ] Proyección correcta cuando daysElapsed = 1 (no divide-by-zero)
-- [ ] Proyección correcta cuando hay 0 obligaciones futuras conocidas
-- [ ] La proyección incluye correctamente las cuotas vencidas en el período
-- [ ] Test determinista: mismo snapshot de input → mismo FinancialProjection output
+- [x] `ForecastingEngine.projectPeriod()` returns result in <500ms
+- [x] Correct projection when daysElapsed = 1 (no divide-by-zero)
+- [x] Correct projection when there are 0 known future obligations
+- [x] Projection correctly includes installments due in the period
+- [x] Deterministic test: same input snapshot → same FinancialProjection output
 
-## Referencias
+## References
 
-- Plan de implementación: `plans/forecasting.md`
-- Depende de: ADR-001 (categorías), ADR-002 (snapshot)
-- Revisitar para v2 cuando haya >100 usuarios con >6 meses de historial
+- Implementation plan: `plans/forecasting.md`
+- Depends on: ADR-001 (categories), ADR-002 (snapshot)
+- Revisit for v2 when there are >100 users with >6 months of history
