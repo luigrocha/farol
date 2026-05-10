@@ -37,11 +37,22 @@ class InsightCard extends ConsumerWidget {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(title,
                   style: GoogleFonts.manrope(
-                      fontSize: 13, fontWeight: FontWeight.w700)),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700).copyWith(fontFamilyFallback: const [
+                    'Apple Color Emoji',
+                    'Noto Color Emoji',
+                    'Segoe UI Emoji'
+                  ])),
               const SizedBox(height: 3),
               Text(body,
                   style: GoogleFonts.manrope(
-                      fontSize: 12, color: Colors.grey.shade700, height: 1.4)),
+                      fontSize: 12,
+                      color: Colors.grey.shade700,
+                      height: 1.4).copyWith(fontFamilyFallback: const [
+                    'Apple Color Emoji',
+                    'Noto Color Emoji',
+                    'Segoe UI Emoji'
+                  ])),
               if (actionLabel != null) ...[
                 const SizedBox(height: 8),
                 GestureDetector(
@@ -55,7 +66,11 @@ class InsightCard extends ConsumerWidget {
                     style: GoogleFonts.manrope(
                         fontSize: 12,
                         color: color,
-                        fontWeight: FontWeight.w700),
+                        fontWeight: FontWeight.w700).copyWith(fontFamilyFallback: const [
+                      'Apple Color Emoji',
+                      'Noto Color Emoji',
+                      'Segoe UI Emoji'
+                    ]),
                   ),
                 ),
               ],
