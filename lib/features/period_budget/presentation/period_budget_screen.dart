@@ -8,6 +8,7 @@ import '../../../core/theme/farol_colors.dart';
 import '../../../design/farol_colors.dart' as tokens;
 import '../../../core/domain/value_objects/money.dart';
 import 'budget_edit_sheet.dart';
+import '../../../core/providers/workspace_providers.dart' show canWriteProvider;
 
 class PeriodBudgetScreen extends ConsumerWidget {
   const PeriodBudgetScreen({super.key});
@@ -68,11 +69,16 @@ class PeriodBudgetScreen extends ConsumerWidget {
           const SliverToBoxAdapter(child: SizedBox(height: 80)),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'fab_period_budget',
-        onPressed: () => _openEdit(context, null),
-        backgroundColor: tokens.FarolColors.beam,
-        child: const Icon(Icons.add, color: tokens.FarolColors.navy),
+      floatingActionButton: Consumer(
+        builder: (context, ref, _) {
+          if (!ref.watch(canWriteProvider)) return const SizedBox.shrink();
+          return FloatingActionButton(
+            heroTag: 'fab_period_budget',
+            onPressed: () => _openEdit(context, null),
+            backgroundColor: tokens.FarolColors.beam,
+            child: const Icon(Icons.add, color: tokens.FarolColors.navy),
+          );
+        },
       ),
     );
   }

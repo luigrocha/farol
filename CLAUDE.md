@@ -14,16 +14,32 @@
 ```
 
 **Current phase**: Multi-user (Workspace model) + Freemium
-→ See `plans/multiuser_freemium.md` — complete plan with 4 phases and migrations V26–V30
+→ See `plans/multiuser_freemium.md` — complete plan with 4 phases
 
-**Phase 1 Flutter — COMPLETE (2026-05-09)**:
-- SQLs V26–V30 in `supabase/migrations/` — ready to apply to production
+**Phase 1 — COMPLETE + IN PRODUCTION (2026-05-09)**:
+- V26–V32 applied in production (`database/migrations/`)
+  - V26: workspaces + workspace_members + workspace_invites tables + RLS
+  - V27: workspace_id column added to all 14 data tables
+  - V28: backfill — personal workspace created per existing user, data linked
+  - V29: workspace_id NOT NULL enforced + indexes
+  - V30: RLS policies migrated from user_id to workspace membership
+  - V31: Fix — system categories visibility (user_id IS NULL) + auto-populate workspace_id triggers
+  - V32: Fix — infinite recursion in workspace_members RLS (SECURITY DEFINER helper functions)
 - Models: `Workspace`, `WorkspaceMember`, `WorkspaceInvite` → `lib/core/models/workspace.dart`
 - `WorkspaceRepository` → `lib/core/repositories/workspace_repository.dart`
 - Providers: `activeWorkspaceProvider`, `workspacePlanProvider`, `canWriteProvider` → `lib/core/providers/workspace_providers.dart`
 - `FeatureGate` widget + `PremiumFeature` enum → `lib/core/widgets/feature_gate.dart`
 - 5 repositories with `workspaceId`: Expense, Income, Category, InstallmentPlan, RecurringRules
-- **Next step**: Apply V26–V30 in Supabase SQL Editor (production)
+- **RLS pattern**: All policies use `SECURITY DEFINER` helper functions (`get_my_workspace_ids()`, `get_my_workspace_ids_as_writer()`, `get_my_workspace_ids_as_admin()`) to avoid self-referential recursion
+- **Phase 2 + 3 — COMPLETE (2026-05-09)**:
+  - `WorkspaceSwitcherSheet` — AppBar chip (hidden when solo), lists workspaces, switches active
+  - `CreateWorkspaceSheet` — creates workspace + auto-switches to it
+  - `InviteMemberSheet` — email + role picker, generates invite token + copy link
+  - `MembersScreen` — list members, change roles, remove (owner/admin only)
+  - `WorkspaceAppBarChip` — chip in dashboard AppBar, only visible when >1 workspace
+  - Desktop NavRail header shows workspace chip when >1 workspace
+  - `canWriteProvider` guards: FABs hidden for viewers in all screens (Dashboard, Transactions, Installments, Recurring, Budget, Categories, Accounts); swipe-to-delete disabled; edit `onTap` disabled
+- **Next step**: Phase 4 — Monetization (future, when ready)
 
 ---
 

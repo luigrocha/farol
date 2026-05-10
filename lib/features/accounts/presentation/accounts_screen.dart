@@ -8,6 +8,7 @@ import '../../../core/providers/providers.dart';
 import '../../../core/theme/farol_colors.dart';
 import '../../../design/farol_colors.dart' as tokens;
 import '../../../design/widgets/farol_card.dart';
+import '../../../core/providers/workspace_providers.dart' show canWriteProvider;
 
 class AccountsScreen extends ConsumerWidget {
   const AccountsScreen({super.key});
@@ -72,15 +73,20 @@ class AccountsScreen extends ConsumerWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'fab_accounts',
-        onPressed: () => showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          builder: (_) => const _AddAccountSheet(),
-        ),
-        backgroundColor: tokens.FarolColors.beam,
-        child: const Icon(Icons.add, color: tokens.FarolColors.navy),
+      floatingActionButton: Consumer(
+        builder: (context, ref, _) {
+          if (!ref.watch(canWriteProvider)) return const SizedBox.shrink();
+          return FloatingActionButton(
+            heroTag: 'fab_accounts',
+            onPressed: () => showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (_) => const _AddAccountSheet(),
+            ),
+            backgroundColor: tokens.FarolColors.beam,
+            child: const Icon(Icons.add, color: tokens.FarolColors.navy),
+          );
+        },
       ),
     );
   }

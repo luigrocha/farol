@@ -7,6 +7,7 @@ import '../../core/theme/farol_colors.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../core/i18n/app_localizations.dart';
 import '../../core/widgets/farol_snackbar.dart';
+import '../../core/providers/workspace_providers.dart' show canWriteProvider;
 
 class CategoriesManagementScreen extends ConsumerWidget {
   const CategoriesManagementScreen({super.key});
@@ -80,11 +81,13 @@ class CategoriesManagementScreen extends ConsumerWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showCategoryDialog(context, ref),
-        backgroundColor: tokens.FarolColors.navy,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+      floatingActionButton: ref.watch(canWriteProvider)
+          ? FloatingActionButton(
+              onPressed: () => _showCategoryDialog(context, ref),
+              backgroundColor: tokens.FarolColors.navy,
+              child: const Icon(Icons.add, color: Colors.white),
+            )
+          : null,
     );
   }
 

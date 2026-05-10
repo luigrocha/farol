@@ -8,6 +8,7 @@ import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../core/theme/farol_colors.dart';
+import '../../core/providers/workspace_providers.dart' show canWriteProvider;
 import 'add_installment_bottom_sheet.dart';
 import '../../core/widgets/farol_dialogs.dart';
 import '../../core/widgets/farol_snackbar.dart';
@@ -89,15 +90,20 @@ class _InstallmentsScreenState extends ConsumerState<InstallmentsScreen> {
             sliver: content,
           ),
       ]),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'fab_installments',
-        onPressed: () => showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          builder: (_) => const AddInstallmentBottomSheet(),
-        ),
-        backgroundColor: tokens.FarolColors.beam,
-        child: const Icon(Icons.add, color: tokens.FarolColors.navy),
+      floatingActionButton: Consumer(
+        builder: (context, ref, _) {
+          if (!ref.watch(canWriteProvider)) return const SizedBox.shrink();
+          return FloatingActionButton(
+            heroTag: 'fab_installments',
+            onPressed: () => showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (_) => const AddInstallmentBottomSheet(),
+            ),
+            backgroundColor: tokens.FarolColors.beam,
+            child: const Icon(Icons.add, color: tokens.FarolColors.navy),
+          );
+        },
       ),
     );
   }

@@ -7,6 +7,7 @@ import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/widgets/farol_snackbar.dart';
 import 'add_recurring_bottom_sheet.dart';
+import '../../core/providers/workspace_providers.dart' show canWriteProvider;
 
 const _teal = Color(0xFF00897B);
 
@@ -85,15 +86,20 @@ class _RecurringScreenState extends ConsumerState<RecurringScreen> {
             sliver: content,
           ),
       ]),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'fab_recurring',
-        onPressed: () => showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          builder: (_) => const AddRecurringBottomSheet(),
-        ),
-        backgroundColor: _teal,
-        child: const Icon(Icons.add, color: Colors.white),
+      floatingActionButton: Consumer(
+        builder: (context, ref, _) {
+          if (!ref.watch(canWriteProvider)) return const SizedBox.shrink();
+          return FloatingActionButton(
+            heroTag: 'fab_recurring',
+            onPressed: () => showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (_) => const AddRecurringBottomSheet(),
+            ),
+            backgroundColor: _teal,
+            child: const Icon(Icons.add, color: Colors.white),
+          );
+        },
       ),
     );
   }

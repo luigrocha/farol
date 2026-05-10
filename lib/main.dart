@@ -34,6 +34,9 @@ import 'features/simulators/rescission_simulator_screen.dart';
 import 'features/period_budget/presentation/period_budget_screen.dart';
 import 'features/net_worth/presentation/patrimonio_screen.dart';
 import 'features/auth/presentation/auth_loading_screen.dart';
+import 'core/providers/workspace_providers.dart'
+    show userWorkspacesProvider, activeWorkspaceProvider;
+import 'features/workspace/workspace_switcher_sheet.dart';
 
 final themeModeProvider =
     NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
@@ -473,10 +476,14 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
   }
 }
 
-/// Logo / quick-action header shown above the rail destinations on desktop.
-class _NavRailHeader extends StatelessWidget {
+/// Logo / workspace header shown above the rail destinations on desktop.
+class _NavRailHeader extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final workspaces = ref.watch(userWorkspacesProvider).valueOrNull ?? [];
+    final activeWs = ref.watch(activeWorkspaceProvider).valueOrNull;
+    final hasMultiple = workspaces.length > 1;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
       child: Column(
@@ -504,6 +511,49 @@ class _NavRailHeader extends StatelessWidget {
               ),
             ],
           ),
+          // Show workspace chip on desktop when user has >1 workspace
+          if (hasMultiple && activeWs != null) ...[
+            const SizedBox(height: 12),
+            GestureDetector(
+              onTap: () => WorkspaceSwitcherSheet.show(context),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.group_outlined,
+                      size: 13,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    ),
+                    const SizedBox(width: 5),
+                    Flexible(
+                      child: Text(
+                        activeWs.name,
+                        style: GoogleFonts.manrope(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onSecondaryContainer,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    Icon(
+                      Icons.unfold_more,
+                      size: 14,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 20),
         ],
       ),

@@ -20,6 +20,8 @@ import 'widgets/burn_rate_card.dart';
 import 'widgets/liquidity_alert_card.dart';
 import 'widgets/connectivity_banner.dart';
 import '../insights/insights_panel.dart';
+import '../workspace/workspace_switcher_sheet.dart';
+import '../../core/providers/workspace_providers.dart' show canWriteProvider;
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -78,6 +80,8 @@ class DashboardScreen extends ConsumerWidget {
         ],
       ),
       actions: [
+        // Workspace chip — visible only when user has >1 workspace
+        const WorkspaceAppBarChip(),
         Consumer(builder: (_, ref, __) {
           final isPrivate = ref.watch(privacyModeProvider);
           return IconButton(
@@ -124,15 +128,21 @@ class DashboardScreen extends ConsumerWidget {
           ),
         ),
       ]),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'fab_dashboard',
-        onPressed: () => showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          builder: (_) => const QuickAddBottomSheet(),
-        ),
-        backgroundColor: tokens.FarolColors.beam,
-        child: const Icon(Icons.add, color: tokens.FarolColors.navy),
+      floatingActionButton: Consumer(
+        builder: (context, ref, _) {
+          final canWrite = ref.watch(canWriteProvider);
+          if (!canWrite) return const SizedBox.shrink();
+          return FloatingActionButton(
+            heroTag: 'fab_dashboard',
+            onPressed: () => showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (_) => const QuickAddBottomSheet(),
+            ),
+            backgroundColor: tokens.FarolColors.beam,
+            child: const Icon(Icons.add, color: tokens.FarolColors.navy),
+          );
+        },
       ),
     );
   }

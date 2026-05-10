@@ -16,6 +16,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'quick_add_bottom_sheet.dart';
 import 'edit_expense_bottom_sheet.dart';
 import 'edit_income_bottom_sheet.dart';
+import '../../core/providers/workspace_providers.dart' show canWriteProvider;
 
 class TransactionsScreen extends ConsumerStatefulWidget {
   const TransactionsScreen({super.key});
@@ -94,15 +95,20 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           Expanded(child: const _IncomeTab()),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'fab_transactions_desktop',
-        onPressed: () => showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          builder: (_) => const QuickAddBottomSheet(),
-        ),
-        backgroundColor: tokens.FarolColors.beam,
-        child: const Icon(Icons.add, color: tokens.FarolColors.navy),
+      floatingActionButton: Consumer(
+        builder: (context, ref, _) {
+          if (!ref.watch(canWriteProvider)) return const SizedBox.shrink();
+          return FloatingActionButton(
+            heroTag: 'fab_transactions_desktop',
+            onPressed: () => showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (_) => const QuickAddBottomSheet(),
+            ),
+            backgroundColor: tokens.FarolColors.beam,
+            child: const Icon(Icons.add, color: tokens.FarolColors.navy),
+          );
+        },
       ),
     );
   }
@@ -183,17 +189,22 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'fab_transactions',
-        onPressed: () => showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          builder: (_) => _onExpensesTab
-              ? const QuickAddBottomSheet()
-              : const _AddIncomeSheet(),
-        ),
-        backgroundColor: tokens.FarolColors.beam,
-        child: const Icon(Icons.add, color: tokens.FarolColors.navy),
+      floatingActionButton: Consumer(
+        builder: (context, ref, _) {
+          if (!ref.watch(canWriteProvider)) return const SizedBox.shrink();
+          return FloatingActionButton(
+            heroTag: 'fab_transactions',
+            onPressed: () => showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (_) => _onExpensesTab
+                  ? const QuickAddBottomSheet()
+                  : const _AddIncomeSheet(),
+            ),
+            backgroundColor: tokens.FarolColors.beam,
+            child: const Icon(Icons.add, color: tokens.FarolColors.navy),
+          );
+        },
       ),
     );
   }
@@ -305,10 +316,11 @@ class _IncomeRow extends ConsumerWidget {
     final colors = context.colors;
     final type = IncomeType.fromDb(income.incomeType);
     final l10n = AppLocalizations.of(context);
+    final canWrite = ref.watch(canWriteProvider);
 
     return Dismissible(
       key: ValueKey(income.id),
-      direction: DismissDirection.endToStart,
+      direction: canWrite ? DismissDirection.endToStart : DismissDirection.none,
       background: Container(
         margin: const EdgeInsets.fromLTRB(20, 0, 20, 8),
         decoration: BoxDecoration(color: Colors.red.shade700, borderRadius: BorderRadius.circular(16)),
@@ -330,11 +342,13 @@ class _IncomeRow extends ConsumerWidget {
         }
       },
       child: GestureDetector(
-        onTap: () => showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          builder: (_) => EditIncomeBottomSheet(income: income),
-        ),
+        onTap: canWrite
+            ? () => showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (_) => EditIncomeBottomSheet(income: income),
+                )
+            : null,
         child: Container(
           margin: const EdgeInsets.fromLTRB(20, 0, 20, 8),
           padding: const EdgeInsets.all(16),
@@ -963,6 +977,7 @@ class _TxRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final colors = context.colors;
+    final canWrite = ref.watch(canWriteProvider);
     final catsMap = ref.watch(categoriesMapProvider);
     
     final dbCat = expense.category as String;
@@ -978,7 +993,7 @@ class _TxRow extends ConsumerWidget {
 
     return Dismissible(
       key: ValueKey(expense.id),
-      direction: DismissDirection.endToStart,
+      direction: canWrite ? DismissDirection.endToStart : DismissDirection.none,
       background: Container(
         margin: const EdgeInsets.fromLTRB(20, 0, 20, 8),
         decoration: BoxDecoration(color: Colors.red.shade700, borderRadius: BorderRadius.circular(16)),
@@ -1058,11 +1073,13 @@ class _TxRow extends ConsumerWidget {
         }
       },
       child: GestureDetector(
-        onTap: () => showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          builder: (_) => EditExpenseBottomSheet(expense: expense),
-        ),
+        onTap: canWrite
+            ? () => showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (_) => EditExpenseBottomSheet(expense: expense),
+                )
+            : null,
         child: Container(
           margin: const EdgeInsets.fromLTRB(20, 0, 20, 8),
           padding: const EdgeInsets.all(16),
