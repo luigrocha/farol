@@ -39,6 +39,7 @@ import 'core/providers/workspace_providers.dart'
 import 'core/models/workspace.dart' show WorkspaceType;
 import 'core/services/workspace_realtime_service.dart';
 import 'features/workspace/workspace_switcher_sheet.dart';
+import 'features/paywall/paywall_screen.dart';
 
 final themeModeProvider =
     NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
@@ -167,6 +168,7 @@ class FarolApp extends ConsumerWidget {
         '/rescission_simulator': (context) => const RescissionSimulatorScreen(),
         '/patrimonio': (context) => const PatrimonioScreen(),
         '/auth_loading': (context) => const AuthLoadingScreen(),
+        '/paywall': (context) => const PaywallScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/investment_detail') {

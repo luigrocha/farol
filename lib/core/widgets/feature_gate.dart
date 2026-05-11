@@ -5,9 +5,14 @@ import '../providers/workspace_providers.dart';
 import '../../design/farol_colors.dart' as tokens;
 
 // ─────────────────────────────────────────────────────────────
+// Entitlement activation flag
+// Flip to true once Stripe webhook is wired and all users migrated.
+// ─────────────────────────────────────────────────────────────
+
+const _kFreemiumActive = false;
+
+// ─────────────────────────────────────────────────────────────
 // PremiumFeature enum
-// Todas as features retornam isAllowed = true por enquanto.
-// Quando ativar monetização: editar isAllowed(plan) por feature.
 // ─────────────────────────────────────────────────────────────
 
 enum PremiumFeature {
@@ -20,12 +25,15 @@ enum PremiumFeature {
   unlimitedInstallments,
   recurringDetection;
 
-  /// Retorna true se a feature está disponível para o plano informado.
-  /// Atualmente tudo é free — alterar aqui quando ativar o paywall.
   bool isAllowed(WorkspacePlan plan) {
-    // TODO: quando ativar freemium, retornar false para algumas features
-    // dependendo do plano. Por enquanto, tudo liberado:
-    return true;
+    if (!_kFreemiumActive) return true;
+    return switch (this) {
+      PremiumFeature.multiWorkspace      => plan == WorkspacePlan.premium,
+      PremiumFeature.cashflowProjections => plan == WorkspacePlan.premium,
+      PremiumFeature.aiInsights          => plan == WorkspacePlan.premium,
+      PremiumFeature.exportPdf           => plan == WorkspacePlan.premium,
+      _                                  => true,
+    };
   }
 
   String get label => switch (this) {
@@ -111,9 +119,7 @@ class _UpgradePrompt extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           OutlinedButton(
-            onPressed: () {
-              // TODO: navegar para PaywallScreen quando implementado
-            },
+            onPressed: () => Navigator.pushNamed(context, '/paywall'),
             style: OutlinedButton.styleFrom(
               foregroundColor: tokens.FarolColors.navy,
               side: const BorderSide(color: tokens.FarolColors.navy),
