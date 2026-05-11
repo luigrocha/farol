@@ -433,7 +433,8 @@ final expensesByCategoryProvider = Provider.autoDispose<Map<String, double>>((re
   final expenses = ref.watch(realExpensesProvider).value ?? [];
   final map = <String, double>{};
   for (final e in expenses) {
-    map[e.category] = (map[e.category] ?? 0) + e.amount;
+    final slug = e.category.toLowerCase();
+    map[slug] = (map[slug] ?? 0) + e.amount;
   }
   return map;
 });
@@ -442,7 +443,9 @@ final cashExpensesByCategoryProvider = Provider.autoDispose<Map<String, double>>
   final expenses = ref.watch(realExpensesProvider).value ?? [];
   final map = <String, double>{};
   for (final e in expenses.where((e) => e.payType == 'Cash')) {
-    map[e.category] = (map[e.category] ?? 0) + e.amount;
+    // Normalize slug to lowercase to avoid duplicate entries (e.g. 'OTHER' vs 'other')
+    final slug = e.category.toLowerCase();
+    map[slug] = (map[slug] ?? 0) + e.amount;
   }
   return map;
 });
@@ -544,7 +547,8 @@ final budgetGoalsProvider = StreamProvider.autoDispose<List<BudgetGoal>>((ref) {
 
 final budgetGoalsMapProvider = Provider.autoDispose<Map<String, BudgetGoal>>((ref) {
   final goals = ref.watch(budgetGoalsProvider).value ?? [];
-  return {for (var g in goals) g.category: g};
+  // Normalize keys to lowercase to match category slug normalization in expense providers
+  return {for (var g in goals) g.category.toLowerCase(): g};
 });
 
 /// Sum of targetPercentage for all non-Swile budget goals.
