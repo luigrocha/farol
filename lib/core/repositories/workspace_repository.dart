@@ -57,28 +57,15 @@ class WorkspaceRepository {
     String? color,
     String? description,
   }) async {
-    final userId = _userId!;
-    final wsRow = await _supabase
-        .from('workspaces')
-        .insert({
-          'name':           name,
-          'owner_id':       userId,
-          'plan':           'free',
-          'workspace_type': type.name,
-          if (emoji != null) 'emoji': emoji,
-          if (color != null) 'color': color,
-          if (description != null) 'description': description,
-        })
-        .select()
-        .single();
-
-    await _supabase.from('workspace_members').insert({
-      'workspace_id': wsRow['id'],
-      'user_id':      userId,
-      'role':         'owner',
+    final data = await _supabase.rpc('create_workspace', params: {
+      'name':           name,
+      'workspace_type': type.name,
+      if (emoji != null) 'emoji': emoji,
+      if (color != null) 'color': color,
+      if (description != null) 'description': description,
     });
-
-    return getById(wsRow['id'] as String).then((w) => w!);
+    final id = (data as Map<String, dynamic>)['id'] as String;
+    return getById(id).then((w) => w!);
   }
 
   Future<void> updateName(String workspaceId, String name) async {

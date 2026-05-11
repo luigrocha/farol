@@ -12,6 +12,7 @@
 -- ─── Fix 1: Allow authenticated users to create workspaces ──────
 -- The user can only set themselves as owner.
 
+DROP POLICY IF EXISTS "authenticated_users_can_create_workspaces" ON workspaces;
 CREATE POLICY "authenticated_users_can_create_workspaces"
   ON workspaces FOR INSERT
   WITH CHECK (owner_id = auth.uid());
@@ -32,6 +33,7 @@ $$;
 -- Replace the INSERT policy on workspace_members to also allow the
 -- owner to insert themselves (as 'owner' role) when creating a workspace.
 DROP POLICY IF EXISTS "admin_can_insert_members" ON workspace_members;
+DROP POLICY IF EXISTS "owner_can_insert_self_or_admin_can_insert" ON workspace_members;
 
 CREATE POLICY "owner_can_insert_self_or_admin_can_insert"
   ON workspace_members FOR INSERT
