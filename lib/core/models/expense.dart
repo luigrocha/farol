@@ -17,6 +17,9 @@ class Expense {
   final int? installmentPlanId;
   final String? installmentPlanUuid;
 
+  // Phase 2: attribution — who created this expense
+  final String? authorUserId;
+
   const Expense({
     required this.id,
     required this.userId,
@@ -35,6 +38,7 @@ class Expense {
     this.isProjected = false,
     this.installmentPlanId,
     this.installmentPlanUuid,
+    this.authorUserId,
   });
 
   factory Expense.fromJson(Map<String, dynamic> json) {
@@ -58,6 +62,7 @@ class Expense {
       isProjected: json['is_projected'] as bool? ?? false,
       installmentPlanId: (json['installment_plan_id'] as num?)?.toInt(),
       installmentPlanUuid: json['installment_plan_uuid_id'] as String?,
+      authorUserId: json['author_user_id'] as String?,
     );
   }
 }

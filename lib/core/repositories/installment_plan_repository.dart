@@ -77,7 +77,9 @@ class InstallmentPlanRepository {
   Future<InstallmentPlan> create(InstallmentPlan plan) async {
     final userId = _userId;
     if (userId == null) throw Exception('Not authenticated');
-    final payload = plan.toJson()..remove('id');
+    final payload = plan.toJson()
+      ..remove('id')
+      ..['author_user_id'] = userId;
     if (workspaceId != null) payload['workspace_id'] = workspaceId;
     final data = await _supabase
         .from('installment_plans')

@@ -48,7 +48,29 @@
   - `WorkspaceSwitcherSheet`: redesigned with "Your space" / "Shared spaces" sections; `_WorkspaceAvatar` shows emoji; type-based coloring
   - `CreateWorkspaceSheet`: type picker (personal vs shared card UI), emoji palette, color picker (6 accent colors)
   - Desktop NavRail `_NavRailHeader`: same always-visible + teal/grey tinting treatment, emoji support
-- **Next step**: Phase 4 — Monetization (future, when ready)
+- **Attribution System (Phase 2) — COMPLETE (2026-05-10)**:
+  - V34 migration: `author_user_id UUID` on `expenses`, `recurring_rules`, `installment_plans`; backfill (`SET author_user_id = user_id`); profiles RLS policy for co-member visibility
+  - `MemberDisplay` value object + `avatarColorForUserId()` — `lib/core/models/member_display.dart`
+  - `memberDisplayMapProvider` — `FutureProvider.autoDispose<Map<String, MemberDisplay>>` — fetches profiles in one Supabase query
+  - `isSharedWorkspaceProvider` — `Provider<bool>` — gates all attribution UI
+  - `MemberChip` + `MemberAvatarGroup` widgets — `lib/core/widgets/member_chip.dart`
+  - Attribution wired into `TransactionsScreen` (`_TxRow`), `InstallmentsScreen` (`_PlanTile`), `RecurringScreen` (`_RuleTile`) — shown only in shared workspaces
+  - `ContributionBar` on Dashboard — stacked bar + legend, groups real expenses by `author_user_id`, only visible in shared workspaces
+  - `MembersScreen` upgraded — real display names, initials, and avatar colors from `memberDisplayMapProvider` (was showing raw userId prefix)
+  - Repository inserts updated — `author_user_id: userId` now written on all new expenses, recurring rules, and installment plans
+- **Activity Feed (Phase 3) — COMPLETE (2026-05-10)**:
+  - V35 migration: `workspace_activity` table + RLS + SECURITY DEFINER triggers on expenses, recurring_rules, installment_plans (INSERT/DELETE auto-log)
+  - V36 migration: `budget_changes` audit table + RLS (app-side writes, not triggers)
+  - `WorkspaceActivity` entity — `lib/core/domain/entities/workspace_activity.dart`
+  - `WorkspaceActivityRepository` — `fetchLatest()` + `fetchPage()` (cursor-based pagination)
+  - `latestWorkspaceActivityProvider` (family, limit param) + `workspaceActivityFirstPageProvider`
+  - `ActivityFeedTile` widget — `lib/features/activity/activity_feed_tile.dart`
+  - `ActivityFeedScreen` — full page, day-grouped, infinite scroll, pull-to-refresh — `lib/features/activity/activity_feed_screen.dart`
+  - `ActivityFeedPreviewCard` — dashboard widget, last 3 items + "Ver tudo" → ActivityFeedScreen — `lib/features/dashboard/widgets/activity_feed_preview_card.dart`
+  - `BudgetChangesRepository` + `budgetChangesProvider` — `lib/core/repositories/budget_changes_repository.dart`
+  - `BudgetEditSheet` logs change on upsert (shared workspaces only, invalidates `budgetChangesProvider`)
+  - `_BudgetLastEditLine` widget on each envelope in `PeriodBudgetScreen` — "Último ajuste: Ana · ontem"
+- **Next step**: Phase 4 — Realtime + Presence (when ready)
 
 ---
 

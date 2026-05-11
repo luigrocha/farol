@@ -19,6 +19,8 @@ import 'widgets/recurring_suggestions_card.dart';
 import 'widgets/burn_rate_card.dart';
 import 'widgets/liquidity_alert_card.dart';
 import 'widgets/connectivity_banner.dart';
+import 'widgets/activity_feed_preview_card.dart';
+import 'widgets/contribution_bar.dart';
 import '../insights/insights_panel.dart';
 import '../workspace/workspace_switcher_sheet.dart';
 import '../../core/providers/workspace_providers.dart' show canWriteProvider;
@@ -178,6 +180,10 @@ class _MobileDashboardSliver extends StatelessWidget {
           const SizedBox(height: 4),
           const PeriodBalanceHero(),
           const SizedBox(height: 12),
+          const ContributionBar(),
+          const SizedBox(height: 12),
+          const ActivityFeedPreviewCard(),
+          const SizedBox(height: 12),
           const HealthGaugeCard(),
           const SizedBox(height: 12),
           const KpiGrid(),
@@ -233,6 +239,10 @@ class _DesktopDashboardSliver extends StatelessWidget {
                   InsightsPanel(),
                   SizedBox(height: 4),
                   PeriodBalanceHero(),
+                  SizedBox(height: 12),
+                  ContributionBar(),
+                  SizedBox(height: 12),
+                  ActivityFeedPreviewCard(),
                   SizedBox(height: 12),
                   KpiGrid(),
                   SizedBox(height: 16),

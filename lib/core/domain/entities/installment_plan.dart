@@ -16,6 +16,9 @@ class InstallmentPlan {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  // Phase 2: attribution
+  final String? authorUserId;
+
   // Runtime-populated fields (not stored directly)
   final int paidCount;
   final String? categorySlug; // populated by caller from categories cache
@@ -39,6 +42,7 @@ class InstallmentPlan {
     required this.updatedAt,
     this.paidCount = 0,
     this.categorySlug,
+    this.authorUserId,
   });
 
   bool get isActive => status == 'active';
@@ -77,6 +81,7 @@ class InstallmentPlan {
     DateTime? updatedAt,
     int? paidCount,
     String? categorySlug,
+    String? authorUserId,
   }) {
     return InstallmentPlan(
       id: id ?? this.id,
@@ -98,6 +103,7 @@ class InstallmentPlan {
       updatedAt: updatedAt ?? this.updatedAt,
       paidCount: paidCount ?? this.paidCount,
       categorySlug: categorySlug ?? this.categorySlug,
+      authorUserId: authorUserId ?? this.authorUserId,
     );
   }
 
@@ -123,6 +129,7 @@ class InstallmentPlan {
           : null,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
+      authorUserId: json['author_user_id'] as String?,
     );
   }
 

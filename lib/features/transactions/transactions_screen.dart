@@ -16,7 +16,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'quick_add_bottom_sheet.dart';
 import 'edit_expense_bottom_sheet.dart';
 import 'edit_income_bottom_sheet.dart';
-import '../../core/providers/workspace_providers.dart' show canWriteProvider;
+import '../../core/providers/workspace_providers.dart'
+    show canWriteProvider, isSharedWorkspaceProvider, memberDisplayMapProvider;
+import '../../core/widgets/member_chip.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
   const TransactionsScreen({super.key});
@@ -979,7 +981,9 @@ class _TxRow extends ConsumerWidget {
     final colors = context.colors;
     final canWrite = ref.watch(canWriteProvider);
     final catsMap = ref.watch(categoriesMapProvider);
-    
+    final isShared = ref.watch(isSharedWorkspaceProvider);
+    final memberMap = ref.watch(memberDisplayMapProvider).valueOrNull ?? {};
+
     final dbCat = expense.category as String;
     final cat = catsMap[dbCat];
     final catLabel = cat?.name ?? dbCat;
@@ -990,6 +994,9 @@ class _TxRow extends ConsumerWidget {
         '${txDate.hour.toString().padLeft(2, '0')}:${txDate.minute.toString().padLeft(2, '0')}';
 
     final isSwile = (expense.payType as String) == 'Swile';
+    final author = isShared && expense.authorUserId != null
+        ? memberMap[expense.authorUserId as String]
+        : null;
 
     return Dismissible(
       key: ValueKey(expense.id),
@@ -1173,6 +1180,11 @@ class _TxRow extends ConsumerWidget {
                     ),
                   ],
                 ]),
+                // Attribution chip — only in shared workspaces
+                if (author != null) ...[
+                  const SizedBox(height: 4),
+                  MemberChip(member: author),
+                ],
               ]),
             ),
             Column(crossAxisAlignment: CrossAxisAlignment.end, children: [

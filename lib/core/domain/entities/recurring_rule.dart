@@ -74,6 +74,9 @@ class RecurringRule {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  // Phase 2: attribution
+  final String? authorUserId;
+
   const RecurringRule({
     required this.id,
     required this.userId,
@@ -100,6 +103,7 @@ class RecurringRule {
     this.legacyExpenseId,
     required this.createdAt,
     required this.updatedAt,
+    this.authorUserId,
   });
 
   bool get isActive => status == RecurringStatus.active;
@@ -150,6 +154,7 @@ class RecurringRule {
         legacyExpenseId: json['legacy_expense_id'] as int?,
         createdAt: DateTime.parse(json['created_at'] as String),
         updatedAt: DateTime.parse(json['updated_at'] as String),
+        authorUserId: json['author_user_id'] as String?,
       );
 
   Map<String, dynamic> toJson() => {

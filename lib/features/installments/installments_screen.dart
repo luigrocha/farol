@@ -9,7 +9,9 @@ import '../../core/services/financial_calculator_service.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../core/i18n/app_localizations.dart';
 import '../../core/theme/farol_colors.dart';
-import '../../core/providers/workspace_providers.dart' show canWriteProvider;
+import '../../core/providers/workspace_providers.dart'
+    show canWriteProvider, isSharedWorkspaceProvider, memberDisplayMapProvider;
+import '../../core/widgets/member_chip.dart';
 import 'add_installment_bottom_sheet.dart';
 import '../../core/widgets/farol_dialogs.dart';
 import '../../core/widgets/farol_snackbar.dart';
@@ -265,6 +267,11 @@ class _PlanTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final nextDue = _nextDueDate();
+    final isShared = ref.watch(isSharedWorkspaceProvider);
+    final memberMap = ref.watch(memberDisplayMapProvider).valueOrNull ?? {};
+    final author = isShared && plan.authorUserId != null
+        ? memberMap[plan.authorUserId]
+        : null;
 
     return GestureDetector(
       onTap: () => _openDetail(context, ref),
@@ -348,6 +355,11 @@ class _PlanTile extends ConsumerWidget {
                     plan.isComplete ? Colors.green : _purple),
               ),
             ),
+            // Attribution — shared workspaces only
+            if (author != null) ...[
+              const SizedBox(height: 8),
+              MemberChip(member: author),
+            ],
           ]),
         ]),
       ),

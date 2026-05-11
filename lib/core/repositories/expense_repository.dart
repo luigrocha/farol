@@ -144,6 +144,7 @@ class ExpenseRepository {
     final categoryId = await _resolveCategoryId(category);
     final row = <String, dynamic>{
       'user_id': userId,
+      'author_user_id': userId,
       if (workspaceId != null) 'workspace_id': workspaceId,
       'transaction_date': transactionDate.toIso8601String().substring(0, 10),
       'month': month,
@@ -344,6 +345,8 @@ class ExpenseRepository {
         return {
           'user_id': userId,
           if (workspaceId != null) 'workspace_id': workspaceId,
+          // Preserve original author when propagating fixed expenses forward
+          if (e.authorUserId != null) 'author_user_id': e.authorUserId,
           'transaction_date':
               DateTime(toYear, toMonth, day.clamp(1, maxDay)).toIso8601String().substring(0, 10),
           'month': toMonth,

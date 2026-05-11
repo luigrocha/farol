@@ -330,7 +330,7 @@ class WorkspaceAppBarChip extends ConsumerWidget {
     final hasEmoji = activeWs.emoji != null && activeWs.emoji!.isNotEmpty;
 
     final bgColor = isShared
-        ? const Color(0xFF00695C).withOpacity(0.15)
+        ? const Color(0xFF00695C).withValues(alpha: 0.15)
         : colorScheme.secondaryContainer;
     final fgColor = isShared
         ? const Color(0xFF00695C)

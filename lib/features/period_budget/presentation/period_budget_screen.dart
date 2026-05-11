@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/models/period_budget.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';
@@ -8,7 +9,12 @@ import '../../../core/theme/farol_colors.dart';
 import '../../../design/farol_colors.dart' as tokens;
 import '../../../core/domain/value_objects/money.dart';
 import 'budget_edit_sheet.dart';
-import '../../../core/providers/workspace_providers.dart' show canWriteProvider;
+import '../../../core/providers/workspace_providers.dart'
+    show
+        budgetChangesProvider,
+        canWriteProvider,
+        isSharedWorkspaceProvider,
+        memberDisplayMapProvider;
 
 class PeriodBudgetScreen extends ConsumerWidget {
   const PeriodBudgetScreen({super.key});
@@ -429,8 +435,59 @@ class _EntryCard extends ConsumerWidget {
                 ),
               ],
             ),
+            // ── Last edit by (shared workspaces only) ──
+            _BudgetLastEditLine(categorySlug: entry.category.toLowerCase()),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ── Budget last-edit attribution ──────────────────────────────────────────────
+
+class _BudgetLastEditLine extends ConsumerWidget {
+  const _BudgetLastEditLine({required this.categorySlug});
+  final String categorySlug;
+
+  String _timeLabel(DateTime changedAt) {
+    final diff = DateTime.now().difference(changedAt);
+    if (diff.inDays == 0) return 'hoje';
+    if (diff.inDays == 1) return 'ontem';
+    return '${diff.inDays}d atrás';
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isShared = ref.watch(isSharedWorkspaceProvider);
+    if (!isShared) return const SizedBox.shrink();
+
+    final changesMap = ref.watch(budgetChangesProvider).valueOrNull ?? {};
+    final change = changesMap[categorySlug];
+    if (change == null) return const SizedBox.shrink();
+
+    final memberMap = ref.watch(memberDisplayMapProvider).valueOrNull ?? {};
+    final editor = memberMap[change.changedBy];
+    final currentUserId =
+        Supabase.instance.client.auth.currentUser?.id ?? '';
+    final isSelf = change.changedBy == currentUserId;
+    final name = isSelf ? 'Você' : (editor?.displayName ?? '${change.changedBy.substring(0, 8)}…');
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Row(
+        children: [
+          Icon(Icons.edit_outlined, size: 11,
+              color: Theme.of(context).colorScheme.onSurfaceVariant),
+          const SizedBox(width: 4),
+          Text(
+            'Último ajuste: $name · ${_timeLabel(change.changedAt)}',
+            style: GoogleFonts.manrope(
+              fontSize: 10,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }

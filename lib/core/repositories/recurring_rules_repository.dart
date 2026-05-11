@@ -53,7 +53,9 @@ class RecurringRulesRepository {
   Future<RecurringRule> create(RecurringRule rule) async {
     final userId = _userId;
     if (userId == null) throw Exception('Not authenticated');
-    final payload = rule.toJson()..['user_id'] = userId;
+    final payload = rule.toJson()
+      ..['user_id'] = userId
+      ..['author_user_id'] = userId;
     if (workspaceId != null) payload['workspace_id'] = workspaceId;
     final row = await _supabase
         .from('recurring_rules')

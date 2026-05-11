@@ -8,6 +8,12 @@ import '../../../core/theme/farol_colors.dart';
 import '../../../core/i18n/app_localizations.dart';
 import '../../../core/widgets/farol_snackbar.dart';
 import '../../../design/farol_colors.dart' as tokens;
+import '../../../core/providers/workspace_providers.dart'
+    show
+        activeWorkspaceProvider,
+        budgetChangesProvider,
+        budgetChangesRepositoryProvider,
+        isSharedWorkspaceProvider;
 
 class BudgetEditSheet extends ConsumerStatefulWidget {
   /// Existing entry to edit. Null = creating a new override for a category.
@@ -67,6 +73,21 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
             amount: amount,
             isCustom: isCustom,
           );
+
+      // Log budget change for shared workspaces
+      final isShared = ref.read(isSharedWorkspaceProvider);
+      final ws = ref.read(activeWorkspaceProvider).valueOrNull;
+      if (isShared && ws != null) {
+        final changesRepo = ref.read(budgetChangesRepositoryProvider);
+        await changesRepo.log(
+          workspaceId: ws.id,
+          categorySlug: _selectedCategory!.toLowerCase(),
+          newAmount: amount,
+          oldAmount: widget.entry?.amount,
+        );
+        ref.invalidate(budgetChangesProvider);
+      }
+
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {

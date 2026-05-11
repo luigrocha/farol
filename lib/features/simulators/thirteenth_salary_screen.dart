@@ -99,7 +99,7 @@ class _InputCard extends StatelessWidget {
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(24)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('DATOS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1.6, color: colors.onSurfaceFaint)),
+        Text('DADOS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1.6, color: colors.onSurfaceFaint)),
         const SizedBox(height: 16),
         TextField(
           controller: salaryCtrl,

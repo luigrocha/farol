@@ -8,7 +8,9 @@ import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/widgets/farol_snackbar.dart';
 import 'add_recurring_bottom_sheet.dart';
-import '../../core/providers/workspace_providers.dart' show canWriteProvider;
+import '../../core/providers/workspace_providers.dart'
+    show canWriteProvider, isSharedWorkspaceProvider, memberDisplayMapProvider;
+import '../../core/widgets/member_chip.dart';
 
 const _teal = Color(0xFF00897B);
 
@@ -208,6 +210,12 @@ class _RuleTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isShared = ref.watch(isSharedWorkspaceProvider);
+    final memberMap = ref.watch(memberDisplayMapProvider).valueOrNull ?? {};
+    final author = isShared && rule.authorUserId != null
+        ? memberMap[rule.authorUserId]
+        : null;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -229,6 +237,10 @@ class _RuleTile extends ConsumerWidget {
                   '${rule.frequency.localizedLabel(context.l10n.locale.languageCode)}  ·  dia ${rule.dayOfMonth ?? '—'}',
                   style: GoogleFonts.manrope(fontSize: 12, color: Colors.grey),
                 ),
+                if (author != null) ...[
+                  const SizedBox(height: 4),
+                  MemberChip(member: author),
+                ],
               ]),
             ),
             Column(crossAxisAlignment: CrossAxisAlignment.end, children: [

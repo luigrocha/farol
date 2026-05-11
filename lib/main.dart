@@ -487,7 +487,7 @@ class _NavRailHeader extends ConsumerWidget {
     final isShared = activeWs?.type == WorkspaceType.shared;
     final hasEmoji = activeWs?.emoji != null && activeWs!.emoji!.isNotEmpty;
     final chipBg = isShared
-        ? const Color(0xFF00695C).withOpacity(0.15)
+        ? const Color(0xFF00695C).withValues(alpha: 0.15)
         : colorScheme.secondaryContainer;
     final chipFg = isShared
         ? const Color(0xFF00695C)

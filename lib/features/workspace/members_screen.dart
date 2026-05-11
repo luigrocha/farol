@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../core/models/member_display.dart';
 import '../../core/models/workspace.dart';
 import '../../core/providers/workspace_providers.dart';
 import 'invite_member_sheet.dart';
@@ -162,9 +163,13 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
                     final member = members[i];
                     final isSelf = member.userId == _currentUserId;
                     final isOwner = member.role == WorkspaceRole.owner;
+                    final memberMap =
+                        ref.watch(memberDisplayMapProvider).valueOrNull ?? {};
+                    final display = memberMap[member.userId];
 
                     return _MemberTile(
                       member: member,
+                      display: display,
                       isSelf: isSelf,
                       canManage: _canManage && !isOwner && !isSelf,
                       onChangeRole: (newRole) => _changeRole(member, newRole),
@@ -179,6 +184,7 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
 class _MemberTile extends StatelessWidget {
   const _MemberTile({
     required this.member,
+    required this.display,
     required this.isSelf,
     required this.canManage,
     required this.onChangeRole,
@@ -186,6 +192,7 @@ class _MemberTile extends StatelessWidget {
   });
 
   final WorkspaceMember member;
+  final MemberDisplay? display;
   final bool isSelf;
   final bool canManage;
   final ValueChanged<WorkspaceRole> onChangeRole;
@@ -198,9 +205,12 @@ class _MemberTile extends StatelessWidget {
         WorkspaceRole.viewer => 'Viewer',
       };
 
-  String get _initials {
-    // We don't have display names from DB in this model — show userId prefix
-    return member.userId.substring(0, 2).toUpperCase();
+  String get _initials =>
+      display?.initials ?? member.userId.substring(0, 2).toUpperCase();
+
+  String get _displayName {
+    if (isSelf) return 'You';
+    return display?.displayName ?? '${member.userId.substring(0, 8)}…';
   }
 
   @override
@@ -213,13 +223,19 @@ class _MemberTile extends StatelessWidget {
       WorkspaceRole.viewer => colorScheme.outline,
     };
 
+    final avatarBg = display?.avatarColor ??
+        colorScheme.surfaceContainerHighest;
+    final avatarFg = display != null
+        ? Colors.white
+        : colorScheme.onSurfaceVariant;
+
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: colorScheme.surfaceContainerHighest,
+        backgroundColor: avatarBg,
         child: Text(
           _initials,
           style: TextStyle(
-            color: colorScheme.onSurfaceVariant,
+            color: avatarFg,
             fontWeight: FontWeight.w700,
             fontSize: 13,
           ),
@@ -229,7 +245,7 @@ class _MemberTile extends StatelessWidget {
         children: [
           Flexible(
             child: Text(
-              isSelf ? 'You' : member.userId.substring(0, 8) + '…',
+              _displayName,
               style: GoogleFonts.manrope(
                 fontWeight: isSelf ? FontWeight.w700 : FontWeight.w500,
               ),

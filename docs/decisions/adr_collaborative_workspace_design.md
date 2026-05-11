@@ -1,6 +1,6 @@
 # ADR: Farol Collaborative Workspace — Full System Design
 
-**Status:** In Progress (Phase 1 complete — 2026-05-10)  
+**Status:** In Progress (Phase 1 + Phase 2 + Phase 3 complete — 2026-05-10)  
 **Date:** 2026-05-10  
 **Scope:** UX Architecture · UI Design · Backend Schema · Frontend Providers · Incremental Rollout  
 **Author:** CTO Assistant (Senior Product Designer + UX Architect + Software Architect)
@@ -1198,14 +1198,14 @@ CREATE TRIGGER trg_expense_activity
 **Goal:** Make the existing multi-workspace system feel polished, not half-built.
 
 Tasks:
-- [ ] Always show WorkspaceChip in AppBar (not just when >1 workspace)
-- [ ] Add workspace emoji + color fields (V33 migration)
-- [ ] Emoji picker in CreateWorkspaceSheet + WorkspaceSettings
-- [ ] Add workspace type (personal vs shared) — V33
-- [ ] WorkspaceSwitcherSheet redesign: "Your spaces" / "Shared spaces" sections
-- [ ] WorkspaceChip: teal tint for shared, grey for personal
-- [ ] Personal workspace auto-named "My Finances" / "Minhas Finanças" (l10n)
-- [ ] Workspace onboarding checklist after creation
+- [x] Always show WorkspaceChip in AppBar (not just when >1 workspace) — 2026-05-10
+- [x] Add workspace emoji + color fields (V33 migration) — 2026-05-10
+- [x] Emoji picker in CreateWorkspaceSheet — 2026-05-10
+- [x] Add workspace type (personal vs shared) — V33 — 2026-05-10
+- [x] WorkspaceSwitcherSheet redesign: "Your space" / "Shared spaces" sections — 2026-05-10
+- [x] WorkspaceChip: teal tint for shared, grey for personal — 2026-05-10
+- [x] Personal workspace auto-named via trigger (V33 updates `create_personal_workspace()` with emoji 🏠) — 2026-05-10
+- [ ] Workspace onboarding checklist after creation (Drift-persisted per workspace)
 - [ ] Deep-link handling for invite tokens (farol.app/join/{token})
 
 **Risk:** Very low. All UI-only changes + one simple migration.  
@@ -1218,16 +1218,16 @@ Tasks:
 **Goal:** Every shared workspace item shows who did what.
 
 Tasks:
-- [ ] V34: Add `author_user_id` to expenses, recurring_rules, installment_plans
-- [ ] V38: Backfill author_user_id
-- [ ] Flutter: `memberDisplayMapProvider`
-- [ ] `MemberChip` widget (compact + labeled variants)
-- [ ] `MemberAvatarGroup` widget
-- [ ] `isSharedWorkspaceProvider`
-- [ ] Attribution in TransactionsScreen (only in shared workspaces)
-- [ ] Attribution in InstallmentsScreen
-- [ ] Attribution in RecurringScreen
-- [ ] `ContributionBar` on Dashboard (shared workspaces only)
+- [x] V34: Add `author_user_id` to expenses, recurring_rules, installment_plans
+- [x] V34: Backfill author_user_id (SET author_user_id = user_id)
+- [x] Flutter: `memberDisplayMapProvider`
+- [x] `MemberChip` widget (compact + labeled variants)
+- [x] `MemberAvatarGroup` widget
+- [x] `isSharedWorkspaceProvider`
+- [x] Attribution in TransactionsScreen (only in shared workspaces)
+- [x] Attribution in InstallmentsScreen
+- [x] Attribution in RecurringScreen
+- [x] `ContributionBar` on Dashboard (shared workspaces only)
 
 **Risk:** Low. Additive — new columns, new widgets. Nothing changes for personal workspaces.  
 **ROI:** High. This is the single most visible collaborative feature.
@@ -1239,13 +1239,15 @@ Tasks:
 **Goal:** The "heartbeat" of collaborative finance.
 
 Tasks:
-- [ ] V35: `workspace_activity` table + RLS
-- [ ] V35: Triggers on expenses + recurring_rules + budgets
-- [ ] `WorkspaceActivityNotifier` provider
-- [ ] `ActivityFeedTile` widget
-- [ ] Activity Feed screen (full page)
-- [ ] Activity Feed preview on Dashboard (last 3 items + "See all")
-- [ ] Budget edit audit: V36 `budget_changes` table + "Último ajuste: Ana" in BudgetScreen
+- [x] V35: `workspace_activity` table + RLS + triggers (expenses, recurring_rules, installment_plans)
+- [x] V36: `budget_changes` table + RLS
+- [x] `WorkspaceActivityRepository` + `latestWorkspaceActivityProvider` + `workspaceActivityFirstPageProvider`
+- [x] `ActivityFeedTile` widget (avatar, action line, entity label + amount, time ago)
+- [x] `ActivityFeedScreen` — full page, day-grouped, infinite scroll, pull-to-refresh
+- [x] `ActivityFeedPreviewCard` on Dashboard (last 3 items + "See all" → ActivityFeedScreen)
+- [x] `BudgetChangesRepository` + `budgetChangesProvider`
+- [x] Budget edit logging in `BudgetEditSheet.upsert()` (shared workspaces only)
+- [x] `_BudgetLastEditLine` widget on each envelope tile — "Último ajuste: Ana · ontem"
 
 **Risk:** Medium. Database triggers need testing. Activity feed query needs pagination.  
 **ROI:** Very high. Core collaborative UX — this is what differentiates Farol.
