@@ -221,8 +221,8 @@ class _MobileDashboardSliver extends StatelessWidget {
 class _DesktopDashboardSliver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(24, 0, 24, 80),
+    return const SliverPadding(
+      padding: EdgeInsets.fromLTRB(24, 0, 24, 80),
       sliver: SliverToBoxAdapter(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,7 +232,7 @@ class _DesktopDashboardSliver extends StatelessWidget {
               flex: 3,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: const [
+                children: [
                   LiquidityAlertCard(),
                   AlertBanner(),
                   SizedBox(height: 12),
@@ -252,13 +252,13 @@ class _DesktopDashboardSliver extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 20),
+            SizedBox(width: 20),
             // ── Right column (secondary) ──
             Expanded(
               flex: 2,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: const [
+                children: [
                   HealthGaugeCard(),
                   SizedBox(height: 16),
                   BurnRateCard(),

@@ -4,6 +4,7 @@ import '../models/workspace.dart';
 import '../models/member_display.dart';
 import '../repositories/workspace_repository.dart';
 import '../repositories/workspace_activity_repository.dart';
+import '../services/workspace_realtime_service.dart';
 import '../repositories/budget_changes_repository.dart';
 import '../domain/entities/workspace_activity.dart';
 // Reutiliza os providers de infraestrutura já declarados em providers.dart
@@ -161,7 +162,7 @@ final memberDisplayMapProvider =
       .inFilter('id', userIds);
 
   final profileMap = {
-    for (final r in rows) r['id'] as String: r as Map<String, dynamic>,
+    for (final r in rows) r['id'] as String: r,
   };
 
   return {
@@ -229,3 +230,36 @@ final budgetChangesProvider =
   final repo = ref.read(budgetChangesRepositoryProvider);
   return repo.fetchLatestPerCategory(ws.id);
 });
+
+// ─────────────────────────────────────────────────────────────
+// Realtime invalidation bridge
+// ─────────────────────────────────────────────────────────────
+
+/// Listens to WorkspaceRealtimeService.onActivityChange and invalidates
+/// latestWorkspaceActivityProvider whenever a new activity row appears.
+/// Must be watched by at least one widget to activate (use in MainShell or
+/// ActivityFeedPreviewCard).
+final workspaceActivityRealtimeProvider = StreamProvider.autoDispose<void>(
+  (ref) {
+    return WorkspaceRealtimeService.instance.onActivityChange.map((_) {
+      // Invalidate the activity preview — it will re-fetch
+      ref.invalidate(latestWorkspaceActivityProvider);
+      // Also invalidate first page so feed screen refreshes on next open
+      ref.invalidate(workspaceActivityFirstPageProvider);
+    });
+  },
+);
+
+// ─────────────────────────────────────────────────────────────
+// Presence
+// ─────────────────────────────────────────────────────────────
+
+/// Set of user IDs (excluding self) currently online in the active workspace.
+/// Empty in personal workspaces or when no co-members are online.
+final workspacePresenceProvider = StreamProvider.autoDispose<Set<String>>(
+  (ref) {
+    final isShared = ref.watch(isSharedWorkspaceProvider);
+    if (!isShared) return const Stream.empty();
+    return WorkspaceRealtimeService.instance.onPresenceChange;
+  },
+);

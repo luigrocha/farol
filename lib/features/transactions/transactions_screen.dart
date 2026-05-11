@@ -94,7 +94,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         children: [
           Expanded(child: _buildExpensesPanel(context, headerLabel: 'Gastos')),
           const VerticalDivider(thickness: 1, width: 1),
-          Expanded(child: const _IncomeTab()),
+          const Expanded(child: _IncomeTab()),
         ],
       ),
       floatingActionButton: Consumer(

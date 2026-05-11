@@ -35,8 +35,9 @@ import 'features/period_budget/presentation/period_budget_screen.dart';
 import 'features/net_worth/presentation/patrimonio_screen.dart';
 import 'features/auth/presentation/auth_loading_screen.dart';
 import 'core/providers/workspace_providers.dart'
-    show userWorkspacesProvider, activeWorkspaceProvider;
+    show activeWorkspaceProvider, isSharedWorkspaceProvider;
 import 'core/models/workspace.dart' show WorkspaceType;
+import 'core/services/workspace_realtime_service.dart';
 import 'features/workspace/workspace_switcher_sheet.dart';
 
 final themeModeProvider =
@@ -334,10 +335,13 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // Activate workspace realtime on first build
+    WidgetsBinding.instance.addPostFrameCallback((_) => _syncRealtime());
   }
 
   @override
   void dispose() {
+    WorkspaceRealtimeService.instance.pause();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -345,7 +349,22 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      WorkspaceRealtimeService.instance.resume();
       setState(() {});
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
+      WorkspaceRealtimeService.instance.pause();
+    }
+  }
+
+  void _syncRealtime() {
+    if (!mounted) return;
+    final container = ProviderScope.containerOf(context);
+    final ws = container.read(activeWorkspaceProvider).valueOrNull;
+    final isShared = container.read(isSharedWorkspaceProvider);
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (ws != null && isShared && uid != null) {
+      WorkspaceRealtimeService.instance.setWorkspace(ws.id, uid);
     }
   }
 
@@ -372,10 +391,23 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
     final width = MediaQuery.sizeOf(context).width;
     final isDesktop = width >= 600;
 
-    if (isDesktop) {
-      return _buildDesktopShell(l10n);
-    }
-    return _buildMobileShell(l10n);
+    // Re-sync realtime service whenever the active workspace changes
+    return Consumer(
+      builder: (ctx, ref, child) {
+        ref.listen(activeWorkspaceProvider, (_, next) {
+          final ws = next.valueOrNull;
+          final isShared = ref.read(isSharedWorkspaceProvider);
+          final uid = Supabase.instance.client.auth.currentUser?.id;
+          if (ws != null && isShared && uid != null) {
+            WorkspaceRealtimeService.instance.setWorkspace(ws.id, uid);
+          } else {
+            WorkspaceRealtimeService.instance.pause();
+          }
+        });
+        return child!;
+      },
+      child: isDesktop ? _buildDesktopShell(l10n) : _buildMobileShell(l10n),
+    );
   }
 
   // ── Desktop: NavigationRail + content side by side ────────────────────────

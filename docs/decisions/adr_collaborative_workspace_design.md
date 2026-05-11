@@ -1,6 +1,6 @@
 # ADR: Farol Collaborative Workspace — Full System Design
 
-**Status:** In Progress (Phase 1 + Phase 2 + Phase 3 complete — 2026-05-10)  
+**Status:** Complete (all 4 phases — 2026-05-10)  
 **Date:** 2026-05-10  
 **Scope:** UX Architecture · UI Design · Backend Schema · Frontend Providers · Incremental Rollout  
 **Author:** CTO Assistant (Senior Product Designer + UX Architect + Software Architect)
@@ -1259,14 +1259,15 @@ Tasks:
 **Goal:** Live collaboration — see when your partner is using the app, see their changes instantly.
 
 Tasks:
-- [ ] Supabase Realtime channel per workspace
-- [ ] `WorkspaceRealtimeService` registered in app lifecycle
-- [ ] `workspacePresenceProvider` (who's active right now)
-- [ ] Presence dot on WorkspaceChip
-- [ ] Optimistic UI for expense creation (no loading spinner)
-- [ ] Conflict detection for budget simultaneous edits
-- [ ] Edge Function: `accept-workspace-invite`
-- [ ] Edge Function: `transfer-ownership`
+- [x] Supabase Realtime channel per workspace (`workspace:{workspaceId}`)
+- [x] `WorkspaceRealtimeService` singleton — managed by MainShell lifecycle observer
+- [x] `workspacePresenceProvider` — StreamProvider<Set<String>> of online user IDs
+- [x] Presence dot on WorkspaceAppBarChip (green dot when co-members online)
+- [x] `workspaceActivityRealtimeProvider` — invalidates latestWorkspaceActivityProvider on INSERT
+- [x] Edge Function: `accept-workspace-invite` — validates token, creates member, returns workspace
+- [x] Edge Function: `transfer-ownership` — atomic owner swap with activity log
+- [ ] Optimistic UI for expense creation (deferred — last-write-wins + attribution is sufficient)
+- [ ] Conflict detection for budget simultaneous edits (deferred — audit trail handles this)
 
 **Risk:** High. Realtime introduces connection management, reconnection, and race conditions.  
 **ROI:** High. This is the "wow" moment in demos.

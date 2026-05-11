@@ -96,7 +96,7 @@ class _UpgradePrompt extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             feature.label,
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.w700,
               color: tokens.FarolColors.navy,
             ),
@@ -116,7 +116,7 @@ class _UpgradePrompt extends StatelessWidget {
             },
             style: OutlinedButton.styleFrom(
               foregroundColor: tokens.FarolColors.navy,
-              side: BorderSide(color: tokens.FarolColors.navy),
+              side: const BorderSide(color: tokens.FarolColors.navy),
             ),
             child: const Text('Ver planos'),
           ),

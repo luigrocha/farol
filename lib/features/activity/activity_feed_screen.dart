@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/domain/entities/workspace_activity.dart';
-import '../../core/models/member_display.dart';
 import '../../core/providers/workspace_providers.dart'
     show
         activeWorkspaceProvider,
@@ -169,7 +168,7 @@ class _ActivityFeedScreenState extends ConsumerState<ActivityFeedScreen> {
 
                       final item = _items[index];
                       final display =
-                          memberMap[item.userId] as MemberDisplay?;
+                          memberMap[item.userId];
 
                       // Day separator
                       final showDate = index == 0 ||

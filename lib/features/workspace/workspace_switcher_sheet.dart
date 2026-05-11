@@ -336,44 +336,72 @@ class WorkspaceAppBarChip extends ConsumerWidget {
         ? const Color(0xFF00695C)
         : colorScheme.onSecondaryContainer;
 
+    // Presence: show green dot when co-members are online
+    final onlineUsers =
+        ref.watch(workspacePresenceProvider).valueOrNull ?? {};
+    final hasPresence = isShared && onlineUsers.isNotEmpty;
+
     return GestureDetector(
       onTap: () => WorkspaceSwitcherSheet.show(context),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Emoji or icon
-            if (hasEmoji)
-              Text(activeWs.emoji!, style: const TextStyle(fontSize: 13))
-            else
-              Icon(
-                isShared ? Icons.group_outlined : Icons.person_outline,
-                size: 14,
-                color: fgColor,
-              ),
-            const SizedBox(width: 4),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 100),
-              child: Text(
-                activeWs.name,
-                style: GoogleFonts.manrope(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: fgColor,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Emoji or icon
+                if (hasEmoji)
+                  Text(activeWs.emoji!, style: const TextStyle(fontSize: 13))
+                else
+                  Icon(
+                    isShared ? Icons.group_outlined : Icons.person_outline,
+                    size: 14,
+                    color: fgColor,
+                  ),
+                const SizedBox(width: 4),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 100),
+                  child: Text(
+                    activeWs.name,
+                    style: GoogleFonts.manrope(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: fgColor,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                const SizedBox(width: 2),
+                Icon(Icons.arrow_drop_down, size: 16, color: fgColor),
+              ],
+            ),
+          ),
+          // ── Presence dot ──
+          if (hasPresence)
+            Positioned(
+              top: -2,
+              right: -2,
+              child: Container(
+                width: 9,
+                height: 9,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF22C55E), // green-500
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.surface,
+                    width: 1.5,
+                  ),
+                ),
               ),
             ),
-            const SizedBox(width: 2),
-            Icon(Icons.arrow_drop_down, size: 16, color: fgColor),
-          ],
-        ),
+        ],
       ),
     );
   }

@@ -70,7 +70,15 @@
   - `BudgetChangesRepository` + `budgetChangesProvider` — `lib/core/repositories/budget_changes_repository.dart`
   - `BudgetEditSheet` logs change on upsert (shared workspaces only, invalidates `budgetChangesProvider`)
   - `_BudgetLastEditLine` widget on each envelope in `PeriodBudgetScreen` — "Último ajuste: Ana · ontem"
-- **Next step**: Phase 4 — Realtime + Presence (when ready)
+- **Realtime + Presence (Phase 4) — COMPLETE (2026-05-10)**:
+  - `WorkspaceRealtimeService` singleton — `lib/core/services/workspace_realtime_service.dart`; subscribes to `workspace_activity` INSERT + Presence on channel `workspace:{id}`; managed by `MainShell` WidgetsBindingObserver (`resume`/`pause`); re-syncs on active workspace change via `Consumer` listener
+  - `workspacePresenceProvider` — `StreamProvider<Set<String>>` of co-member user IDs currently online
+  - Presence dot on `WorkspaceAppBarChip` — green dot (9px) when `workspacePresenceProvider` is non-empty in shared workspaces
+  - `workspaceActivityRealtimeProvider` — `StreamProvider` bridge; invalidates `latestWorkspaceActivityProvider` + `workspaceActivityFirstPageProvider` on any INSERT event
+  - `ActivityFeedPreviewCard` watches `workspaceActivityRealtimeProvider` to keep bridge alive
+  - Edge Function `accept-workspace-invite` — `supabase/functions/accept-workspace-invite/index.ts`; validates token, checks expiry, creates `workspace_members` row, marks invite `accepted_at`, logs to `workspace_activity`, returns workspace data
+  - Edge Function `transfer-ownership` — `supabase/functions/transfer-ownership/index.ts`; atomically promotes new owner, demotes old owner to admin, updates `workspaces.owner_id`, logs to `workspace_activity`, with rollback on partial failure
+- **Next step**: Monetization / Freemium gates (Phase 5, when ready)
 
 ---
 

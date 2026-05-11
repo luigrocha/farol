@@ -6,7 +6,8 @@ import '../../../core/providers/workspace_providers.dart'
     show
         isSharedWorkspaceProvider,
         latestWorkspaceActivityProvider,
-        memberDisplayMapProvider;
+        memberDisplayMapProvider,
+        workspaceActivityRealtimeProvider;
 import '../../activity/activity_feed_tile.dart';
 import '../../activity/activity_feed_screen.dart';
 
@@ -19,6 +20,9 @@ class ActivityFeedPreviewCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isShared = ref.watch(isSharedWorkspaceProvider);
     if (!isShared) return const SizedBox.shrink();
+
+    // Activate realtime bridge while this card is visible
+    ref.watch(workspaceActivityRealtimeProvider);
 
     final activityAsync = ref.watch(latestWorkspaceActivityProvider(3));
     final memberMap =

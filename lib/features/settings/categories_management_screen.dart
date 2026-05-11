@@ -141,11 +141,11 @@ class _CategoryTile extends StatelessWidget {
   });
 
   static (String, Color) _financialTypeLabel(String type) => switch (type) {
-        'need' => ('Necessidade', Color(0xFF2196F3)),
-        'investment' => ('Investimento', Color(0xFF00897B)),
-        'income' => ('Receita', Color(0xFF4CAF50)),
-        'transfer' => ('Transferência', Color(0xFF9E9E9E)),
-        _ => ('Desejo', Color(0xFFF59E0B)),
+        'need' => ('Necessidade', const Color(0xFF2196F3)),
+        'investment' => ('Investimento', const Color(0xFF00897B)),
+        'income' => ('Receita', const Color(0xFF4CAF50)),
+        'transfer' => ('Transferência', const Color(0xFF9E9E9E)),
+        _ => ('Desejo', const Color(0xFFF59E0B)),
       };
 
   @override
@@ -202,7 +202,7 @@ class _CategoryTile extends StatelessWidget {
             _Chip(label: typeLabel, color: typeColor),
             if (category.isSwile) ...[
               const SizedBox(width: 4),
-              _Chip(label: 'Swile', color: tokens.FarolColors.beam),
+              const _Chip(label: 'Swile', color: tokens.FarolColors.beam),
             ],
           ]),
         ),

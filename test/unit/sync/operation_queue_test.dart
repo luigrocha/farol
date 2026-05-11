@@ -9,11 +9,10 @@ import 'package:farol/core/infrastructure/sync/sync_operations.dart';
 class _FakeSupabase extends Fake implements SupabaseClient {}
 
 class _SpyOperation extends SyncOperation {
-  _SpyOperation({Map<String, dynamic>? payload, String? idempotencyKey})
+  _SpyOperation({Map<String, dynamic>? payload, super.idempotencyKey})
       : super(
           operationType: InsertExpenseOperation.type,
           payload: payload ?? {'test': 'data'},
-          idempotencyKey: idempotencyKey,
         );
 
   @override

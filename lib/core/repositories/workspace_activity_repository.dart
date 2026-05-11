@@ -28,18 +28,19 @@ class WorkspaceActivityRepository {
     int pageSize = 30,
     DateTime? before,
   }) async {
-    var query = _supabase
+    var filter = _supabase
         .from('workspace_activity')
         .select()
-        .eq('workspace_id', workspaceId)
-        .order('created_at', ascending: false)
-        .limit(pageSize);
+        .eq('workspace_id', workspaceId);
 
     if (before != null) {
-      query = query.lt('created_at', before.toIso8601String());
+      filter = filter.lt('created_at', before.toIso8601String());
     }
 
-    final rows = await query;
+    final rows = await filter
+        .select()
+        .order('created_at', ascending: false)
+        .limit(pageSize);
     return rows.map(WorkspaceActivity.fromJson).toList();
   }
 }

@@ -56,12 +56,10 @@ class InsertExpenseOperation extends SyncOperation {
   static const String type = 'insert_expense';
 
   InsertExpenseOperation({
-    required Map<String, dynamic> payload,
-    String? idempotencyKey,
+    required super.payload,
+    super.idempotencyKey,
   }) : super(
           operationType: type,
-          payload: payload,
-          idempotencyKey: idempotencyKey,
         );
 
   InsertExpenseOperation.fromPayload(

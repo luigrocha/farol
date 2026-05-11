@@ -22,7 +22,7 @@ void main() {
     });
 
     test('equal timestamps → remote wins (Supabase is source of truth)', () {
-      final ts = '2026-05-08T10:00:00.000Z';
+      const ts = '2026-05-08T10:00:00.000Z';
       final local = record(ts);
       final remote = record(ts);
       expect(resolver.resolve(local, remote), same(remote));
