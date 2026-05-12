@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/domain/value_objects/category_ref.dart';
+import '../../core/models/category.dart';
 import '../../core/providers/providers.dart';
 import '../../core/models/enums.dart';
 import '../../core/models/expense.dart';
@@ -61,7 +62,14 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final bottom = MediaQuery.of(context).viewInsets.bottom;
-    final categories = ref.watch(rootCategoriesRefProvider);
+    final categoriesAsync = ref.watch(categoriesStreamProvider);
+    final allLoaded = categoriesAsync.value ?? [];
+    final categories = allLoaded
+        .where((c) => c.parentId == null)
+        .map(CategoryRef.fromCategory)
+        .toList();
+    final isLoadingCategories = categoriesAsync.isLoading && allLoaded.isEmpty;
+
     final selectedCategory = categories.firstWhere(
       (c) => c.slug == _categoryDbValue,
       orElse: () => categories.isNotEmpty ? categories.first : CategoryRef.uncategorized(_categoryDbValue),
@@ -92,15 +100,21 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
         // Category grid
         Align(alignment: Alignment.centerLeft, child: Text(l10n.category, style: Theme.of(context).textTheme.labelLarge)),
         const SizedBox(height: 8),
-        GridView.count(
-          crossAxisCount: 3,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: 2.5,
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 8,
-          children: categories.map((c) => _catChip(c, context)).toList(),
-        ),
+        if (isLoadingCategories)
+          const SizedBox(
+            height: 80,
+            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          )
+        else
+          GridView.count(
+            crossAxisCount: 3,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            childAspectRatio: 2.5,
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            children: categories.map((c) => _catChip(c, context)).toList(),
+          ),
         const SizedBox(height: 16),
 
         // Subcategory chips (dynamic from DB)

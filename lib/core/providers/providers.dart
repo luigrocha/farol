@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -64,7 +66,7 @@ import '../domain/entities/recurring_rule.dart';
 import '../domain/entities/recurring_occurrence.dart';
 import '../repositories/recurring_rules_repository.dart';
 import '../repositories/recurring_occurrences_repository.dart';
-import 'workspace_providers.dart' show activeWorkspaceIdProvider;
+import 'workspace_providers.dart' show activeWorkspaceIdProvider, activeWorkspaceProvider;
 
 // ═══════════════════════════════════════════
 // LOCAL-DEVICE PROVIDERS (Drift)
@@ -295,6 +297,17 @@ final _allExpensesStreamProvider = StreamProvider.autoDispose<List<Expense>>((re
 });
 
 final categoriesStreamProvider = StreamProvider.autoDispose<List<Category>>((ref) {
+  // Wait for the active workspace to resolve before subscribing.
+  // While loading, activeWorkspaceIdProvider returns null → the repo uses the
+  // userId branch and may miss workspace-scoped categories. Gating here ensures
+  // the stream always starts with a fully resolved workspaceId.
+  // StreamController that never emits keeps the provider in AsyncLoading state.
+  final wsAsync = ref.watch(activeWorkspaceProvider);
+  if (wsAsync.isLoading) {
+    final ctrl = StreamController<List<Category>>();
+    ref.onDispose(ctrl.close);
+    return ctrl.stream;
+  }
   return ref.watch(categoryRepositoryProvider).watchAll();
 });
 

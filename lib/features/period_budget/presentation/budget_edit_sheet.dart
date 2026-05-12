@@ -102,15 +102,29 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final period = ref.watch(currentPeriodProvider);
-    final categories = ref.watch(categoriesStreamProvider).value ?? [];
-    
+    // Only root categories in the picker — no subcategories.
+    // Also normalize the selected slug to lowercase for legacy UPPERCASE values.
+    final categories = (ref.watch(categoriesStreamProvider).value ?? [])
+        .where((c) => c.parentId == null)
+        .toList();
+
     final entry = widget.entry;
     final isEdit = entry != null;
     final goalAmount = entry?.goalAmount;
 
-    // Default selection if not set
-    if (_selectedCategory == null && categories.isNotEmpty) {
-      _selectedCategory = categories.first.slug;
+    // Resolve the effective category slug — normalize UPPERCASE legacy values,
+    // fall back to first category if unknown. Uses a local var to avoid
+    // setState-during-build.
+    final slugs = categories.map((c) => c.slug).toSet();
+    final normalizedSelected = _selectedCategory?.toLowerCase();
+    final effectiveCategory = (normalizedSelected != null && slugs.contains(normalizedSelected))
+        ? normalizedSelected
+        : (categories.isNotEmpty ? categories.first.slug : null);
+
+    if (effectiveCategory != _selectedCategory) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _selectedCategory = effectiveCategory);
+      });
     }
 
     return Padding(
@@ -187,7 +201,7 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                  value: _selectedCategory,
+                  value: effectiveCategory,
                   isExpanded: true,
                   // Lock category when editing an existing entry.
                   onChanged: isEdit

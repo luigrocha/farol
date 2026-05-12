@@ -9,7 +9,12 @@ class CategoryRepository {
 
   String? get _userId => _supabase.auth.currentUser?.id;
 
-  // Returns system categories (user_id IS NULL) + user's custom categories
+  // Returns system categories (user_id IS NULL) + user's custom categories.
+  // System categories always have user_id IS NULL — their workspace_id was
+  // assigned by V29 to whichever workspace existed at migration time, NOT to
+  // each user's workspace. So we must NOT filter by workspace_id for system
+  // rows; instead we keep any row where user_id IS NULL (system) OR the row
+  // belongs to the active workspace (custom).
   Stream<List<Category>> watchAll() {
     final wsId = workspaceId;
     final userId = _userId;
@@ -20,7 +25,9 @@ class CategoryRepository {
           .order('display_order', ascending: true)
           .map((rows) => rows
               .map(Category.fromJson)
-              .where((c) => c.workspaceId == null || c.workspaceId == wsId)
+              .where((c) =>
+                  c.userId == null ||          // system category — always visible
+                  c.workspaceId == wsId)       // or belongs to active workspace
               .where((c) => !c.isArchived)
               .toList());
     }
@@ -40,10 +47,12 @@ class CategoryRepository {
     final wsId = workspaceId;
     final userId = _userId;
     if (wsId != null) {
+      // System rows have user_id IS NULL (not workspace_id IS NULL — V29 assigned
+      // a workspace_id to them). Use user_id IS NULL to identify system categories.
       final data = await _supabase
           .from('categories')
           .select()
-          .or('workspace_id.is.null,workspace_id.eq.$wsId')
+          .or('user_id.is.null,workspace_id.eq.$wsId')
           .eq('is_archived', false)
           .order('display_order', ascending: true);
       return data.map((r) => Category.fromJson(r)).toList();

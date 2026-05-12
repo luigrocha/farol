@@ -263,7 +263,8 @@ class _EntryCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final catsMap = ref.watch(categoriesMapProvider);
-    final cat = catsMap[entry.category];
+    // Normalize to lowercase slug — period_budgets may store legacy UPPERCASE values.
+    final cat = catsMap[entry.category] ?? catsMap[entry.category.toLowerCase()];
 
     final slug = entry.category.toLowerCase();
     final envelopes = ref.watch(envelopesProvider);
