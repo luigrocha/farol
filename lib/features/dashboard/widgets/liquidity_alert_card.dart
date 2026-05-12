@@ -42,34 +42,32 @@ class LiquidityAlertCard extends ConsumerWidget {
           _ => (Colors.grey, Icons.info_outline, ''),
         };
 
-        return Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: color.withValues(alpha: 0.4)),
-          ),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(12),
-            onTap: () => _showBreakdown(context, risk),
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Row(children: [
-                Icon(icon, color: color, size: 22),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(title,
-                        style: GoogleFonts.manrope(
-                            fontSize: 13, fontWeight: FontWeight.w700, color: color)),
-                    const SizedBox(height: 2),
-                    Text(
-                      _subtitle(l10n, risk),
-                      style: GoogleFonts.manrope(fontSize: 12, color: Colors.grey),
-                    ),
-                  ]),
-                ),
-                const Icon(Icons.chevron_right, size: 18, color: Colors.grey),
-              ]),
+        // Compact single-row pill — matches AlertBanner height and style.
+        return GestureDetector(
+          onTap: () => _showBreakdown(context, risk),
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: color.withValues(alpha: 0.4)),
             ),
+            child: Row(children: [
+              Icon(icon, color: color, size: 14),
+              const SizedBox(width: 7),
+              Expanded(
+                child: Text(
+                  '$title · ${_subtitle(l10n, risk)}',
+                  style: GoogleFonts.manrope(
+                      fontSize: 12, fontWeight: FontWeight.w600, color: color),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(Icons.chevron_right, size: 14, color: color),
+            ]),
           ),
         );
       },

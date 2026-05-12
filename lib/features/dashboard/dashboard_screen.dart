@@ -46,12 +46,18 @@ class DashboardScreen extends ConsumerWidget {
 
     final appBar = SliverAppBar(
       floating: true,
-      toolbarHeight: 64,
+      // titleSpacing: 0 lets the title use all available space without extra margins.
+      titleSpacing: 0,
+      toolbarHeight: 56,
+      // Use automaticallyImplyLeading: false so Flutter doesn't reserve space for
+      // a back button, which would shrink the available title width.
+      automaticallyImplyLeading: false,
       title: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
+          // ── Left: chevron + date column + chevron ─────────────────────────
           IconButton(
             icon: const Icon(Icons.chevron_left, size: 20),
+            visualDensity: VisualDensity.compact,
             onPressed: () => _changeMonth(ref, month, year, -1),
           ),
           Column(
@@ -62,14 +68,14 @@ class DashboardScreen extends ConsumerWidget {
                 '${months[month - 1]} $year',
                 style: GoogleFonts.manrope(
                   fontWeight: FontWeight.w700,
-                  fontSize: 16,
+                  fontSize: 15,
                 ),
               ),
               Text(
                 periodLabel,
                 style: GoogleFonts.manrope(
                   fontWeight: FontWeight.w500,
-                  fontSize: 11,
+                  fontSize: 10,
                   color: context.colors.onSurfaceSoft,
                 ),
               ),
@@ -77,42 +83,51 @@ class DashboardScreen extends ConsumerWidget {
           ),
           IconButton(
             icon: const Icon(Icons.chevron_right, size: 20),
+            visualDensity: VisualDensity.compact,
             onPressed: () => _changeMonth(ref, month, year, 1),
+          ),
+          // ── Right: workspace chip + icons (use Expanded + Row so they never overflow)
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const WorkspaceAppBarChip(),
+                Consumer(builder: (_, ref, __) {
+                  final isPrivate = ref.watch(privacyModeProvider);
+                  return IconButton(
+                    icon: Icon(
+                      isPrivate
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      size: 20,
+                    ),
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () =>
+                        ref.read(privacyModeProvider.notifier).toggle(),
+                  );
+                }),
+                Consumer(builder: (_, ref, __) {
+                  final alerts = ref.watch(budgetAlertsProvider);
+                  final critical =
+                      alerts.where((a) => a.level != AlertLevel.warning).length;
+                  return Badge(
+                    isLabelVisible: critical > 0,
+                    label: Text('$critical'),
+                    backgroundColor: tokens.FarolColors.coral,
+                    child: IconButton(
+                      icon: const Icon(Icons.notifications_outlined, size: 20),
+                      visualDensity: VisualDensity.compact,
+                      onPressed: () =>
+                          Navigator.pushNamed(context, '/notifications'),
+                    ),
+                  );
+                }),
+                const SizedBox(width: 4),
+              ],
+            ),
           ),
         ],
       ),
-      actions: [
-        // Workspace chip — visible only when user has >1 workspace
-        const WorkspaceAppBarChip(),
-        Consumer(builder: (_, ref, __) {
-          final isPrivate = ref.watch(privacyModeProvider);
-          return IconButton(
-            icon: Icon(
-              isPrivate
-                  ? Icons.visibility_off_outlined
-                  : Icons.visibility_outlined,
-              size: 20,
-            ),
-            onPressed: () => ref.read(privacyModeProvider.notifier).toggle(),
-          );
-        }),
-        Consumer(builder: (_, ref, __) {
-          final alerts = ref.watch(budgetAlertsProvider);
-          final critical =
-              alerts.where((a) => a.level != AlertLevel.warning).length;
-          return Badge(
-            isLabelVisible: critical > 0,
-            label: Text('$critical'),
-            backgroundColor: tokens.FarolColors.coral,
-            child: IconButton(
-              icon: const Icon(Icons.notifications_outlined, size: 20),
-              onPressed: () =>
-                  Navigator.pushNamed(context, '/notifications'),
-            ),
-          );
-        }),
-        const SizedBox(width: 16),
-      ],
     );
 
     return Scaffold(
