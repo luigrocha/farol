@@ -40,6 +40,8 @@ import 'core/models/workspace.dart' show WorkspaceType;
 import 'core/services/workspace_realtime_service.dart';
 import 'features/workspace/workspace_switcher_sheet.dart';
 import 'features/paywall/paywall_screen.dart';
+import 'core/models/budget_alert.dart' show AlertLevel;
+import 'core/domain/entities/financial_insight.dart' show InsightPriority;
 
 final themeModeProvider =
     NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
@@ -418,53 +420,16 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
     return Scaffold(
       body: Row(
         children: [
-          NavigationRail(
-            extended: true,
+          _DesktopNavRail(
             selectedIndex: _currentIndex,
             onDestinationSelected: _onDestinationSelected,
-            minExtendedWidth: 190,
-            leading: _NavRailHeader(),
-            destinations: _railDestinations(l10n),
+            l10n: l10n,
           ),
-          const VerticalDivider(thickness: 1, width: 1),
           Expanded(child: _buildScreenStack()),
         ],
       ),
     );
   }
-
-  List<NavigationRailDestination> _railDestinations(AppLocalizations l10n) => [
-        NavigationRailDestination(
-          icon: const Icon(Icons.home_outlined),
-          selectedIcon: const Icon(Icons.home),
-          label: Text(l10n.dashboard),
-        ),
-        NavigationRailDestination(
-          icon: const Icon(Icons.receipt_long_outlined),
-          selectedIcon: const Icon(Icons.receipt_long),
-          label: Text(l10n.transactions),
-        ),
-        NavigationRailDestination(
-          icon: const Icon(Icons.bar_chart_outlined),
-          selectedIcon: const Icon(Icons.bar_chart),
-          label: Text(l10n.analytics),
-        ),
-        const NavigationRailDestination(
-          icon: Icon(Icons.pie_chart_outline),
-          selectedIcon: Icon(Icons.pie_chart),
-          label: Text('Budget'),
-        ),
-        NavigationRailDestination(
-          icon: const Icon(Icons.trending_up_outlined),
-          selectedIcon: const Icon(Icons.trending_up),
-          label: Text(l10n.investments),
-        ),
-        NavigationRailDestination(
-          icon: const Icon(Icons.settings_outlined),
-          selectedIcon: const Icon(Icons.settings),
-          label: Text(l10n.settings),
-        ),
-      ];
 
   // ── Mobile: BottomNavigationBar ───────────────────────────────────────────
 
@@ -511,93 +476,314 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
   }
 }
 
-/// Logo / workspace header shown above the rail destinations on desktop.
-class _NavRailHeader extends ConsumerWidget {
+// ── Desktop Navigation Rail ───────────────────────────────────────────────────
+//
+// Custom rail that matches the reference design:
+//   - Navy sidebar with amber accent for selected item
+//   - Logo with amber flame icon + "Farol" wordmark
+//   - Workspace chip below logo
+//   - Badge counts on nav items
+//   - Dark mode toggle + Settings pinned at bottom
+
+class _DesktopNavRail extends ConsumerStatefulWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onDestinationSelected;
+  final AppLocalizations l10n;
+
+  const _DesktopNavRail({
+    required this.selectedIndex,
+    required this.onDestinationSelected,
+    required this.l10n,
+  });
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_DesktopNavRail> createState() => _DesktopNavRailState();
+}
+
+class _DesktopNavRailState extends ConsumerState<_DesktopNavRail> {
+  static const _navyBg = Color(0xFF1B2B4B);
+  static const _amber = Color(0xFFF5A623);
+  static const _selectedBg = Color(0x22F5A623); // amber at 13% opacity
+
+  @override
+  Widget build(BuildContext context) {
     final activeWs = ref.watch(activeWorkspaceProvider).valueOrNull;
-    final colorScheme = Theme.of(context).colorScheme;
+    final alerts = ref.watch(budgetAlertsProvider);
+    final insights = ref.watch(insightsProvider).valueOrNull ?? [];
+    final themeMode = ref.watch(themeModeProvider);
 
     final isShared = activeWs?.type == WorkspaceType.shared;
     final hasEmoji = activeWs?.emoji != null && activeWs!.emoji!.isNotEmpty;
-    final chipBg = isShared
-        ? const Color(0xFF00695C).withValues(alpha: 0.15)
-        : colorScheme.secondaryContainer;
-    final chipFg = isShared
-        ? const Color(0xFF00695C)
-        : colorScheme.onSecondaryContainer;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: tokens.FarolColors.navy,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(Icons.light_sharp, color: Colors.white, size: 18),
+    // Badge counts per section
+    final dashboardBadge = alerts.where((a) => a.level != AlertLevel.warning).length +
+        insights.where((i) => i.priority == InsightPriority.critical).length;
+    final budgetBadge = alerts.where((a) => a.level == AlertLevel.exceeded).length;
+
+    final items = [
+      _NavItem(icon: Icons.home_outlined, selectedIcon: Icons.home_rounded,
+          label: widget.l10n.dashboard, badge: dashboardBadge),
+      _NavItem(icon: Icons.receipt_long_outlined, selectedIcon: Icons.receipt_long_rounded,
+          label: widget.l10n.transactions),
+      _NavItem(icon: Icons.bar_chart_outlined, selectedIcon: Icons.bar_chart_rounded,
+          label: widget.l10n.analytics),
+      _NavItem(icon: Icons.pie_chart_outline_rounded, selectedIcon: Icons.pie_chart_rounded,
+          label: 'Budget', badge: budgetBadge),
+      _NavItem(icon: Icons.trending_up_outlined, selectedIcon: Icons.trending_up_rounded,
+          label: widget.l10n.investments),
+    ];
+
+    return SizedBox(
+      width: 200,
+      child: Container(
+        color: _navyBg,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ── Logo ──
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+              child: Row(
+                children: [
+                  Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: _amber,
+                      borderRadius: BorderRadius.circular(9),
+                    ),
+                    child: const Icon(Icons.local_fire_department_rounded,
+                        color: Colors.white, size: 20),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Farol',
+                    style: GoogleFonts.manrope(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 10),
-              Text(
-                'Farol',
-                style: GoogleFonts.manrope(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: tokens.FarolColors.navy,
+            ),
+
+            // ── Workspace chip ──
+            if (activeWs != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                child: GestureDetector(
+                  onTap: () => WorkspaceSwitcherSheet.show(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(9),
+                    ),
+                    child: Row(
+                      children: [
+                        if (hasEmoji)
+                          Text(activeWs.emoji!, style: const TextStyle(fontSize: 13))
+                        else
+                          Icon(
+                            isShared ? Icons.group_outlined : Icons.person_outline,
+                            size: 14,
+                            color: Colors.white70,
+                          ),
+                        const SizedBox(width: 7),
+                        Expanded(
+                          child: Text(
+                            activeWs.name,
+                            style: GoogleFonts.manrope(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Icon(Icons.unfold_more_rounded, size: 14, color: Colors.white38),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+            const SizedBox(height: 16),
+
+            // ── Nav items ──
+            ...items.asMap().entries.map((e) {
+              final idx = e.key;
+              final item = e.value;
+              final selected = widget.selectedIndex == idx;
+              return _NavRailItem(
+                item: item,
+                selected: selected,
+                selectedBg: _selectedBg,
+                selectedColor: _amber,
+                unselectedColor: Colors.white60,
+                onTap: () => widget.onDestinationSelected(idx),
+              );
+            }),
+
+            const Spacer(),
+
+            // ── Dark mode toggle ──
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              child: InkWell(
+                onTap: () {
+                  final next = themeMode == ThemeMode.dark
+                      ? ThemeMode.light
+                      : ThemeMode.dark;
+                  ref.read(themeModeProvider.notifier).setThemeMode(next);
+                },
+                borderRadius: BorderRadius.circular(9),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  child: Row(
+                    children: [
+                      Icon(
+                        themeMode == ThemeMode.dark
+                            ? Icons.light_mode_outlined
+                            : Icons.dark_mode_outlined,
+                        size: 18,
+                        color: Colors.white60,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        themeMode == ThemeMode.dark ? 'Light mode' : 'Dark mode',
+                        style: GoogleFonts.manrope(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white60,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // ── Settings ──
+            _NavRailItem(
+              item: _NavItem(
+                icon: Icons.settings_outlined,
+                selectedIcon: Icons.settings_rounded,
+                label: widget.l10n.settings,
+              ),
+              selected: widget.selectedIndex == 5,
+              selectedBg: _selectedBg,
+              selectedColor: _amber,
+              unselectedColor: Colors.white60,
+              onTap: () => widget.onDestinationSelected(5),
+            ),
+
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NavItem {
+  final IconData icon;
+  final IconData selectedIcon;
+  final String label;
+  final int badge;
+
+  const _NavItem({
+    required this.icon,
+    required this.selectedIcon,
+    required this.label,
+    this.badge = 0,
+  });
+}
+
+class _NavRailItem extends StatelessWidget {
+  final _NavItem item;
+  final bool selected;
+  final Color selectedBg;
+  final Color selectedColor;
+  final Color unselectedColor;
+  final VoidCallback onTap;
+
+  const _NavRailItem({
+    required this.item,
+    required this.selected,
+    required this.selectedBg,
+    required this.selectedColor,
+    required this.unselectedColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected ? selectedColor : unselectedColor;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: selected ? selectedBg : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Row(
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Icon(
+                    selected ? item.selectedIcon : item.icon,
+                    size: 18,
+                    color: color,
+                  ),
+                  if (item.badge > 0)
+                    Positioned(
+                      top: -5,
+                      right: -7,
+                      child: Container(
+                        width: 15,
+                        height: 15,
+                        decoration: const BoxDecoration(
+                          color: tokens.FarolColors.coral,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${item.badge}',
+                            style: const TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  item.label,
+                  style: GoogleFonts.manrope(
+                    fontSize: 13,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    color: color,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           ),
-          // Workspace chip — always shown when data is loaded
-          if (activeWs != null) ...[
-            const SizedBox(height: 12),
-            GestureDetector(
-              onTap: () => WorkspaceSwitcherSheet.show(context),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                decoration: BoxDecoration(
-                  color: chipBg,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (hasEmoji)
-                      Text(activeWs.emoji!, style: const TextStyle(fontSize: 13))
-                    else
-                      Icon(
-                        isShared ? Icons.group_outlined : Icons.person_outline,
-                        size: 13,
-                        color: chipFg,
-                      ),
-                    const SizedBox(width: 5),
-                    Flexible(
-                      child: Text(
-                        activeWs.name,
-                        style: GoogleFonts.manrope(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: chipFg,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 2),
-                    Icon(Icons.unfold_more, size: 14, color: chipFg),
-                  ],
-                ),
-              ),
-            ),
-          ],
-          const SizedBox(height: 20),
-        ],
+        ),
       ),
     );
   }

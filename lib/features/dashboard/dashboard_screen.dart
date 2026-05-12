@@ -173,32 +173,42 @@ class _MobileDashboardSliver extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       sliver: SliverList(
         delegate: SliverChildListDelegate([
+          // 1. Alerts — urgent signals at the top
           const LiquidityAlertCard(),
           const AlertBanner(),
           const SizedBox(height: 12),
-          const InsightsPanel(),
-          const SizedBox(height: 4),
+          // 2. Period hero — primary financial summary
           const PeriodBalanceHero(),
           const SizedBox(height: 12),
-          const ContributionBar(),
+          // 3. Insights — contextual alerts beneath the balance
+          const InsightsPanel(),
           const SizedBox(height: 12),
-          const ActivityFeedPreviewCard(),
-          const SizedBox(height: 12),
+          // 4. Health + KPIs
           const HealthGaugeCard(),
           const SizedBox(height: 12),
           const KpiGrid(),
           const SizedBox(height: 16),
+          // 5. Category spending breakdown
           const ExpenseBreakdown(),
           const SizedBox(height: 16),
+          // 6. Monthly savings goal
           const MonthlyGoalCard(),
           const SizedBox(height: 16),
+          // 7. Installments
           const InstallmentsSummaryCard(),
           const SizedBox(height: 16),
+          // 8. Burn rate
           const BurnRateCard(),
           const SizedBox(height: 16),
+          // 9. Recurring rules
           const RecurringCard(),
           const SizedBox(height: 16),
           const RecurringSuggestionsCard(),
+          const SizedBox(height: 16),
+          // 10. Collaboration widgets (only visible in shared workspaces)
+          const ContributionBar(),
+          const SizedBox(height: 12),
+          const ActivityFeedPreviewCard(),
           const SizedBox(height: 80),
         ]),
       ),
@@ -210,12 +220,12 @@ class _MobileDashboardSliver extends StatelessWidget {
 //
 //  ┌─────────────────────────────┬──────────────────────────┐
 //  │  LiquidityAlertCard         │  HealthGaugeCard          │
-//  │  AlertBanner                │  BurnRateCard             │
+//  │  AlertBanner                │  KpiGrid (large cards)    │
+//  │  PeriodBalanceHero          │  BurnRateCard             │
 //  │  InsightsPanel              │  InstallmentsSummaryCard  │
-//  │  PeriodBalanceHero          │  RecurringCard            │
-//  │  KpiGrid                    │  RecurringSuggestionsCard │
-//  │  ExpenseBreakdown           │                           │
-//  │  MonthlyGoalCard            │                           │
+//  │  ExpenseBreakdown           │  RecurringCard            │
+//  │  MonthlyGoalCard            │  RecurringSuggestionsCard │
+//  │  ContributionBar            │  ActivityFeedPreviewCard  │
 //  └─────────────────────────────┴──────────────────────────┘
 
 class _DesktopDashboardSliver extends StatelessWidget {
@@ -229,37 +239,38 @@ class _DesktopDashboardSliver extends StatelessWidget {
           children: [
             // ── Left column (primary) ──
             Expanded(
-              flex: 3,
+              flex: 55,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   LiquidityAlertCard(),
                   AlertBanner(),
                   SizedBox(height: 12),
-                  InsightsPanel(),
-                  SizedBox(height: 4),
                   PeriodBalanceHero(),
                   SizedBox(height: 12),
-                  ContributionBar(),
-                  SizedBox(height: 12),
-                  ActivityFeedPreviewCard(),
-                  SizedBox(height: 12),
-                  KpiGrid(),
+                  InsightsPanel(),
                   SizedBox(height: 16),
                   ExpenseBreakdown(),
                   SizedBox(height: 16),
                   MonthlyGoalCard(),
+                  SizedBox(height: 16),
+                  ContributionBar(),
+                  SizedBox(height: 12),
+                  ActivityFeedPreviewCard(),
                 ],
               ),
             ),
             SizedBox(width: 20),
-            // ── Right column (secondary) ──
+            // ── Right column (secondary) — mirrors the reference design ──
             Expanded(
-              flex: 2,
+              flex: 45,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   HealthGaugeCard(),
+                  SizedBox(height: 12),
+                  // Large KPI cards — compact: false for desktop sizing
+                  KpiGrid(compact: false),
                   SizedBox(height: 16),
                   BurnRateCard(),
                   SizedBox(height: 16),

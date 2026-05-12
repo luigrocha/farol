@@ -38,6 +38,7 @@ class BrlBig extends ConsumerWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           'R\$ ',
@@ -47,13 +48,16 @@ class BrlBig extends ConsumerWidget {
             color: c,
           ),
         ),
-        Text(
-          f.replaceFirst('R\$ ', ''),
-          style: GoogleFonts.manrope(
-            fontSize: size,
-            fontWeight: weight,
-            color: c,
-            letterSpacing: -size * 0.028,
+        Flexible(
+          child: Text(
+            f.replaceFirst('R\$ ', ''),
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.manrope(
+              fontSize: size,
+              fontWeight: weight,
+              color: c,
+              letterSpacing: -size * 0.028,
+            ),
           ),
         ),
         Text(
@@ -87,6 +91,7 @@ class BrlSmall extends StatelessWidget {
     final f = FinancialCalculatorService.formatBRL(value);
     return Text(
       f,
+      overflow: TextOverflow.ellipsis,
       style: GoogleFonts.inter(
         fontSize: size,
         fontWeight: weight,

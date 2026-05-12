@@ -60,13 +60,16 @@ class PeriodBalanceHero extends ConsumerWidget {
               Row(children: [
                 const Icon(Icons.trending_flat, size: 12, color: Colors.white38),
                 const SizedBox(width: 4),
-                Text(
-                  l10n.periodProjectionClosing(FinancialCalculatorService.formatBRL(projectedClosing.amount)),
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: projectedClosing.isNegative
-                        ? const Color(0xFFFF8A80)
-                        : Colors.white54,
+                Flexible(
+                  child: Text(
+                    l10n.periodProjectionClosing(FinancialCalculatorService.formatBRL(projectedClosing.amount)),
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: projectedClosing.isNegative
+                          ? const Color(0xFFFF8A80)
+                          : Colors.white54,
+                    ),
                   ),
                 ),
               ]),
