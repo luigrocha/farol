@@ -603,7 +603,7 @@ class _DesktopNavRailState extends ConsumerState<_DesktopNavRail> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        Icon(Icons.unfold_more_rounded, size: 14, color: Colors.white38),
+                        const Icon(Icons.unfold_more_rounded, size: 14, color: Colors.white38),
                       ],
                     ),
                   ),

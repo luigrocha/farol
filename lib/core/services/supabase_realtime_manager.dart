@@ -29,8 +29,10 @@ class SupabaseRealtimeManager {
     required T Function(Map<String, dynamic>) fromJson,
     String? userId,
     required String userIdColumn,
+    String? workspaceId,
   }) {
-    if (userId == null) {
+    // In workspace mode filter by workspaceId; otherwise require userId.
+    if (workspaceId == null && userId == null) {
       return const Stream.empty();
     }
 
@@ -42,6 +44,7 @@ class SupabaseRealtimeManager {
           primaryKey: primaryKey,
           userId: userId,
           userIdColumn: userIdColumn,
+          workspaceId: workspaceId,
           controller: controller,
           fromJson: fromJson,
         );
@@ -67,11 +70,18 @@ class SupabaseRealtimeManager {
   bool isMaxRetriesReached(String table) => (_retryAttempts[table] ?? 0) >= _maxRetries;
 
   /// One-shot HTTP fetch for polling fallback.
+  /// When [workspaceId] is provided it is used instead of [userId] to filter,
+  /// so that all workspace members' records are included.
   Future<List<Map<String, dynamic>>> fetchAll({
     required String table,
     String? userId,
     required String userIdColumn,
+    String? workspaceId,
   }) async {
+    if (workspaceId != null) {
+      final response = await _client.from(table).select().eq('workspace_id', workspaceId);
+      return List<Map<String, dynamic>>.from(response);
+    }
     if (userId == null) return [];
     final response = await _client.from(table).select().eq(userIdColumn, userId);
     return List<Map<String, dynamic>>.from(response);
@@ -80,23 +90,29 @@ class SupabaseRealtimeManager {
   void _setupChannel<T>({
     required String table,
     required List<String> primaryKey,
-    required String userId,
+    required String? userId,
     required String userIdColumn,
+    String? workspaceId,
     required StreamController<List<T>> controller,
     required T Function(Map<String, dynamic>) fromJson,
   }) {
     _streamControllers[table] = controller;
 
-    // Fetch initial data immediately via HTTP so the UI isn't empty
+    // Fetch initial data immediately via HTTP so the UI isn't empty.
     _fetchAndEmit<T>(
       table: table,
       userId: userId,
       userIdColumn: userIdColumn,
+      workspaceId: workspaceId,
       fromJson: fromJson,
     );
 
-    final channel = _client.channel('realtime:$table');
+    // In workspace mode, listen on workspace_id so changes from any member
+    // trigger a re-fetch. Fall back to user_id for personal workspaces.
+    final filterColumn = workspaceId != null ? 'workspace_id' : userIdColumn;
+    final filterValue  = workspaceId ?? userId!;
 
+    final channel = _client.channel('realtime:$table');
     channel
         .onPostgresChanges(
           event: PostgresChangeEvent.all,
@@ -104,8 +120,8 @@ class SupabaseRealtimeManager {
           table: table,
           filter: PostgresChangeFilter(
             type: PostgresChangeFilterType.eq,
-            column: userIdColumn,
-            value: userId,
+            column: filterColumn,
+            value: filterValue,
           ),
           callback: (_) {
             _retryAttempts[table] = 0;
@@ -113,6 +129,7 @@ class SupabaseRealtimeManager {
               table: table,
               userId: userId,
               userIdColumn: userIdColumn,
+              workspaceId: workspaceId,
               fromJson: fromJson,
             );
           },
@@ -131,19 +148,20 @@ class SupabaseRealtimeManager {
 
   Future<void> _fetchAndEmit<T>({
     required String table,
-    required String userId,
+    required String? userId,
     required String userIdColumn,
+    String? workspaceId,
     required T Function(Map<String, dynamic>) fromJson,
   }) async {
     try {
       final controller = _streamControllers[table] as StreamController<List<T>>?;
       if (controller == null || controller.isClosed) return;
 
-      final response = await _client
-          .from(table)
-          .select()
-          .eq(userIdColumn, userId);
+      final query = workspaceId != null
+          ? _client.from(table).select().eq('workspace_id', workspaceId)
+          : _client.from(table).select().eq(userIdColumn, userId!);
 
+      final response = await query;
       final items = response.map((r) => fromJson(r)).toList();
       controller.add(items);
     } catch (_) {}

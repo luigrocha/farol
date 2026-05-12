@@ -166,7 +166,11 @@ class ExpenseRepository {
       if (categoryId != null) 'category_id': categoryId,
     };
 
-    if (_syncManager != null) {
+    // Only use the SyncManager offline path when the device truly has no network.
+    // When online, write directly to Supabase so the realtime stream picks it up
+    // immediately and the UI updates without waiting for the queue to drain.
+    final isOffline = _syncManager != null && !_syncManager!.currentStatus.isOnline;
+    if (isOffline) {
       await _syncManager!.execute(InsertExpenseOperation(payload: row));
       // Return 0 as a sentinel — callers that need the real DB id should
       // re-query after insert (offline path cannot guarantee a server id).
@@ -284,6 +288,7 @@ class ExpenseRepository {
       fromJson: Expense.fromJson,
       userId: _userId,
       userIdColumn: 'user_id',
+      workspaceId: workspaceId,
     );
   }
 
@@ -298,6 +303,7 @@ class ExpenseRepository {
           table: 'expenses',
           userId: _userId,
           userIdColumn: 'user_id',
+          workspaceId: workspaceId,
         )
         .then((rows) => rows.map(Expense.fromJson).toList());
   }

@@ -272,7 +272,10 @@ final _allIncomesStreamProvider = StreamProvider.autoDispose<List<Income>>((ref)
   }
 });
 
-final _allExpensesStreamProvider = StreamProvider.autoDispose<List<Expense>>((ref) {
+/// Public alias — widgets can call `ref.invalidate(allExpensesStreamProvider)`
+/// after a successful insert to trigger an immediate re-fetch without waiting
+/// for the next realtime event or 30-second polling cycle.
+final allExpensesStreamProvider = StreamProvider.autoDispose<List<Expense>>((ref) {
   final useRealtime = ref.watch(realtimeActiveProvider);
   final repository = ref.watch(expenseRepositoryProvider);
   final maxRetries = ref.watch(realtimeMaxRetriesReachedProvider);
@@ -383,7 +386,7 @@ final totalIncomeProvider = Provider.autoDispose<double>((ref) {
 final expensesProvider = Provider.autoDispose<AsyncValue<List<Expense>>>((ref) {
   final month = ref.watch(selectedMonthProvider);
   final year = ref.watch(selectedYearProvider);
-  return ref.watch(_allExpensesStreamProvider).whenData(
+  return ref.watch(allExpensesStreamProvider).whenData(
     (all) => all.where((e) => e.month == month && e.year == year).toList(),
   );
 });
@@ -432,7 +435,7 @@ final filteredByCategoryProvider = Provider.autoDispose<Map<String, double>>((re
 });
 
 final swileTransactionsProvider = Provider.autoDispose<AsyncValue<List<Expense>>>((ref) {
-  return ref.watch(_allExpensesStreamProvider).whenData(
+  return ref.watch(allExpensesStreamProvider).whenData(
     (all) {
       final swile = all.where((e) => e.payType == 'Swile').toList()
         ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -1128,7 +1131,7 @@ final periodBudgetEntriesProvider =
     Provider.autoDispose<AsyncValue<List<PeriodBudgetEntry>>>((ref) {
   final goalsMap = ref.watch(budgetGoalsMapProvider);
   final overridesAsync = ref.watch(_periodBudgetsRawProvider);
-  final expensesAsync = ref.watch(_allExpensesStreamProvider);
+  final expensesAsync = ref.watch(allExpensesStreamProvider);
   final period = ref.watch(selectedPeriodProvider);
   final categories = ref.watch(categoriesRefProvider);
 
@@ -1360,7 +1363,7 @@ final envelopesProvider = Provider.autoDispose<List<Envelope>>((ref) {
   final entries = ref.watch(periodBudgetEntriesProvider).value ?? [];
   if (entries.isEmpty) return const [];
 
-  final allExpenses = ref.watch(_allExpensesStreamProvider).value ?? [];
+  final allExpenses = ref.watch(allExpensesStreamProvider).value ?? [];
   final cutoffDay = ref.watch(budgetSettingsProvider).value?.cutoffDay ?? 1;
   final period = FinancialPeriod.current(cutoffDay);
   final previousPeriod = period.previous;

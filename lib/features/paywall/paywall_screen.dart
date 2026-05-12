@@ -243,7 +243,7 @@ class _FreeFeatureRow extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.check_circle_rounded,
             size: 20,
             color: tokens.FarolColors.tide,
@@ -279,7 +279,7 @@ class _PremiumFeatureItem extends StatelessWidget {
               color: tokens.FarolColors.navy.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(6),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.check_rounded,
               size: 14,
               color: tokens.FarolColors.navy,
@@ -292,7 +292,7 @@ class _PremiumFeatureItem extends StatelessWidget {
                 Expanded(
                   child: Text(
                     feature.label,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       color: tokens.FarolColors.navy,
@@ -305,7 +305,7 @@ class _PremiumFeatureItem extends StatelessWidget {
                     color: tokens.FarolColors.navy.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: Text(
+                  child: const Text(
                     'Premium',
                     style: TextStyle(
                       fontSize: 11,
@@ -337,14 +337,14 @@ class _TrialBadge extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Row(
+      child: const Row(
         children: [
           Icon(
             Icons.celebration_rounded,
             size: 20,
             color: tokens.FarolColors.tide,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Text(
               '14 dias grátis para novos assinantes',

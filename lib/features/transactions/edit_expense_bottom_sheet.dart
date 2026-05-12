@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/domain/value_objects/category_ref.dart';
-import '../../core/models/category.dart';
 import '../../core/providers/providers.dart';
 import '../../core/models/enums.dart';
 import '../../core/models/expense.dart';
@@ -285,6 +284,8 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
           paymentMethod: _method.dbValue,
         );
       }
+
+      ref.invalidate(allExpensesStreamProvider);
 
       HapticFeedback.mediumImpact();
       if (mounted) {

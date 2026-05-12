@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/domain/value_objects/category_ref.dart';
-import '../../core/models/category.dart';
 import '../../core/providers/providers.dart';
 import '../../core/models/enums.dart';
 import '../../core/theme/farol_colors.dart';
@@ -248,6 +247,10 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
           storeDescription: desc,
         );
       }
+
+      // Force an immediate re-fetch so the new record appears without waiting
+      // for the next realtime event or 30-second polling tick.
+      ref.invalidate(allExpensesStreamProvider);
 
       HapticFeedback.mediumImpact();
       if (mounted) {
