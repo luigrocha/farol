@@ -35,7 +35,10 @@ class CategoriesManagementScreen extends ConsumerWidget {
       body: categoriesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(child: Text('Error: $err')),
-        data: (categories) {
+        data: (allCategories) {
+          // Show only root categories in the management list.
+          // Subcategories (parentId != null) are managed inline per parent.
+          final categories = allCategories.where((c) => c.parentId == null).toList();
           if (categories.isEmpty) {
             return Center(
               child: Column(
@@ -72,9 +75,11 @@ class CategoriesManagementScreen extends ConsumerWidget {
               return _CategoryTile(
                 key: ValueKey(category.id),
                 category: category,
-                onEdit: () => _showCategoryDialog(context, ref, category: category),
-                onDelete: category.isSystem 
-                    ? null 
+                onEdit: category.isSystem
+                    ? null
+                    : () => _showCategoryDialog(context, ref, category: category),
+                onDelete: category.isSystem
+                    ? null
                     : () => _confirmDelete(context, ref, category),
               );
             },
@@ -130,13 +135,13 @@ class CategoriesManagementScreen extends ConsumerWidget {
 
 class _CategoryTile extends StatelessWidget {
   final Category category;
-  final VoidCallback onEdit;
+  final VoidCallback? onEdit;
   final VoidCallback? onDelete;
 
   const _CategoryTile({
     super.key,
     required this.category,
-    required this.onEdit,
+    this.onEdit,
     this.onDelete,
   });
 
@@ -209,11 +214,17 @@ class _CategoryTile extends StatelessWidget {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-              icon: const Icon(Icons.edit_outlined, size: 20),
-              onPressed: onEdit,
-              color: colors.onSurfaceSoft,
-            ),
+            if (category.isSystem)
+              Tooltip(
+                message: 'Categoria do sistema — não editável',
+                child: Icon(Icons.lock_outline, size: 18, color: colors.onSurfaceFaint),
+              )
+            else
+              IconButton(
+                icon: const Icon(Icons.edit_outlined, size: 20),
+                onPressed: onEdit,
+                color: colors.onSurfaceSoft,
+              ),
             if (onDelete != null)
               IconButton(
                 icon: const Icon(Icons.delete_outline, size: 20),

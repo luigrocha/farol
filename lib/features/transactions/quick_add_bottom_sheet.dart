@@ -26,17 +26,6 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
   String? _subcategory;
   bool _saving = false;
 
-  static const _subcategories = {
-    'housing': ['Rent', 'Condo Fee', 'Electricity', 'Water', 'Gas', 'Internet', 'Property Tax', 'Maintenance'],
-    'transport': ['Uber', 'Subway/Bus', 'Fuel', 'Parking', 'Maintenance'],
-    'food_grocery': ['Supermarket', 'Restaurant', 'Delivery', 'Bakery', 'Farmers Market'],
-    'health': ['Pharmacy', 'Doctor', 'Health Plan', 'Lab Tests', 'Gym'],
-    'subscriptions': ['Streaming', 'Apps', 'Mobile Phone', 'Gym', 'Other'],
-    'leisure': ['Cinema', 'Travel', 'Bars', 'Games', 'Hobbies'],
-    'education': ['Course', 'Books', 'Certification', 'Materials'],
-    'card_installments': ['Installment Purchase'],
-    'other': ['Gift', 'Donation', 'Unexpected', 'Other'],
-  };
 
   @override
   void dispose() { _amountCtrl.dispose(); _descCtrl.dispose(); _installmentsCtrl.dispose(); super.dispose(); }
@@ -45,7 +34,12 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final bottom = MediaQuery.of(context).viewInsets.bottom;
-    final categories = ref.watch(categoriesRefProvider);
+    final categories = ref.watch(rootCategoriesRefProvider);
+    final selectedCategory = categories.firstWhere(
+      (c) => c.slug == _categoryDbValue,
+      orElse: () => categories.isNotEmpty ? categories.first : CategoryRef.uncategorized(_categoryDbValue),
+    );
+    final subcategories = ref.watch(subcategoriesForProvider(selectedCategory.id));
 
     return Container(
       decoration: BoxDecoration(
@@ -82,13 +76,16 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
         ),
         const SizedBox(height: 16),
 
-        // 3. Subcategory chips
-        if (_subcategories[_categoryDbValue] != null) ...[
+        // 3. Subcategory chips (dynamic from DB)
+        if (subcategories.isNotEmpty) ...[
           Align(alignment: Alignment.centerLeft, child: Text(l10n.translate('subcategory'), style: Theme.of(context).textTheme.labelLarge)),
           const SizedBox(height: 8),
-          Wrap(spacing: 8, runSpacing: 4, children: _subcategories[_categoryDbValue]!.map((s) =>
-            ChoiceChip(label: Text(s, style: const TextStyle(fontSize: 12)), selected: _subcategory==s,
-              onSelected: (v) => setState(() => _subcategory = v ? s : null))).toList()),
+          Wrap(spacing: 8, runSpacing: 4, children: subcategories.map((s) =>
+            ChoiceChip(
+              label: Text('${s.emoji} ${s.name}', style: const TextStyle(fontSize: 12)),
+              selected: _subcategory == s.slug,
+              onSelected: (v) => setState(() => _subcategory = v ? s.slug : null),
+            )).toList()),
           const SizedBox(height: 16),
         ],
 
@@ -179,7 +176,7 @@ class _QuickAddState extends ConsumerState<QuickAddBottomSheet> {
         ? int.tryParse(_installmentsCtrl.text) ?? 1
         : 1;
 
-    final categories = ref.read(categoriesRefProvider);
+    final categories = ref.read(rootCategoriesRefProvider);
     final currentCat = categories.firstWhere((c) => c.slug == _categoryDbValue,
         orElse: () => categories.isNotEmpty ? categories.first : CategoryRef.uncategorized(_categoryDbValue));
     

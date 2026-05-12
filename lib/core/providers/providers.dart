@@ -309,6 +309,19 @@ final categoriesRefProvider = Provider.autoDispose<List<CategoryRef>>((ref) {
   return cats.map(CategoryRef.fromCategory).toList();
 });
 
+/// Only root categories (parentId == null). Use this for category pickers in
+/// expense sheets so subcategories don't bleed into the top-level grid.
+final rootCategoriesRefProvider = Provider.autoDispose<List<CategoryRef>>((ref) {
+  return ref.watch(categoriesRefProvider).where((c) => c.parentId == null).toList();
+});
+
+/// Subcategories for a given parent category id. Returns empty list when the
+/// category has no children in the DB (i.e. hardcoded subcategories are gone).
+final subcategoriesForProvider =
+    Provider.autoDispose.family<List<CategoryRef>, String>((ref, parentId) {
+  return ref.watch(categoriesRefProvider).where((c) => c.parentId == parentId).toList();
+});
+
 /// Singleton CategoryResolver kept in sync with loaded categories.
 /// Use this to safely resolve raw category strings without risk of StateError.
 final categoryResolverProvider = Provider<CategoryResolver>((ref) {
