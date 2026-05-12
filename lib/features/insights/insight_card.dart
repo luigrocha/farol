@@ -148,6 +148,7 @@ class InsightCard extends ConsumerWidget {
     final d = insight.data;
     switch (insight.actionKey) {
       case 'insight_overdraft_action': return l10n.insightOverdraftAction;
+      case 'insight_liquidity_action': return l10n.insightLiquidityAction;
       case 'insight_spike_action': return l10n.insightSpikeAction('${d['category'] ?? ''}');
       case 'insight_duplicate_action': return l10n.insightDuplicateAction;
       case 'insight_subscription_action': return l10n.insightSubscriptionAction;

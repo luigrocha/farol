@@ -70,6 +70,34 @@ class FinancialInsight {
 
   bool isExpired() =>
       expiresAt != null && DateTime.now().isAfter(expiresAt!);
+
+  FinancialInsight copyWith({
+    Map<String, dynamic>? data,
+    String? title,
+    String? body,
+    String? actionLabel,
+    String? actionRoute,
+    String? actionKey,
+  }) {
+    return FinancialInsight(
+      id: id,
+      type: type,
+      priority: priority,
+      titleKey: titleKey,
+      bodyKey: bodyKey,
+      actionKey: actionKey ?? this.actionKey,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      actionLabel: actionLabel ?? this.actionLabel,
+      actionRoute: actionRoute ?? this.actionRoute,
+      confidence: confidence,
+      data: data ?? this.data,
+      generatedAt: generatedAt,
+      expiresAt: expiresAt,
+      isDismissable: isDismissable,
+      dismissGroup: dismissGroup,
+    );
+  }
 }
 
 // ─── CategoryVelocity (used by IntelligenceLayer) ────────────────────────────

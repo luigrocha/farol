@@ -361,15 +361,16 @@ class AppLocalizations {
       'insights_most_ignored': 'Most ignored types',
       'insights_empty': 'No insights right now.\nKeep recording your expenses!',
       // Insight rule strings
-      'insight_overdraft_title': 'Negative balance risk',
-      'insight_overdraft_body': 'At the current pace, you will close the period with %s. There are %s in confirmed commitments.',
-      'insight_overdraft_action': 'See projection',
-      'insight_liquidity_critical_title': 'Very tight week',
-      'insight_liquidity_warning_title': 'Tight week',
-      'insight_liquidity_body': 'You have %s available and %s in payments this week.',
-      'insight_spike_title': 'Acceleration in %s',
-      'insight_spike_body': '%s so far vs. average of %s. %s%% above usual.',
-      'insight_spike_action': 'See %s',
+      'insight_overdraft_title': '⚠️ You may close in the red',
+      'insight_overdraft_body': 'At the current pace, the period closes at %s. You still have %s in bills to pay.',
+      'insight_overdraft_action': 'See projection →',
+      'insight_liquidity_critical_title': '🚨 Critical: payments due this week',
+      'insight_liquidity_warning_title': '📅 Payments due this week',
+      'insight_liquidity_body': 'Your current balance is %s. Check that it covers all due payments before spending.',
+      'insight_liquidity_action': 'See commitments →',
+      'insight_spike_title': '📈 %s above usual pace',
+      'insight_spike_body': 'You spent %s this month — %s%% more than your average of %s. There\'s still time to adjust.',
+      'insight_spike_action': 'See %s →',
       'insight_duplicate_title': 'Possible duplicate charge',
       'insight_duplicate_body': '%sx "%s" for R\$ %s in %s day(s).',
       'insight_duplicate_action': 'Check',
@@ -1009,15 +1010,16 @@ class AppLocalizations {
       'insights_most_ignored': 'Tipos más ignorados',
       'insights_empty': 'Ningún insight por ahora.\n¡Sigue registrando tus gastos!',
       // Insight rule strings
-      'insight_overdraft_title': 'Riesgo de saldo negativo',
-      'insight_overdraft_body': 'Al ritmo actual, cerrarás el período con %s. Hay %s en compromisos confirmados.',
-      'insight_overdraft_action': 'Ver proyección',
-      'insight_liquidity_critical_title': 'Semana muy apretada',
-      'insight_liquidity_warning_title': 'Semana apretada',
-      'insight_liquidity_body': 'Tienes %s disponible y %s en pagos esta semana.',
-      'insight_spike_title': 'Aceleración en %s',
-      'insight_spike_body': '%s hasta ahora vs. promedio de %s. %s%% por encima de lo usual.',
-      'insight_spike_action': 'Ver %s',
+      'insight_overdraft_title': '⚠️ Puedes cerrar el período en rojo',
+      'insight_overdraft_body': 'Al ritmo actual, el período cierra en %s. Aún tienes %s en cuentas por pagar.',
+      'insight_overdraft_action': 'Ver proyección →',
+      'insight_liquidity_critical_title': '🚨 Crítico: pagos vencen esta semana',
+      'insight_liquidity_warning_title': '📅 Pagos vencen esta semana',
+      'insight_liquidity_body': 'Tu saldo actual es %s. Verifica que cubra todos los vencimientos antes de gastar.',
+      'insight_liquidity_action': 'Ver compromisos →',
+      'insight_spike_title': '📈 %s por encima del ritmo habitual',
+      'insight_spike_body': 'Gastaste %s este mes — %s%% más que tu promedio de %s. Aún hay tiempo para ajustar.',
+      'insight_spike_action': 'Ver %s →',
       'insight_duplicate_title': 'Posible cobro duplicado',
       'insight_duplicate_body': '%sx "%s" por R\$ %s en %s día(s).',
       'insight_duplicate_action': 'Verificar',
@@ -1657,15 +1659,16 @@ class AppLocalizations {
       'insights_most_ignored': 'Tipos mais ignorados',
       'insights_empty': 'Nenhum insight no momento.\nContinue registrando seus gastos!',
       // Insight rule strings
-      'insight_overdraft_title': 'Risco de saldo negativo',
-      'insight_overdraft_body': 'Com o ritmo atual, você fechará o período com %s. Há %s em compromissos confirmados.',
-      'insight_overdraft_action': 'Ver projeção',
-      'insight_liquidity_critical_title': 'Semana muito apertada',
-      'insight_liquidity_warning_title': 'Semana apertada',
-      'insight_liquidity_body': 'Você tem %s disponível e %s em pagamentos esta semana.',
-      'insight_spike_title': 'Aceleração em %s',
-      'insight_spike_body': '%s até agora vs. média de %s. %s%% acima do usual.',
-      'insight_spike_action': 'Ver %s',
+      'insight_overdraft_title': '⚠️ Você pode fechar no vermelho',
+      'insight_overdraft_body': 'No ritmo atual, o período fecha em %s. Ainda tem %s em contas a pagar.',
+      'insight_overdraft_action': 'Ver projeção →',
+      'insight_liquidity_critical_title': '🚨 Crítico: pagamentos vencem esta semana',
+      'insight_liquidity_warning_title': '📅 Pagamentos vencem esta semana',
+      'insight_liquidity_body': 'Seu saldo atual é %s. Verifique se cobre todos os vencimentos antes de gastar.',
+      'insight_liquidity_action': 'Ver compromissos →',
+      'insight_spike_title': '📈 %s acima do ritmo habitual',
+      'insight_spike_body': 'Você gastou %s este mês — %s%% a mais que sua média de %s. Ainda dá tempo de ajustar.',
+      'insight_spike_action': 'Ver %s →',
       'insight_duplicate_title': 'Possível cobrança duplicada',
       'insight_duplicate_body': '%sx "%s" por R\$ %s em %s dia(s).',
       'insight_duplicate_action': 'Verificar',
@@ -2319,9 +2322,12 @@ class AppLocalizations {
   String get insightLiquidityWarningTitle => translate('insight_liquidity_warning_title');
   String insightLiquidityBody(String balance, String obligations) =>
       translate('insight_liquidity_body').replaceFirst('%s', balance).replaceFirst('%s', obligations);
+  String get insightLiquidityAction => translate('insight_liquidity_action');
   String insightSpikeTitle(String category) => translate('insight_spike_title').replaceFirst('%s', category);
+  // Template: "You spent %s this month — %s%% more than your average of %s."
+  // Order: current, pct, average
   String insightSpikeBody(String current, String average, String pct) =>
-      translate('insight_spike_body').replaceFirst('%s', current).replaceFirst('%s', average).replaceFirst('%s', pct);
+      translate('insight_spike_body').replaceFirst('%s', current).replaceFirst('%s', pct).replaceFirst('%s', average);
   String insightSpikeAction(String category) => translate('insight_spike_action').replaceFirst('%s', category);
   String get insightDuplicateTitle => translate('insight_duplicate_title');
   String insightDuplicateBody(String count, String desc, String amount, String days) =>

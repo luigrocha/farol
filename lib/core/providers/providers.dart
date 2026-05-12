@@ -1651,6 +1651,7 @@ final insightsProvider =
   final projection = await ref.watch(financialProjectionProvider.future);
   final allExpenses = await ref.watch(expenseRepositoryProvider).getAll();
   final dismissed = await ref.watch(dismissedInsightsProvider.future);
+  final catRefs = ref.watch(categoriesRefProvider);
 
   final now = DateTime.now();
   final recent = allExpenses
@@ -1658,13 +1659,30 @@ final insightsProvider =
           e.transactionDate.isAfter(now.subtract(const Duration(days: 30))))
       .toList();
 
-  return const IntelligenceLayer().analyze(
+  final insights = const IntelligenceLayer().analyze(
     snapshot: snapshot,
     projection: projection,
     recentExpenses: recent,
     allExpenses: allExpenses,
     dismissedIds: dismissed,
   );
+
+  // Resolve category display names for spending-spike insights.
+  // IntelligenceLayer is a pure service without category access, so it stores
+  // the raw slug (may be UPPERCASE legacy). We resolve it here.
+  return insights.map((insight) {
+    if (insight.type != InsightType.spendingSpike) return insight;
+    final rawSlug = insight.data['category'] as String? ?? '';
+    final catRef = CategoryRef.fromLegacyString(rawSlug, catRefs);
+    final displayName = catRef.name;
+    return insight.copyWith(
+      data: {
+        ...insight.data,
+        'category': displayName,
+        'categorySlug': rawSlug,
+      },
+    );
+  }).toList();
 });
 
 

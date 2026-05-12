@@ -66,11 +66,11 @@ class IntelligenceLayer {
       titleKey: 'insight_overdraft_title',
       bodyKey: 'insight_overdraft_body',
       actionKey: 'insight_overdraft_action',
-      title: 'Risco de saldo negativo',
+      title: '⚠️ Você pode fechar no vermelho',
       body:
-          'Com o ritmo atual, você fechará o período com ${projected.formatted}. '
-          'Há ${snap.totalFutureObligations.formatted} em compromissos confirmados.',
-      actionLabel: 'Ver projeção',
+          'No ritmo atual, o período fecha em ${projected.formatted}. '
+          'Ainda tem ${snap.totalFutureObligations.formatted} em contas a pagar.',
+      actionLabel: 'Ver projeção →',
       actionRoute: '/analytics',
       confidence: 0.85,
       expiresAt: snap.period.end,
@@ -96,10 +96,13 @@ class IntelligenceLayer {
           isCritical ? InsightPriority.critical : InsightPriority.warning,
       titleKey: isCritical ? 'insight_liquidity_critical_title' : 'insight_liquidity_warning_title',
       bodyKey: 'insight_liquidity_body',
-      title: isCritical ? 'Semana muito apertada' : 'Semana apertada',
+      actionKey: 'insight_liquidity_action',
+      actionRoute: '/analytics',
+      title: isCritical ? '🚨 Crítico: pagamentos vencem esta semana' : '📅 Pagamentos vencem esta semana',
       body:
-          'Você tem ${snap.currentBalance.formatted} disponível e '
-          '${risk.obligationsNext7Days.formatted} em pagamentos esta semana.',
+          'Seu saldo atual é ${snap.currentBalance.formatted}. '
+          'Verifique se cobre todos os vencimentos antes de gastar.',
+      actionLabel: 'Ver compromissos →',
       confidence: 0.95,
       expiresAt: DateTime.now().add(const Duration(days: 7)),
       data: {
