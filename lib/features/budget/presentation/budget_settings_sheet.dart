@@ -95,7 +95,7 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
             const SizedBox(height: 6),
             Text(l10n.translate('set_planned_income'), style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft, height: 1.5)),
             const SizedBox(height: 20),
-            _AmountField(controller: _netSalaryController, label: l10n.translate('net_salary'), hint: '9651.91', icon: Icons.account_balance_wallet),
+            _AmountField(controller: _netSalaryController, label: l10n.translate('net_salary'), hint: '6783.21', icon: Icons.account_balance_wallet),
             const SizedBox(height: 12),
             _AmountField(controller: _swileMealController, label: l10n.translate('pay_swile_meal'), hint: '1400.00', icon: Icons.restaurant),
             const SizedBox(height: 12),

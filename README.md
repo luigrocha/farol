@@ -173,8 +173,6 @@ On first launch, the app automatically loads April 2025 demo data:
 
 | Category | Amount | Notes |
 |---|---|---|
-| Gross Salary | R$ 13,287.90 | Monthly |
-| Net Salary | R$ 9,651.91 | After INSS + IRRF |
 | Swile Meal | R$ 1,400.00 | Monthly benefit |
 | Swile Food | R$ 1,031.00 | Monthly benefit |
 | Rent + Condo Fee | R$ 4,200.00 | Fixed housing expense |
@@ -185,16 +183,16 @@ On first launch, the app automatically loads April 2025 demo data:
 
 ### 13th Salary Calculation Example
 
-Using **R$ 7,000** gross monthly salary (12 months worked, 1 dependent):
+Using **R$ 9,000** gross monthly salary (12 months worked, 1 dependent):
 
 #### Step 1: Calculate Base
 ```
-Base = R$ 7,000 × 12 months ÷ 12 = R$ 7,000
+Base = R$ 9,000 × 12 months ÷ 12 = R$ 9,000
 ```
 
 #### Step 2: First Installment (June)
 ```
-First Installment = R$ 7,000 ÷ 2 = R$ 3,500 ✅
+First Installment = R$ 9,000 ÷ 2 = R$ 4,500 ✅
 (No deductions — pure gross)
 ```
 
@@ -203,36 +201,36 @@ First Installment = R$ 7,000 ÷ 2 = R$ 3,500 ✅
 Bracket 1: R$ 0 → R$ 1,518.00 @ 7.5%   = R$    113.85
 Bracket 2: R$ 1,518.01 → R$ 2,793.88 @ 9%   = R$    114.83
 Bracket 3: R$ 2,793.89 → R$ 4,190.83 @ 12%  = R$    167.63
-Bracket 4: R$ 4,190.84 → R$ 7,000.00 @ 14%  = R$    393.28
-                                        ———————————
-Total INSS = R$ 789.59 (below R$ 951.62 cap)
+Bracket 4: R$ 4,190.84 → R$ 9,000.00 @ 14%  = R$    673.28
+                                         ———————————
+Total INSS = R$ 1,069.59 → capped at R$ 951.62
 ```
 
 #### Step 4: IRRF Calculation (Progressive 2025)
 ```
-Taxable Base = R$ 7,000 - INSS (R$ 789.59) - Dependent (R$ 189.59) = R$ 6,020.82
+Taxable Base = R$ 9,000 - INSS (R$ 951.62) - Dependent (R$ 189.59) = R$ 7,858.79
 
-Bracket 5 (> R$ 4,664.68): R$ 6,020.82 @ 27.5% - R$ 896.00
-= (R$ 6,020.82 × 0.275) - R$ 896.00
-= R$ 1,655.73 - R$ 896.00
-= R$ 759.73
+Bracket 5 (> R$ 4,664.68): R$ 7,858.79 @ 27.5% - R$ 896.00
+= (R$ 7,858.79 × 0.275) - R$ 896.00
+= R$ 2,161.17 - R$ 896.00
+= R$ 1,265.17
 ```
 
 #### Step 5: Second Installment (December)
 ```
-Second Installment = R$ 3,500 - INSS (R$ 789.59) - IRRF (R$ 759.73)
-                   = R$ 1,950.68 💰
+Second Installment = R$ 4,500 - INSS (R$ 951.62) - IRRF (R$ 1,265.17)
+                   = R$ 2,283.21 💰
 ```
 
 #### Summary
 ```
-Gross 13th:        R$ 7,000.00
-Deductions:      - R$ 1,549.32  (INSS: R$ 789.59 + IRRF: R$ 759.73)
+Gross 13th:        R$ 9,000.00
+Deductions:      - R$ 2,216.79  (INSS: R$ 951.62 + IRRF: R$ 1,265.17)
                   ———————————
-Net 13th:          R$ 5,450.68
+Net 13th:          R$ 6,783.21
 
-First Installment (June):    R$ 3,500.00
-Second Installment (Dec):    R$ 1,950.68
+First Installment (June):    R$ 4,500.00
+Second Installment (Dec):    R$ 2,283.21
 ```
 
 👉 **Try it yourself**: Go to **Settings → Simuladores → 13° Salário** to adjust the salary, months worked, and dependents in real-time.

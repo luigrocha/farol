@@ -28,7 +28,7 @@ class SeedData {
       month: Value(4),
       year: Value(2025),
       incomeType: Value('NET_SALARY'),
-      amount: Value(9651.91),
+      amount: Value(6783.21),
       isNet: Value(true),
       notes: Value('CLT net salary'),
     ));

@@ -7,8 +7,8 @@ class AppConstants {
   // ═══════════════════════════════════════════
   // User Financial Defaults (CLT Regime)
   // ═══════════════════════════════════════════
-  static const double defaultGrossSalary = 13287.90;
-  static const double defaultNetSalary = 9651.91;
+  static const double defaultGrossSalary = 9000.00;
+  static const double defaultNetSalary = 6783.21;
   static const double defaultSwileMeal = 1400.00;
   static const double defaultSwileFood = 1031.00;
   static const double defaultSwileTotal = 2431.00;

@@ -1,64 +1,64 @@
 # Testing Automation Strategy — Farol
 
-## Estado Actual
+## Current State
 
-*   **Cobertura actual**: < 5% (casi inexistente).
+*   **Current coverage**: < 5% (almost nonexistent).
 *   **Gaps**:
-    *   Sin Integration Tests (flujos reales entre capas).
-    *   Sin E2E (flujos de usuario completos en dispositivos reales).
-    *   Tests de Auth frágiles (acoplados a Supabase real sin entorno controlado).
-    *   Sin validación de persistencia offline (Drift queue).
-*   **Riesgos**:
-    *   Regresiones en lógica financiera crítica (forecasting/budgets).
-    *   Errores de sincronización entre Drift y Supabase.
-    *   Fallas de Auth en diferentes plataformas (Web vs Mobile).
-*   **Deuda Técnica**:
-    *   Dependencia directa de singletons estáticos (`Supabase.instance`).
-    *   Lógica de negocio mezclada con providers en algunos casos.
+    *   No Integration Tests (real flows between layers).
+    *   No E2E (complete user flows on real devices).
+    *   Fragile Auth tests (coupled to real Supabase without controlled environment).
+    *   No offline persistence validation (Drift queue).
+*   **Risks**:
+    *   Regressions in critical financial logic (forecasting/budgets).
+    *   Sync errors between Drift and Supabase.
+    *   Auth failures on different platforms (Web vs Mobile).
+*   **Technical Debt**:
+    *   Direct dependency on static singletons (`Supabase.instance`).
+    *   Business logic mixed with providers in some cases.
 
-## Estrategia Global
+## Global Strategy
 
-Adoptaremos la pirámide de testing adaptada para Flutter:
+Adopting the testing pyramid adapted for Flutter:
 
-1.  **Unit Tests (60%)**: Lógica de dominio (FinancialEngine, ForecastingEngine, Repositories).
-    *   *Herramientas*: `flutter_test`, `mocktail`.
-2.  **Widget Tests (25%)**: Componentes UI aislados y flujos de pantalla.
-    *   *Foco*: Comportamiento, no píxeles.
-3.  **Integration Tests (10%)**: Flujos entre múltiples capas (UI -> Repo -> Local DB).
-    *   *Herramientas*: `integration_test`.
-4.  **E2E Tests (5%)**: Flujos críticos en ambientes reales.
-    *   *Herramientas*: `Patrol` (por su capacidad de interactuar con permisos de sistema y web/native bridges).
-5.  **Smoke Tests**: Ejecución rápida post-deploy para verificar que el app inicia y el login básico funciona.
+1.  **Unit Tests (60%)**: Domain logic (FinancialEngine, ForecastingEngine, Repositories).
+    *   *Tools*: `flutter_test`, `mocktail`.
+2.  **Widget Tests (25%)**: Isolated UI components and screen flows.
+    *   *Focus*: Behavior, not pixels.
+3.  **Integration Tests (10%)**: Flows across multiple layers (UI -> Repo -> Local DB).
+    *   *Tools*: `integration_test`.
+4.  **E2E Tests (5%)**: Critical flows in real environments.
+    *   *Tools*: `Patrol` (for system permissions and web/native bridges).
+5.  **Smoke Tests**: Quick post-deploy execution to verify app starts and basic login works.
 
-## Prioridades (Roadmap Incremental)
+## Priorities (Incremental Roadmap)
 
-### Fase 1: Cimientos y Auth (Actual)
-*   **Auth**: Registro, Login, Logout, Session Recovery.
-*   **Infra**: Setup de Mocks/Fakes, integración CI.
+### Phase 1: Foundations and Auth (Current)
+*   **Auth**: Registration, Login, Logout, Session Recovery.
+*   **Infra**: Mocks/Fakes setup, CI integration.
 
-### Fase 2: Transacciones y Ledger
-*   **Transactions**: CRUD, validaciones financieras.
-*   **Sync**: Verificación del `SyncManager` y `OperationQueue`.
+### Phase 2: Transactions and Ledger
+*   **Transactions**: CRUD, financial validations.
+*   **Sync**: `SyncManager` and `OperationQueue` verification.
 
-### Fase 3: Financial Core
-*   **Budgets**: Envelopes, rollover, límites.
-*   **Forecasting**: Proyecciones deterministas.
+### Phase 3: Financial Core
+*   **Budgets**: Envelopes, rollover, limits.
+*   **Forecasting**: Deterministic projections.
 
-### Fase 4: Experiencia Pro
-*   **Workspace Switching**: Aislamiento de datos.
-*   **Offline Experience**: Modo offline, resolución de conflictos.
-*   **Installments/Recurring**: Generación de cuotas y ocurrencias.
+### Phase 4: Pro Experience
+*   **Workspace Switching**: Data isolation.
+*   **Offline Experience**: Offline mode, conflict resolution.
+*   **Installments/Recurring**: Payment and occurrence generation.
 
-## Estrategia Técnica
+## Technical Strategy
 
-| Herramienta | Uso | Tradeoff |
+| Tool | Usage | Tradeoff |
 | :--- | :--- | :--- |
-| `flutter_test` | Unit/Widget | Rápido, sin device. No prueba integraciones reales. |
-| `integration_test` | Integration | Corre en device. Más lento, pero alta confianza. |
-| `Patrol` | E2E | Maneja permisos nativos y flujos complejos. Mayor setup. |
-| `Mocktail` | Mocking | Type-safe, fácil de usar. Evitar mocks masivos. |
-| `Supabase Local` | Backend | Entorno reproducible. Requiere Docker en CI. |
+| `flutter_test` | Unit/Widget | Fast, no device needed. Does not test real integrations. |
+| `integration_test` | Integration | Runs on device. Slower but high confidence. |
+| `Patrol` | E2E | Handles native permissions and complex flows. More setup. |
+| `Mocktail` | Mocking | Type-safe, easy to use. Avoid massive mocks. |
+| `Supabase Local` | Backend | Reproducible environment. Requires Docker in CI. |
 
-### Filosofía: Behavior-Driven
-*   No testeamos "si el botón es azul", testeamos "si al pulsar el botón el gasto se resta del presupuesto".
-*   Preferimos **Fakes** sobre **Mocks** para Repositorios (bases de datos en memoria).
+### Philosophy: Behavior-Driven
+*   We don't test "if the button is blue", we test "if pressing the button subtracts the expense from the budget".
+*   Prefer **Fakes** over **Mocks** for Repositories (in-memory databases).

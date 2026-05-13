@@ -1,127 +1,127 @@
 # Farol — Predictive Financial Engine
-## Documento Estratégico de Arquitectura
-**Versión 1.0 · Mayo 2026**
-**Autor: Principal Software Architect (IA) · Para: Luis Grocha**
+## Strategic Architecture Document
+**Version 1.0 · May 2026**
+**Author: Principal Software Architect (AI) · For: Luis Grocha**
 
 ---
 
-> **Premisa**: Este documento no describe mejoras cosmética. Describe la transformación de Farol en un motor financiero predictivo real — el tipo de sistema que hace que un usuario diga *"esta app me conoce mejor que yo mismo"*. Cada decisión aquí fue tomada con base en el código real del repositorio, no en suposiciones genéricas.
+> **Premise**: This document does not describe cosmetic improvements. It describes transforming Farol into a real predictive financial engine — the kind of system that makes a user say *"this app knows me better than I know myself"*. Every decision here was made based on the actual repository code, not on generic assumptions.
 
 ---
 
-# ÍNDICE
+# TABLE OF CONTENTS
 
-1. [Diagnóstico del Sistema Actual](#1-diagnóstico)
-2. [Arquitectura Ideal del Financial Engine](#2-arquitectura)
-3. [Rediseño del Sistema de Categorías](#3-categorías)
+1. [Current System Diagnosis](#1-current-system-diagnosis)
+2. [Ideal Financial Engine Architecture](#2-ideal-architecture)
+3. [Category System Redesign](#3-category-redesign)
 4. [Envelope Budgeting Engine](#4-envelopes)
-5. [Sistema Real de Recurrentes](#5-recurrentes)
-6. [Integración Correcta de Cuotas/Installments](#6-installments)
+5. [Recurring System](#5-recurring-system)
+6. [Installments Integration](#6-installments)
 7. [Forecasting Engine](#7-forecasting)
-8. [Budget Intelligence Layer](#8-inteligencia)
-9. [Arquitectura de Sincronización](#9-sincronización)
-10. [Roadmap de Implementación](#10-roadmap)
-11. [Riesgos y Errores Comunes](#11-riesgos)
-12. [Resultado Final Esperado](#12-resultado)
+8. [Budget Intelligence Layer](#8-intelligence)
+9. [Sync Architecture](#9-sync-architecture)
+10. [Implementation Roadmap](#10-roadmap)
+11. [Risks and Common Mistakes](#11-risks)
+12. [Expected Final Result](#12-result)
 
 ---
 
-# 1. DIAGNÓSTICO DEL SISTEMA ACTUAL
+# 1. CURRENT SYSTEM DIAGNOSIS
 
-## 1.1 Lo que encontré en el código (no supuestos)
+## 1.1 What I Found in the Code (Not Assumptions)
 
-Tras analizar el repositorio completo, el estado real es:
+After analyzing the complete repository, here is the actual state:
 
-### Capa de Datos
+### Data Layer
 
 **`app_database.dart` (Drift/SQLite local)**
-El esquema local tiene 8 tablas: `Incomes`, `Expenses`, `CardInstallments`, `Investments`, `NetWorthSnapshots`, `BudgetGoals`, `UserSettings`, `CategoryTable`. Existe un `schemaVersion: 2` con una migración que popula las categorías sistema. El problema crítico: **la mayor parte de la lógica real vive en Supabase, no en Drift**. Las tablas Drift existen pero los repositorios en `features/` usan `SupabaseClient` directamente. Esto crea una **dualidad de persistencia no resuelta**: no es offline-first real, es Supabase-first con Drift como artefacto.
+The local schema has 8 tables: `Incomes`, `Expenses`, `CardInstallments`, `Investments`, `NetWorthSnapshots`, `BudgetGoals`, `UserSettings`, `CategoryTable`. There is a `schemaVersion: 2` with a migration that populates system categories. The critical problem: **most real logic lives in Supabase, not Drift**. Drift tables exist but repositories in `features/` use `SupabaseClient` directly. This creates an **unresolved persistence duality**: it is not truly offline-first, it is Supabase-first with Drift as an artifact.
 
 **`Expense` model**
-El modelo tiene `installmentPlanId` (referencia a un plan de cuotas) e `isProjected` (flag para gastos proyectados). Estos campos *existen* pero ningún servicio los usa de forma coherente. Son la evidencia de intenciones arquitectónicas incompletas.
+The model has `installmentPlanId` (reference to an installment plan) and `isProjected` (flag for projected expenses). These fields *exist* but no service uses them coherently. They are evidence of incomplete architectural intentions.
 
 **`CardInstallment` model**
-Tiene `currentInstallment` (contador manual), `remainingInstallments`, `remainingBalance`. El avance es manual — el usuario hace `advance()`. No existe generación automática de cuotas como filas de `expenses`. El `installmentPlanId` en `Expense` no tiene contrapartida en `CardInstallments` (no hay `foreign key` a expenses). Son **dos mundos paralelos que no se hablan**.
+Has `currentInstallment` (manual counter), `remainingInstallments`, `remainingBalance`. Advancement is manual — the user calls `advance()`. There is no automatic generation of installments as `expenses` rows. The `installmentPlanId` in `Expense` has no counterpart in `CardInstallments` (no foreign key to expenses). They are **two parallel worlds that don't communicate**.
 
-### Capa de Dominio
+### Domain Layer
 
 **`FinancialCalculatorService`**
-Servicio con métodos estáticos puros. Calcula: savings rate, health score (5 factores), FGTS projection, budget alerts, net worth, 13th salary, INSS/IRRF, rescisión, FGTS aniversário. Es correcto conceptualmente pero **no tiene estado, no tiene streams, no tiene caching**. Cada cálculo es independiente y no compone con otros. No existe un "resultado financiero del período" unificado — cada widget hace sus propios cálculos en paralelo.
+A service with pure static methods. Calculates: savings rate, health score (5 factors), FGTS projection, budget alerts, net worth, 13th salary, INSS/IRRF, severance, FGTS anniversary withdrawal. It is conceptually correct but **has no state, no streams, no caching**. Each calculation is independent and does not compose with others. There is no unified "period financial result" — each widget performs its own calculations in parallel.
 
 **`FinancialPeriod`**
-Excelente abstracción. El `cutoffDay` personalizable es una ventaja competitiva real. La lógica `current()`, `next()`, `previous()` es correcta. **Este es el componente más sólido del sistema**.
+Excellent abstraction. The customizable `cutoffDay` is a real competitive advantage. The `current()`, `next()`, `previous()` logic is correct. **This is the most solid component in the system**.
 
 **`PeriodBudget` + `PeriodBudgetEntry`**
-El modelo de presupuesto por período tiene buena base: goal como referencia, override por período, tracking de gasto. El `BudgetStatus` (ok/warning/overspent) es correcto. Pero falta: rollover, carry-over, envelopes automáticos, vinculación con recurrentes.
+The per-period budget model has a good foundation: goal as reference, override per period, spend tracking. `BudgetStatus` (ok/warning/overspent) is correct. But missing: rollover, carry-over, automatic envelopes, recurring rule linking.
 
-### Sistema de Categorías: El Problema Dual
+### Category System: The Dual Problem
 
-Este es el problema más estructural. Existen **dos sistemas paralelos e incompatibles**:
+This is the most structural problem. There are **two parallel and incompatible systems**:
 
 ```
-Sistema 1: enum ExpenseCategory (enums.dart)
-→ 9 valores hardcodeados en Dart
-→ Tiene localización, isSwile, localizedLabel
-→ Usado en UI, en filtros, en cálculos
+System 1: enum ExpenseCategory (enums.dart)
+→ 9 hardcoded Dart values
+→ Has localization, isSwile, localizedLabel
+→ Used in UI, filters, calculations
 
-Sistema 2: CategoryTable (app_database.dart)
-→ Tabla en SQLite con dbValue/name/emoji/isSwile/isSystem
-→ También en Supabase (inferido por CategoryRepository)
-→ Permite categorías custom del usuario
+System 2: CategoryTable (app_database.dart)
+→ SQLite table with dbValue/name/emoji/isSwile/isSystem
+→ Also in Supabase (inferred by CategoryRepository)
+→ Allows user custom categories
 ```
 
-El resultado: los gastos almacenan `category` como `String`. En algunos flujos se convierte al enum, en otros se usa como string raw. El `ExpenseCategory.fromDb()` lanza `StateError` si la categoría es custom. **Esto es una bomba de tiempo cuando el usuario crea categorías propias**.
+The result: expenses store `category` as `String`. In some flows it is converted to the enum, in others used as raw string. `ExpenseCategory.fromDb()` throws `StateError` if the category is custom. **This is a time bomb when users create their own categories**.
 
-### Recurrentes: Casi No Existen
+### Recurring: Barely Exists
 
-Los gastos "fijos" (`isFixed = true`) se copian del mes anterior mediante `fixedExpensePropagationProvider`. Este es el único mecanismo de recurrencia. No hay: RRULE, excepciones, pausas, detección automática, predicción de montos. El `DashboardScreen` muestra un SnackBar cuando se copian los gastos fijos — lo cual es UX de emergencia, no de producto.
+"Fixed" expenses (`isFixed = true`) are copied from the previous month via `fixedExpensePropagationProvider`. This is the only recurrence mechanism. There is no: RRULE, exceptions, pauses, automatic detection, amount prediction. The `DashboardScreen` shows a SnackBar when fixed expenses are copied — emergency UX, not product UX.
 
-### Forecasting: Prácticamente Inexistente
+### Forecasting: Practically Nonexistent
 
-El campo `isProjected` en `Expense` sugiere intención. El `projectFgts()` en `FinancialCalculatorService` es el único forecasting real. No existe: projected balance, burn rate, liquidity risk, end-of-period prediction. El Health Score de 10 puntos es un proxy estático, no predictivo.
+The `isProjected` field on `Expense` suggests intent. `projectFgts()` in `FinancialCalculatorService` is the only real forecasting. There is no: projected balance, burn rate, liquidity risk, end-of-period prediction. The 10-point Health Score is a static proxy, not predictive.
 
 ---
 
-## 1.2 Fortalezas Reales (reutilizables)
+## 1.2 Real Strengths (Reusable)
 
-| Componente | Por qué es sólido |
+| Component | Why It Is Solid |
 |---|---|
-| `FinancialPeriod` con `cutoffDay` | Diferenciador competitivo. Correcto matemáticamente. Reutilizable 100%. |
-| `FinancialCalculatorService` (métodos) | Lógica fiscal correcta (INSS/IRRF 2025). Los algoritmos son buenos, falta composición. |
-| `PeriodBudget` + `BudgetGoal` | Base válida para envelopes. El modelo goal→override es extensible. |
-| Sistema de `BudgetGoalType` (Need/Want/Invest) | Buena clasificación. Compatible con metodología 50/30/20. |
-| Supabase Realtime manager | Infraestructura de sync existe. Falta orquestación. |
-| Architecture feature-based | La estructura de carpetas es correcta. No hay que cambiarla. |
-| Swile como concepto de bucket separado | Financieramente correcto para Brasil CLT. Mantener. |
+| `FinancialPeriod` with `cutoffDay` | Competitive differentiator. Mathematically correct. 100% reusable. |
+| `FinancialCalculatorService` (methods) | Correct fiscal logic (INSS/IRRF 2025). Good algorithms, needs composition. |
+| `PeriodBudget` + `BudgetGoal` | Valid envelope foundation. The goal→override model is extensible. |
+| `BudgetGoalType` system (Need/Want/Invest) | Good classification. Compatible with 50/30/20 methodology. |
+| Supabase Realtime manager | Sync infrastructure exists. Lacks orchestration. |
+| Feature-based architecture | Folder structure is correct. No changes needed. |
+| Swile as separate bucket concept | Financially correct for Brazil CLT. Keep it. |
 
-## 1.3 Limitaciones Estructurales (que bloquean evolución)
+## 1.3 Structural Limitations (Blocking Evolution)
 
-1. **Categorías como enum Dart hardcodeado**: Imposible extender sin recompilar. Incompatible con categorías custom en producción.
-2. **Installments y Expenses desacoplados**: Una cuota no genera una línea de gasto; un gasto no referencia un plan de cuotas de forma bidireccional.
-3. **Dualidad Drift/Supabase sin estrategia**: No es offline-first ni online-first. Es ambos a medias.
-4. **`FinancialCalculatorService` stateless sin composición**: No puede calcular "estado financiero del período" de forma holística.
-5. **`month/year` como eje temporal principal**: Los gastos viven en `(month, year)`, no en fechas reales. Colisiona con `FinancialPeriod` que cruza meses.
-6. **No existe un evento financiero**: No hay concepto unificado de "algo que impacta el balance en una fecha futura".
+1. **Categories as hardcoded Dart enum**: Impossible to extend without recompiling. Incompatible with custom categories in production.
+2. **Installments and Expenses decoupled**: An installment does not generate an expense line; an expense does not bidirectionally reference an installment plan.
+3. **Drift/Supabase duality without strategy**: Neither offline-first nor online-first. It is both halfway.
+4. **`FinancialCalculatorService` stateless without composition**: Cannot calculate "period financial state" holistically.
+5. **`month/year` as primary temporal axis**: Expenses live in `(month, year)`, not real dates. Collides with `FinancialPeriod` that crosses months.
+6. **No financial event exists**: No unified concept of "something that impacts the balance on a future date".
 
-## 1.4 Deuda Técnica Cuantificada
+## 1.4 Technical Debt Quantified
 
-| Deuda | Impacto | Esfuerzo de resolución |
+| Debt | Impact | Resolution Effort |
 |---|---|---|
-| Enum de categorías + CategoryTable duplicado | CRÍTICO | 2 semanas |
-| Installments sin relación con expenses | ALTO | 1 semana |
-| month/year sin fecha exacta en expenses | ALTO | 3 días (migración) |
-| FinancialCalculatorService sin composición | MEDIO | 1 semana |
-| Recurrentes = isFixed copy | ALTO | 2 semanas |
-| Offline/online dualidad sin estrategia | MEDIO | 2 semanas |
-| Health Score estático | BAJO | 3 días |
+| Category enum + CategoryTable duplication | CRITICAL | 2 weeks |
+| Installments with no relationship to expenses | HIGH | 1 week |
+| month/year without exact date in expenses | HIGH | 3 days (migration) |
+| FinancialCalculatorService without composition | MEDIUM | 1 week |
+| Recurring = isFixed copy | HIGH | 2 weeks |
+| Offline/online duality without strategy | MEDIUM | 2 weeks |
+| Static Health Score | LOW | 3 days |
 
 ---
 
-# 2. ARQUITECTURA IDEAL DEL FINANCIAL ENGINE
+# 2. IDEAL FINANCIAL ENGINE ARCHITECTURE
 
-## 2.1 Principio Rector
+## 2.1 Guiding Principle
 
-El Financial Engine de Farol debe ser **completamente agnóstico de Flutter**. Es una librería Dart pura que podría correr en un servidor, en tests, en un isolate. Flutter es solo el canal de presentación.
+Farol's Financial Engine must be **completely Flutter-agnostic**. It is a pure Dart library that could run on a server, in tests, in an isolate. Flutter is just the presentation channel.
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -142,67 +142,67 @@ El Financial Engine de Farol debe ser **completamente agnóstico de Flutter**. E
 └─────────────────────────────────────────────────────┘
 ```
 
-## 2.2 Bounded Contexts Financieros
+## 2.2 Financial Bounded Contexts
 
-El sistema se divide en 6 bounded contexts con fronteras claras:
+The system is divided into 6 bounded contexts with clear boundaries:
 
 ### BC1: Identity & Period Context
-**Responsabilidad**: Quién es el usuario y en qué período financiero está.
+**Responsibility**: Who the user is and what financial period they are in.
 ```
-Entidades: User, FinancialProfile, FinancialPeriod
-Servicios: PeriodResolver, CutoffDayManager
-Eventos: PeriodChanged, ProfileUpdated
+Entities: User, FinancialProfile, FinancialPeriod
+Services: PeriodResolver, CutoffDayManager
+Events: PeriodChanged, ProfileUpdated
 ```
 
-### BC2: Ledger Context (Libro Mayor)
-**Responsabilidad**: Registro inmutable de todos los eventos monetarios pasados.
+### BC2: Ledger Context
+**Responsibility**: Immutable record of all past monetary events.
 ```
-Entidades: Transaction, Income, Expense, Transfer
+Entities: Transaction, Income, Expense, Transfer
 Value Objects: Money, CategoryRef, DateRange
-Servicios: LedgerService, TransactionClassifier
-Eventos: TransactionCreated, TransactionUpdated, TransactionDeleted
+Services: LedgerService, TransactionClassifier
+Events: TransactionCreated, TransactionUpdated, TransactionDeleted
 ```
 
 ### BC3: Budget Context (Envelopes)
-**Responsabilidad**: Cuánto se planea gastar y cómo se asigna el dinero.
+**Responsibility**: How much is planned to spend and how money is allocated.
 ```
-Entidades: Envelope, BudgetPlan, BudgetPeriod
+Entities: Envelope, BudgetPlan, BudgetPeriod
 Value Objects: AllocationRule, RolloverPolicy
-Servicios: EnvelopeEngine, AllocationService
-Eventos: EnvelopeAllocated, BudgetOverspent, RolloverCalculated
+Services: EnvelopeEngine, AllocationService
+Events: EnvelopeAllocated, BudgetOverspent, RolloverCalculated
 ```
 
-### BC4: Obligations Context (Compromisos Futuros)
-**Responsabilidad**: Todos los compromisos financieros futuros conocidos.
+### BC4: Obligations Context (Future Commitments)
+**Responsibility**: All known future financial commitments.
 ```
-Entidades: InstallmentPlan, InstallmentPayment, RecurringRule, RecurringOccurrence
+Entities: InstallmentPlan, InstallmentPayment, RecurringRule, RecurringOccurrence
 Value Objects: RRule, PaymentSchedule
-Servicios: ObligationEngine, RecurrenceResolver
-Eventos: PaymentDue, InstallmentAdvanced, RecurringDetected
+Services: ObligationEngine, RecurrenceResolver
+Events: PaymentDue, InstallmentAdvanced, RecurringDetected
 ```
 
-### BC5: Forecasting Context (Motor Predictivo)
-**Responsabilidad**: Proyección del estado financiero futuro.
+### BC5: Forecasting Context (Predictive Engine)
+**Responsibility**: Projection of future financial state.
 ```
-Entidades: FinancialProjection, CashflowForecast, LiquidityRisk
+Entities: FinancialProjection, CashflowForecast, LiquidityRisk
 Value Objects: BurnRate, VelocityVector, RiskScore
-Servicios: ForecastingEngine, ScenarioSimulator
-Eventos: ProjectionUpdated, RiskThresholdBreached
+Services: ForecastingEngine, ScenarioSimulator
+Events: ProjectionUpdated, RiskThresholdBreached
 ```
 
-### BC6: Intelligence Context (Copiloto)
-**Responsabilidad**: Patrones, anomalías y recomendaciones.
+### BC6: Intelligence Context (Co-pilot)
+**Responsibility**: Patterns, anomalies, and recommendations.
 ```
-Entidades: FinancialInsight, SpendingPattern, Anomaly
+Entities: FinancialInsight, SpendingPattern, Anomaly
 Value Objects: InsightType, ConfidenceScore
-Servicios: PatternDetector, AnomalyDetector, RecommendationEngine
-Eventos: InsightGenerated, AnomalyDetected
+Services: PatternDetector, AnomalyDetector, RecommendationEngine
+Events: InsightGenerated, AnomalyDetected
 ```
 
-## 2.3 Flujo de Datos Principal
+## 2.3 Main Data Flow
 
 ```
-Usuario registra gasto
+User records expense
         │
         ▼
 [TransactionCommand] → LedgerService → Transaction saved
@@ -224,7 +224,7 @@ Usuario registra gasto
                     └──→ AnomalyDetector, PatternUpdater → Insights
 ```
 
-## 2.4 Estructura de Directorios Propuesta
+## 2.4 Proposed Directory Structure
 
 ```
 lib/
@@ -264,19 +264,19 @@ lib/
 └── features/                       ← igual que ahora
 ```
 
-## 2.5 FinancialEngine: El Núcleo Central
+## 2.5 FinancialEngine: The Central Core
 
 ```dart
-/// El motor financiero central. Produce el estado financiero completo
-/// del período actual. Es el único punto de verdad financiera en la app.
+/// The central financial engine. Produces the complete financial state
+/// of the current period. It is the single source of financial truth in the app.
 class FinancialEngine {
   final LedgerRepository _ledger;
   final EnvelopeEngine _envelopes;
   final ObligationEngine _obligations;
   final ForecastingEngine _forecasting;
 
-  /// Produce el snapshot financiero completo del período.
-  /// Todos los widgets del dashboard consumen este único objeto.
+  /// Produces the complete financial snapshot for the period.
+  /// All dashboard widgets consume this single object.
   Stream<FinancialSnapshot> watchPeriodSnapshot(
     FinancialPeriod period,
     String userId,
@@ -311,17 +311,17 @@ class FinancialSnapshot {
 
 ---
 
-# 3. REDISEÑO COMPLETO DEL SISTEMA DE CATEGORÍAS
+# 3. COMPLETE CATEGORY SYSTEM REDESIGN
 
-## 3.1 El Problema Real (desde el código)
+## 3.1 The Real Problem (from the code)
 
-El problema no es filosófico, es concreto. En `enums.dart` existe `ExpenseCategory` con 9 valores. En `app_database.dart` existe `CategoryTable`. En `Expense` el campo `category` es `String`. En `CategoryRepository` hay queries a Supabase. Cuando un usuario crea una categoría custom con `dbValue = 'ROPA'`, el `ExpenseCategory.fromDb('ROPA')` lanza `StateError: No element`.
+The problem is not philosophical, it is concrete. In `enums.dart` there is `ExpenseCategory` with 9 values. In `app_database.dart` there is `CategoryTable`. In `Expense` the `category` field is `String`. In `CategoryRepository` there are Supabase queries. When a user creates a custom category with `dbValue = 'ROPA'`, `ExpenseCategory.fromDb('ROPA')` throws `StateError: No element`.
 
-**La unificación no es opcional. Es una pre-condición para todo lo demás.**
+**Unification is not optional. It is a precondition for everything else.**
 
-## 3.2 Modelo Unificado de Categorías
+## 3.2 Unified Category Model
 
-### Schema Ideal (Supabase + Drift mirror)
+### Ideal Schema (Supabase + Drift mirror)
 
 ```sql
 -- Categorías unificadas. Reemplaza enum + CategoryTable.
@@ -393,7 +393,7 @@ CREATE TABLE expense_tags (
 );
 ```
 
-### Jerarquía de Categorías Sistema (Brasil, CLT)
+### System Category Hierarchy (Brazil, CLT)
 
 ```
 📦 NECESSIDADES (financial_type: need)
@@ -446,15 +446,15 @@ CREATE TABLE expense_tags (
 └── Transferências         [financial_type: transfer]
 ```
 
-## 3.3 CategoryRef: Value Object en el Dominio
+## 3.3 CategoryRef: Domain Value Object
 
 ```dart
-/// Value object que reemplaza el enum ExpenseCategory.
-/// Puede ser sistema o custom. Nunca lanza StateError.
+/// Value object that replaces the ExpenseCategory enum.
+/// Can be system or custom. Never throws StateError.
 class CategoryRef {
   final String id;       // UUID
   final String slug;     // 'housing', 'custom_ropa'
-  final String name;     // display name localizado
+  final String name;     // localized display name
   final String emoji;
   final String? colorHex;
   final FinancialType financialType;
@@ -466,7 +466,7 @@ class CategoryRef {
   bool get isCustom => !isSystem;
   bool get isTopLevel => parentId == null;
 
-  /// Compatibilidad retroativa con el String 'HOUSING' del enum viejo
+  /// Backward compatibility with old 'HOUSING' enum string
   static CategoryRef fromLegacyDbValue(String dbValue, List<CategoryRef> all) {
     return all.firstWhere(
       (c) => c.slug.toUpperCase() == dbValue,
@@ -478,27 +478,27 @@ class CategoryRef {
 enum FinancialType { need, want, investment, income, transfer }
 ```
 
-## 3.4 Migración Gradual desde el Sistema Actual
+## 3.4 Gradual Migration from Current System
 
-**Paso 1 (sin breaking changes)**: Crear la nueva tabla `categories` con todos los slugs que matchean los `dbValue` del enum actual. Mantener el enum en paralelo.
+**Step 1 (no breaking changes)**: Create new `categories` table with all slugs matching current enum `dbValue` values. Keep the enum in parallel.
 
-**Paso 2**: Agregar campo `category_id UUID` (nullable) a la tabla `expenses` en Supabase. Correr job de backfill que mapea el string `category` al UUID correspondiente.
+**Step 2**: Add `category_id UUID` (nullable) to `expenses` table in Supabase. Run backfill job mapping `category` string to corresponding UUID.
 
-**Paso 3**: Escribir `CategoryResolver` que recibe un `String` (legado) o `UUID` y siempre retorna un `CategoryRef` válido. Nunca lanza excepción.
+**Step 3**: Write `CategoryResolver` that receives a `String` (legacy) or `UUID` and always returns a valid `CategoryRef`. Never throws an exception.
 
-**Paso 4**: Reemplazar todos los usos del enum en la UI por `CategoryRef`. Eliminar el enum.
+**Step 4**: Replace all enum usages in UI with `CategoryRef`. Remove the enum.
 
-**Paso 5**: Hacer `category_id` NOT NULL. Deprecar el campo `category` (string).
+**Step 5**: Make `category_id` NOT NULL. Deprecate the `category` (string) field.
 
 ---
 
 # 4. ENVELOPE BUDGETING ENGINE
 
-## 4.1 Modelo Conceptual
+## 4.1 Conceptual Model
 
-YNAB inventó los envelopes. Farol debe mejorarlos para Brasil. La diferencia clave: en Brasil tienes Swile (bucket separado), cuotas de cartão (obligaciones futuras conocidas), 13° salário (ingreso predecible pero irregular), y un cashflow mensual que frecuentemente cruza períodos (cutoffDay ≠ 1).
+YNAB invented envelopes. Farol must improve them for Brazil. The key difference: in Brazil you have Swile (separate bucket), credit card installments (known future obligations), 13th salary (predictable but irregular income), and monthly cashflow that often crosses periods (cutoffDay ≠ 1).
 
-Un **envelope** en Farol es el presupuesto de una categoría en un período, con estado completo:
+An **envelope** in Farol is the budget for a category in a period, with full state:
 
 ```dart
 class Envelope {
@@ -540,7 +540,7 @@ enum RolloverPolicy {
 }
 ```
 
-## 4.2 Schema DB para Envelopes
+## 4.2 DB Schema for Envelopes
 
 ```sql
 -- Reemplaza period_budgets con modelo más completo
@@ -593,7 +593,7 @@ LEFT JOIN transactions t ON
 GROUP BY e.id;
 ```
 
-## 4.3 Lógica Matemática del Engine
+## 4.3 Engine Mathematical Logic
 
 ```dart
 class EnvelopeEngine {
@@ -685,31 +685,31 @@ class EnvelopeEngine {
 }
 ```
 
-## 4.4 Edge Cases Críticos
+## 4.4 Critical Edge Cases
 
-**Envelope negativo**: Si `rolloverPolicy = rolloverNegative` y el usuario gastó R$200 con envelope de R$150, el próximo período arranca con -R$50. La UI debe mostrar esto claramente — "Debes R$50 de enero".
+**Negative envelope**: If `rolloverPolicy = rolloverNegative` and the user spent R$200 with a R$150 envelope, the next period starts at -R$50. The UI must show this clearly — "You owe R$50 from January".
 
-**Envelope para cuotas**: Cada plan de cuotas activo genera automáticamente un envelope de tipo `obligation` en cada período futuro. Es decir, si tienes 6x R$500 de una TV, Farol crea envelopes bloqueados de R$500 para los próximos 6 períodos. No son editables por el usuario.
+**Installment envelope**: Each active installment plan automatically generates an `obligation` type envelope in each future period. That is, if you have 6x R$500 for a TV, Farol creates locked R$500 envelopes for the next 6 periods. They are not editable by the user.
 
-**Envelope de inversión**: Tratado como gasto en cashflow (reduce balance líquido) pero marcado como `financial_type: investment`. El forecasting lo separa del gasto corriente.
+**Investment envelope**: Treated as an expense in cashflow (reduces liquid balance) but marked as `financial_type: investment`. Forecasting separates it from current spending.
 
-**Income parcial**: Si el salario no llegó todavía (mitad de período), el engine trabaja con ingreso proyectado, no real. El campo `isProjected: true` en Income indica esto.
+**Partial income**: If salary has not arrived yet (mid-period), the engine works with projected income, not actual. The `isProjected: true` field on Income indicates this.
 
 ---
 
-# 5. SISTEMA REAL DE RECURRENTES
+# 5. RECURRING SYSTEM
 
-## 5.1 ¿Por qué `isFixed + copy` no escala?
+## 5.1 Why `isFixed + copy` Does Not Scale
 
-El mecanismo actual de `fixedExpensePropagationProvider` copia gastos del mes anterior con `isFixed = true`. Problemas:
+The current `fixedExpensePropagationProvider` mechanism copies last month's expenses with `isFixed = true`. Problems:
 
-- El monto puede variar (el alquiler subió R$100 en marzo)
-- El usuario puede tener recurrentes que empiezan en una fecha futura
-- No hay forma de pausar uno sin borrarlo
-- No hay soporte para frecuencias no-mensuales (alquiler anual de temporada, seguro semestral)
-- No detecta automáticamente patrones recurrentes
+- The amount can vary (rent increased R$100 in March)
+- Users can have recurring expenses starting on a future date
+- There is no way to pause one without deleting it
+- No support for non-monthly frequencies (annual seasonal rent, semi-annual insurance)
+- Does not automatically detect recurring patterns
 
-## 5.2 Modelo de Recurrentes
+## 5.2 Recurring Model
 
 ### Schema
 
@@ -788,7 +788,7 @@ CREATE TABLE recurring_occurrences (
 );
 ```
 
-### Generación de Ocurrencias
+### Occurrence Generation
 
 ```dart
 class RecurrenceResolver {
@@ -847,7 +847,7 @@ class RecurrenceResolver {
 }
 ```
 
-## 5.3 Detección Automática de Recurrentes
+## 5.3 Automatic Recurring Detection
 
 ```dart
 class RecurringDetector {
@@ -893,26 +893,26 @@ class RecurringDetector {
 }
 ```
 
-## 5.4 UX Recomendada para Recurrentes
+## 5.4 Recommended UX for Recurring
 
-El flujo de UI debe ser: al detectar un candidato, mostrar una card no-invasiva en el dashboard: *"Parece que pagas Netflix todo los meses (~R$45). ¿Quieres que Farol lo rastree automáticamente?"* → [Confirmar] [Editar] [Ignorar]. Si confirma, el engine crea la `RecurringRule` y retroactivamente marca las ocurrencias pasadas como `paid`. No interrumpir el flujo de entrada de gastos con preguntas.
+The UI flow should be: when a candidate is detected, show a non-invasive card on the dashboard: *"Looks like you pay Netflix every month (~R$45). Would you like Farol to track it automatically?"* → [Confirm] [Edit] [Ignore]. If confirmed, the engine creates the `RecurringRule` and retroactively marks past occurrences as `paid`. Do not interrupt the expense entry flow with questions.
 
 ---
 
-# 6. INTEGRACIÓN CORRECTA DE CUOTAS/INSTALLMENTS
+# 6. INSTALLMENTS INTEGRATION
 
-## 6.1 El Problema Real (desde el código)
+## 6.1 The Real Problem (from the code)
 
-`CardInstallment` y `Expense` son entidades completamente independientes. El `Expense.installmentPlanId` existe pero `CardInstallments` no tiene referencia a expenses. El flujo actual:
+`CardInstallment` and `Expense` are completely independent entities. `Expense.installmentPlanId` exists but `CardInstallments` has no reference to expenses. The current flow:
 
-1. Usuario registra un gasto de R$1200 en 12x → crea un `Expense` por R$100 en el mes actual
-2. Separadamente crea un `CardInstallment` con `numInstallments=12, monthlyAmount=100`
-3. Cada mes, *manualmente* hace `advance()` para avanzar el contador
-4. Los meses futuros no tienen el gasto registrado hasta que el usuario los advance
+1. User records a R$1200 expense in 12 installments → creates an `Expense` for R$100 in the current month
+2. Separately creates a `CardInstallment` with `numInstallments=12, monthlyAmount=100`
+3. Each month, *manually* calls `advance()` to increment the counter
+4. Future months do not have the expense recorded until the user advances them
 
-Esto es fundamentalmente incorrecto para forecasting. Si compras una TV en 12x, el engine debe saber que tienes R$100/mes comprometidos durante 12 meses.
+This is fundamentally incorrect for forecasting. If you buy a TV in 12 installments, the engine must know you have R$100/month committed for 12 months.
 
-## 6.2 Modelo Correcto: InstallmentPlan + Payments
+## 6.2 Correct Model: InstallmentPlan + Payments
 
 ```sql
 -- Plan madre: la compra original
@@ -974,7 +974,7 @@ CREATE TABLE installment_payments (
 );
 ```
 
-### Flujo Completo de una Compra Parcelada
+### Complete Installment Purchase Flow
 
 ```dart
 class InstallmentService {
@@ -1059,7 +1059,7 @@ class InstallmentService {
 }
 ```
 
-### Impacto en Forecasting
+### Forecasting Impact
 
 El `ForecastingEngine` consulta `installment_payments WHERE status = 'pending' AND due_date BETWEEN :periodStart AND :end` para conocer exactamente cuánto compromiso de cuotas hay en cada período futuro. No necesita inferir ni adivinar — la información está explícitamente en la DB.
 
@@ -1077,15 +1077,15 @@ Money totalInstallmentObligation = futureInstallments
 
 # 7. FORECASTING ENGINE
 
-## 7.1 Filosofía del Motor Predictivo
+## 7.1 Predictive Engine Philosophy
 
-El Forecasting Engine de Farol no es un chatbot de IA. Es un motor matemático determinista con heurísticas estadísticas. Debe dar respuestas concretas a preguntas concretas. Cuando el usuario pregunta "¿cuánto ahorraré este mes?", Farol no dice "depende de tus hábitos". Dice "**R$847** basado en tu velocidad actual de gasto y las obligaciones confirmadas de los próximos 18 días".
+Farol's Forecasting Engine is not an AI chatbot. It is a deterministic mathematical engine with statistical heuristics. It must give concrete answers to concrete questions. When the user asks "how much will I save this month?", Farol does not say "it depends on your habits." It says "**R$847** based on your current spending velocity and confirmed obligations for the next 18 days."
 
-## 7.2 Las 7 Métricas Core del Forecasting
+## 7.2 The 7 Core Forecasting Metrics
 
-### Métrica 1: Burn Rate
+### Metric 1: Burn Rate
 
-**Definición**: Velocidad de consumo del presupuesto disponible.
+**Definition**: Rate of consumption of available budget.
 
 ```
 BurnRate = TotalGastado / DíasTranscurridos
@@ -1109,7 +1109,7 @@ class BurnRate {
 }
 ```
 
-### Métrica 2: Projected Closing Balance
+### Metric 2: Projected Closing Balance
 
 ```dart
 Money calculateProjectedClosingBalance({
@@ -1130,9 +1130,9 @@ Money calculateProjectedClosingBalance({
 }
 ```
 
-### Métrica 3: Days Until Empty (DUE)
+### Metric 3: Days Until Empty (DUE)
 
-**La métrica más impactante emocionalmente.** Si el usuario ve "quedan 8 días de efectivo" → acción inmediata.
+**The most emotionally impactful metric.** If the user sees "8 days of cash left" → immediate action.
 
 ```dart
 int calculateDaysUntilEmpty({
@@ -1162,7 +1162,7 @@ int calculateDaysUntilEmpty({
 }
 ```
 
-### Métrica 4: Budget Risk Score (BRS)
+### Metric 4: Budget Risk Score (BRS)
 
 ```dart
 /// Score 0-100. 0 = sin riesgo. 100 = crisis financiera inminente.
@@ -1197,9 +1197,9 @@ double calculateBudgetRisk({
 }
 ```
 
-### Métrica 5: Category Velocity
+### Metric 5: Category Velocity
 
-Detecta qué categorías están "fuera de control" con base en su historial.
+Detects which categories are "out of control" based on their history.
 
 ```dart
 class CategoryVelocity {
@@ -1221,7 +1221,7 @@ class CategoryVelocity {
 }
 ```
 
-### Métrica 6: Savings Prediction
+### Metric 6: Savings Prediction
 
 ```dart
 Money predictSavings({
@@ -1240,7 +1240,7 @@ Money predictSavings({
 }
 ```
 
-### Métrica 7: Liquidity Risk
+### Metric 7: Liquidity Risk
 
 ```dart
 enum LiquidityRisk { none, low, medium, high, critical }
@@ -1269,7 +1269,7 @@ LiquidityRisk assessLiquidityRisk({
 }
 ```
 
-## 7.3 Arquitectura del ForecastingEngine
+## 7.3 ForecastingEngine Architecture
 
 ```dart
 class ForecastingEngine {
@@ -1419,9 +1419,9 @@ class ForecastingEngine {
 }
 ```
 
-## 7.4 Incremental Calculations y Performance
+## 7.4 Incremental Calculations and Performance
 
-El forecasting NO se recalcula en cada rebuild de widget. La estrategia:
+Forecasting is NOT recalculated on every widget rebuild. The strategy:
 
 ```dart
 // Provider Riverpod con cache y invalidación selectiva
@@ -1446,24 +1446,24 @@ Future<FinancialProjection> financialProjection(
 // + invalidación por evento. No recalcula si no cambió nada.
 ```
 
-**Estrategia de cálculo por capas**:
-- **Layer 1 (instantáneo)**: Balance actual = dato de DB, sin cálculo
-- **Layer 2 (<50ms)**: BurnRate = división simple
-- **Layer 3 (<200ms)**: Projected balance = burnrate + obligaciones (query simple)
-- **Layer 4 (<500ms)**: Category velocities = comparación con histórico
-- **Layer 5 (<1s)**: Full cashflow forecast 90 días = cálculo iterativo
+**Layered calculation strategy**:
+- **Layer 1 (instant)**: Current balance = DB data, no calculation
+- **Layer 2 (<50ms)**: BurnRate = simple division
+- **Layer 3 (<200ms)**: Projected balance = burnrate + obligations (simple query)
+- **Layer 4 (<500ms)**: Category velocities = comparison with history
+- **Layer 5 (<1s)**: Full 90-day cashflow forecast = iterative calculation
 
-La UI muestra Layer 1-2 inmediatamente y va revelando capas con skeleton loaders.
+The UI shows Layer 1-2 immediately and reveals layers progressively with skeleton loaders.
 
 ---
 
 # 8. BUDGET INTELLIGENCE LAYER
 
-## 8.1 El Copiloto que Farol Necesita
+## 8.1 The Co-pilot Farol Needs
 
-No quieres un chatbot genérico que responde preguntas. Quieres un copiloto que observa, detecta, y avisa *antes* de que el problema ocurra. La inteligencia no es artificial en el sentido de ML — es un conjunto de reglas expertas con scoring contextual.
+You don't want a generic chatbot that answers questions. You want a co-pilot that observes, detects, and warns *before* the problem occurs. The intelligence is not artificial in the ML sense — it is a set of expert rules with contextual scoring.
 
-## 8.2 Tipos de Insights
+## 8.2 Insight Types
 
 ```dart
 enum InsightType {
@@ -1504,7 +1504,7 @@ class FinancialInsight {
 }
 ```
 
-## 8.3 Reglas del Motor de Inteligencia
+## 8.3 Intelligence Engine Rules
 
 ```dart
 class IntelligenceLayer {
@@ -1658,30 +1658,30 @@ class IntelligenceLayer {
 }
 ```
 
-## 8.4 UX de Insights: No Invasivo
+## 8.4 UX of Insights: Non-Invasive
 
-Los insights **no son notificaciones push** en el arranque de la app. Son un panel contextual en el dashboard que aparece cuando hay algo relevante. Reglas:
+Insights are **not push notifications** on app launch. They are a contextual panel on the dashboard that appears when something relevant is detected. Rules:
 
-- Máximo 1 insight `critical` visible al mismo tiempo
-- Los insights de `achievement` solo se muestran si el usuario está en el tab de Saúde
-- El usuario puede silenciar un tipo de insight por 30 días
-- Los insights expiran: un "risco de saldo negativo" de ayer no es relevante hoy
-- Nunca mostrar más de 5 insights en lista (el sexto se oculta detrás de "Ver todos")
+- Maximum 1 `critical` insight visible at a time
+- `achievement` insights are only shown if the user is on the Health tab
+- The user can silence an insight type for 30 days
+- Insights expire: yesterday's "negative balance risk" is not relevant today
+- Never show more than 5 insights in a list (the 6th is hidden behind "View all")
 
 ---
 
-# 9. ARQUITECTURA DE SINCRONIZACIÓN
+# 9. SYNCHRONIZATION ARCHITECTURE
 
-## 9.1 El Principio Correcto para Farol
+## 9.1 The Right Principle for Farol
 
-Farol no es Notion ni Obsidian. No necesita sincronización bidireccional offline-first extrema. El usuario principal de Farol (CLT brasileño) usa la app con conexión 95% del tiempo. Lo que necesita:
+Farol is not Notion or Obsidian. It does not need extreme bidirectional offline-first sync. The typical Farol user (Brazilian CLT worker) uses the app with connectivity 95% of the time. What they need:
 
-- **Entrada de datos rápida sin esperar red** (optimistic updates)
-- **Sin pérdida de datos si cae la red** (queue persistente)
-- **Sin datos duplicados** (idempotency)
-- **Sync inmediato al reconectar** (retry automático)
+- **Fast data entry without waiting for the network** (optimistic updates)
+- **No data loss if the network drops** (persistent queue)
+- **No duplicate data** (idempotency)
+- **Immediate sync on reconnect** (automatic retry)
 
-## 9.2 Estrategia: Optimistic + Queue
+## 9.2 Strategy: Optimistic + Queue
 
 ```dart
 class SyncManager {
@@ -1689,10 +1689,10 @@ class SyncManager {
   final SupabaseClient _supabase;
   final ConnectivityMonitor _connectivity;
 
-  /// Registra una operación. Si hay red → ejecuta inmediatamente.
-  /// Si no hay red → encola para retry.
+  /// Registers an operation. If online → executes immediately.
+  /// If offline → enqueues for retry.
   Future<void> execute(SyncOperation op) async {
-    // 1. Aplicar inmediatamente al estado local (optimistic update)
+    // 1. Apply immediately to local state (optimistic update)
     await op.applyLocally();
 
     if (await _connectivity.isOnline) {
@@ -1700,10 +1700,10 @@ class SyncManager {
         await op.executeRemote(_supabase);
         await op.markCompleted();
       } catch (e) {
-        // Si falla remote, encolar para retry
+        // If remote fails, enqueue for retry
         await _queue.enqueue(op);
-        // El estado local ya está actualizado (optimistic)
-        // El usuario no ve error excepto en casos críticos
+        // Local state is already updated (optimistic)
+        // User sees no error except in critical cases
       }
     } else {
       await _queue.enqueue(op);
@@ -1712,21 +1712,21 @@ class SyncManager {
 }
 
 class OperationQueue {
-  // Persiste la queue en Drift para sobrevivir reinicios de app
+  // Persists the queue in Drift to survive app restarts
   final AppDatabase _db;
 
   Future<void> enqueue(SyncOperation op) async {
     await _db.insertQueueItem(QueueItemsCompanion(
       operationType: Value(op.type.name),
       payload: Value(jsonEncode(op.toJson())),
-      idempotencyKey: Value(op.idempotencyKey), // UUID de la operación
+      idempotencyKey: Value(op.idempotencyKey), // operation UUID
       retryCount: const Value(0),
       status: Value('pending'),
       createdAt: Value(DateTime.now()),
     ));
   }
 
-  /// Procesar queue pendiente. Llamar al reconectar.
+  /// Process pending queue. Called on reconnect.
   Future<void> processPending() async {
     final pending = await _db.getPendingQueueItems();
 
@@ -1737,7 +1737,7 @@ class OperationQueue {
         await _db.markQueueItemCompleted(item.id);
       } catch (e) {
         if (item.retryCount >= 3) {
-          // Después de 3 intentos → marcar como fallido y notificar al usuario
+          // After 3 attempts → mark as failed and notify the user
           await _db.markQueueItemFailed(item.id, e.toString());
         } else {
           await _db.incrementRetryCount(item.id);
@@ -1748,14 +1748,14 @@ class OperationQueue {
 }
 ```
 
-## 9.3 Schema de Queue (Drift)
+## 9.3 Queue Schema (Drift)
 
 ```dart
 class SyncQueue extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get operationType => text()(); // 'insert_expense' | 'update_envelope' | etc.
-  TextColumn get payload => text()();       // JSON serializado
-  TextColumn get idempotencyKey => text().unique()(); // UUID, evita duplicados en retry
+  TextColumn get payload => text()();       // Serialized JSON
+  TextColumn get idempotencyKey => text().unique()(); // UUID, prevents duplicates on retry
   IntColumn get retryCount => integer().withDefault(const Constant(0))();
   TextColumn get status => text().withDefault(const Constant('pending'))();
   TextColumn get error => text().nullable()();
@@ -1764,29 +1764,29 @@ class SyncQueue extends Table {
 }
 ```
 
-## 9.4 Resolución de Conflictos
+## 9.4 Conflict Resolution
 
-Para Farol, los conflictos son raros pero pueden ocurrir (dos dispositivos del mismo usuario). Estrategia: **Last-Write-Wins con timestamp + merge semántico para envelopes**.
+For Farol, conflicts are rare but can happen (two devices from the same user). Strategy: **Last-Write-Wins with timestamp + semantic merge for envelopes**.
 
 ```dart
 class ConflictResolver {
-  /// Para transacciones: Last-Write-Wins (el más reciente gana)
+  /// For transactions: Last-Write-Wins (most recent wins)
   Transaction resolveTransaction(Transaction local, Transaction remote) {
     return local.updatedAt.isAfter(remote.updatedAt) ? local : remote;
   }
 
-  /// Para envelopes: merge semántico (el allocated más alto gana,
-  /// el spent se suma si ambos tienen transacciones distintas)
+  /// For envelopes: semantic merge (higher allocated wins,
+  /// spent is summed if both have distinct transactions)
   Envelope resolveEnvelope(Envelope local, Envelope remote) {
-    // Si son del mismo updatedAt → no hay conflicto real
+    // Same updatedAt → no real conflict
     if (local.updatedAt == remote.updatedAt) return local;
 
     return Envelope(
       id: local.id,
       allocated: Money.max(local.allocated, remote.allocated),
-      spent: Money.max(local.spent, remote.spent), // el real se recalcula desde transactions
+      spent: Money.max(local.spent, remote.spent), // actual value recalculated from transactions
       updatedAt: DateTime.now(),
-      // El resto: last-write-wins
+      // Rest: last-write-wins
     );
   }
 }
@@ -1794,314 +1794,314 @@ class ConflictResolver {
 
 ---
 
-# 10. ROADMAP DE IMPLEMENTACIÓN REALISTA
+# 10. REALISTIC IMPLEMENTATION ROADMAP
 
-## Principio: No Big Bang Rewrite
+## Principle: No Big Bang Rewrite
 
-Cada fase tiene valor de producto independiente. El usuario siente la mejora después de cada fase. La deuda técnica se reduce incrementalmente.
+Each phase has independent product value. The user feels improvement after each phase. Technical debt is reduced incrementally.
 
 ---
 
-## FASE 1: Fundamentos Sólidos
-**ROI**: Elimina errores actuales, prepara el terreno. Sin esta fase, todo lo demás colapsa.
+## PHASE 1: Solid Foundations
+**ROI**: Eliminates current bugs, prepares the ground. Without this phase, everything else collapses.
 
-### 1.1 Unificación del sistema de categorías
-- Crear tabla `categories` en Supabase (con slugs que matchean los dbValues del enum)
-- Crear `CategoryRef` value object en Dart
-- Escribir `CategoryResolver` que maneja string legacy → CategoryRef sin excepciones
-- Backfill: campo `category_id UUID` en `expenses` (nullable primero)
-- Mantener el enum en paralelo temporalmente
-- **Test crítico**: `ExpenseCategory.fromDb('CUSTOM_XYZ')` nunca lanza StateError
+### 1.1 Category system unification
+- Create `categories` table in Supabase (with slugs matching the enum dbValues)
+- Create `CategoryRef` value object in Dart
+- Write `CategoryResolver` that handles string legacy → CategoryRef without exceptions
+- Backfill: `category_id UUID` field in `expenses` (nullable first)
+- Keep the enum in parallel temporarily
+- **Critical test**: `ExpenseCategory.fromDb('CUSTOM_XYZ')` never throws StateError
 
-**Complejidad**: Media | **Riesgo**: Bajo (cambios aditivos) | **Dependencias**: Ninguna
+**Complexity**: Medium | **Risk**: Low (additive changes) | **Dependencies**: None
 
-### 1.2 Migración de Expenses a fechas reales
-- Agregar `transaction_date DATE` en la tabla `expenses` (ya existe en el modelo Dart)
-- Asegurar que todos los queries de período usen `transaction_date BETWEEN` en vez de `month/year`
-- El campo `month/year` puede mantenerse como índice adicional para compatibilidad
-- Actualizar `getExpensesByRange` para usar date range real
+### 1.2 Migrate Expenses to real dates
+- Add `transaction_date DATE` to the `expenses` table (already exists in the Dart model)
+- Ensure all period queries use `transaction_date BETWEEN` instead of `month/year`
+- The `month/year` field can be kept as an additional index for compatibility
+- Update `getExpensesByRange` to use real date range
 
-**Complejidad**: Baja | **Riesgo**: Medio (puede afectar queries existentes)
+**Complexity**: Low | **Risk**: Medium (may affect existing queries)
 
 ### 1.3 InstallmentPlan + InstallmentPayments
-- Crear tabla `installment_plans` y `installment_payments` en Supabase
-- Migrar `card_installments` existentes: cada registro genera un plan con N payments
-- Actualizar `InstallmentRepository` para usar el nuevo schema
-- La UI de installments puede quedar igual — solo cambia el backend
-- Mantener `card_installments` tabla vieja en readonly durante transición
+- Create `installment_plans` and `installment_payments` tables in Supabase
+- Migrate existing `card_installments`: each record generates a plan with N payments
+- Update `InstallmentRepository` to use the new schema
+- The installments UI can stay the same — only the backend changes
+- Keep old `card_installments` table in read-only mode during transition
 
-**Complejidad**: Alta | **Riesgo**: Medio | **Dependencias**: Fechas reales (1.2)
+**Complexity**: High | **Risk**: Medium | **Dependencies**: Real dates (1.2)
 
-### Métricas de éxito Fase 1
-- 0 StateError por categoría desconocida en producción
-- Los installments muestran fechas de vencimiento futuras
-- Los períodos financieros filtran por fecha real, no month/year
+### Phase 1 success metrics
+- 0 StateError from unknown category in production
+- Installments show future due dates
+- Financial periods filter by real date, not month/year
 
 ---
 
-## FASE 2: Motor Central
-**ROI**: El producto empieza a "pensar" por el usuario. Primera diferenciación real.
+## PHASE 2: Central Engine
+**ROI**: The product starts to "think" for the user. First real differentiation.
 
 ### 2.1 RecurringRule Engine
-- Crear tabla `recurring_rules` y `recurring_occurrences`
-- Implementar `RecurrenceResolver.generateOccurrences()`
-- UI: nueva pantalla "Gastos Fixos & Recorrentes" (reemplaza el isFixed copy)
-- Migrar gastos `isFixed = true` existentes a `RecurringRule` equivalentes
-- Configurar job background para generar ocurrencias del próximo mes
+- Create `recurring_rules` and `recurring_occurrences` tables
+- Implement `RecurrenceResolver.generateOccurrences()`
+- UI: new "Recurring Expenses" screen (replaces the isFixed copy)
+- Migrate existing `isFixed = true` expenses to equivalent `RecurringRule`
+- Configure background job to generate next month's occurrences
 
-**Complejidad**: Alta | **Riesgo**: Medio
+**Complexity**: High | **Risk**: Medium
 
-### 2.2 EnvelopeEngine con Rollover
-- Extender `period_budgets` → `envelopes` con rollover_policy
-- Implementar `EnvelopeEngine.calculateRollover()`
-- UI: badge "Rollover: R$120 do período anterior" en budget card
-- Implementar envelope automático para cuotas
+### 2.2 EnvelopeEngine with Rollover
+- Extend `period_budgets` → `envelopes` with rollover_policy
+- Implement `EnvelopeEngine.calculateRollover()`
+- UI: badge "Rollover: R$120 from previous period" on budget card
+- Implement automatic envelope for installments
 
-**Complejidad**: Media | **Riesgo**: Bajo
+**Complexity**: Medium | **Risk**: Low
 
-### 2.3 FinancialSnapshot unificado
-- Crear `FinancialEngine` que produce `FinancialSnapshot`
-- Migrar el `DashboardScreen` para consumir solo el snapshot
-- Eliminar cálculos duplicados en widgets individuales
-- Implementar cache con invalidación por evento
+### 2.3 Unified FinancialSnapshot
+- Create `FinancialEngine` that produces `FinancialSnapshot`
+- Migrate `DashboardScreen` to consume only the snapshot
+- Remove duplicate calculations from individual widgets
+- Implement cache with event-based invalidation
 
-**Complejidad**: Alta | **Riesgo**: Alto (refactoring del dashboard)
+**Complexity**: High | **Risk**: High (dashboard refactoring)
 
-### Métricas de éxito Fase 2
-- Dashboard carga con un único observable (FinancialSnapshot)
-- Recurrentes se proyectan 3 meses hacia adelante automáticamente
-- El rollover de envelopes funciona correctamente entre períodos
+### Phase 2 success metrics
+- Dashboard loads with a single observable (FinancialSnapshot)
+- Recurring items auto-project 3 months forward
+- Envelope rollover works correctly across periods
 
 ---
 
-## FASE 3: Forecasting Real
-**ROI**: El "momento wow" del producto. El usuario ve el futuro de sus finanzas.
+## PHASE 3: Real Forecasting
+**ROI**: The product's "wow moment". The user sees the future of their finances.
 
 ### 3.1 BurnRate + DaysUntilEmpty
-- Implementar `BurnRate` calculation en `ForecastingEngine`
-- UI: nuevo widget "Velocidade Financeira" en el dashboard
-- Mostrar DaysUntilEmpty con semáforo (verde/amarillo/rojo)
-- Alertas proactivas en el dashboard cuando DUE < 14 días
+- Implement `BurnRate` calculation in `ForecastingEngine`
+- UI: new "Financial Velocity" widget on the dashboard
+- Show DaysUntilEmpty with traffic light (green/yellow/red)
+- Proactive alerts on dashboard when DUE < 14 days
 
 ### 3.2 Projected Balance + Cashflow Chart
-- Implementar `calculateProjectedClosingBalance()`
-- UI: Chart de proyección de balance (línea sólida = real, línea punteada = proyectado)
-- Integrar cuotas futuras como puntos en el chart (drops visibles)
-- Integrar ingresos proyectados como puntos (income events)
+- Implement `calculateProjectedClosingBalance()`
+- UI: Balance projection chart (solid line = actual, dashed line = projected)
+- Integrate future installments as points on the chart (visible drops)
+- Integrate projected income as points (income events)
 
-### 3.3 Category Velocity + Risk Score (Semana 15-16)
-- Implementar `CategoryVelocity` para todas las categorías
-- UI: indicador de velocidad por categoría en el budget screen
-- Implementar `BudgetRiskScore` general
-- UI: Health Score migra de estático a dinámico/predictivo
+### 3.3 Category Velocity + Risk Score (Week 15-16)
+- Implement `CategoryVelocity` for all categories
+- UI: per-category velocity indicator on the budget screen
+- Implement overall `BudgetRiskScore`
+- UI: Health Score migrates from static to dynamic/predictive
 
-### Métricas de éxito Fase 3
-- El usuario puede responder "¿cuánto voy a ahorrar este mes?" mirando la app
-- El cashflow chart muestra correctamente drops de cuotas futuras
-- El Risk Score cambia en tiempo real cuando se registra un gasto
+### Phase 3 success metrics
+- The user can answer "how much will I save this month?" by looking at the app
+- The cashflow chart correctly shows drops from future installments
+- The Risk Score changes in real-time when an expense is recorded
 
 ---
 
-## FASE 4: Inteligencia y Pulido
-**ROI**: Retención. El usuario que llega a esta fase no abandona la app.
+## PHASE 4: Intelligence & Polish
+**ROI**: Retention. The user who reaches this phase does not abandon the app.
 
 ### 4.1 Intelligence Layer
-- Implementar `IntelligenceLayer` con las 8 reglas core
-- UI: panel de insights en el dashboard (máximo 3 visibles)
-- Implementar dismissal y silenciado de tipos de insight
-- Implementar detección de recurrentes automática
-- UI: sugerencia "Detecté que pagas Netflix cada mes, ¿rastrearlo?"
+- Implement `IntelligenceLayer` with the 8 core rules
+- UI: insights panel on the dashboard (maximum 3 visible)
+- Implement dismissal and silencing of insight types
+- Implement automatic recurring detection
+- UI: suggestion "I noticed you pay Netflix every month — track it?"
 
-### 4.2 Detección Automática de Recurrentes
-- Implementar `RecurringDetector.detect()`
-- UI: onboarding flow que propone recurrentes detectados
-- Sistema de confirmación/rechazo de candidatos
+### 4.2 Automatic Recurring Detection
+- Implement `RecurringDetector.detect()`
+- UI: onboarding flow proposing detected recurring items
+- Confirmation/rejection system for candidates
 
-### 4.3 Sincronización Robusta
-- Implementar `OperationQueue` en Drift
-- Implementar `SyncManager` con retry logic
-- UI: indicador de estado de sync (discreto, no invasivo)
-- Tests de sincronización: offline → registro → reconexión → datos coherentes
+### 4.3 Robust Synchronization
+- Implement `OperationQueue` in Drift
+- Implement `SyncManager` with retry logic
+- UI: sync status indicator (discrete, non-invasive)
+- Sync tests: offline → record → reconnect → consistent data
 
-### 4.4 Supabase Edge Functions para cálculos pesados
-- Mover el cálculo del cashflow forecast a una Edge Function
-- El cliente solo pide el resultado cacheado
-- Invalidar cache en el servidor cuando llegan nuevas transacciones
+### 4.4 Supabase Edge Functions for heavy calculations
+- Move cashflow forecast calculation to an Edge Function
+- Client only requests the cached result
+- Invalidate cache on the server when new transactions arrive
 
-### Métricas de éxito Fase 4
-- El sistema detecta recurrentes con >75% de precisión en el historial real del usuario
-- Los insights tienen tasa de dismiss < 30% (son relevantes)
-- Cero pérdida de datos en escenario offline → online
+### Phase 4 success metrics
+- System detects recurring items with >75% accuracy on real user history
+- Insights have dismissal rate < 30% (they are relevant)
+- Zero data loss in offline → online scenario
 
 ---
 
-## Dependencias del Roadmap
+## Roadmap Dependencies
 
 ```
-Fase 1.1 (Categorías) ←── Todo lo demás depende de esto
+Phase 1.1 (Categories) ←── Everything else depends on this
      │
-     ├──→ Fase 1.2 (Fechas) ←── Fase 1.3 (Installments)
+     ├──→ Phase 1.2 (Dates) ←── Phase 1.3 (Installments)
      │                                    │
-     └──→ Fase 2.1 (Recurrentes)         │
+     └──→ Phase 2.1 (Recurring)           │
                │                         │
-               └──→ Fase 2.2 (Envelopes)─┘
+               └──→ Phase 2.2 (Envelopes)─┘
                          │
-                         └──→ Fase 2.3 (FinancialSnapshot)
+                         └──→ Phase 2.3 (FinancialSnapshot)
                                     │
-                                    └──→ Fase 3 (Forecasting)
+                                    └──→ Phase 3 (Forecasting)
                                                │
-                                               └──→ Fase 4 (Intelligence)
+                                               └──→ Phase 4 (Intelligence)
 ```
 
 ---
 
-# 11. RIESGOS Y ERRORES COMUNES
+# 11. RISKS AND COMMON MISTAKES
 
-## 11.1 Errores Arquitectónicos
+## 11.1 Architectural Mistakes
 
-**Error 1: El forecasting como ML desde el día 1**
-Muchas apps financieras intentan implementar machine learning para predecir gastos antes de tener datos históricos suficientes. Un usuario nuevo no tiene historial. El motor matemático determinista (burnrate, obligaciones, velocidad) da mejores resultados con datos escasos que cualquier modelo ML. ML es Fase 5+.
+**Mistake 1: Forecasting as ML from day one**
+Many finance apps try to implement machine learning for expense prediction before having enough historical data. A new user has no history. The deterministic mathematical engine (burnrate, obligations, velocity) yields better results with sparse data than any ML model. ML is Phase 5+.
 
-**Error 2: Sincronización bidireccional antes de tener usuarios**
-Invertir semanas en conflict resolution para un producto con un solo usuario activo es over-engineering clásico. La estrategia Last-Write-Wins es suficiente para los primeros 1,000 usuarios.
+**Mistake 2: Bidirectional sync before having users**
+Spending weeks on conflict resolution for a product with a single active user is classic over-engineering. Last-Write-Wins is sufficient for the first 1,000 users.
 
-**Error 3: Categorías infinitamente anidadas**
-La jerarquía padre/hijo es correcta pero máximo 2 niveles (categoría → subcategoría). 3+ niveles crean UX pesadilla en mobile y queries JOIN complejos. YNAB tiene 0 anidamiento. Farol puede tener 2.
+**Mistake 3: Infinitely nested categories**
+Parent/child hierarchy is correct but maximum 2 levels (category → subcategory). 3+ levels create a UX nightmare on mobile and complex JOIN queries. YNAB has 0 nesting. Farol can have 2.
 
-**Error 4: Envelopes ultra-granulares**
-No hacer un envelope por subcategoría. Un envelope por categoría raíz es suficiente. La granularidad excesiva crea cognitive overload. El usuario de YNAB medio tiene 15-20 envelopes, no 50.
+**Mistake 4: Ultra-granular envelopes**
+Don't make an envelope per subcategory. One envelope per root category is sufficient. Excessive granularity creates cognitive overload. The average YNAB user has 15-20 envelopes, not 50.
 
-**Error 5: Invalidar el cache de forecasting en cada tick**
-Si el ForecastingEngine se recalcula cada vez que el timer de Riverpod dispara, el CPU usage en mobile es inaceptable. El cache TTL debe ser de mínimo 5 minutos, con invalidación solo en eventos reales (nueva transacción, nuevo recurrente).
+**Mistake 5: Invalidating the forecast cache on every tick**
+If the ForecastingEngine recalculates every time the Riverpod timer fires, CPU usage on mobile is unacceptable. The TTL cache must be at least 5 minutes, with invalidation only on real events (new transaction, new recurring item).
 
-## 11.2 Riesgos de UX
+## 11.2 UX Risks
 
-**Riesgo: Demasiados insights simultáneos**
-Si el usuario ve 8 insights al abrir la app, aprende a ignorarlos todos. Máximo 3 en pantalla, con prioridad estricta. Less is more.
+**Risk: Too many simultaneous insights**
+If the user sees 8 insights when opening the app, they learn to ignore all of them. Maximum 3 on screen, with strict priority. Less is more.
 
-**Riesgo: El forecast genera ansiedad**
-"Te quedan 8 días de efectivo" es útil. "Proyección de solvencia: 8.2 días con intervalo de confianza 73%" es aterrador e inútil. El lenguaje debe ser humano y accionable, no estadístico.
+**Risk: Forecast causes anxiety**
+"You have 8 days of cash left" is useful. "Solvency projection: 8.2 days with 73% confidence interval" is terrifying and useless. The language must be human and actionable, not statistical.
 
-**Riesgo: Rollover confuso**
-Los usuarios de YNAB tardan semanas en entender el rollover. La UI debe explicarlo con ejemplos concretos: "Sobraron R$120 de Lazer en enero → se sumaron a tu presupuesto de Lazer en febrero". Nunca mostrar números sin contexto.
+**Risk: Confusing rollover**
+YNAB users take weeks to understand rollover. The UI must explain it with concrete examples: "R$120 leftover from Entertainment in January → added to your Entertainment budget in February". Never show numbers without context.
 
-**Riesgo: Instalamento vs gasto**
-Si una compra parcelada genera tanto un `Expense` como un `InstallmentPayment`, el usuario puede ver el monto duplicado. La UI debe ser explícita: "Este gasto forma parte del plan 'iPhone 15 - 12x'. Cuota 1 de 12."
+**Risk: Installment vs expense**
+If a purchase paid in installments generates both an `Expense` and an `InstallmentPayment`, the user may see the amount duplicated. The UI must be explicit: "This expense is part of the 'iPhone 15 - 12x' plan. Installment 1 of 12."
 
-## 11.3 Riesgos de Performance
+## 11.3 Performance Risks
 
-**Riesgo: Queries de forecasting sin índices**
-El cashflow forecast consulta todas las transacciones futuras. Sin índice en `due_date` + `user_id`, esto es un full table scan. Agregar índice compuesto `(user_id, due_date, status)` en `installment_payments` y `recurring_occurrences`.
+**Risk: Forecasting queries without indexes**
+The cashflow forecast queries all future transactions. Without an index on `due_date` + `user_id`, this is a full table scan. Add a composite index `(user_id, due_date, status)` on `installment_payments` and `recurring_occurrences`.
 
-**Riesgo: Materializar demasiado pronto**
-Las vistas materializadas en Supabase son útiles pero añaden complejidad operacional (necesitan refresh). Empezar con queries normales y materializar solo lo que sea probadamente lento con usuarios reales.
+**Risk: Materializing too early**
+Materialized views in Supabase are useful but add operational complexity (they need refresh). Start with regular queries and materialize only what is provably slow with real users.
 
-**Riesgo: Supabase Realtime para todo**
-Supabase Realtime consume WebSocket connections. Para el forecasting no es necesario realtime a nivel de milisegundos — polling cada 30 segundos o invalidación por evento de escritura es suficiente.
+**Risk: Supabase Realtime for everything**
+Supabase Realtime consumes WebSocket connections. Forecasting does not need millisecond-level realtime — polling every 30 seconds or write-event invalidation is sufficient.
 
-## 11.4 Errores Comunes de Apps Financieras
+## 11.4 Common Finance App Mistakes
 
-1. **YNAB-copy sin adaptación**: El modelo YNAB es para economías estables con ingresos mensuales fijos. Brasil tiene: 13° salário (enero vs diciembre), Swile (bucket separado), FGTS (no líquido), cuotas de cartão como cultura. Copiar YNAB literalmente es un error.
+1. **YNAB-copy without adaptation**: The YNAB model is for stable economies with fixed monthly income. Brazil has: 13th salary (January vs December), Swile (separate bucket), FGTS (non-liquid), installment culture. Copying YNAB literally is a mistake.
 
-2. **Categorías en inglés para un mercado latinoamericano**: "Leisure" no significa nada culturalmente para un brasileño. "Lazer", "Alimentação", "Moradia" sí.
+2. **Categories in English for a Latin American market**: "Leisure" has no cultural meaning for a Brazilian. "Lazer", "Alimentação", "Moradia" do.
 
-3. **Ignorar el período de corte**: La mayoría de apps usan mes calendario. El `cutoffDay` de Farol es una ventaja competitiva real — la mayoría de brasileños reciben el salario entre el 5 y el 15, no el 1.
+3. **Ignoring the cutoff period**: Most apps use the calendar month. Farol's `cutoffDay` is a real competitive advantage — most Brazilians receive their salary between the 5th and the 15th, not the 1st.
 
-4. **Health Score sin predictividad**: Un score de "tu situación actual" no genera engagement. Un score de "cómo vas a terminar el período si sigues así" sí lo genera.
+4. **Health Score without predictivity**: A score showing "your current situation" does not generate engagement. A score showing "how you'll end the period if you keep this up" does.
 
-5. **Forzar presupuesto desde el primer día**: Los usuarios nuevos no tienen historial. El onboarding debe empezar con tracking puro (sin presupuesto) y sugerir presupuesto después de 30 días de datos.
-
----
-
-# 12. RESULTADO FINAL ESPERADO
-
-## 12.1 ¿Cómo debe sentirse Farol después de esta evolución?
-
-El usuario abre Farol en la mañana antes de ir al trabajo. En 3 segundos, sin leer nada, sabe:
-- **Verde / Amarillo / Rojo**: su situación financiera del período
-- **Un número clave**: "Te quedan R$1,240 libres de presupuesto"
-- **Un alert específico si hay algo urgente**: "Tienes 3 cuotas esta semana: R$580"
-
-A fin de período, sin que el usuario haga nada, Farol:
-- Cierra los envelopes, calcula el rollover
-- Genera los recurrentes del próximo período
-- Le dice cuánto puede invertir este mes
-
-En 6 meses de uso, Farol conoce el perfil de gasto del usuario mejor que él mismo y puede decir: "Históricamente, gastas R$400 más en diciembre por regalos. Tu presupuesto de diciembre ya tiene ese ajuste."
-
-## 12.2 ¿Por qué gana contra la competencia?
-
-| Dimensión | YNAB | Copilot | Monarch | Mobills | **Farol** |
-|---|---|---|---|---|---|
-| Período de corte personalizable | ❌ | ❌ | ❌ | ❌ | ✅ |
-| Contexto Brasil (Swile, FGTS, 13°) | ❌ | ❌ | ❌ | Parcial | ✅ |
-| Forecasting predictivo | Básico | ✅ | Básico | ❌ | ✅ |
-| Cuotas integradas al cashflow | ❌ | Parcial | Parcial | ✅ | ✅ |
-| Precio asequible para LATAM | ❌ ($15/mes) | ❌ ($13/mes) | ❌ ($10/mes) | Freemium | ✅ |
-| Offline-first real | ❌ | ❌ | ❌ | ❌ | ✅ (Drift) |
-| Recurrentes con RRULE | ✅ | Básico | Básico | Básico | ✅ |
-| Health Score predictivo | ❌ | Básico | ❌ | ❌ | ✅ |
-
-## 12.3 La Ventaja Competitiva Real
-
-**Farol tiene algo que ninguna app occidental puede copiar fácilmente: entiende la realidad financiera del trabajador CLT brasileño.**
-
-El cutoffDay = 10 porque el salário cae el día 10. El Swile es un bucket separado porque el benefício não é dinheiro, é crédito. O 13° salário não é bônus, é planejado. As parcelas no cartão não são dívidas, são o jeito de comprar no Brasil.
-
-Esa comprensión cultural, integrada en el motor financiero desde la arquitectura, no en la UI, es la ventaja competitiva. No es una feature. Es el modelo mental correcto.
-
-## 12.4 Visión: Farol como SaaS
-
-Con el Financial Engine desacoplado de Flutter:
-- **Farol API**: exponer el engine como API REST → Open Finance integrations
-- **Farol Web**: mismo engine, UI React
-- **Multi-cuenta**: el engine maneja N usuarios sin cambios de arquitectura
-- **Multi-moneda**: el Value Object `Money` ya puede tener `currencyCode`
-- **IA Contextual**: los insights basados en reglas se enriquecen con LLM (embeddings sobre historial financiero, preguntas en lenguaje natural)
-- **Família**: un `userId` puede tener múltiples `FinancialProfile` (yo, minha esposa, conta conjunta)
-
-El Predictive Financial Engine no es la versión 2.0 de Farol. Es la base sobre la que se construye el producto definitivo.
+5. **Forcing budgeting from day one**: New users have no history. Onboarding should start with pure tracking (no budget) and suggest budgeting after 30 days of data.
 
 ---
 
-## APÉNDICE: Checklist de Implementación por Fase
+# 12. EXPECTED FINAL RESULT
 
-### Fase 1 ✅ Fundamentos
-- [ ] Crear tabla `categories` en Supabase con todos los slugs sistema
-- [ ] Implementar `CategoryRef` value object
-- [ ] Implementar `CategoryResolver` (string → CategoryRef, nunca lanza)
-- [ ] Backfill `category_id` en `expenses`
-- [ ] Crear tabla `installment_plans` + `installment_payments`
-- [ ] Migrar `card_installments` → new schema
-- [ ] Agregar `transaction_date` real a expenses (todos los flows)
-- [ ] Tests: period filter usa fecha real, no month/year
+## 12.1 How should Farol feel after this evolution?
 
-### Fase 2 ✅ Motor Central
-- [ ] Crear tabla `recurring_rules` + `recurring_occurrences`
-- [ ] Implementar `RecurrenceResolver.generateOccurrences()`
-- [ ] UI pantalla de Recurrentes
-- [ ] Migrar gastos `isFixed` → `RecurringRule`
-- [ ] Implementar `EnvelopeEngine` con rollover
-- [ ] Implementar `FinancialEngine` → `FinancialSnapshot`
-- [ ] Refactorizar Dashboard para consumir solo `FinancialSnapshot`
+The user opens Farol in the morning before going to work. In 3 seconds, without reading anything, they know:
+- **Green / Yellow / Red**: their financial situation for the period
+- **One key number**: "You have R$1,240 left in budget"
+- **A specific alert if something is urgent**: "You have 3 installments this week: R$580"
 
-### Fase 3 ✅ Forecasting
-- [ ] Implementar `BurnRate` + `DaysUntilEmpty`
-- [ ] Implementar `ProjectedClosingBalance`
-- [ ] Implementar `CashflowForecast` (90 días)
-- [ ] UI: widget de velocidad financiera
-- [ ] UI: chart de cashflow proyectado
-- [ ] Implementar `CategoryVelocity`
-- [ ] Implementar `BudgetRiskScore` dinámico
+At the end of the period, without the user doing anything, Farol:
+- Closes the envelopes, calculates the rollover
+- Generates the recurring items for the next period
+- Tells them how much they can invest this month
 
-### Fase 4 ✅ Inteligencia
-- [ ] Implementar `IntelligenceLayer` con 8 reglas
-- [ ] UI: panel de insights en dashboard
-- [ ] Implementar `RecurringDetector`
-- [ ] UI: sugerencias de recurrentes automáticos
-- [ ] Implementar `OperationQueue` en Drift
-- [ ] Implementar `SyncManager` con retry
-- [ ] Tests de sincronización offline → online
+After 6 months of use, Farol knows the user's spending profile better than they do and can say: "Historically, you spend R$400 more in December on gifts. Your December budget already includes that adjustment."
+
+## 12.2 Why it wins against the competition
+
+| Dimension | YNAB | Copilot | Monarch | Mobills | **Farol** |
+|---|---|---|---|---|---|---|
+| Customizable cutoff period | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Brazil context (Swile, FGTS, 13th salary) | ❌ | ❌ | ❌ | Partial | ✅ |
+| Predictive forecasting | Basic | ✅ | Basic | ❌ | ✅ |
+| Installments integrated with cashflow | ❌ | Partial | Partial | ✅ | ✅ |
+| Affordable price for LATAM | ❌ ($15/mo) | ❌ ($13/mo) | ❌ ($10/mo) | Freemium | ✅ |
+| Real offline-first | ❌ | ❌ | ❌ | ❌ | ✅ (Drift) |
+| Recurring with RRULE | ✅ | Basic | Basic | Basic | ✅ |
+| Predictive Health Score | ❌ | Basic | ❌ | ❌ | ✅ |
+
+## 12.3 The Real Competitive Advantage
+
+**Farol has something no Western app can easily copy: it understands the financial reality of the Brazilian CLT worker.**
+
+The cutoffDay = 10 because salary arrives on the 10th. Swile is a separate bucket because the benefit is not money, it's credit. The 13th salary is not a bonus, it's planned. Installments on a credit card are not debt, they're how you buy in Brazil.
+
+This cultural understanding, integrated into the financial engine from the architecture, not in the UI, is the competitive advantage. It's not a feature. It's the correct mental model.
+
+## 12.4 Vision: Farol as SaaS
+
+With the Financial Engine decoupled from Flutter:
+- **Farol API**: expose the engine as a REST API → Open Finance integrations
+- **Farol Web**: same engine, React UI
+- **Multi-account**: the engine handles N users without architecture changes
+- **Multi-currency**: the `Money` Value Object can already have `currencyCode`
+- **Contextual AI**: rule-based insights enriched with LLM (embeddings on financial history, natural language questions)
+- **Family**: a single `userId` can have multiple `FinancialProfile` (me, my spouse, joint account)
+
+The Predictive Financial Engine is not version 2.0 of Farol. It is the foundation upon which the definitive product is built.
+
+---
+
+## APPENDIX: Phase-by-Phase Implementation Checklist
+
+### Phase 1 ✅ Foundations
+- [ ] Create `categories` table in Supabase with all system slugs
+- [ ] Implement `CategoryRef` value object
+- [ ] Implement `CategoryResolver` (string → CategoryRef, never throws)
+- [ ] Backfill `category_id` in `expenses`
+- [ ] Create `installment_plans` + `installment_payments` tables
+- [ ] Migrate `card_installments` → new schema
+- [ ] Add real `transaction_date` to expenses (all flows)
+- [ ] Tests: period filter uses real date, not month/year
+
+### Phase 2 ✅ Central Engine
+- [ ] Create `recurring_rules` + `recurring_occurrences` tables
+- [ ] Implement `RecurrenceResolver.generateOccurrences()`
+- [ ] UI: Recurring screen
+- [ ] Migrate `isFixed` expenses → `RecurringRule`
+- [ ] Implement `EnvelopeEngine` with rollover
+- [ ] Implement `FinancialEngine` → `FinancialSnapshot`
+- [ ] Refactor Dashboard to consume only `FinancialSnapshot`
+
+### Phase 3 ✅ Forecasting
+- [ ] Implement `BurnRate` + `DaysUntilEmpty`
+- [ ] Implement `ProjectedClosingBalance`
+- [ ] Implement `CashflowForecast` (90 days)
+- [ ] UI: financial velocity widget
+- [ ] UI: projected cashflow chart
+- [ ] Implement `CategoryVelocity`
+- [ ] Implement dynamic `BudgetRiskScore`
+
+### Phase 4 ✅ Intelligence
+- [ ] Implement `IntelligenceLayer` with 8 rules
+- [ ] UI: insights panel on dashboard
+- [ ] Implement `RecurringDetector`
+- [ ] UI: automatic recurring suggestions
+- [ ] Implement `OperationQueue` in Drift
+- [ ] Implement `SyncManager` with retry
+- [ ] Offline → online sync tests
 
 ---
 

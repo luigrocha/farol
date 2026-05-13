@@ -1,70 +1,70 @@
 # Automation Checklist — Farol
 
-## 🔐 Auth (Fase 1 — COMPLETO)
+## 🔐 Auth (Phase 1 — COMPLETE)
 
 ### Unit Tests (AuthNotifier)
-- [x] Registro: happy path → AsyncData
-- [x] Registro: email duplicado → AsyncError "already registered"
-- [x] Registro: password débil → AsyncError
-- [x] Registro: password < 6 chars rechazada por FakeRepo
-- [x] Login: login exitoso → AsyncData
-- [x] Login: credenciales inválidas → AsyncError "Invalid email or password"
-- [x] Login: error de red → AsyncError
-- [x] Login: usuario desconocido → AsyncError
-- [x] Logout → AsyncData, sesión limpiada
+- [x] Registration: happy path → AsyncData
+- [x] Registration: duplicate email → AsyncError "already registered"
+- [x] Registration: weak password → AsyncError
+- [x] Registration: password < 6 chars rejected by FakeRepo
+- [x] Login: successful login → AsyncData
+- [x] Login: invalid credentials → AsyncError "Invalid email or password"
+- [x] Login: network error → AsyncError
+- [x] Login: unknown user → AsyncError
+- [x] Logout → AsyncData, session cleared
 - [x] Password reset: happy path → AsyncData
-- [x] Password reset: error de red → AsyncError
+- [x] Password reset: network error → AsyncError
 
 ### Widget Tests — LoginScreen
-- [x] Formulario vacío → errores de validación
-- [x] Email inválido → error de email
-- [x] Password < 6 chars → error de longitud
-- [x] Email + password válidos → sin errores de validación
-- [x] Loading state: botón deshabilitado durante request
-- [x] Error recovery: botón re-habilitado tras error
-- [x] Credenciales inválidas → error visible en UI
-- [x] Error de red → error visible en UI
-- [x] Link "Sign up" → navega a /signup
-- [x] "Forgot password" vacío → SnackBar
-- [x] "Forgot password" con email → SnackBar confirmación
-- [x] Password es obscura por defecto
-- [x] Toggle visibilidad de password
+- [x] Empty form → validation errors
+- [x] Invalid email → email error
+- [x] Password < 6 chars → length error
+- [x] Valid email + password → no validation errors
+- [x] Loading state: button disabled during request
+- [x] Error recovery: button re-enabled after error
+- [x] Invalid credentials → error visible in UI
+- [x] Network error → error visible in UI
+- [x] "Sign up" link → navigates to /signup
+- [x] "Forgot password" empty → SnackBar
+- [x] "Forgot password" with email → confirmation SnackBar
+- [x] Password obscured by default
+- [x] Password visibility toggle
 
 ### Widget Tests — SignUpScreen
-- [x] Formulario vacío → errores en todos los campos requeridos
-- [x] Email inválido → error de email
-- [x] Passwords no coinciden → error "don't match"
-- [x] Sin aceptar términos → bloquea envío y muestra error
-- [x] Password débil → strength meter "Very weak"
-- [x] Password fuerte → strength meter "Strong/Good"
-- [x] Email duplicado → error "already registered"
-- [x] Error de red → error visible en UI
-- [x] Botón deshabilitado durante loading
-- [x] Link "Sign in" → navega a /login
+- [x] Empty form → errors on all required fields
+- [x] Invalid email → email error
+- [x] Passwords don't match → "don't match" error
+- [x] Terms not accepted → blocks submission and shows error
+- [x] Weak password → strength meter "Very weak"
+- [x] Strong password → strength meter "Strong/Good"
+- [x] Duplicate email → "already registered" error
+- [x] Network error → error visible in UI
+- [x] Button disabled during loading
+- [x] "Sign in" link → navigates to /login
 
 ### Integration Tests — Auth Flow
-- [x] Cold start sin sesión → landing en onboarding/login
-- [x] Registro nuevo usuario → formulario sin errores de validación
-- [x] Login válido → navega fuera del login
-- [x] Login inválido → permanece en login con error
-- [x] Session recovery: usuario autenticado → salta login
-- [x] Logout → sesión limpiada, stream emite Unauthenticated
+- [x] Cold start without session → landing on onboarding/login
+- [x] New user registration → form without validation errors
+- [x] Valid login → navigates away from login
+- [x] Invalid login → stays on login with error
+- [x] Session recovery: authenticated user → skips login
+- [x] Logout → session cleared, stream emits Unauthenticated
 
-### Infraestructura
-- [x] `FakeAuthRepository` (in-memory, sin red)
+### Infrastructure
+- [x] `FakeAuthRepository` (in-memory, no network)
 - [x] `test_helpers.dart` (pumpApp, pumpAppWithFakeAuth)
-- [x] `supabaseClientProvider` (DI para testeabilidad)
-- [x] `SupabaseAuthRepository` acepta `SupabaseClient` por constructor
+- [x] `supabaseClientProvider` (DI for testability)
+- [x] `SupabaseAuthRepository` accepts `SupabaseClient` via constructor
 - [x] CI: GitHub Actions (unit/widget + integration + web build)
 
 ---
 
-## 🏢 Workspace (Fase 4)
-- [ ] Switch de workspace
-- [ ] Aislamiento de datos entre workspaces
-- [ ] Permisos (Viewer vs Owner)
+## 🏢 Workspace (Phase 4)
+- [ ] Workspace switcher
+- [ ] Data isolation across workspaces
+- [ ] Permissions (Viewer vs Owner)
 
-## 💸 Transactions (Fase 2)
+## 💸 Transactions (Phase 2)
 ### Unit Tests — Fakes
 - [x] `FakeExpenseRepository` (CRUD, watchAll, updateFixedSeriesFrom, error simulation)
 - [x] `FakeIncomeRepository` (CRUD, watchAll, seedId, error simulation)
@@ -73,16 +73,16 @@
 - [x] `FakeExpenseRepository` — 13 tests (insert, getAll, getByRange, update, delete, watchAll, updateFixedSeriesFrom, error recovery)
 - [x] `FakeIncomeRepository` — 18 tests (insert, getAll, getByRange, update, delete, watchAll, error recovery)
 
-### Widget Tests — QuickAddBottomSheet (criar gasto)
-- [x] Formulário renderizado (amount, categories, payment methods, fixed toggle, save)
-- [x] Validação: empty amount → snackbar
-- [x] Installment field aparece quando Credit (Installments) selecionado
-- [x] Criar gasto simples → salvo no repositório
-- [x] Criar gasto com categoria selecionada
-- [x] Criar gasto fixo → isFixed = true
+### Widget Tests — QuickAddBottomSheet (create expense)
+- [x] Form rendered (amount, categories, payment methods, fixed toggle, save)
+- [x] Validation: empty amount → snackbar
+- [x] Installment field appears when Credit (Installments) selected
+- [x] Create simple expense → saved to repository
+- [x] Create expense with selected category
+- [x] Create fixed expense → isFixed = true
 - [x] Network error → snackbar
 
-### Widget Tests — EditExpenseBottomSheet (editar gasto)
+### Widget Tests — EditExpenseBottomSheet (edit expense)
 - [x] Loads existing amount into text field
 - [x] Shows edit expense title
 - [x] Shows category grid
@@ -94,7 +94,7 @@
 - [x] Network error shows snackbar
 > ✅ Fixed: ensureVisible before SAVE tap (off-screen), scope dialog text now matches hardcoded pt_BR
 
-### Widget Tests — EditIncomeBottomSheet (editar receita) ✅ NEW
+### Widget Tests — EditIncomeBottomSheet (edit income) ✅ NEW
 - [x] Loads existing amount into text field
 - [x] Shows edit income title
 - [x] Shows income type chips
@@ -109,12 +109,12 @@
 - [x] Invalid amount shows snackbar
 - [x] Network error shows snackbar
 
-## 📅 Recurring & Installments (Fase 4)
-- [ ] Generación de cuotas
-- [ ] Propagación de cambios en recurrentes
-- [ ] Finalización de planes de cuotas
+## 📅 Recurring & Installments (Phase 4)
+- [ ] Payment generation
+- [ ] Propagation of changes in recurring rules
+- [ ] Completion of installment plans
 
-## 📊 Budget & Forecasting (Fase 3)
+## 📊 Budget & Forecasting (Phase 3)
 ### Domain Logic — existing (103 tests)
 - [x] FinancialEngine: income, expenses, balance, savingsRate, healthScore (20 tests)
 - [x] EnvelopeEngine: basic allocation, rollover, status, aggregates (16 tests)
@@ -141,12 +141,12 @@
 - [ ] BudgetGoalsSheet widget tests (percentage allocation)
 - [ ] BudgetSettingsSheet widget tests (net salary / Swile settings)
 
-## 🔄 Sync & Offline (Fase 4)
+## 🔄 Sync & Offline (Phase 4)
 ### Unit Tests — SyncManager path (ExpenseRepository.insert)
 - [x] Routes through SyncManager in offline mode → returns 0 sentinel
 - [x] InsertExpenseOperation carries correct payload fields
 - [x] Real SyncManager enqueues operation when offline
 - [x] Without SyncManager, insert goes directly to Supabase (no queueing)
 > ✅ Fixed 2026-05-13: setOnlineForTest(false) required after repo refactored to write directly to Supabase when online
-- [ ] Sincronización al recuperar red
-- [ ] Resolución de conflictos básica
+- [ ] Synchronization when network recovers
+- [ ] Basic conflict resolution
