@@ -48,7 +48,12 @@ class InstallmentPaymentRepository {
   Future<List<InstallmentPayment>> insertAll(
       List<InstallmentPayment> payments) async {
     if (payments.isEmpty) return [];
-    final rows = payments.map((p) => p.toJson()..remove('id')).toList();
+    final userId = _userId;
+    final rows = payments
+        .map((p) => p.toJson()
+          ..remove('id')
+          ..['user_id'] = userId)
+        .toList();
     final data = await _supabase
         .from('installment_payments')
         .insert(rows)

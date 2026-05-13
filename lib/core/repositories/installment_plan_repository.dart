@@ -79,6 +79,7 @@ class InstallmentPlanRepository {
     if (userId == null) throw Exception('Not authenticated');
     final payload = plan.toJson()
       ..remove('id')
+      ..['user_id'] = userId
       ..['author_user_id'] = userId;
     if (workspaceId != null) payload['workspace_id'] = workspaceId;
     final data = await _supabase
