@@ -1,350 +1,266 @@
-# Farol 💰
+# Farol
 
-A complete personal finance app for Brazilian CLT workers. Full control of salary, Swile benefits (Meal/Food vouchers), card installments, investments, net worth, and 13th salary simulation — all offline with SQLite and Riverpod reactive state management.
+[![CI](https://github.com/luigrocha/farol/actions/workflows/test.yml/badge.svg)](https://github.com/luigrocha/farol/actions/workflows/test.yml)
 
-## ✨ Features
+**Predictive personal finance for Brazilian CLT workers.** Offline-first, realtime-collaborative, with a deterministic forecasting engine that understands Swile, FGTS, 13th salary, and your cutoff day.
 
-- **Dashboard** — Real-time net worth, savings rate, health score (0-10), and expense breakdown with 4-level budget alerts
-- **Transactions** — Full expense/income/installment history with advanced filters and search
-- **Analytics** — Revenue/expense trends, category distribution, savings evolution, and monthly charts
-- **Investments** — Portfolio management with Treasury, CDB, and REIT positions; asset allocation insights
-- **Budget Alerts** — 3-level proactive notifications:
-  - 🟢 **Green** (0-74%) — Under control
-  - 🟡 **Yellow** (75-89%) — Warning
-  - 🟠 **Orange** (90-99%) — Critical
-  - 🔴 **Red** (≥100%) — Limit exceeded
-- **13th Salary Simulator** — INSS 2025 + IRRF 2025 with progressive tables, dependent deductions, and installment breakdown
-- **Settings** — Profile management, budget goals by category, card installment tracking, theme toggle, and CSV/JSON export
+---
 
-## 📱 Screens
+## Features
 
-The app has 5 main screens accessible via bottom navigation, plus simulators in settings:
+- **Predictive Engine** — Burn rate, days until empty, projected closing balance, and cashflow forecast. Not a chart — an answer to *"how will my money behave this period?"*
+- **CLT-native** — Customizable `cutoffDay`, Swile as a separate bucket, FGTS auto-projection (8% of gross), 13th salary simulator with INSS + IRRF 2025 progressive tables
+- **Offline-first + Sync** — Drift SQLite local-first, optimistic updates, persistent operation queue, idempotent retry. Works 100% offline, syncs when connected
+- **Multi-user Workspaces** — Shared spending tracking with role-based access (admin/writer/viewer), attribution (who spent what), activity feed, and realtime presence
+- **Budget with Envelopes** — Per-category targets with 4-level alerts (green/yellow/orange/red), rollover between periods, automatic envelope for installments
+- **Recurring Rules** — RRULE-based engine for fixed and recurring items. Auto-generates occurrences 3 months ahead. Detects recurring patterns in your history
+- **Intelligence Layer** — 12 rule-based insights (unusual spending, velocity changes, budget risk) with dismiss tracking and stats. No ML — deterministic rules that work from day one
+- **Installment Plans** — Full lifecycle: create, track payments, integrate with cashflow forecast. Each installment appears as a projected expense drop on the chart
+- **31 test files, 0 lint warnings** — Unit, widget, sync, and integration tests enforced by CI
 
-1. **Dashboard** - Net worth KPIs, health score, expense breakdown with alert colors, and top alert banner
-2. **Transactions** - Expenses, income, and installments list with category filters and date range
-3. **Analytics** - Trend charts, distribution, savings rate, and cash flow analysis
-4. **Investments** - Portfolio overview, position tracking, and allocation suggestions
-5. **Settings** - Profile data, goals, installments, simulators (13th salary), export, and theme
+---
 
-## 🏗 Architecture
+## Screens
+
+| Screen | What it does |
+|---|---|
+| **Dashboard** | Net worth KPIs, health score (0–10), burn rate, contribution bar (shared workspaces), expense breakdown, activity feed preview, top alerts |
+| **Transactions** | Full expense/income/installment history with filters, date range, and search. Member attribution in shared workspaces |
+| **Analytics** | Cashflow forecast chart (actual + projected), revenue/expense trends, category distribution, monthly comparison, category velocity |
+| **Budget** | Period envelopes with progress bars, rollover badge, last-edit attribution, 4-level alerts |
+| **Recurring** | Recurring rules with occurrence calendar, auto-detection suggestions |
+| **Installments** | Active installment plans with payment schedule and cashflow impact |
+| **Activity** | Day-grouped feed with infinite scroll, pull-to-refresh, realtime updates |
+| **Workspace** | Switcher, create/invite members, manage roles, transfer ownership |
+| **Settings** | Profile, salary config (gross/net/Swile), budget goals, 13th simulator, export, theme |
+| **Investments** | Portfolio positions (Treasury, CDB, REIT), allocation insights |
+
+---
+
+## Architecture
 
 ```
 lib/
 ├── core/
-│   ├── database/
-│   │   ├── app_database.dart              # Drift schema (SQLite) + DAOs
-│   │   ├── app_database.g.dart            # Drift-generated code
-│   │   └── seed_data.dart                 # Initial data (April 2025)
-│   ├── models/
-│   │   ├── enums.dart                     # Domain enums (ExpenseCategory, PaymentMethod, etc.)
-│   │   ├── budget_alert.dart              # Budget alert model (AlertLevel enum)
-│   │   └── constants.dart                 # Financial and UI constants
-│   ├── providers/
-│   │   └── providers.dart                 # 30+ Riverpod providers (derived state, caching)
-│   ├── services/
-│   │   ├── financial_calculator_service.dart  # Math: BRL formatting, tax calculations
-│   │   └── export_service.dart                # CSV + JSON backup export
-│   └── theme/
-│       ├── app_theme.dart                 # Material 3 light/dark themes + constants
-│       └── farol_colors.dart              # Color palette + theme extensions
+│   ├── domain/                    # DDD — entities, services, value objects
+│   │   ├── entities/              FinancialSnapshot, Envelope, BurnRate,
+│   │   │                          InstallmentPlan, RecurringRule, FinancialInsight
+│   │   ├── services/              FinancialEngine, ForecastingEngine, EnvelopeEngine,
+│   │   │                          ObligationEngine, IntelligenceLayer, InstallmentService,
+│   │   │                          RecurringService, RecurrenceResolver, RecurringDetector
+│   │   └── value_objects/         Money, CategoryRef, MemberDisplay
+│   ├── repositories/              WorkspaceRepository, BudgetChangesRepository,
+│   │                              WorkspaceActivityRepository, (5 repos with workspaceId)
+│   ├── providers/                 providers.dart — 30+ Riverpod autoDispose providers
+│   ├── database/                  Drift schema (SQLite), DAOs, seed data
+│   ├── models/                    Enums (ExpenseCategory, PaymentMethod, etc.),
+│   │                              constants, budget_alert, member_display
+│   ├── services/                  WorkspaceRealtimeService, FinancialCalculatorService,
+│   │                              ExportService
+│   ├── infrastructure/sync/       SyncManager, OperationQueue, ConflictResolver
+│   └── widgets/                   FeatureGate, MemberChip, MemberAvatarGroup,
+│                                  ActivityFeedTile, WorkspaceAppBarChip
 ├── features/
-│   ├── dashboard/
-│   │   └── dashboard_screen.dart          # KPIs, health score, expense breakdown, alerts
-│   ├── transactions/
-│   │   ├── transactions_screen.dart       # History with filters and search
-│   │   └── quick_add_bottom_sheet.dart    # Fast expense entry
-│   ├── analytics/
-│   │   └── analytics_screen.dart          # Trend/distribution charts
-│   ├── investments/
-│   │   └── investments_screen.dart        # Portfolio and allocation
-│   ├── notifications/
-│   │   └── notifications_screen.dart      # Real-time budget alerts by level
-│   ├── simulators/
-│   │   └── thirteenth_salary_screen.dart  # INSS + IRRF calculator with tables
-│   └── settings/
-│       └── settings_screen.dart           # Profile, goals, installments, simulators, export
-└── main.dart                              # Entry point + bottom nav shell
+│   ├── dashboard/                 KPIs, health gauge, burn rate, contribution bar,
+│   │                              insights panel, activity preview, connectivity banner
+│   ├── transactions/              List, filters, quick-add, edit/delete
+│   ├── analytics/                 Cashflow chart, trends, distribution, velocity
+│   ├── budget/                    Period envelopes, budget edit sheet, progress
+│   ├── recurring/                 Rules list, occurrence view, add/edit sheet
+│   ├── installments/              Plans list, payment schedule
+│   ├── activity/                  Activity feed screen, infinite scroll
+│   ├── workspace/                 Switcher sheet, create, invite, members screen
+│   ├── auth/                      Login, signup, session management
+│   └── settings/                  Profile, salary, goals, 13th simulator, export
+└── main.dart                      Entry point, MainShell with responsive nav
 ```
 
-**State Management**: All data flows through Riverpod `Provider.autoDispose` for reactive, zero-allocation derived state (no manual listeners).
+- **State**: Riverpod 2 (`autoDispose` — zero side effects, automatic cleanup)
+- **Database**: Drift (SQLite) — offline-first, type-safe DAOs, auto migrations
+- **Backend**: Supabase — auth, REST, realtime, Edge Functions
+- **Charts**: fl_chart — line, pie, bar (animated, responsive)
 
-**Database**: Drift (SQLite) with DAOs for type-safe queries and automatic migrations. All data persists locally.
+---
 
-## 🛠 Tech Stack
+## Stack
 
-| Layer | Technology | Package | Usage |
+| Layer | Technology |
+|---|---|
+| **Language** | Dart 3 |
+| **Framework** | Flutter 3 (Material 3) |
+| **State** | Riverpod 2 (autoDispose) |
+| **Database** | Drift (SQLite) |
+| **Backend** | Supabase (auth + REST + realtime + Edge Functions) |
+| **Charts** | fl_chart |
+| **Fonts** | Google Fonts (Manrope) |
+| **Code Gen** | build_runner (Drift, Riverpod) |
+
+---
+
+## Database Schema
+
+| Table | Purpose |
+|---|---|
+| `incomes` | Gross/net salary, Swile, bonus, 13th salary |
+| `expenses` | Cash, card, and Swile expenses with category + workspace |
+| `installment_plans` | Credit card installment plans (parent) |
+| `installment_payments` | Individual payments per plan (child) |
+| `recurring_rules` | RRULE-based recurring expense rules |
+| `recurring_occurrences` | Generated occurrences from rules |
+| `envelopes` | Period budgets with rollover policy |
+| `budget_goals` | Per-category target percentages |
+| `investments` | Portfolio positions (Treasury, CDB, REIT) |
+| `net_worth_snapshots` | Monthly net worth tracking |
+| `workspace_activity` | Audit log for shared workspaces |
+| `budget_changes` | Budget edit history (shared workspaces) |
+| `workspaces` | Personal and shared workspaces |
+| `workspace_members` | Membership with roles (admin/writer/viewer) |
+| `workspace_invites` | Pending invitations |
+
+---
+
+## Business Logic
+
+### Predictive Financial Engine
+
+The engine is **deterministic**, not ML. Works from day one with zero user history:
+
+- **Burn Rate** — Average daily spending over configurable window, projected forward
+- **Days Until Empty** — Cash balance ÷ burn rate, with red/yellow/green thresholds
+- **Projected Closing Balance** — Current balance + projected income − projected expenses − installment drops
+- **Cashflow Forecast** — 90-day chart (solid = actual, dashed = projected) with installment event markers
+- **Category Velocity** — Spending rate per category, compared to historical average
+- **Budget Risk Score** — Dynamic score that changes in real-time when expenses are recorded
+
+### Intelligence Layer (12 rules)
+
+No ML, no training data needed. Pure heuristic rules that trigger insights:
+
+- Unusual spending spike (2σ from mean)
+- Budget depletion rate warning
+- Installment concentration alert
+- Savings rate drop
+- Recurring charge change detection
+- Low-balance before known obligations
+- And 7 more — all with dismiss tracking and stats
+
+### Budget & Envelopes
+
+- 4 alert levels: 🟢 Green (<75%) → 🟡 Yellow (75–89%) → 🟠 Orange (90–99%) → 🔴 Red (≥100%)
+- Rollover: unused envelope balance carries to next period
+- Swile expenses are **excluded** from cash budget tracking
+
+### CLT-specific
+
+- **FGTS**: Auto-projected at 8% of gross salary, updated reactively when salary changes
+- **13th Salary**: Full INSS + IRRF 2025 progressive table simulation with dependent deductions
+- **Swile**: Separate Meal/Food buckets that don't touch cash burn rate
+- **Cutoff Day**: Customizable period start (most Brazilians receive salary day 5–15, not day 1)
+
+### Workspace Roles
+
+| Role | Create/Edit | Manage Members | Transfer Ownership |
 |---|---|---|---|
-| **UI** | Flutter 3 Material 3 | `google_fonts`, `flutter_svg` | Custom Typography (Manrope), icons, theming |
-| **State** | Riverpod 2 | `flutter_riverpod` | Reactive, auto-cached, zero-allocation providers |
-| **Database** | SQLite | `drift` | Type-safe DAOs, auto migrations, seed data |
-| **Charts** | Line/Pie/Bar | `fl_chart` | Dashboard trends, category distribution |
-| **Export** | CSV + JSON | `csv`, `share_plus` | Monthly export, full backup, AirDrop/WhatsApp sharing |
-| **Dev** | Code Generation | `build_runner` | Drift schema + DAOs, Riverpod observer |
-| **Language** | Dart 3 | Typed records, destructuring patterns | Modern syntax for tax tables |
+| Owner | ✅ | ✅ | — |
+| Admin | ✅ | ✅ | ❌ |
+| Writer | ✅ | ❌ | ❌ |
+| Viewer | ❌ | ❌ | ❌ |
 
-## 📊 Database Schema
+---
 
-| Table | Columns | Purpose |
-|---|---|---|
-| **incomes** | `id`, `amount`, `type`, `date` | Gross + net salary, Swile, bonus, 13th salary records |
-| **expenses** | `id`, `amount`, `category`, `payment_method`, `date`, `is_fixed`, `memo` | Cash expenses, card spending, installments |
-| **card_installments** | `id`, `description`, `total_amount`, `paid_amount`, `remaining_months`, `monthly_amount`, `status`, `created_at` | Credit card installment tracking (active/settled/suspended) |
-| **investments** | `id`, `type`, `quantity`, `unit_price`, `created_at` | Treasury, CDB, REIT positions and cost basis |
-| **net_worth_snapshots** | `id`, `month`, `fgts`, `cash_balance`, `investments_total` | Monthly snapshots for net worth trend |
-| **budget_goals** | `id`, `category`, `target_amount`, `created_at` | Budget target per expense category |
-| **user_settings** | `key`, `value` | App config (profile name, selected theme, etc.) |
-
-## 📐 Business Rules
-
-### Budget Alerts & Visualization
-
-Budget targets are set in **Settings → Budget Goals** per category. Real-time alerts compare actual spending to targets:
-
-| Level | Threshold | Color | Icon | Action |
-|---|---|---|---|---|
-| **Green** | 0–74% of target | `tertiaryColor` | — | No alert |
-| **Yellow** | 75–89% of target | `secondaryColor` | ⚠️ | Warning badge |
-| **Orange** | 90–99% of target | `#FF6B35` | ⚠️ | Critical badge |
-| **Red** | ≥100% of target | `errorColor` | ❌ | Exceeded badge + banner |
-
-Alerts appear in:
-- **Dashboard** — Top banner, inline progress bars
-- **Notifications Screen** — Full list grouped by severity
-
-### Core Business Logic
-
-1. **Swile separated**: Swile Meal + Food expenses do NOT count toward cash budget or alerts
-2. **Auto installments**: Credit card purchase entry creates monthly `card_installments` record (active status)
-3. **Savings Rate**: `(Net Salary - Cash Expenses) / Net Salary × 100%`
-4. **Health Score** (0-10 scale):
-   - Savings ≥20% → +2pts | 10-19% → +1pt
-   - Housing ≤30% → +2pts | 31-40% → +1pt
-   - Positive monthly balance → +2pts
-   - Emergency fund ≥3 months expenses → +2pts
-   - Card installments ≤30% of net salary → +1pt
-5. **FGTS**: Auto-projected at 8% of gross (⚡ updates when salary changes)
-6. **13th Salary Simulator** (in Settings):
-   - **INSS 2025**: Progressive table (4 brackets, capped at R$ 951.62)
-   - **IRRF 2025**: 5 brackets with standard deductions + dependent deduction (R$ 189.59 each)
-   - Output: Both installments, total net, deductions breakdown
-
-## 🚀 Setup
+## Setup
 
 ### Prerequisites
-- **Flutter 3.x** (get it at flutter.dev)
-- **Dart SDK ≥ 3.0** (comes with Flutter)
-- **Git** for version control
 
-### Installation
+- Flutter 3.27+ ([install](https://flutter.dev))
+- Dart SDK ≥ 3.0 (included with Flutter)
+- Git
+
+### Install
 
 ```bash
-# Clone and navigate
-git clone <repo>
+git clone https://github.com/luigrocha/farol.git
 cd farol
-
-# Install dependencies
 flutter pub get
-
-# (First run only) Generate Drift DAOs + Riverpod observer
 dart run build_runner build --delete-conflicting-outputs
-
-# Run on device/simulator
 flutter run
+```
 
-# Run on web (Chrome)
+### Web
+
+```bash
 flutter run -d chrome --dart-define-from-file=env.json
 ```
 
-### First Launch
+### Dev
 
-The app loads April 2025 demo data automatically. To reset and start fresh:
-1. Delete the SQLite database file on your device (app data)
-2. Restart the app
+```bash
+flutter analyze          # 0 issues expected
+flutter test             # 31 files, 100+ tests
+```
 
-### Development
+---
 
-- **Flutter Analyze**: `flutter analyze` (zero errors/warnings)
-- **Code Generation**: Auto-triggered on `flutter pub get`; manual rebuild: `dart run build_runner build`
-- **Hot Reload**: Supported for UI changes; full restart needed for provider/database changes
+## Demo Data
 
-### Initial Data
-
-On first launch, the app automatically loads April 2025 demo data:
+On first launch, the app seeds demo data for April 2025:
 
 | Category | Amount | Notes |
 |---|---|---|
-| Swile Meal | R$ 1,400.00 | Monthly benefit |
-| Swile Food | R$ 1,031.00 | Monthly benefit |
-| Rent + Condo Fee | R$ 4,200.00 | Fixed housing expense |
-| Fixed Expenses | R$ 2,150.00 | Utilities, insurance, subscriptions |
-| FGTS Balance | R$ 19,888.00 | Fund for housing/emergencies |
-| Active Card Installments | 1 | "Spouse Surgery" (2/12 @ R$ 754.97/mo) |
-| Budget Goals (7 categories) | Configured | Grocery, Transport, Dining, etc. |
+| Gross Salary | R$ 9,000.00 | CLT monthly |
+| Net Salary | R$ 6,783.21 | After INSS + IRRF |
+| Swile Meal | R$ 700.00 | Monthly benefit |
+| Swile Food | R$ 500.00 | Monthly benefit |
+| Rent | R$ 2,500.00 | Fixed housing |
+| FGTS Balance | R$ 15,000.00 | Auto-projected at 8%/mo |
+| Installments | 1 plan (12x R$ 500) | Generic example |
 
-### 13th Salary Calculation Example
+To reset: delete app data → restart.
 
-Using **R$ 9,000** gross monthly salary (12 months worked, 1 dependent):
+### 13th Salary Example (R$ 9,000 gross, 1 dependent)
 
-#### Step 1: Calculate Base
 ```
-Base = R$ 9,000 × 12 months ÷ 12 = R$ 9,000
-```
-
-#### Step 2: First Installment (June)
-```
-First Installment = R$ 9,000 ÷ 2 = R$ 4,500 ✅
-(No deductions — pure gross)
-```
-
-#### Step 3: INSS Calculation (Progressive 2025)
-```
-Bracket 1: R$ 0 → R$ 1,518.00 @ 7.5%   = R$    113.85
-Bracket 2: R$ 1,518.01 → R$ 2,793.88 @ 9%   = R$    114.83
-Bracket 3: R$ 2,793.89 → R$ 4,190.83 @ 12%  = R$    167.63
-Bracket 4: R$ 4,190.84 → R$ 9,000.00 @ 14%  = R$    673.28
+INSS (progressive 2025):
+  1º faixa:  R$ 0 ~ 1.518,00 @ 7,5%   = R$   113,85
+  2º faixa:  R$ 1.518,01 ~ 2.793,88 @ 9%   = R$   114,83
+  3º faixa:  R$ 2.793,89 ~ 4.190,83 @ 12%  = R$   167,63
+  4º faixa:  R$ 4.190,84 ~ 9.000,00 @ 14%  = R$   673,28
                                          ———————————
-Total INSS = R$ 1,069.59 → capped at R$ 951.62
+  Total: R$ 1.069,59 → capped at R$ 951,62
+
+IRRF (progressive 2025):
+  Base = R$ 9.000 - R$ 951,62 (INSS) - R$ 189,59 (dependent)
+       = R$ 7.858,79
+  Bracket 5 (> R$ 4.664,68): R$ 7.858,79 × 27,5% - R$ 896,00
+       = R$ 1.265,17
+
+Net 13th: R$ 9.000 - R$ 951,62 - R$ 1.265,17 = R$ 6.783,21
+→ 1ª parcela (junho):  R$ 4.500,00
+→ 2ª parcela (dezembro): R$ 2.283,21
 ```
 
-#### Step 4: IRRF Calculation (Progressive 2025)
-```
-Taxable Base = R$ 9,000 - INSS (R$ 951.62) - Dependent (R$ 189.59) = R$ 7,858.79
+---
 
-Bracket 5 (> R$ 4,664.68): R$ 7,858.79 @ 27.5% - R$ 896.00
-= (R$ 7,858.79 × 0.275) - R$ 896.00
-= R$ 2,161.17 - R$ 896.00
-= R$ 1,265.17
-```
+## Design
 
-#### Step 5: Second Installment (December)
-```
-Second Installment = R$ 4,500 - INSS (R$ 951.62) - IRRF (R$ 1,265.17)
-                   = R$ 2,283.21 💰
-```
+- **Theme**: Material 3 (light / dark / system)
+- **Colors**: Navy primary, green secondary, teal tertiary, red error
+- **Typography**: Manrope (400/700/800, 12–30px)
+- **Platform**: Mobile-first, responsive web via NavigationRail
 
-#### Summary
-```
-Gross 13th:        R$ 9,000.00
-Deductions:      - R$ 2,216.79  (INSS: R$ 951.62 + IRRF: R$ 1,265.17)
-                  ———————————
-Net 13th:          R$ 6,783.21
+---
 
-First Installment (June):    R$ 4,500.00
-Second Installment (Dec):    R$ 2,283.21
-```
+## Testing & Quality
 
-👉 **Try it yourself**: Go to **Settings → Simuladores → 13° Salário** to adjust the salary, months worked, and dependents in real-time.
+| Metric | Status |
+|---|---|
+| **Lint warnings** | 0 (`flutter analyze` clean) |
+| **Test files** | 31 (unit + widget + sync + integration) |
+| **CI** | GitHub Actions — Flutter 3.27, Ubuntu, 3 jobs |
+| **Coverage areas** | Forecasting engine, intelligence layer, sync (queue, conflict resolver, manager), financial engine, envelope engine, recurring engine, installment service, repositories, auth UI |
 
-## 🎨 Design & Theme
+---
 
-### Color Palette (Material 3)
+## License
 
-| Role | Color | Hex | Usage |
-|---|---|---|---|
-| **Primary** | Dark Blue | `#1B3A5C` | Buttons, headers, key actions |
-| **Secondary** | Green | `#1A7A4A` | Budget OK (75%), accent elements |
-| **Tertiary** | Teal | `#0B7F7A` | Success state, healthy metrics |
-| **Error** | Red | `#B91C1C` | Budget exceeded (≥100%) |
-| **Critical** | Orange | `#FF6B35` | Budget critical (90-99%) |
-| **Surface** | Light Gray | `#F3F4F6` | Cards, backgrounds |
-| **On-Surface** | Dark Gray | `#1F2937` | Text on light backgrounds |
-
-### Theme Support
-
-- **Light Mode** — Default (high contrast, optimized for daytime)
-- **Dark Mode** — OLED-friendly (high contrast, reduced eye strain)
-- **System** — Follows device settings (toggle in Settings)
-
-### Typography
-
-- **Font**: [Manrope](https://fonts.google.com/specimen/Manrope) (geometric sans-serif)
-- **Weights**: 400 (regular), 700 (bold), 800 (extra bold)
-- **Sizes**: 12–30px (responsive across devices)
-
-## 📤 Data Export & Backup
-
-From **Settings → Exportar**:
-
-| Format | Scope | Use Case |
-|---|---|---|
-| **CSV (Monthly)** | Expenses or income for 1 month | Share with accountant, import into spreadsheet |
-| **JSON (Full)** | All tables, all time | Full backup, restore to new device, data migration |
-
-Exports are shared via:
-- **AirDrop** (iOS device to Mac)
-- **WhatsApp** (share file to contact/group)
-- **Email** (if configured)
-- **Cloud storage** (if app has permissions)
-
-⚠️ **JSON backups include sensitive data** (income, bank details). Encrypt backups or use secure storage.
-
-## 🧪 Testing & Quality
-
-- ✅ **Zero lint warnings**: `flutter analyze` passes completely
-- ✅ **Material 3 spec compliance**: Navigation bar, cards, buttons, dialogs
-- ✅ **Offline-first**: All features work without internet (SQLite is embedded)
-- ✅ **Dark mode support**: Full contrast and readability verified
-- ✅ **Responsive design**: Tested on phone (320–480dp) and tablet (600dp+)
-
-## 🐛 Known Limitations
-
-- **Web support**: Layout optimized for mobile; web experience is secondary
-- **Cloud sync**: No cross-device sync (local SQLite only)
-- **Multiple users**: Single-user app (one profile per device)
-- **Currency**: Only BRL (R$) supported (hardcoded for Brazilian CLT workers)
-
-## 📚 Architecture Highlights
-
-### Riverpod State Management
-
-All providers are `Provider.autoDispose` to minimize memory footprint:
-
-```dart
-// Example: Budget alerts derived from goals + spending
-final budgetAlertsProvider = Provider.autoDispose<List<BudgetAlert>>((ref) {
-  final goals = ref.watch(budgetGoalsMapProvider);
-  final spending = ref.watch(cashExpensesByCategoryProvider);
-  return goals.entries
-    .where((g) => spending[g.key]! >= g.value.targetAmount * 0.75)
-    .map((g) => BudgetAlert(...))
-    .toList();
-});
-```
-
-Zero side effects. Pure derived state. Automatic cleanup when listeners detach.
-
-### Drift Database
-
-Type-safe DAO pattern with auto-generated code:
-
-```dart
-// Queries are type-safe and composable
-final april = await db.expensesDao.getByMonth(DateTime(2025, 4));
-final byCategory = groupBy(april, (e) => e.category);
-```
-
-### Financial Calculations
-
-All money math lives in `FinancialCalculatorService`:
-
-```dart
-static String formatBRL(double amount) => NumberFormat.currency(
-  locale: 'pt_BR',
-  symbol: 'R\$',
-  decimalDigits: 2,
-).format(amount);
-
-static double calculateINSS(double gross) { ... } // Progressive table
-static double calculateIRRF(double taxableBase) { ... } // 5-bracket table
-```
-
-## 📄 License
-
-Built for personal use. © 2025 Luis Rocha.
-
-Powered by:
-- **Flutter 3** + **Dart 3**
-- **Riverpod 2** (reactive state)
-- **Drift** (offline-first SQLite)
-- **fl_chart** (beautiful charts)
-- **Material 3** (Google Design System)
+© 2026 Luis Rocha. MIT.
