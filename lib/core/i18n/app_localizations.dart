@@ -528,6 +528,22 @@ class AppLocalizations {
       'onboarding_f3': 'Support in your language, 24/7',
       'onboarding_button': 'Create my Farol account',
       'onboarding_login': 'Already a client · Log in',
+      // Onboarding carousel slides
+      'onboarding_s1_eyebrow': 'FINANCIAL CLARITY',
+      'onboarding_s1_title': 'Know exactly where your money goes',
+      'onboarding_s1_f1': 'Smart envelopes per category with real periods',
+      'onboarding_s1_f2': 'Visual cashflow — balance at a glance',
+      'onboarding_s1_f3': 'Installments and recurring tracked automatically',
+      'onboarding_s2_eyebrow': 'PREDICTIVE ENGINE',
+      'onboarding_s2_title': 'Know before you run out',
+      'onboarding_s2_f1': 'Burn rate — how fast you spend vs. budget',
+      'onboarding_s2_f2': '90-day cashflow forecast with obligations',
+      'onboarding_s2_f3': 'Smart alerts before your balance drops',
+      'onboarding_s3_eyebrow': 'YOUR FINANCIAL OS',
+      'onboarding_s3_title': 'Your complete financial system',
+      'onboarding_s3_f1': 'Shared workspaces — finances with your family',
+      'onboarding_s3_f2': 'Financial health score (0–10) with context',
+      'onboarding_s3_f3': 'Built for CLT workers — salary, FGTS, Swile',
       // Signup
       'account_created_check_email': 'Account created! Check your email to continue.',
       'create_your': 'Create your\n',
@@ -1178,6 +1194,22 @@ class AppLocalizations {
       'onboarding_f3': 'Soporte en tu idioma, 24/7',
       'onboarding_button': 'Crear mi cuenta Farol',
       'onboarding_login': 'Ya soy cliente · Iniciar sesión',
+      // Onboarding carousel slides
+      'onboarding_s1_eyebrow': 'CLARIDAD FINANCIERA',
+      'onboarding_s1_title': 'Sabe exactamente adónde va tu dinero',
+      'onboarding_s1_f1': 'Sobres inteligentes por categoría con períodos reales',
+      'onboarding_s1_f2': 'Cashflow visual — saldo de un vistazo',
+      'onboarding_s1_f3': 'Cuotas y recurrentes seguidos automáticamente',
+      'onboarding_s2_eyebrow': 'MOTOR PREDICTIVO',
+      'onboarding_s2_title': 'Anticípate antes de quedarte sin saldo',
+      'onboarding_s2_f1': 'Burn rate — qué tan rápido gastas vs. presupuesto',
+      'onboarding_s2_f2': 'Forecast de 90 días con cuotas y recurrentes',
+      'onboarding_s2_f3': 'Alertas inteligentes antes de que el saldo caiga',
+      'onboarding_s3_eyebrow': 'TU SISTEMA FINANCIERO',
+      'onboarding_s3_title': 'Todo tu ecosistema financiero en un lugar',
+      'onboarding_s3_f1': 'Workspaces compartidos con tu familia',
+      'onboarding_s3_f2': 'Salud financiera (0–10) con contexto real',
+      'onboarding_s3_f3': 'Hecho para CLT — salario, FGTS, beneficios',
       // Signup
       'account_created_check_email': '¡Cuenta creada! Revisa tu correo para continuar.',
       'create_your': 'Crea tu\n',
@@ -1828,6 +1860,22 @@ class AppLocalizations {
       'onboarding_f3': 'Suporte em português, 24/7',
       'onboarding_button': 'Criar minha conta Farol',
       'onboarding_login': 'Já sou cliente · Entrar',
+      // Onboarding carousel slides
+      'onboarding_s1_eyebrow': 'CLAREZA FINANCEIRA',
+      'onboarding_s1_title': 'Saiba exatamente para onde vai seu dinheiro',
+      'onboarding_s1_f1': 'Envelopes inteligentes por categoria com períodos reais',
+      'onboarding_s1_f2': 'Cashflow visual — saldo de um olhar',
+      'onboarding_s1_f3': 'Parcelas e recorrentes rastreados automaticamente',
+      'onboarding_s2_eyebrow': 'MOTOR PREDITIVO',
+      'onboarding_s2_title': 'Antecipe-se antes de ficar sem saldo',
+      'onboarding_s2_f1': 'Burn rate — o quão rápido você gasta vs. orçamento',
+      'onboarding_s2_f2': 'Forecast de 90 dias com parcelas e recorrentes',
+      'onboarding_s2_f3': 'Alertas inteligentes antes do saldo cair',
+      'onboarding_s3_eyebrow': 'SEU SISTEMA FINANCEIRO',
+      'onboarding_s3_title': 'Todo seu ecossistema financeiro em um lugar',
+      'onboarding_s3_f1': 'Workspaces compartilhados com sua família',
+      'onboarding_s3_f2': 'Saúde financeira (0–10) com contexto real',
+      'onboarding_s3_f3': 'Feito para CLT — salário, FGTS, Swile',
       // Signup
       'account_created_check_email': 'Conta criada! Verifique seu e-mail para continuar.',
       'create_your': 'Criar sua\n',
@@ -2506,6 +2554,22 @@ class AppLocalizations {
   String get onboardingF3 => translate('onboarding_f3');
   String get onboardingButton => translate('onboarding_button');
   String get onboardingLogin => translate('onboarding_login');
+  // Onboarding carousel slides
+  String get onboardingS1Eyebrow => translate('onboarding_s1_eyebrow');
+  String get onboardingS1Title => translate('onboarding_s1_title');
+  String get onboardingS1F1 => translate('onboarding_s1_f1');
+  String get onboardingS1F2 => translate('onboarding_s1_f2');
+  String get onboardingS1F3 => translate('onboarding_s1_f3');
+  String get onboardingS2Eyebrow => translate('onboarding_s2_eyebrow');
+  String get onboardingS2Title => translate('onboarding_s2_title');
+  String get onboardingS2F1 => translate('onboarding_s2_f1');
+  String get onboardingS2F2 => translate('onboarding_s2_f2');
+  String get onboardingS2F3 => translate('onboarding_s2_f3');
+  String get onboardingS3Eyebrow => translate('onboarding_s3_eyebrow');
+  String get onboardingS3Title => translate('onboarding_s3_title');
+  String get onboardingS3F1 => translate('onboarding_s3_f1');
+  String get onboardingS3F2 => translate('onboarding_s3_f2');
+  String get onboardingS3F3 => translate('onboarding_s3_f3');
   // Signup
   String get accountCreatedCheckEmail => translate('account_created_check_email');
   String get createYour => translate('create_your');
