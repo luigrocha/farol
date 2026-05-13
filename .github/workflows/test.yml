@@ -1,0 +1,129 @@
+name: Farol — Test Suite
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+# Cancel in-progress runs on the same branch to avoid wasting minutes
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: "3.27.0"
+
+jobs:
+  # ── Job 1: Unit & Widget Tests (fastest — no device needed) ─────────────────
+  unit_and_widget:
+    name: Unit & Widget Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify no compilation errors
+        run: flutter analyze --no-fatal-infos
+
+      - name: Run unit tests (AuthNotifier, domain logic)
+        run: |
+          flutter test test/features/auth/data/ \
+            --reporter github \
+            --coverage
+
+      - name: Run widget tests (LoginScreen, SignUpScreen)
+        run: |
+          flutter test test/features/auth/presentation/ \
+            --reporter github \
+            --coverage
+
+      - name: Run all remaining unit/widget tests
+        run: |
+          flutter test test/ \
+            --exclude-tags integration \
+            --reporter github \
+            --coverage
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v4
+        if: success()
+        with:
+          files: coverage/lcov.info
+          flags: unit_widget
+          fail_ci_if_error: false
+
+  # ── Job 2: Integration Tests (requires Android emulator) ────────────────────
+  integration:
+    name: Integration Tests (Android)
+    runs-on: macos-latest          # macOS runners have hardware acceleration for AVD
+    timeout-minutes: 30
+    # Only run on main branch or PRs targeting main — expensive runner
+    if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Setup Android SDK & AVD
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          arch: x86_64
+          profile: Nexus 6
+          script: |
+            flutter test integration_test/auth_flow_test.dart \
+              --reporter github
+
+  # ── Job 3: Smoke Test — ensure app builds for web ───────────────────────────
+  build_web:
+    name: Web Build Smoke Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build web (canvaskit)
+        run: |
+          flutter build web \
+            --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL || 'https://placeholder.supabase.co' }} \
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY || 'placeholder-key' }} \
+            --no-tree-shake-icons \
+            --release
+
+      - name: Verify build output exists
+        run: test -f build/web/index.html

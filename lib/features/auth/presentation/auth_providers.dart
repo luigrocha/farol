@@ -6,20 +6,28 @@ import '../data/auth_repository.dart';
 import '../domain/app_user.dart';
 import '../domain/auth_state.dart';
 
+final supabaseClientProvider = Provider<SupabaseClient>((ref) {
+  return Supabase.instance.client;
+});
+
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  return SupabaseAuthRepository();
+  final client = ref.watch(supabaseClientProvider);
+  return SupabaseAuthRepository(supabase: client);
 });
 
 /// Reactive stream of the current authentication state.
 /// Emits the current session synchronously so the app never shows a spinner
 /// on cold start when the user is already logged in.
 final authStateProvider = StreamProvider<AppAuthState>((ref) {
+  final client = ref.watch(supabaseClientProvider);
   final repo = ref.watch(authRepositoryProvider);
-  // Read the cached session synchronously — no network call needed.
-  final cachedUser = Supabase.instance.client.auth.currentUser;
+
+  // Read the cached user synchronously — no network call needed.
+  final cachedUser = client.auth.currentUser;
   final AppAuthState initialState = cachedUser != null
       ? AppAuthAuthenticated(AppUser.fromSupabase(cachedUser))
       : const AppAuthUnauthenticated();
+
   // Prepend the synchronous initial value so the app never blocks on cold start.
   final controller = StreamController<AppAuthState>();
   controller.add(initialState);

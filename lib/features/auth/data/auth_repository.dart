@@ -23,13 +23,20 @@ abstract class AuthRepository {
 }
 
 class SupabaseAuthRepository implements AuthRepository {
-  final SupabaseClient _supabase = Supabase.instance.client;
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId: const String.fromEnvironment(
-      'GOOGLE_CLIENT_ID',
-      defaultValue: 'dummy-client-id.apps.googleusercontent.com',
-    ),
-  );
+  final SupabaseClient _supabase;
+  final GoogleSignIn _googleSignIn;
+
+  SupabaseAuthRepository({
+    SupabaseClient? supabase,
+    GoogleSignIn? googleSignIn,
+  })  : _supabase = supabase ?? Supabase.instance.client,
+        _googleSignIn = googleSignIn ??
+            GoogleSignIn(
+              clientId: const String.fromEnvironment(
+                'GOOGLE_CLIENT_ID',
+                defaultValue: 'dummy-client-id.apps.googleusercontent.com',
+              ),
+            );
 
   @override
   Stream<AppAuthState> get authStateChanges =>

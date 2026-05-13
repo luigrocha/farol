@@ -64,6 +64,7 @@ void main() {
     test('routes through SyncManager and returns 0 sentinel', () async {
       final queue = OperationQueue(db, supabase);
       final mgr = _SpySyncManager(queue, supabase);
+      await mgr.setOnlineForTest(false);
       final repo = ExpenseRepository(supabase, syncManager: mgr);
 
       final result = await repo.insert(
@@ -85,6 +86,7 @@ void main() {
     test('InsertExpenseOperation carries correct payload fields', () async {
       final queue = OperationQueue(db, supabase);
       final mgr = _SpySyncManager(queue, supabase);
+      await mgr.setOnlineForTest(false);
       final repo = ExpenseRepository(supabase, syncManager: mgr);
 
       await repo.insert(
@@ -112,9 +114,10 @@ void main() {
     test('real SyncManager enqueues when remote fails', () async {
       final queue = OperationQueue(db, supabase);
       final mgr = SyncManager(queue, supabase);
+      await mgr.setOnlineForTest(false);
       final repo = ExpenseRepository(supabase, syncManager: mgr);
 
-      // FakeSupabase.from() throws UnimplementedError → remote fails → queued
+      // Offline → operation queued locally
       await repo.insert(
         transactionDate: DateTime(2026, 5, 1),
         month: 5,
