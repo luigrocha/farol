@@ -35,7 +35,9 @@ import 'features/period_budget/presentation/period_budget_screen.dart';
 import 'features/net_worth/presentation/patrimonio_screen.dart';
 import 'features/auth/presentation/auth_loading_screen.dart';
 import 'core/providers/workspace_providers.dart'
-    show activeWorkspaceProvider, isSharedWorkspaceProvider;
+    show activeWorkspaceProvider, isSharedWorkspaceProvider,
+         pendingInviteNotificationsProvider, userNotificationsRepositoryProvider;
+import 'core/models/user_notification.dart';
 import 'core/models/workspace.dart' show WorkspaceType;
 import 'core/services/workspace_realtime_service.dart';
 import 'features/workspace/workspace_switcher_sheet.dart';
@@ -436,6 +438,42 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
     // Re-sync realtime service whenever the active workspace changes
     return Consumer(
       builder: (ctx, ref, child) {
+        ref.listen<AsyncValue<List<UserNotification>>>(
+          pendingInviteNotificationsProvider,
+          (prev, next) {
+            final prevList = prev?.valueOrNull ?? [];
+            final nextList = next.valueOrNull ?? [];
+            final newOnes = nextList
+                .where((n) => !prevList.any((p) => p.id == n.id))
+                .toList();
+            if (newOnes.isNotEmpty) {
+              final notif = newOnes.first;
+              ScaffoldMessenger.of(ctx).showMaterialBanner(MaterialBanner(
+                content: Text(
+                    '${notif.invitedByName} te invitó a "${notif.workspaceName}"'),
+                leading: const Icon(Icons.group_add_outlined),
+                actions: [
+                  TextButton(
+                    child: const Text('Ver'),
+                    onPressed: () {
+                      ref
+                          .read(userNotificationsRepositoryProvider)
+                          .markRead(notif.id);
+                      navigatorKey.currentState
+                          ?.pushNamed('/invite/${notif.inviteToken}');
+                      ScaffoldMessenger.of(ctx).hideCurrentMaterialBanner();
+                    },
+                  ),
+                  TextButton(
+                    child: const Text('Después'),
+                    onPressed: () =>
+                        ScaffoldMessenger.of(ctx).hideCurrentMaterialBanner(),
+                  ),
+                ],
+              ));
+            }
+          },
+        );
         ref.listen(activeWorkspaceProvider, (_, next) {
           final ws = next.valueOrNull;
           final isShared = ref.read(isSharedWorkspaceProvider);

@@ -7,6 +7,8 @@ import '../repositories/workspace_activity_repository.dart';
 import '../services/workspace_realtime_service.dart';
 import '../repositories/budget_changes_repository.dart';
 import '../domain/entities/workspace_activity.dart';
+import '../models/user_notification.dart';
+import '../repositories/user_notifications_repository.dart';
 // Reutiliza os providers de infraestrutura já declarados em providers.dart
 import 'providers.dart' show databaseProvider;
 
@@ -263,3 +265,31 @@ final workspacePresenceProvider = StreamProvider.autoDispose<Set<String>>(
     return WorkspaceRealtimeService.instance.onPresenceChange;
   },
 );
+
+// ─────────────────────────────────────────────────────────────
+// User Notifications
+// ─────────────────────────────────────────────────────────────
+
+
+final userNotificationsRepositoryProvider = Provider.autoDispose(
+  (ref) => UserNotificationsRepository(Supabase.instance.client),
+);
+
+/// Stream of unread notifications for the current user.
+/// Powered by Supabase .stream() so it refreshes on Realtime INSERT.
+final pendingInviteNotificationsProvider =
+    StreamProvider.autoDispose<List<UserNotification>>((ref) {
+  final supabase = Supabase.instance.client;
+  final userId = supabase.auth.currentUser?.id;
+  if (userId == null) return const Stream.empty();
+
+  return supabase
+      .from('user_notifications')
+      .stream(primaryKey: ['id'])
+      .eq('user_id', userId)
+      .order('created_at', ascending: false)
+      .map((rows) => rows
+          .where((r) => r['read_at'] == null)
+          .map(UserNotification.fromJson)
+          .toList());
+});
