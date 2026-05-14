@@ -21,6 +21,8 @@ import 'widgets/liquidity_alert_card.dart';
 import 'widgets/connectivity_banner.dart';
 import 'widgets/activity_feed_preview_card.dart';
 import 'widgets/contribution_bar.dart';
+import 'widgets/swile_dashboard_card.dart';
+import 'widgets/recent_transactions_card.dart';
 import '../insights/insights_panel.dart';
 import '../workspace/workspace_switcher_sheet.dart';
 import '../../core/providers/workspace_providers.dart' show canWriteProvider;
@@ -231,17 +233,12 @@ class _MobileDashboardSliver extends StatelessWidget {
   }
 }
 
-// ── Desktop: two-column grid ──────────────────────────────────────────────────
+// ── Desktop: 3-column grid ────────────────────────────────────────────────────
 //
-//  ┌─────────────────────────────┬──────────────────────────┐
-//  │  LiquidityAlertCard         │  HealthGaugeCard          │
-//  │  AlertBanner                │  KpiGrid (large cards)    │
-//  │  PeriodBalanceHero          │  BurnRateCard             │
-//  │  InsightsPanel              │  InstallmentsSummaryCard  │
-//  │  ExpenseBreakdown           │  RecurringCard            │
-//  │  MonthlyGoalCard            │  RecurringSuggestionsCard │
-//  │  ContributionBar            │  ActivityFeedPreviewCard  │
-//  └─────────────────────────────┴──────────────────────────┘
+//  Row 1:  BalanceHero (45%)  │  InsightsPanel (35%)  │  Health + BurnRate (20%)
+//  Row 2:  KPI mini-cards — 4 cards horizontal (full width)
+//  Row 3:  ExpenseBreakdown   │  InstallmentsSummary  │  SwileDashboardCard
+//  Row 4:  RecentTransactionsCard (full width)
 
 class _DesktopDashboardSliver extends StatelessWidget {
   @override
@@ -249,56 +246,139 @@ class _DesktopDashboardSliver extends StatelessWidget {
     return const SliverPadding(
       padding: EdgeInsets.fromLTRB(24, 0, 24, 80),
       sliver: SliverToBoxAdapter(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // ── Left column (primary) ──
-            Expanded(
-              flex: 55,
-              child: Column(
+            // Alerts (collapsible, shown when needed)
+            LiquidityAlertCard(),
+            AlertBanner(),
+            SizedBox(height: 12),
+
+            // ── Row 1: Balance | Insights | Health+BurnRate ──
+            IntrinsicHeight(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  LiquidityAlertCard(),
-                  AlertBanner(),
-                  SizedBox(height: 12),
-                  PeriodBalanceHero(),
-                  SizedBox(height: 12),
-                  InsightsPanel(),
-                  SizedBox(height: 16),
-                  ExpenseBreakdown(),
-                  SizedBox(height: 16),
-                  MonthlyGoalCard(),
-                  SizedBox(height: 16),
-                  ContributionBar(),
-                  SizedBox(height: 12),
-                  ActivityFeedPreviewCard(),
+                  Expanded(flex: 45, child: PeriodBalanceHero()),
+                  SizedBox(width: 16),
+                  Expanded(flex: 35, child: InsightsPanel()),
+                  SizedBox(width: 16),
+                  Expanded(
+                    flex: 20,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        HealthGaugeCard(),
+                        SizedBox(height: 12),
+                        BurnRateCard(),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-            SizedBox(width: 20),
-            // ── Right column (secondary) — mirrors the reference design ──
-            Expanded(
-              flex: 45,
-              child: Column(
+            SizedBox(height: 16),
+
+            // ── Row 2: 4 KPI mini-cards horizontal ──
+            _KpiRow(),
+            SizedBox(height: 16),
+
+            // ── Row 3: ExpenseBreakdown | Parcelas | Swile ──
+            IntrinsicHeight(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  HealthGaugeCard(),
-                  SizedBox(height: 12),
-                  // Large KPI cards — compact: false for desktop sizing
-                  KpiGrid(compact: false),
-                  SizedBox(height: 16),
-                  BurnRateCard(),
-                  SizedBox(height: 16),
-                  InstallmentsSummaryCard(),
-                  SizedBox(height: 16),
-                  RecurringCard(),
-                  SizedBox(height: 16),
-                  RecurringSuggestionsCard(),
+                  Expanded(flex: 45, child: ExpenseBreakdown()),
+                  SizedBox(width: 16),
+                  Expanded(flex: 35, child: InstallmentsSummaryCard()),
+                  SizedBox(width: 16),
+                  Expanded(flex: 20, child: SwileDashboardCard()),
                 ],
               ),
             ),
+            SizedBox(height: 16),
+
+            // ── Row 4: Últimas Transacciones ──
+            RecentTransactionsCard(),
+            SizedBox(height: 16),
+
+            // Collaboration widgets (shared workspaces only)
+            ContributionBar(),
+            SizedBox(height: 12),
+            ActivityFeedPreviewCard(),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _KpiRow extends ConsumerWidget {
+  const _KpiRow();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final snap = ref.watch(financialSnapshotProvider);
+    final colors = context.colors;
+
+    final items = [
+      (
+        icon: Icons.account_balance_wallet,
+        bg: colors.iconTintBlue,
+        label: 'Salário Líquido',
+        value: snap.cashIncome.amount,
+        color: null as Color?,
+      ),
+      (
+        icon: Icons.fastfood,
+        bg: colors.secondaryContainer,
+        label: 'Beneficios Swile',
+        value: snap.swileIncome.amount,
+        color: tokens.FarolColors.beam as Color?,
+      ),
+      (
+        icon: Icons.trending_down,
+        bg: colors.iconTintRed,
+        label: 'Gastos Totais',
+        value: snap.cashSpent.amount,
+        color: tokens.FarolColors.coral as Color?,
+      ),
+      (
+        icon: Icons.savings,
+        bg: colors.iconTintBlue,
+        label: 'Taxa de Ahorro',
+        value: null as double?,
+        color: null as Color?,
+      ),
+    ];
+    final sr = snap.savingsRate;
+
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (int i = 0; i < items.length; i++) ...[
+            if (i > 0) const SizedBox(width: 12),
+            Expanded(
+              child: i == 3
+                  ? KpiCard(
+                      icon: items[i].icon,
+                      bg: items[i].bg,
+                      label: items[i].label,
+                      raw: '${sr.toStringAsFixed(1)}%',
+                      compact: false,
+                    )
+                  : KpiCard(
+                      icon: items[i].icon,
+                      bg: items[i].bg,
+                      label: items[i].label,
+                      value: items[i].value,
+                      color: items[i].color,
+                      compact: false,
+                    ),
+            ),
+          ],
+        ],
       ),
     );
   }
