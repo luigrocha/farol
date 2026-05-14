@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../core/i18n/app_localizations.dart';
 import '../../core/models/workspace.dart';
 import '../../core/providers/workspace_providers.dart';
 
@@ -73,6 +76,7 @@ class _InviteMemberSheetState extends ConsumerState<InviteMemberSheet> {
       child: _createdInvite != null
           ? _InviteSuccessView(
               invite: _createdInvite!,
+              workspaceName: widget.workspace.name,
               onDone: () => Navigator.pop(context),
             )
           : Form(
@@ -222,22 +226,71 @@ class _RolePicker extends StatelessWidget {
   }
 }
 
-/// Shown after the invite is created — displays the token link.
+/// Shown after the invite is created — displays the token link with share options.
 class _InviteSuccessView extends StatelessWidget {
-  const _InviteSuccessView({required this.invite, required this.onDone});
+  const _InviteSuccessView({
+    required this.invite,
+    required this.workspaceName,
+    required this.onDone,
+  });
 
   final WorkspaceInvite invite;
+  final String workspaceName;
   final VoidCallback onDone;
 
-  // In production this would be a deep link / web URL.
   String get _inviteLink => 'https://farolapp.com/invite/${invite.token}';
+
+  Future<void> _shareNative(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    await Share.share(
+      l10n.inviteShareText(workspaceName, _inviteLink),
+      subject: l10n.inviteShareEmailSubject(workspaceName),
+    );
+  }
+
+  Future<void> _shareWhatsApp(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    final text = Uri.encodeComponent(
+        l10n.inviteShareText(workspaceName, _inviteLink));
+    final uri = Uri.parse('https://wa.me/?text=$text');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('WhatsApp not available')),
+      );
+    }
+  }
+
+  Future<void> _shareEmail(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    final subject = Uri.encodeComponent(
+        l10n.inviteShareEmailSubject(workspaceName));
+    final body = Uri.encodeComponent(
+        l10n.inviteShareText(workspaceName, _inviteLink));
+    final uri = Uri.parse('mailto:${invite.invitedEmail}?subject=$subject&body=$body');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else if (context.mounted) {
+      await _shareNative(context);
+    }
+  }
+
+  void _copyLink(BuildContext context) {
+    Clipboard.setData(ClipboardData(text: _inviteLink));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Link copied to clipboard')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        // ── Handle ────────────────────────────────────────────────────────
         Center(
           child: Container(
             width: 36,
@@ -249,54 +302,98 @@ class _InviteSuccessView extends StatelessWidget {
             ),
           ),
         ),
-        const Icon(Icons.check_circle, color: Colors.green, size: 48),
+
+        // ── Check icon + title ────────────────────────────────────────────
+        Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            color: Colors.green.withValues(alpha: 0.12),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.check_rounded, color: Colors.green, size: 32),
+        ),
         const SizedBox(height: 12),
         Text(
           'Invite created!',
           style: GoogleFonts.manrope(fontSize: 20, fontWeight: FontWeight.w700),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         Text(
-          'Share this link with ${invite.invitedEmail}:',
-          style: TextStyle(color: colorScheme.onSurfaceVariant),
+          'Share with ${invite.invitedEmail}',
+          style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 13),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
+
+        // ── Link card ─────────────────────────────────────────────────────
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
             color: colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: colorScheme.outlineVariant),
           ),
           child: Row(
             children: [
               Expanded(
                 child: Text(
                   _inviteLink,
-                  style: const TextStyle(fontSize: 12, fontFamily: 'monospace'),
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontFamily: 'monospace',
+                      color: colorScheme.onSurfaceVariant),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.copy, size: 18),
+                icon: const Icon(Icons.copy_rounded, size: 18),
                 tooltip: 'Copy link',
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: _inviteLink));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Link copied to clipboard')),
-                  );
-                },
+                visualDensity: VisualDensity.compact,
+                onPressed: () => _copyLink(context),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         Text(
           'Expires in 7 days',
-          style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
+          style: TextStyle(fontSize: 11, color: colorScheme.onSurfaceVariant),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 20),
+
+        // ── Share buttons ─────────────────────────────────────────────────
+        Row(
+          children: [
+            Expanded(
+              child: _ShareButton(
+                icon: Icons.email_outlined,
+                label: 'Email',
+                onTap: () => _shareEmail(context),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _ShareButton(
+                icon: Icons.chat_outlined,
+                label: 'WhatsApp',
+                onTap: () => _shareWhatsApp(context),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _ShareButton(
+                icon: Icons.ios_share_rounded,
+                label: 'Share',
+                onTap: () => _shareNative(context),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+
+        // ── Done ──────────────────────────────────────────────────────────
         SizedBox(
           width: double.infinity,
           child: FilledButton(
@@ -305,6 +402,45 @@ class _InviteSuccessView extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _ShareButton extends StatelessWidget {
+  const _ShareButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          border: Border.all(color: colorScheme.outlineVariant),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 22, color: colorScheme.primary),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(fontSize: 11, color: colorScheme.onSurface),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

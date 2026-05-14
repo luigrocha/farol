@@ -1,7 +1,7 @@
 name: farol
 description: Farol - Your personal financial guide (CLT)
 publish_to: 'CR-Soft'
-version: 0.1.13
+version: 0.1.14
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -40,6 +40,10 @@ dependencies:
 
   # Media
   image_picker: ^1.1.2
+
+  # Deep links & URL launching
+  app_links: ^6.3.2
+  url_launcher: ^6.3.1
 
   # Connectivity
   connectivity_plus: ^6.1.4

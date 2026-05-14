@@ -39,9 +39,13 @@ import 'core/providers/workspace_providers.dart'
 import 'core/models/workspace.dart' show WorkspaceType;
 import 'core/services/workspace_realtime_service.dart';
 import 'features/workspace/workspace_switcher_sheet.dart';
+import 'features/workspace/accept_invite_screen.dart';
+import 'package:app_links/app_links.dart';
 import 'features/paywall/paywall_screen.dart';
 import 'core/models/budget_alert.dart' show AlertLevel;
 import 'core/domain/entities/financial_insight.dart' show InsightPriority;
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 final themeModeProvider =
     NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
@@ -137,6 +141,7 @@ class FarolApp extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
 
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: 'Farol',
       debugShowCheckedModeBanner: false,
       theme: farolLightTheme,
@@ -177,6 +182,17 @@ class FarolApp extends ConsumerWidget {
           final inv = settings.arguments as Investment;
           return MaterialPageRoute(
               builder: (context) => InvestmentDetailScreen(investment: inv));
+        }
+        // Deep link: /invite/{token}
+        final name = settings.name ?? '';
+        final uri = Uri.tryParse(name);
+        if (uri != null &&
+            uri.pathSegments.length == 2 &&
+            uri.pathSegments[0] == 'invite') {
+          final token = uri.pathSegments[1];
+          return MaterialPageRoute(
+              builder: (context) => AcceptInviteScreen(token: token),
+              settings: settings);
         }
         return null;
       },
@@ -325,6 +341,7 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
   int _currentIndex = 0;
   // Tracks which screens have been visited so they are only built once.
   final Set<int> _visited = {0};
+  final _appLinks = AppLinks();
 
   static const _screenBuilders = [
     DashboardScreen.new,
@@ -340,7 +357,28 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     // Activate workspace realtime on first build
-    WidgetsBinding.instance.addPostFrameCallback((_) => _syncRealtime());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncRealtime();
+      _initDeepLinks();
+    });
+  }
+
+  void _initDeepLinks() {
+    // Handle deep links while app is running
+    _appLinks.uriLinkStream.listen(_handleDeepLink);
+    // Handle cold-start deep link
+    _appLinks.getInitialLink().then((uri) {
+      if (uri != null) _handleDeepLink(uri);
+    });
+  }
+
+  void _handleDeepLink(Uri uri) {
+    final segments = uri.pathSegments;
+    if (segments.length >= 2 && segments[0] == 'invite') {
+      final token = segments[1];
+      navigatorKey.currentState
+          ?.pushNamed('/invite/$token');
+    }
   }
 
   @override

@@ -528,6 +528,17 @@ class AppLocalizations {
       'onboarding_f3': 'Support in your language, 24/7',
       'onboarding_button': 'Create my Farol account',
       'onboarding_login': 'Already a client · Log in',
+      // Workspace invite
+      'invite_share_text': "You're invited to '{name}' on Farol! Join: {link}",
+      'invite_share_email_subject': 'Join {name} on Farol',
+      'invite_accepting': 'Joining workspace...',
+      'invite_success_joined': 'You joined {name}!',
+      'invite_error_expired': 'This invite has expired. Ask for a new one.',
+      'invite_error_used': 'This invite was already used.',
+      'invite_error_member': "You're already a member of this workspace.",
+      'invite_error_not_found': 'Invite not found or invalid link.',
+      'invite_go_workspace': 'Go to workspace',
+      'invite_login_to_accept': 'Log in to accept invite',
       // Onboarding carousel slides
       'onboarding_s1_eyebrow': 'FINANCIAL CLARITY',
       'onboarding_s1_title': 'Know exactly where your money goes',
@@ -1194,6 +1205,17 @@ class AppLocalizations {
       'onboarding_f3': 'Soporte en tu idioma, 24/7',
       'onboarding_button': 'Crear mi cuenta Farol',
       'onboarding_login': 'Ya soy cliente · Iniciar sesión',
+      // Workspace invite
+      'invite_share_text': "Te invito a '{name}' en Farol. Únete: {link}",
+      'invite_share_email_subject': 'Únete a {name} en Farol',
+      'invite_accepting': 'Uniéndose al workspace...',
+      'invite_success_joined': '¡Te uniste a {name}!',
+      'invite_error_expired': 'Esta invitación expiró. Pide una nueva.',
+      'invite_error_used': 'Esta invitación ya fue usada.',
+      'invite_error_member': 'Ya eres miembro de este workspace.',
+      'invite_error_not_found': 'Invitación no encontrada o enlace inválido.',
+      'invite_go_workspace': 'Ir al workspace',
+      'invite_login_to_accept': 'Iniciar sesión para aceptar',
       // Onboarding carousel slides
       'onboarding_s1_eyebrow': 'CLARIDAD FINANCIERA',
       'onboarding_s1_title': 'Sabe exactamente adónde va tu dinero',
@@ -1860,6 +1882,17 @@ class AppLocalizations {
       'onboarding_f3': 'Suporte em português, 24/7',
       'onboarding_button': 'Criar minha conta Farol',
       'onboarding_login': 'Já sou cliente · Entrar',
+      // Workspace invite
+      'invite_share_text': "Te convido para '{name}' no Farol! Acesse: {link}",
+      'invite_share_email_subject': 'Junte-se a {name} no Farol',
+      'invite_accepting': 'Entrando no workspace...',
+      'invite_success_joined': 'Você entrou em {name}!',
+      'invite_error_expired': 'Este convite expirou. Peça um novo.',
+      'invite_error_used': 'Este convite já foi usado.',
+      'invite_error_member': 'Você já é membro deste workspace.',
+      'invite_error_not_found': 'Convite não encontrado ou link inválido.',
+      'invite_go_workspace': 'Ir para o workspace',
+      'invite_login_to_accept': 'Entrar para aceitar o convite',
       // Onboarding carousel slides
       'onboarding_s1_eyebrow': 'CLAREZA FINANCEIRA',
       'onboarding_s1_title': 'Saiba exatamente para onde vai seu dinheiro',
@@ -2554,6 +2587,20 @@ class AppLocalizations {
   String get onboardingF3 => translate('onboarding_f3');
   String get onboardingButton => translate('onboarding_button');
   String get onboardingLogin => translate('onboarding_login');
+  // Workspace invite
+  String inviteShareText(String name, String link) =>
+      translate('invite_share_text').replaceAll('{name}', name).replaceAll('{link}', link);
+  String inviteShareEmailSubject(String name) =>
+      translate('invite_share_email_subject').replaceAll('{name}', name);
+  String get inviteAccepting => translate('invite_accepting');
+  String inviteSuccessJoined(String name) =>
+      translate('invite_success_joined').replaceAll('{name}', name);
+  String get inviteErrorExpired => translate('invite_error_expired');
+  String get inviteErrorUsed => translate('invite_error_used');
+  String get inviteErrorMember => translate('invite_error_member');
+  String get inviteErrorNotFound => translate('invite_error_not_found');
+  String get inviteGoWorkspace => translate('invite_go_workspace');
+  String get inviteLoginToAccept => translate('invite_login_to_accept');
   // Onboarding carousel slides
   String get onboardingS1Eyebrow => translate('onboarding_s1_eyebrow');
   String get onboardingS1Title => translate('onboarding_s1_title');
