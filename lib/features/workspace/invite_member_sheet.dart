@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../core/config/app_config.dart';
 import '../../core/i18n/app_localizations.dart';
 import '../../core/models/workspace.dart';
 import '../../core/providers/workspace_providers.dart';
@@ -239,7 +240,7 @@ class _InviteSuccessView extends StatelessWidget {
   final VoidCallback onDone;
 
   String get _inviteLink =>
-      'https://luigrocha.github.io/farol/#/invite/${invite.token}';
+      '${AppConfig.baseUrl}/#/invite/${invite.token}';
 
   Future<void> _shareNative(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
