@@ -40,6 +40,7 @@ import 'core/providers/workspace_providers.dart'
 import 'core/models/user_notification.dart';
 import 'core/models/workspace.dart' show WorkspaceType;
 import 'core/services/workspace_realtime_service.dart';
+import 'core/services/app_lifecycle_service.dart';
 import 'features/workspace/workspace_switcher_sheet.dart';
 import 'features/workspace/accept_invite_screen.dart';
 import 'package:app_links/app_links.dart';
@@ -392,23 +393,37 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      WorkspaceRealtimeService.instance.resume();
-      setState(() {});
-    } else if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.inactive) {
-      WorkspaceRealtimeService.instance.pause();
+    switch (state) {
+      case AppLifecycleState.resumed:
+        // Use AppLifecycleService to debounce + selectively invalidate stale
+        // providers instead of a bare setState() which caused a full tree
+        // rebuild while providers were in AsyncLoading → gray screen.
+        AppLifecycleService.instance.onResume(
+          ProviderScope.containerOf(context),
+        );
+      case AppLifecycleState.paused:
+      case AppLifecycleState.inactive:
+        AppLifecycleService.instance.onPause();
+        WorkspaceRealtimeService.instance.pause();
+      case AppLifecycleState.detached:
+      case AppLifecycleState.hidden:
+        // No action needed
+        break;
     }
   }
 
   void _syncRealtime() {
     if (!mounted) return;
-    final container = ProviderScope.containerOf(context);
-    final ws = container.read(activeWorkspaceProvider).valueOrNull;
-    final isShared = container.read(isSharedWorkspaceProvider);
-    final uid = Supabase.instance.client.auth.currentUser?.id;
-    if (ws != null && isShared && uid != null) {
-      WorkspaceRealtimeService.instance.setWorkspace(ws.id, uid);
+    try {
+      final container = ProviderScope.containerOf(context);
+      final ws = container.read(activeWorkspaceProvider).valueOrNull;
+      final isShared = container.read(isSharedWorkspaceProvider);
+      final uid = Supabase.instance.client.auth.currentUser?.id;
+      if (ws != null && isShared && uid != null) {
+        WorkspaceRealtimeService.instance.setWorkspace(ws.id, uid);
+      }
+    } catch (e) {
+      debugPrint('[MainShell] _syncRealtime error: $e');
     }
   }
 
@@ -486,7 +501,9 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
         });
         return child!;
       },
-      child: isDesktop ? _buildDesktopShell(l10n) : _buildMobileShell(l10n),
+      child: _ProviderKeepAlive(
+        child: isDesktop ? _buildDesktopShell(l10n) : _buildMobileShell(l10n),
+      ),
     );
   }
 
@@ -549,6 +566,30 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
         ],
       ),
     );
+  }
+}
+
+// ── Provider Keep-Alive ───────────────────────────────────────────────────────
+//
+// Holds ref.watch subscriptions to the two most critical stream providers so
+// that Riverpod's autoDispose never drops the underlying Supabase WebSocket
+// connections while MainShell is alive. Without this, switching screens or
+// brief inactivity could dispose the streams → gray UI on wake-up.
+
+class _ProviderKeepAlive extends ConsumerWidget {
+  const _ProviderKeepAlive({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Keep root data streams alive as long as MainShell is mounted.
+    // These watches are purely for the keepAlive side-effect — the values
+    // are consumed by individual screen providers, not here.
+    ref.watch(allExpensesStreamProvider);
+    ref.watch(allIncomesStreamProvider);
+    ref.watch(categoriesStreamProvider);
+    return child;
   }
 }
 

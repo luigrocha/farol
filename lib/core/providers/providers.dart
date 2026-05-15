@@ -248,7 +248,7 @@ final installmentServiceProvider = Provider<InstallmentService>((ref) {
 final realtimeActiveProvider = StateProvider<bool>((ref) => true);
 final realtimeMaxRetriesReachedProvider = StateProvider<bool>((ref) => false);
 
-final _allIncomesStreamProvider = StreamProvider.autoDispose<List<Income>>((ref) {
+final allIncomesStreamProvider = StreamProvider.autoDispose<List<Income>>((ref) {
   final useRealtime = ref.watch(realtimeActiveProvider);
   final repository = ref.watch(incomeRepositoryProvider);
   final maxRetries = ref.watch(realtimeMaxRetriesReachedProvider);
@@ -354,7 +354,7 @@ final categoryResolverProvider = Provider<CategoryResolver>((ref) {
 final incomesProvider = Provider.autoDispose<AsyncValue<List<Income>>>((ref) {
   final month = ref.watch(selectedMonthProvider);
   final year = ref.watch(selectedYearProvider);
-  return ref.watch(_allIncomesStreamProvider).whenData(
+  return ref.watch(allIncomesStreamProvider).whenData(
     (all) => all.where((i) => i.month == month && i.year == year).toList(),
   );
 });
@@ -1053,12 +1053,12 @@ class IncomeNotifier extends AsyncNotifier<void> {
           irrfDeducted: irrfDeducted,
           notes: notes,
         );
-    ref.invalidate(_allIncomesStreamProvider);
+    ref.invalidate(allIncomesStreamProvider);
   }
 
   Future<void> delete(int id) async {
     await ref.read(incomeRepositoryProvider).delete(id);
-    ref.invalidate(_allIncomesStreamProvider);
+    ref.invalidate(allIncomesStreamProvider);
   }
 
   Future<void> save({
@@ -1083,7 +1083,7 @@ class IncomeNotifier extends AsyncNotifier<void> {
           irrfDeducted: irrfDeducted,
           notes: notes,
         );
-    ref.invalidate(_allIncomesStreamProvider);
+    ref.invalidate(allIncomesStreamProvider);
   }
 }
 

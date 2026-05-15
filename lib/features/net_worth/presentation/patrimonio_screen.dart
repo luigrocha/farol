@@ -35,9 +35,9 @@ class _PatrimonioScreenState extends ConsumerState<PatrimonioScreen> with Widget
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      setState(() {});
-    }
+    // No-op: lifecycle recovery is handled globally by AppLifecycleService
+    // in MainShell. A bare setState() here would force a full rebuild while
+    // providers are still in AsyncLoading → gray screen.
   }
 
   @override

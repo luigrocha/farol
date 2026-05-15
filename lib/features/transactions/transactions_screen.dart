@@ -51,7 +51,10 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+    // Only unsubscribe on actual background (paused), not on transient
+    // inactive states (e.g. notification overlay, app switcher visible).
+    // Unsubscribing on inactive caused websocket drops on every notification.
+    if (state == AppLifecycleState.paused) {
       _unsubscribeRealtime();
     }
   }
