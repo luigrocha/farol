@@ -87,6 +87,7 @@ class WorkspaceInvite {
   final String invitedBy;
   final DateTime expiresAt;
   final DateTime? acceptedAt;
+  final DateTime? declinedAt;
   final DateTime createdAt;
 
   const WorkspaceInvite({
@@ -98,12 +99,14 @@ class WorkspaceInvite {
     required this.invitedBy,
     required this.expiresAt,
     this.acceptedAt,
+    this.declinedAt,
     required this.createdAt,
   });
 
-  bool get isExpired => DateTime.now().isAfter(expiresAt);
+  bool get isExpired  => DateTime.now().isAfter(expiresAt);
   bool get isAccepted => acceptedAt != null;
-  bool get isPending => !isExpired && !isAccepted;
+  bool get isDeclined => declinedAt != null;
+  bool get isPending  => !isExpired && !isAccepted && !isDeclined;
 
   factory WorkspaceInvite.fromJson(Map<String, dynamic> json) {
     return WorkspaceInvite(
@@ -116,6 +119,9 @@ class WorkspaceInvite {
       expiresAt:     DateTime.parse(json['expires_at'] as String),
       acceptedAt:    json['accepted_at'] != null
                        ? DateTime.parse(json['accepted_at'] as String)
+                       : null,
+      declinedAt:    json['declined_at'] != null
+                       ? DateTime.parse(json['declined_at'] as String)
                        : null,
       createdAt:     DateTime.parse(json['created_at'] as String),
     );
@@ -240,4 +246,20 @@ class Workspace {
           .map((m) => m.role)
           .firstOrNull ??
       WorkspaceRole.viewer;
+
+  /// Build a minimal Workspace from the accept-workspace-invite Edge Function
+  /// response. Full member list will be loaded on the next getUserWorkspaces() call.
+  factory Workspace.fromEdgeFunctionResponse(Map<String, dynamic> json) {
+    final now = DateTime.now();
+    return Workspace(
+      id:        json['id'] as String,
+      name:      json['name'] as String? ?? '',
+      ownerId:   json['owner_id'] as String? ?? '',
+      createdAt: now,
+      updatedAt: now,
+      type:      WorkspaceTypeX.parse(json['workspace_type'] as String?),
+      emoji:     json['emoji'] as String?,
+      color:     json['color'] as String?,
+    );
+  }
 }

@@ -35,14 +35,13 @@ import 'features/period_budget/presentation/period_budget_screen.dart';
 import 'features/net_worth/presentation/patrimonio_screen.dart';
 import 'features/auth/presentation/auth_loading_screen.dart';
 import 'core/providers/workspace_providers.dart'
-    show activeWorkspaceProvider, isSharedWorkspaceProvider,
-         pendingInviteNotificationsProvider, userNotificationsRepositoryProvider;
-import 'core/models/user_notification.dart';
+    show activeWorkspaceProvider, isSharedWorkspaceProvider;
 import 'core/models/workspace.dart' show WorkspaceType;
 import 'core/services/workspace_realtime_service.dart';
 import 'core/services/app_lifecycle_service.dart';
 import 'features/workspace/workspace_switcher_sheet.dart';
 import 'features/workspace/accept_invite_screen.dart';
+import 'features/workspace/invite_notification_overlay.dart';
 import 'package:app_links/app_links.dart';
 import 'features/paywall/paywall_screen.dart';
 import 'core/models/budget_alert.dart' show AlertLevel;
@@ -450,45 +449,11 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
     final width = MediaQuery.sizeOf(context).width;
     final isDesktop = width >= 600;
 
-    // Re-sync realtime service whenever the active workspace changes
+    // Re-sync realtime service whenever the active workspace changes.
+    // Invite notifications are now handled by InviteNotificationManager overlay
+    // (persistent banner with inline Accept/Decline) — no more MaterialBanner.
     return Consumer(
       builder: (ctx, ref, child) {
-        ref.listen<AsyncValue<List<UserNotification>>>(
-          pendingInviteNotificationsProvider,
-          (prev, next) {
-            final prevList = prev?.valueOrNull ?? [];
-            final nextList = next.valueOrNull ?? [];
-            final newOnes = nextList
-                .where((n) => !prevList.any((p) => p.id == n.id))
-                .toList();
-            if (newOnes.isNotEmpty) {
-              final notif = newOnes.first;
-              ScaffoldMessenger.of(ctx).showMaterialBanner(MaterialBanner(
-                content: Text(
-                    '${notif.invitedByName} te invitó a "${notif.workspaceName}"'),
-                leading: const Icon(Icons.group_add_outlined),
-                actions: [
-                  TextButton(
-                    child: const Text('Ver'),
-                    onPressed: () {
-                      ref
-                          .read(userNotificationsRepositoryProvider)
-                          .markRead(notif.id);
-                      navigatorKey.currentState
-                          ?.pushNamed('/invite/${notif.inviteToken}');
-                      ScaffoldMessenger.of(ctx).hideCurrentMaterialBanner();
-                    },
-                  ),
-                  TextButton(
-                    child: const Text('Después'),
-                    onPressed: () =>
-                        ScaffoldMessenger.of(ctx).hideCurrentMaterialBanner(),
-                  ),
-                ],
-              ));
-            }
-          },
-        );
         ref.listen(activeWorkspaceProvider, (_, next) {
           final ws = next.valueOrNull;
           final isShared = ref.read(isSharedWorkspaceProvider);
@@ -502,7 +467,9 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
         return child!;
       },
       child: _ProviderKeepAlive(
-        child: isDesktop ? _buildDesktopShell(l10n) : _buildMobileShell(l10n),
+        child: InviteNotificationManager(
+          child: isDesktop ? _buildDesktopShell(l10n) : _buildMobileShell(l10n),
+        ),
       ),
     );
   }
