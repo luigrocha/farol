@@ -19,6 +19,9 @@ import '../../core/models/space.dart';
 import '../../core/models/space_transaction.dart';
 import '../../core/providers/space_providers.dart';
 import 'add_space_transaction_sheet.dart';
+import 'space_app_bar_chip.dart';
+import 'space_settings_screen.dart';
+import 'space_transactions_screen.dart';
 
 final _brlFmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 final _dateFmt = DateFormat('dd/MM');
@@ -32,8 +35,15 @@ class SpaceDashboardScreen extends ConsumerWidget {
 
   const SpaceDashboardScreen({super.key, required this.space});
 
+  static Future<void> push(BuildContext context, Space space) =>
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => SpaceDashboardScreen(space: space)),
+      );
+
   String get _currentUserId =>
       Supabase.instance.client.auth.currentUser!.id;
+
+  static const double _kDesktopBreakpoint = 800.0;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,6 +52,11 @@ class SpaceDashboardScreen extends ConsumerWidget {
     final canSeeBalances   = ref.watch(canSeeBalancesProvider);
     final canWrite         = ref.watch(canWriteInSpaceProvider);
     final theme            = Theme.of(context);
+    final width            = MediaQuery.sizeOf(context).width;
+    final isDesktop        = width >= _kDesktopBreakpoint;
+
+    // Keep the realtime subscription alive while dashboard is mounted.
+    ref.watch(spaceTransactionsRealtimeProvider);
 
     return Scaffold(
       body: RefreshIndicator(
@@ -56,6 +71,8 @@ class SpaceDashboardScreen extends ConsumerWidget {
               expandedHeight: 140,
               pinned:         true,
               backgroundColor: theme.colorScheme.surface,
+              title: const SpaceAppBarChip(),
+              centerTitle: false,
               flexibleSpace: FlexibleSpaceBar(
                 titlePadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                 title: _SpaceHeaderTitle(space: space),
@@ -63,7 +80,7 @@ class SpaceDashboardScreen extends ConsumerWidget {
               actions: [
                 IconButton(
                   icon: const Icon(Icons.settings_outlined),
-                  onPressed: () {}, // TODO: space settings screen
+                  onPressed: () => SpaceSettingsScreen.push(context, space),
                 ),
               ],
             ),
@@ -83,98 +100,25 @@ class SpaceDashboardScreen extends ConsumerWidget {
 
             const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
-            // ── Balance summary ──────────────────────────────────
-            if (canSeeBalances)
-              SliverToBoxAdapter(
-                child: suggestionsAsync.when(
-                  data:    (s) => _BalanceSummary(
-                    suggestions: s,
-                    currentUserId: _currentUserId,
-                  ),
-                  loading: () => const _SectionSkeleton(height: 80),
-                  error:   (_, __) => const SizedBox.shrink(),
-                ),
+            // ── Content — mobile vs desktop ─────────────────────
+            if (isDesktop)
+              _DesktopContentSliver(
+                space:         space,
+                txAsync:       txAsync,
+                suggestionsAsync: suggestionsAsync,
+                canSeeBalances:  canSeeBalances,
+                canWrite:      canWrite,
+                currentUserId: _currentUserId,
+              )
+            else
+              _MobileContentSliver(
+                space:         space,
+                txAsync:       txAsync,
+                suggestionsAsync: suggestionsAsync,
+                canSeeBalances:  canSeeBalances,
+                canWrite:      canWrite,
+                currentUserId: _currentUserId,
               ),
-
-            // ── Category envelopes ───────────────────────────────
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-                child: Text(
-                  'Gastos por categoria',
-                  style: GoogleFonts.manrope(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
-              ),
-            ),
-
-            SliverToBoxAdapter(
-              child: txAsync.when(
-                data:    (txs) => _CategoryEnvelopes(transactions: txs),
-                loading: () => const _SectionSkeleton(height: 120),
-                error:   (_, __) => const SizedBox.shrink(),
-              ),
-            ),
-
-            // ── Recent transactions ─────────────────────────────
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-                child: Row(
-                  children: [
-                    Text(
-                      'Transações recentes',
-                      style: GoogleFonts.manrope(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    const Spacer(),
-                    if (txAsync.valueOrNull != null &&
-                        txAsync.valueOrNull!.length > 5)
-                      TextButton(
-                        onPressed: () {}, // TODO: full transaction list
-                        child: const Text('Ver todos'),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-
-            txAsync.when(
-              data: (txs) => txs.isEmpty
-                  ? SliverToBoxAdapter(
-                      child: _EmptyTransactions(
-                        canWrite: canWrite,
-                        onAdd: () => AddSpaceTransactionSheet.show(context, space),
-                      ),
-                    )
-                  : SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (_, i) => _TransactionTile(
-                          tx:            txs[i],
-                          currentUserId: _currentUserId,
-                          members:       space.members,
-                        ),
-                        childCount: txs.take(10).length,
-                      ),
-                    ),
-              loading: () => SliverToBoxAdapter(
-                child: Column(
-                  children: List.generate(
-                    3,
-                    (_) => const _SectionSkeleton(height: 64),
-                  ),
-                ),
-              ),
-              error: (e, _) => SliverToBoxAdapter(
-                child: Center(child: Text('Erro: $e')),
-              ),
-            ),
 
             // Bottom padding for FAB
             const SliverToBoxAdapter(child: SizedBox(height: 80)),
@@ -188,6 +132,258 @@ class SpaceDashboardScreen extends ConsumerWidget {
               label: const Text('Novo gasto'),
             )
           : null,
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Mobile content sliver (single column)
+// ─────────────────────────────────────────────────────────────────
+
+class _MobileContentSliver extends StatelessWidget {
+  final Space                        space;
+  final AsyncValue<List<SpaceTransaction>> txAsync;
+  final AsyncValue<List<SettlementSuggestion>> suggestionsAsync;
+  final bool  canSeeBalances;
+  final bool  canWrite;
+  final String currentUserId;
+
+  const _MobileContentSliver({
+    required this.space,
+    required this.txAsync,
+    required this.suggestionsAsync,
+    required this.canSeeBalances,
+    required this.canWrite,
+    required this.currentUserId,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SliverList(
+      delegate: SliverChildListDelegate([
+        // Balance summary
+        if (canSeeBalances)
+          suggestionsAsync.when(
+            data:    (s) => _BalanceSummary(
+              suggestions:   s,
+              currentUserId: currentUserId,
+              spaceId:       space.id,
+            ),
+            loading: () => const _SectionSkeleton(height: 80),
+            error:   (_, __) => const SizedBox.shrink(),
+          ),
+
+        // Category envelopes header
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+          child: Text(
+            'Gastos por categoria',
+            style: GoogleFonts.manrope(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+        ),
+
+        txAsync.when(
+          data:    (txs) => _CategoryEnvelopes(transactions: txs),
+          loading: () => const _SectionSkeleton(height: 120),
+          error:   (_, __) => const SizedBox.shrink(),
+        ),
+
+        // Recent transactions header
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+          child: Row(
+            children: [
+              Text(
+                'Transações recentes',
+                style: GoogleFonts.manrope(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              const Spacer(),
+              if (txAsync.valueOrNull != null &&
+                  txAsync.valueOrNull!.length > 5)
+                TextButton(
+                  onPressed: () =>
+                      SpaceTransactionsScreen.push(context, space),
+                  child: const Text('Ver todos'),
+                ),
+            ],
+          ),
+        ),
+
+        // Transaction list / empty state
+        txAsync.when(
+          data: (txs) => txs.isEmpty
+              ? _EmptyTransactions(
+                  space:    space,
+                  canWrite: canWrite,
+                  onAdd:    () => AddSpaceTransactionSheet.show(context, space),
+                )
+              : Column(
+                  children: txs
+                      .take(10)
+                      .map((tx) => _TransactionTile(
+                            tx:            tx,
+                            currentUserId: currentUserId,
+                            members:       space.members,
+                          ))
+                      .toList(),
+                ),
+          loading: () => Column(
+            children: List.generate(
+              3,
+              (_) => const _SectionSkeleton(height: 64),
+            ),
+          ),
+          error: (e, _) => Center(child: Text('Erro: $e')),
+        ),
+      ]),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Desktop content sliver (two columns)
+// ─────────────────────────────────────────────────────────────────
+
+class _DesktopContentSliver extends StatelessWidget {
+  final Space                          space;
+  final AsyncValue<List<SpaceTransaction>>     txAsync;
+  final AsyncValue<List<SettlementSuggestion>> suggestionsAsync;
+  final bool   canSeeBalances;
+  final bool   canWrite;
+  final String currentUserId;
+
+  const _DesktopContentSliver({
+    required this.space,
+    required this.txAsync,
+    required this.suggestionsAsync,
+    required this.canSeeBalances,
+    required this.canWrite,
+    required this.currentUserId,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      sliver: SliverToBoxAdapter(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Left column — primary (transactions + balance) ──
+            Expanded(
+              flex: 55,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Balance summary
+                  if (canSeeBalances)
+                    suggestionsAsync.when(
+                      data:    (s) => _BalanceSummary(
+                        suggestions:   s,
+                        currentUserId: currentUserId,
+                        spaceId:       space.id,
+                      ),
+                      loading: () => const _SectionSkeleton(height: 80),
+                      error:   (_, __) => const SizedBox.shrink(),
+                    ),
+
+                  // Recent transactions
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 20, 0, 8),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Transações recentes',
+                          style: GoogleFonts.manrope(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        const Spacer(),
+                        if (txAsync.valueOrNull != null &&
+                            txAsync.valueOrNull!.length > 5)
+                          TextButton(
+                            onPressed: () =>
+                                SpaceTransactionsScreen.push(context, space),
+                            child: const Text('Ver todos'),
+                          ),
+                      ],
+                    ),
+                  ),
+
+                  txAsync.when(
+                    data: (txs) => txs.isEmpty
+                        ? _EmptyTransactions(
+                            space:    space,
+                            canWrite: canWrite,
+                            onAdd:    () => AddSpaceTransactionSheet.show(context, space),
+                          )
+                        : Column(
+                            children: txs
+                                .take(10)
+                                .map((tx) => _TransactionTile(
+                                      tx:            tx,
+                                      currentUserId: currentUserId,
+                                      members:       space.members,
+                                    ))
+                                .toList(),
+                          ),
+                    loading: () => Column(
+                      children: List.generate(
+                        3,
+                        (_) => const _SectionSkeleton(height: 64),
+                      ),
+                    ),
+                    error: (e, _) => Center(child: Text('Erro: $e')),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(width: 24),
+
+            // ── Right column — category envelopes ───────────────
+            Expanded(
+              flex: 45,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    child: Text(
+                      'Gastos por categoria',
+                      style: GoogleFonts.manrope(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  txAsync.when(
+                    data:    (txs) => _CategoryEnvelopes(transactions: txs),
+                    loading: () => const _SectionSkeleton(height: 200),
+                    error:   (_, __) => const SizedBox.shrink(),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -316,10 +512,12 @@ class _PrivacyChip extends StatelessWidget {
 class _BalanceSummary extends StatelessWidget {
   final List<SettlementSuggestion> suggestions;
   final String currentUserId;
+  final String spaceId;
 
   const _BalanceSummary({
     required this.suggestions,
     required this.currentUserId,
+    required this.spaceId,
   });
 
   @override
@@ -328,7 +526,7 @@ class _BalanceSummary extends StatelessWidget {
 
     // Only show suggestions that involve the current user
     final mine = suggestions
-        .where((s) => s.from == currentUserId || s.to == currentUserId)
+        .where((s) => s.fromUserId == currentUserId || s.toUserId == currentUserId)
         .toList();
 
     if (mine.isEmpty) {
@@ -375,6 +573,7 @@ class _BalanceSummary extends StatelessWidget {
           ...mine.map((s) => _SettlementRow(
                 suggestion:    s,
                 currentUserId: currentUserId,
+                spaceId:       spaceId,
               )),
         ],
       ),
@@ -382,23 +581,86 @@ class _BalanceSummary extends StatelessWidget {
   }
 }
 
-class _SettlementRow extends StatelessWidget {
+class _SettlementRow extends ConsumerStatefulWidget {
   final SettlementSuggestion suggestion;
   final String currentUserId;
+  final String spaceId;
 
   const _SettlementRow({
     required this.suggestion,
     required this.currentUserId,
+    required this.spaceId,
   });
 
   @override
+  ConsumerState<_SettlementRow> createState() => _SettlementRowState();
+}
+
+class _SettlementRowState extends ConsumerState<_SettlementRow> {
+  bool _settling = false;
+
+  Future<void> _settle() async {
+    final now   = DateTime.now();
+    final start = DateTime(now.year, now.month, 1);
+    final end   = DateTime(now.year, now.month + 1, 0);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Confirmar pagamento?'),
+        content: Text(
+          'Registrar pagamento de '
+          '${_brlFmt.format(widget.suggestion.amount)} '
+          'referente a ${_brlFmt.format(widget.suggestion.amount)}?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Confirmar'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _settling = true);
+    try {
+      await ref.read(spaceRepositoryProvider).saveSettlements(
+        widget.spaceId,
+        [widget.suggestion],
+        periodStart: start,
+        periodEnd:   end,
+      );
+      ref.invalidate(settlementSuggestionsProvider);
+      ref.invalidate(pendingSettlementsProvider);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Pagamento registrado!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _settling = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final theme  = Theme.of(context);
-    final iOwePay = suggestion.from == currentUserId;
-    final label = iOwePay
-        ? 'Você deve ${_brlFmt.format(suggestion.amount)}'
-        : 'Te devem ${_brlFmt.format(suggestion.amount)}';
-    final color = iOwePay
+    final theme   = Theme.of(context);
+    final iOwePay = widget.suggestion.fromUserId == widget.currentUserId;
+    final label   = iOwePay
+        ? 'Você deve ${_brlFmt.format(widget.suggestion.amount)}'
+        : 'Te devem ${_brlFmt.format(widget.suggestion.amount)}';
+    final color   = iOwePay
         ? theme.colorScheme.error
         : theme.colorScheme.primary;
 
@@ -430,12 +692,17 @@ class _SettlementRow extends StatelessWidget {
             ),
             if (iOwePay)
               FilledButton.tonal(
-                onPressed: () {}, // TODO: settle flow
+                onPressed: _settling ? null : _settle,
                 style: FilledButton.styleFrom(
-                  minimumSize:    const Size(80, 32),
+                  minimumSize: const Size(80, 32),
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                 ),
-                child: const Text('Pagar'),
+                child: _settling
+                    ? const SizedBox(
+                        width: 14, height: 14,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Pagar'),
               ),
           ],
         ),
@@ -460,14 +727,16 @@ class _CategoryEnvelopes extends StatelessWidget {
     double uncategorized = 0;
 
     for (final tx in transactions) {
-      final cat = tx.category;
-      if (cat == null) {
+      final catId   = tx.categoryId;
+      final catName = tx.categoryName;
+      final catIcon = tx.categoryIcon;
+      if (catId == null || catName == null) {
         uncategorized += tx.amount;
       } else {
-        final existing = totals[cat.id];
-        totals[cat.id] = (
-          name:   cat.name,
-          icon:   cat.icon,
+        final existing = totals[catId];
+        totals[catId] = (
+          name:   catName,
+          icon:   catIcon,
           amount: (existing?.amount ?? 0) + tx.amount,
         );
       }
@@ -589,8 +858,9 @@ class _TransactionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme   = Theme.of(context);
-    final myShare = tx.shareFor(currentUserId);
-    final isPayer = tx.paidBy == currentUserId;
+    final myShareAmount = tx.shareFor(currentUserId); // returns 0.0 if not a participant
+    final isParticipant = myShareAmount > 0;
+    final isPayer       = tx.paidBy == currentUserId;
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
@@ -598,7 +868,7 @@ class _TransactionTile extends StatelessWidget {
         radius: 20,
         backgroundColor: theme.colorScheme.surfaceContainerHighest,
         child: Text(
-          tx.category?.icon ?? '💳',
+          tx.categoryIcon ?? '💳',
           style: const TextStyle(fontSize: 18),
         ),
       ),
@@ -626,15 +896,18 @@ class _TransactionTile extends StatelessWidget {
               color: theme.colorScheme.onSurface,
             ),
           ),
-          if (myShare != null)
+          if (isPayer)
             Text(
-              isPayer
-                  ? 'Você pagou'
-                  : 'Seu: ${_brlFmt.format(myShare.amount)}',
+              'Você pagou',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: isPayer
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.onSurfaceVariant,
+                color: theme.colorScheme.primary,
+              ),
+            )
+          else if (isParticipant)
+            Text(
+              'Seu: ${_brlFmt.format(myShareAmount)}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
         ],
@@ -648,39 +921,230 @@ class _TransactionTile extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────
 
 class _EmptyTransactions extends StatelessWidget {
-  final bool canWrite;
+  final Space      space;
+  final bool       canWrite;
   final VoidCallback onAdd;
 
-  const _EmptyTransactions({required this.canWrite, required this.onAdd});
+  const _EmptyTransactions({
+    required this.space,
+    required this.canWrite,
+    required this.onAdd,
+  });
+
+  // Type-specific guidance copy
+  String get _headline {
+    return switch (space.type) {
+      SpaceType.household => 'Registre as despesas da casa',
+      SpaceType.trip      => 'Registre os gastos da viagem',
+      SpaceType.project   => 'Registre os custos do projeto',
+      SpaceType.family    => 'Registre as despesas da família',
+      SpaceType.business  => 'Registre as despesas do negócio',
+    };
+  }
+
+  String get _subheadline {
+    return switch (space.type) {
+      SpaceType.household => 'Aluguel, contas, supermercado — tudo em um só lugar, '
+          'dividido automaticamente entre os moradores.',
+      SpaceType.trip      => 'Cada gasto da trip vai aparecer aqui. '
+          'Quem pagou o quê fica claro para todos.',
+      SpaceType.project   => 'Mantenha o orçamento do projeto transparente '
+          'para todos os envolvidos.',
+      SpaceType.family    => 'Organize as despesas familiares e veja '
+          'o que cada um contribuiu.',
+      SpaceType.business  => 'Controle os gastos do negócio com visibilidade '
+          'para toda a equipe.',
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final accentColor = space.color != null
+        ? Color(int.parse('FF${space.color!.replaceFirst('#', '')}', radix: 16))
+        : theme.colorScheme.primary;
+
     return Padding(
-      padding: const EdgeInsets.all(32),
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('💸', style: const TextStyle(fontSize: 40)),
-            const SizedBox(height: 12),
-            Text(
-              'Nenhum gasto registrado ainda.',
-              style: GoogleFonts.manrope(
-                fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurfaceVariant,
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // ── Illustration card ──────────────────────────────────
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+            decoration: BoxDecoration(
+              color:        accentColor.withOpacity(0.07),
+              borderRadius: BorderRadius.circular(20),
+              border:       Border.all(
+                color: accentColor.withOpacity(0.18),
+                width: 1,
               ),
             ),
-            if (canWrite) ...[
-              const SizedBox(height: 16),
-              FilledButton.tonal(
-                onPressed: onAdd,
-                child: const Text('Adicionar primeiro gasto'),
+            child: Column(
+              children: [
+                // Space emoji or default icon
+                Text(
+                  space.emoji ?? space.type.defaultEmoji,
+                  style: const TextStyle(fontSize: 52),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  _headline,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.manrope(
+                    fontWeight: FontWeight.w700,
+                    fontSize:   18,
+                    color:      theme.colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _subheadline,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color:  theme.colorScheme.onSurfaceVariant,
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // ── How it works steps ─────────────────────────────────
+          _OnboardingStep(
+            number: '1',
+            icon:   Icons.add_circle_outline,
+            title:  'Adicione um gasto',
+            body:   'Toque em "Novo gasto" e informe o valor, quem pagou e como dividir.',
+            color:  accentColor,
+            theme:  theme,
+          ),
+          const SizedBox(height: 12),
+          _OnboardingStep(
+            number: '2',
+            icon:   Icons.people_outline,
+            title:  'Defina a divisão',
+            body:   'Igualmente, por porcentagem ou valores personalizados por pessoa.',
+            color:  accentColor,
+            theme:  theme,
+          ),
+          const SizedBox(height: 12),
+          _OnboardingStep(
+            number: '3',
+            icon:   Icons.handshake_outlined,
+            title:  'Acerte as contas',
+            body:   'O espaço calcula automaticamente quem deve quanto a quem.',
+            color:  accentColor,
+            theme:  theme,
+          ),
+
+          const SizedBox(height: 28),
+
+          // ── CTA ────────────────────────────────────────────────
+          if (canWrite)
+            FilledButton.icon(
+              onPressed: onAdd,
+              style: FilledButton.styleFrom(
+                backgroundColor: accentColor,
+                foregroundColor: Colors.white,
+                padding:         const EdgeInsets.symmetric(vertical: 16),
+                shape:           RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              icon:  const Icon(Icons.add),
+              label: const Text(
+                'Adicionar primeiro gasto',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            )
+          else
+            Center(
+              child: Text(
+                'Aguardando o primeiro gasto ser registrado.',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Onboarding step row
+// ─────────────────────────────────────────────────────────────────
+
+class _OnboardingStep extends StatelessWidget {
+  final String    number;
+  final IconData  icon;
+  final String    title;
+  final String    body;
+  final Color     color;
+  final ThemeData theme;
+
+  const _OnboardingStep({
+    required this.number,
+    required this.icon,
+    required this.title,
+    required this.body,
+    required this.color,
+    required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Step badge
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color:  color.withOpacity(0.12),
+            shape:  BoxShape.circle,
+          ),
+          child: Center(
+            child: Text(
+              number,
+              style: GoogleFonts.manrope(
+                fontWeight: FontWeight.w700,
+                fontSize:   13,
+                color:      color,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.manrope(
+                  fontWeight: FontWeight.w600,
+                  fontSize:   13,
+                  color:      theme.colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                body,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color:  theme.colorScheme.onSurfaceVariant,
+                  height: 1.4,
+                ),
               ),
             ],
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }

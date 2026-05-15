@@ -22,6 +22,7 @@ import 'widgets/liquidity_alert_card.dart';
 import 'widgets/connectivity_banner.dart';
 import 'widgets/activity_feed_preview_card.dart';
 import 'widgets/contribution_bar.dart';
+import 'widgets/space_contributions_card.dart';
 import 'widgets/swile_dashboard_card.dart';
 import 'widgets/recent_transactions_card.dart';
 import '../insights/insights_panel.dart';
@@ -449,6 +450,8 @@ class _MobileDashboardSliver extends StatelessWidget {
           const SizedBox(height: DSSpacing.lg),
           const ContributionBar(),
           const SizedBox(height: DSSpacing.md),
+          const SpaceContributionsCard(),
+          const SizedBox(height: DSSpacing.md),
           const ActivityFeedPreviewCard(),
           const SizedBox(height: 100),
         ]),
@@ -493,6 +496,8 @@ class _DesktopDashboardSliver extends StatelessWidget {
                       MonthlyGoalCard(),
                       SizedBox(height: DSSpacing.lg),
                       ContributionBar(),
+                      SizedBox(height: DSSpacing.md),
+                      SpaceContributionsCard(),
                       SizedBox(height: DSSpacing.md),
                       ActivityFeedPreviewCard(),
                     ],
@@ -585,6 +590,8 @@ class _WideDesktopSliver extends StatelessWidget {
                       InsightsPanel(),
                       SizedBox(height: DSSpacing.lg),
                       ExpenseBreakdown(),
+                      SizedBox(height: DSSpacing.lg),
+                      SpaceContributionsCard(),
                       SizedBox(height: DSSpacing.lg),
                       ActivityFeedPreviewCard(),
                     ],

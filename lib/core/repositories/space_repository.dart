@@ -7,6 +7,7 @@
 // by user_id manually — it relies on the SECURITY DEFINER helper functions
 // and policies defined in V40/V41.
 
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/space.dart';
 import '../models/space_transaction.dart';
@@ -62,7 +63,7 @@ class SpaceRepository {
     final rows = await _client
         .from('spaces')
         .select('*, space_members(*)')
-        .is_('archived_at', null)
+        .isFilter('archived_at', null)
         .order('created_at');
     return (rows as List)
         .map((r) => Space.fromJson(r as Map<String, dynamic>))
@@ -220,6 +221,47 @@ class SpaceRepository {
     return row as Map<String, dynamic>;
   }
 
+  /// Accept a space invite via the Edge Function.
+  ///
+  /// The invitee has no space membership yet, so RLS blocks a direct SELECT
+  /// on space_invites. The Edge Function runs with service-role credentials
+  /// and handles token validation, membership creation, and invite marking
+  /// atomically.
+  ///
+  /// Returns the joined [Space] on success.
+  /// Throws [SpaceInviteException] with a machine-readable [code] on failure.
+  Future<Space> acceptSpaceInviteViaEdgeFunction(String token) async {
+    try {
+      final response = await _client.functions.invoke(
+        'accept-space-invite',
+        body: {'token': token},
+      );
+
+      final data = response.data;
+      debugPrint('[SpaceInviteAccept] response: status=${response.status} data=$data');
+
+      final dataMap  = data is Map ? Map<String, dynamic>.from(data) : <String, dynamic>{};
+      final spaceRaw = dataMap['space'];
+      if (spaceRaw == null) throw const SpaceInviteException('internal_error');
+
+      final spaceJson = spaceRaw is Map
+          ? Map<String, dynamic>.from(spaceRaw)
+          : <String, dynamic>{};
+
+      return Space.fromJson(spaceJson);
+
+    } on FunctionException catch (e) {
+      debugPrint('[SpaceInviteAccept] FunctionException: status=${e.status} details=${e.details}');
+      final details = e.details;
+      final code    = (details is Map ? details['error'] : null) as String?
+          ?? 'internal_error';
+      throw SpaceInviteException(code);
+    } catch (e) {
+      debugPrint('[SpaceInviteAccept] Unexpected error: $e');
+      rethrow;
+    }
+  }
+
   // ═══════════════════════════════════════════════════════════════
   // Space Categories
   // ═══════════════════════════════════════════════════════════════
@@ -320,23 +362,23 @@ class SpaceRepository {
     String? beforeId,
     DateTime? beforeDate,
   }) async {
-    var query = _client
+    final query = _client
         .from('space_transactions')
         .select('''
           *,
           space_transaction_shares(*),
           space_categories(id, name, icon)
         ''')
-        .eq('space_id', spaceId)
+        .eq('space_id', spaceId);
+
+    final filteredQuery = beforeDate != null
+        ? query.lt('date', beforeDate.toIso8601String().split('T').first)
+        : query;
+
+    final rows = await filteredQuery
         .order('date', ascending: false)
         .order('created_at', ascending: false)
         .limit(limit);
-
-    if (beforeDate != null) {
-      query = query.lt('date', beforeDate.toIso8601String().split('T').first);
-    }
-
-    final rows = await query;
     return (rows as List)
         .map((r) => SpaceTransaction.fromJson(r as Map<String, dynamic>))
         .toList();
@@ -471,19 +513,18 @@ class SpaceRepository {
     required DateTime to,
     String? spaceId,
   }) async {
-    var query = _client
+    final query = _client
         .from('ledger_contributions')
         .select('*, spaces(name, emoji)')
         .eq('user_id', _userId)
         .gte('date', from.toIso8601String().split('T').first)
-        .lte('date', to.toIso8601String().split('T').first)
-        .order('date', ascending: false);
+        .lte('date', to.toIso8601String().split('T').first);
 
-    if (spaceId != null) {
-      query = query.eq('space_id', spaceId);
-    }
+    final filteredQuery = spaceId != null
+        ? query.eq('space_id', spaceId)
+        : query;
 
-    final rows = await query;
+    final rows = await filteredQuery.order('date', ascending: false);
     return (rows as List)
         .map((r) => LedgerContribution.fromJson(r as Map<String, dynamic>))
         .toList();
@@ -499,7 +540,7 @@ class SpaceRepository {
         .from('space_settlements')
         .select()
         .eq('space_id', spaceId)
-        .is_('settled_at', null)
+        .isFilter('settled_at', null)
         .order('created_at');
     return (rows as List)
         .map((r) => SpaceSettlement.fromJson(r as Map<String, dynamic>))
@@ -649,4 +690,17 @@ class _Bal {
   final String userId;
   double amount;
   _Bal(this.userId, this.amount);
+}
+
+// ── Invite error ────────────────────────────────────────────────────────────────
+
+/// Thrown by [SpaceRepository.acceptSpaceInviteViaEdgeFunction] when the
+/// Edge Function returns a non-2xx status. [code] is the machine-readable
+/// error string from the response body.
+class SpaceInviteException implements Exception {
+  const SpaceInviteException(this.code);
+  final String code;
+
+  @override
+  String toString() => 'SpaceInviteException($code)';
 }

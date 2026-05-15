@@ -207,6 +207,28 @@ farol/
 | Infrastructure | `SyncManager`, `OperationQueue`, `ConflictResolver` | `core/infrastructure/sync/` | ✅ |
 | Providers | `financialSnapshotProvider`, `financialProjectionProvider`, `cashflowForecastProvider`, `insightsProvider`, `recurringRulesStreamProvider`, `installmentPlansStreamProvider`, `isOfflineProvider`, `categoriesRefProvider` | `core/providers/providers.dart` | ✅ |
 
+## 🚀 Spaces v2 — Implementation Status (2026-05-15)
+
+| Sprint | Theme | Status |
+|---|---|---|
+| Sprint 1 | DB schema (V43/V44), Dart models, `SpaceRepository`, providers | ✅ Complete |
+| Sprint 2 | `CreateSpaceSheet`, `AddSpaceTransactionSheet`, `SpaceDashboardScreen`, context switcher | ✅ Complete |
+| Sprint 3 | `SpaceSettingsScreen`, `SpaceMembersScreen`, `SpaceTransactionsScreen`, realtime, `SpaceAppBarChip` | ✅ Complete |
+| Sprint 4 | `spaceMemberDisplayMapProvider`, `SpaceContributionsCard`, onboarding empty state, web layout | ✅ Complete |
+| Sprint 5 | `accept-space-invite` Edge Function, `AcceptSpaceInviteScreen`, `/join/:token` deep-link | ✅ Complete |
+| Sprint 6 | Space activity log, push notifications (FCM), invite notification overlay | 🔲 Next |
+
+**Key files:**
+- Schema: `database/migrations/V43__spaces_foundation.sql`, `V44__spaces_backfill.sql`
+- Models: `lib/core/models/space.dart`, `lib/core/models/space_transaction.dart`
+- Repository: `lib/core/repositories/space_repository.dart`
+- Providers: `lib/core/providers/space_providers.dart`
+- Screens: `lib/features/space/` (7 screens + 1 edge function)
+- Dashboard card: `lib/features/dashboard/widgets/space_contributions_card.dart`
+- Edge Functions: `supabase/functions/accept-space-invite/`
+
+---
+
 ## 🚨 Current Focus — What's Really Left
 
 1. ~~**UI audit + migration**~~ ✅ **Completed 2026-05-08** — see `plans/ui_provider_migration.md` and `docs/architecture/ui_audit_2026_05_08.md`

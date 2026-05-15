@@ -8,8 +8,11 @@
 // These providers are entirely additive — existing workspace_providers.dart
 // is not modified.
 
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../models/member_display.dart' show MemberDisplay, avatarColorForUserId;
 import '../models/space.dart';
 import '../models/space_transaction.dart';
 import '../repositories/space_repository.dart';
@@ -203,4 +206,93 @@ final totalLedgerContributionsProvider = Provider.autoDispose
   return ref.watch(ledgerContributionsProvider(period)).whenData(
         (contributions) => contributions.fold(0.0, (sum, c) => sum + c.amount),
       );
+});
+
+// ─────────────────────────────────────────────────────────────────
+// Member display names for the active space
+// ─────────────────────────────────────────────────────────────────
+
+/// Fetches `profiles` rows for all members of the active space.
+/// Returns a map of userId → MemberDisplay (display name, initials, avatar color).
+///
+/// Follows the exact same pattern as `memberDisplayMapProvider` in
+/// workspace_providers.dart but scoped to space membership.
+final spaceMemberDisplayMapProvider =
+    FutureProvider.autoDispose<Map<String, MemberDisplay>>((ref) async {
+  final space = ref.watch(activeSpaceProvider).valueOrNull;
+  if (space == null || space.members.isEmpty) return {};
+
+  final currentUserId =
+      Supabase.instance.client.auth.currentUser?.id ?? '';
+  final userIds = space.members.map((m) => m.userId).toList();
+
+  final rows = await Supabase.instance.client
+      .from('profiles')
+      .select('id, display_name, email, photo_url')
+      .inFilter('id', userIds);
+
+  final profileMap = <String, Map<String, dynamic>>{
+    for (final r in rows as List)
+      (r as Map<String, dynamic>)['id'] as String: r,
+  };
+
+  return {
+    for (final m in space.members)
+      m.userId: MemberDisplay.fromProfile(
+        profileMap[m.userId] ??
+            {
+              'id':           m.userId,
+              'display_name': null,
+              'email':        null,
+              'photo_url':    null,
+            },
+        avatarColor:   avatarColorForUserId(m.userId),
+        currentUserId: currentUserId,
+      ),
+  };
+});
+
+// ─────────────────────────────────────────────────────────────────
+// Realtime — space_transactions INSERT events
+// ─────────────────────────────────────────────────────────────────
+
+/// Listens to INSERT events on `space_transactions` for the active space.
+/// On each event: invalidates `spaceTransactionsProvider` so the dashboard
+/// and transaction list auto-refresh.
+///
+/// Keep this alive by watching it in SpaceDashboardScreen.
+final spaceTransactionsRealtimeProvider = StreamProvider.autoDispose<void>((ref) {
+  final spaceId = ref.watch(activeSpaceIdProvider);
+  if (spaceId == null) return const Stream.empty();
+
+  final client = Supabase.instance.client;
+  final controller = StreamController<void>.broadcast();
+
+  final channel = client.channel('space_tx:$spaceId');
+
+  channel.onPostgresChanges(
+    event:  PostgresChangeEvent.insert,
+    schema: 'public',
+    table:  'space_transactions',
+    filter: PostgresChangeFilter(
+      type:   PostgresChangeFilterType.eq,
+      column: 'space_id',
+      value:  spaceId,
+    ),
+    callback: (_) {
+      // Invalidate caches so consumers auto-rebuild
+      ref.invalidate(spaceTransactionsProvider);
+      ref.invalidate(settlementSuggestionsProvider);
+      if (!controller.isClosed) controller.add(null);
+    },
+  );
+
+  channel.subscribe();
+
+  ref.onDispose(() {
+    client.removeChannel(channel);
+    controller.close();
+  });
+
+  return controller.stream;
 });

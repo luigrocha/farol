@@ -42,6 +42,7 @@ import 'core/services/app_lifecycle_service.dart';
 import 'features/workspace/workspace_switcher_sheet.dart';
 import 'features/workspace/accept_invite_screen.dart';
 import 'features/workspace/invite_notification_overlay.dart';
+import 'features/space/accept_space_invite_screen.dart';
 import 'package:app_links/app_links.dart';
 import 'features/paywall/paywall_screen.dart';
 import 'core/models/budget_alert.dart' show AlertLevel;
@@ -185,16 +186,25 @@ class FarolApp extends ConsumerWidget {
           return MaterialPageRoute(
               builder: (context) => InvestmentDetailScreen(investment: inv));
         }
-        // Deep link: /invite/{token}
         final name = settings.name ?? '';
-        final uri = Uri.tryParse(name);
-        if (uri != null &&
-            uri.pathSegments.length == 2 &&
-            uri.pathSegments[0] == 'invite') {
+        final uri  = Uri.tryParse(name);
+        if (uri != null && uri.pathSegments.length == 2) {
+          final seg0  = uri.pathSegments[0];
           final token = uri.pathSegments[1];
-          return MaterialPageRoute(
-              builder: (context) => AcceptInviteScreen(token: token),
-              settings: settings);
+
+          // Workspace invite: /invite/:token
+          if (seg0 == 'invite') {
+            return MaterialPageRoute(
+                builder: (context) => AcceptInviteScreen(token: token),
+                settings: settings);
+          }
+
+          // Space invite: /join/:token
+          if (seg0 == 'join') {
+            return MaterialPageRoute(
+                builder: (context) => AcceptSpaceInviteScreen(token: token),
+                settings: settings);
+          }
         }
         return null;
       },
@@ -377,9 +387,13 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
   void _handleDeepLink(Uri uri) {
     final segments = uri.pathSegments;
     if (segments.length >= 2 && segments[0] == 'invite') {
+      // Workspace invite: farol.app/invite/:token
       final token = segments[1];
-      navigatorKey.currentState
-          ?.pushNamed('/invite/$token');
+      navigatorKey.currentState?.pushNamed('/invite/$token');
+    } else if (segments.length >= 2 && segments[0] == 'join') {
+      // Space invite: farol.app/join/:token
+      final token = segments[1];
+      navigatorKey.currentState?.pushNamed('/join/$token');
     }
   }
 
