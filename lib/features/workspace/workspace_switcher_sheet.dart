@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/models/workspace.dart';
+import '../../core/models/space.dart';
 import '../../core/providers/workspace_providers.dart';
+import '../../core/providers/space_providers.dart';
+import '../space/create_space_sheet.dart';
+import '../space/space_dashboard_screen.dart';
 import 'create_workspace_sheet.dart';
 import 'members_screen.dart';
 
@@ -28,15 +32,17 @@ class WorkspaceSwitcherSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final workspacesAsync = ref.watch(userWorkspacesProvider);
-    final activeWs = ref.watch(activeWorkspaceProvider).valueOrNull;
-    final role = ref.watch(currentUserRoleProvider);
-    final canManage = role == WorkspaceRole.owner || role == WorkspaceRole.admin;
+    final spacesAsync     = ref.watch(userSpacesProvider);
+    final activeWs        = ref.watch(activeWorkspaceProvider).valueOrNull;
+    final activeSpace     = ref.watch(activeSpaceProvider).valueOrNull;
+    final role            = ref.watch(currentUserRoleProvider);
+    final canManage       = role == WorkspaceRole.owner || role == WorkspaceRole.admin;
 
     return DraggableScrollableSheet(
       expand: false,
-      initialChildSize: 0.55,
+      initialChildSize: 0.65,
       minChildSize: 0.35,
-      maxChildSize: 0.85,
+      maxChildSize: 0.92,
       builder: (context, scrollController) {
         return Column(
           children: [
@@ -48,7 +54,7 @@ class WorkspaceSwitcherSheet extends ConsumerWidget {
               child: Row(
                 children: [
                   Text(
-                    'Workspaces',
+                    'Suas finanças',
                     style: GoogleFonts.manrope(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -58,7 +64,7 @@ class WorkspaceSwitcherSheet extends ConsumerWidget {
                   if (activeWs != null && canManage)
                     IconButton(
                       icon: const Icon(Icons.group_outlined),
-                      tooltip: 'Manage members',
+                      tooltip: 'Gerenciar membros',
                       onPressed: () {
                         Navigator.pop(context);
                         Navigator.push(
@@ -71,7 +77,7 @@ class WorkspaceSwitcherSheet extends ConsumerWidget {
                     ),
                   IconButton(
                     icon: const Icon(Icons.add),
-                    tooltip: 'New workspace',
+                    tooltip: 'Novo workspace',
                     onPressed: () {
                       Navigator.pop(context);
                       CreateWorkspaceSheet.show(context);
@@ -81,7 +87,7 @@ class WorkspaceSwitcherSheet extends ConsumerWidget {
               ),
             ),
             const Divider(height: 1),
-            // ── Workspace list ───────────────────────────────────
+            // ── Combined list ────────────────────────────────────
             Expanded(
               child: workspacesAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
@@ -93,16 +99,23 @@ class WorkspaceSwitcherSheet extends ConsumerWidget {
                   final shared = workspaces
                       .where((w) => w.type == WorkspaceType.shared)
                       .toList();
+                  final spaces = spacesAsync.valueOrNull ?? [];
 
                   final items = <_ListItem>[
+                    // Personal workspace section (🔒 private)
                     if (personal.isNotEmpty) ...[
-                      _SectionHeader('Your space'),
+                      _SectionHeader('🔒  Pessoal'),
                       ...personal.map((w) => _WorkspaceItem(w)),
                     ],
+                    // Legacy shared workspaces
                     if (shared.isNotEmpty) ...[
-                      _SectionHeader('Shared spaces'),
+                      _SectionHeader('Workspaces compartilhados'),
                       ...shared.map((w) => _WorkspaceItem(w)),
                     ],
+                    // Spaces v2
+                    _SectionHeader('Espaços'),
+                    ...spaces.map((s) => _SpaceItem(s)),
+                    _SpaceCreateItem(),
                   ];
 
                   return ListView.builder(
@@ -115,17 +128,51 @@ class WorkspaceSwitcherSheet extends ConsumerWidget {
                       }
                       if (item is _WorkspaceItem) {
                         final ws = item.workspace;
-                        final isActive = ws.id == activeWs?.id;
+                        final isActive = activeSpace == null && ws.id == activeWs?.id;
                         return _WorkspaceTile(
                           workspace: ws,
                           isActive: isActive,
                           onTap: () {
                             if (!isActive) {
-                              ref
-                                  .read(activeWorkspaceProvider.notifier)
-                                  .select(ws);
+                              ref.read(activeWorkspaceProvider.notifier).select(ws);
+                              // Deselect any active space when switching to workspace
+                              ref.read(activeSpaceProvider.notifier).select(null);
                             }
                             Navigator.pop(context);
+                          },
+                        );
+                      }
+                      if (item is _SpaceItem) {
+                        final space   = item.space;
+                        final isActive = space.id == activeSpace?.id;
+                        return _SpaceTile(
+                          space:    space,
+                          isActive: isActive,
+                          onTap: () {
+                            ref.read(activeSpaceProvider.notifier).select(space);
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => SpaceDashboardScreen(space: space),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                      if (item is _SpaceCreateItem) {
+                        return ListTile(
+                          leading: CircleAvatar(
+                            radius: 22,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.surfaceContainerHighest,
+                            child: const Icon(Icons.add, size: 20),
+                          ),
+                          title: const Text('Novo espaço'),
+                          subtitle: const Text('Casa, viagem, projeto…'),
+                          onTap: () {
+                            Navigator.pop(context);
+                            CreateSpaceSheet.show(context);
                           },
                         );
                       }
@@ -155,6 +202,13 @@ class _WorkspaceItem extends _ListItem {
   final Workspace workspace;
   _WorkspaceItem(this.workspace);
 }
+
+class _SpaceItem extends _ListItem {
+  final Space space;
+  _SpaceItem(this.space);
+}
+
+class _SpaceCreateItem extends _ListItem {}
 
 // ─────────────────────────────────────────────────────────────
 // _SectionHeaderTile
@@ -404,6 +458,68 @@ class WorkspaceAppBarChip extends ConsumerWidget {
         ],
       ),
     );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// _SpaceTile
+// ─────────────────────────────────────────────────────────────
+
+class _SpaceTile extends StatelessWidget {
+  const _SpaceTile({
+    required this.space,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  final Space space;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme  = Theme.of(context).colorScheme;
+    final memberCount  = space.members.length;
+    final accentColor  = _parseColor(space.color) ?? const Color(0xFF6366F1);
+
+    return ListTile(
+      onTap: onTap,
+      leading: CircleAvatar(
+        radius: 22,
+        backgroundColor: isActive ? accentColor : accentColor.withOpacity(0.18),
+        child: Text(
+          space.emoji ?? space.type.defaultEmoji,
+          style: const TextStyle(fontSize: 18),
+        ),
+      ),
+      title: Text(
+        space.name,
+        style: GoogleFonts.manrope(
+          fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+        ),
+      ),
+      subtitle: Row(
+        children: [
+          Text(
+            '$memberCount ${memberCount == 1 ? 'pessoa' : 'pessoas'} · ${space.type.label}',
+            style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
+          ),
+        ],
+      ),
+      trailing: isActive
+          ? Icon(Icons.check_circle, color: accentColor)
+          : null,
+    );
+  }
+
+  static Color? _parseColor(String? hex) {
+    if (hex == null) return null;
+    try {
+      final h = hex.replaceFirst('#', '');
+      return Color(int.parse('FF$h', radix: 16));
+    } catch (_) {
+      return null;
+    }
   }
 }
 
