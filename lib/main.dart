@@ -577,118 +577,138 @@ class _DesktopNavRail extends ConsumerStatefulWidget {
 }
 
 class _DesktopNavRailState extends ConsumerState<_DesktopNavRail> {
-  static const _navyBg = Color(0xFF1B2B4B);
-  static const _amber = Color(0xFFF5A623);
-  static const _selectedBg = Color(0x22F5A623); // amber at 13% opacity
+  // Premium sidebar palette — deep navy with subtle glass finish
+  static const _navyBg    = Color(0xFF111827); // near-black with cool tint
+  static const _navyBg2   = Color(0xFF1A2436); // slightly lighter for hover
+  static const _amber      = Color(0xFFF5A623);
+  static const _selectedBg = Color(0x1FF5A623); // amber 12%
 
   @override
   Widget build(BuildContext context) {
-    final activeWs = ref.watch(activeWorkspaceProvider).valueOrNull;
-    final alerts = ref.watch(budgetAlertsProvider);
-    final insights = ref.watch(insightsProvider).valueOrNull ?? [];
+    final activeWs  = ref.watch(activeWorkspaceProvider).valueOrNull;
+    final alerts    = ref.watch(budgetAlertsProvider);
+    final insights  = ref.watch(insightsProvider).valueOrNull ?? [];
     final themeMode = ref.watch(themeModeProvider);
 
     final isShared = activeWs?.type == WorkspaceType.shared;
     final hasEmoji = activeWs?.emoji != null && activeWs!.emoji!.isNotEmpty;
 
-    // Badge counts per section
-    final dashboardBadge = alerts.where((a) => a.level != AlertLevel.warning).length +
+    final dashboardBadge =
+        alerts.where((a) => a.level != AlertLevel.warning).length +
         insights.where((i) => i.priority == InsightPriority.critical).length;
-    final budgetBadge = alerts.where((a) => a.level == AlertLevel.exceeded).length;
+    final budgetBadge =
+        alerts.where((a) => a.level == AlertLevel.exceeded).length;
 
     final items = [
-      _NavItem(icon: Icons.home_outlined, selectedIcon: Icons.home_rounded,
-          label: widget.l10n.dashboard, badge: dashboardBadge),
-      _NavItem(icon: Icons.receipt_long_outlined, selectedIcon: Icons.receipt_long_rounded,
-          label: widget.l10n.transactions),
-      _NavItem(icon: Icons.bar_chart_outlined, selectedIcon: Icons.bar_chart_rounded,
-          label: widget.l10n.analytics),
-      _NavItem(icon: Icons.pie_chart_outline_rounded, selectedIcon: Icons.pie_chart_rounded,
-          label: 'Budget', badge: budgetBadge),
-      _NavItem(icon: Icons.trending_up_outlined, selectedIcon: Icons.trending_up_rounded,
-          label: widget.l10n.investments),
+      _NavItem(icon: Icons.home_outlined,         selectedIcon: Icons.home_rounded,           label: widget.l10n.dashboard,    badge: dashboardBadge),
+      _NavItem(icon: Icons.receipt_long_outlined,  selectedIcon: Icons.receipt_long_rounded,   label: widget.l10n.transactions),
+      _NavItem(icon: Icons.bar_chart_outlined,     selectedIcon: Icons.bar_chart_rounded,      label: widget.l10n.analytics),
+      _NavItem(icon: Icons.pie_chart_outline_rounded, selectedIcon: Icons.pie_chart_rounded,   label: 'Budget',                 badge: budgetBadge),
+      _NavItem(icon: Icons.trending_up_outlined,   selectedIcon: Icons.trending_up_rounded,    label: widget.l10n.investments),
     ];
 
     return SizedBox(
-      width: 200,
+      width: 212,
       child: Container(
-        color: _navyBg,
+        decoration: BoxDecoration(
+          color: _navyBg,
+          border: Border(
+            right: BorderSide(
+              color: Colors.white.withValues(alpha: 0.06),
+              width: 1,
+            ),
+          ),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // ── Logo ──
+            // ── Logo / brand ──────────────────────────────────────────────
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
               child: Row(
                 children: [
                   Container(
-                    width: 34,
-                    height: 34,
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
-                      color: _amber,
-                      borderRadius: BorderRadius.circular(9),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0xFFF5A623), Color(0xFFE8891A)],
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: _amber.withValues(alpha: 0.35),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    child: const Icon(Icons.local_fire_department_rounded,
-                        color: Colors.white, size: 20),
+                    child: const Icon(
+                      Icons.local_fire_department_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                   ),
                   const SizedBox(width: 10),
-                  Text(
-                    'Farol',
-                    style: GoogleFonts.manrope(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Farol',
+                        style: GoogleFonts.manrope(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      Text(
+                        'Finanças',
+                        style: TextStyle(
+                          fontSize: 9,
+                          letterSpacing: 1.2,
+                          color: Colors.white.withValues(alpha: 0.35),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
 
-            // ── Workspace chip ──
+            // ── Workspace chip ────────────────────────────────────────────
             if (activeWs != null)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                child: GestureDetector(
-                  onTap: () => WorkspaceSwitcherSheet.show(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(9),
-                    ),
-                    child: Row(
-                      children: [
-                        if (hasEmoji)
-                          Text(activeWs.emoji!, style: const TextStyle(fontSize: 13))
-                        else
-                          Icon(
-                            isShared ? Icons.group_outlined : Icons.person_outline,
-                            size: 14,
-                            color: Colors.white70,
-                          ),
-                        const SizedBox(width: 7),
-                        Expanded(
-                          child: Text(
-                            activeWs.name,
-                            style: GoogleFonts.manrope(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const Icon(Icons.unfold_more_rounded, size: 14, color: Colors.white38),
-                      ],
-                    ),
-                  ),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                child: _WorkspaceChip(
+                  workspace: activeWs,
+                  hasEmoji: hasEmoji,
+                  isShared: isShared,
+                  navyBg2: _navyBg2,
                 ),
               ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
 
-            // ── Nav items ──
+            // ── Section label ─────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+              child: Text(
+                'MENU',
+                style: TextStyle(
+                  fontSize: 9,
+                  letterSpacing: 1.4,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white.withValues(alpha: 0.25),
+                ),
+              ),
+            ),
+
+            // ── Nav items ─────────────────────────────────────────────────
             ...items.asMap().entries.map((e) {
               final idx = e.key;
               final item = e.value;
@@ -698,51 +718,39 @@ class _DesktopNavRailState extends ConsumerState<_DesktopNavRail> {
                 selected: selected,
                 selectedBg: _selectedBg,
                 selectedColor: _amber,
-                unselectedColor: Colors.white60,
+                unselectedColor: Colors.white.withValues(alpha: 0.55),
+                hoverBg: Colors.white.withValues(alpha: 0.06),
                 onTap: () => widget.onDestinationSelected(idx),
               );
             }),
 
             const Spacer(),
 
-            // ── Dark mode toggle ──
+            // ── Divider ───────────────────────────────────────────────────
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              child: InkWell(
-                onTap: () {
-                  final next = themeMode == ThemeMode.dark
-                      ? ThemeMode.light
-                      : ThemeMode.dark;
-                  ref.read(themeModeProvider.notifier).setThemeMode(next);
-                },
-                borderRadius: BorderRadius.circular(9),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  child: Row(
-                    children: [
-                      Icon(
-                        themeMode == ThemeMode.dark
-                            ? Icons.light_mode_outlined
-                            : Icons.dark_mode_outlined,
-                        size: 18,
-                        color: Colors.white60,
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        themeMode == ThemeMode.dark ? 'Light mode' : 'Dark mode',
-                        style: GoogleFonts.manrope(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white60,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Container(
+                height: 1,
+                color: Colors.white.withValues(alpha: 0.07),
               ),
             ),
 
-            // ── Settings ──
+            // ── Dark mode toggle ──────────────────────────────────────────
+            _SidebarFooterBtn(
+              icon: themeMode == ThemeMode.dark
+                  ? Icons.light_mode_outlined
+                  : Icons.dark_mode_outlined,
+              label: themeMode == ThemeMode.dark ? 'Light mode' : 'Dark mode',
+              hoverBg: Colors.white.withValues(alpha: 0.06),
+              onTap: () {
+                final next = themeMode == ThemeMode.dark
+                    ? ThemeMode.light
+                    : ThemeMode.dark;
+                ref.read(themeModeProvider.notifier).setThemeMode(next);
+              },
+            ),
+
+            // ── Settings ──────────────────────────────────────────────────
             _NavRailItem(
               item: _NavItem(
                 icon: Icons.settings_outlined,
@@ -752,12 +760,161 @@ class _DesktopNavRailState extends ConsumerState<_DesktopNavRail> {
               selected: widget.selectedIndex == 5,
               selectedBg: _selectedBg,
               selectedColor: _amber,
-              unselectedColor: Colors.white60,
+              unselectedColor: Colors.white.withValues(alpha: 0.55),
+              hoverBg: Colors.white.withValues(alpha: 0.06),
               onTap: () => widget.onDestinationSelected(5),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Workspace chip in sidebar ─────────────────────────────────────────────────
+
+class _WorkspaceChip extends StatefulWidget {
+  const _WorkspaceChip({
+    required this.workspace,
+    required this.hasEmoji,
+    required this.isShared,
+    required this.navyBg2,
+  });
+
+  final dynamic workspace;
+  final bool hasEmoji;
+  final bool isShared;
+  final Color navyBg2;
+
+  @override
+  State<_WorkspaceChip> createState() => _WorkspaceChipState();
+}
+
+class _WorkspaceChipState extends State<_WorkspaceChip> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit:  (_) => setState(() => _hovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () => WorkspaceSwitcherSheet.show(context),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            color: _hovered
+                ? Colors.white.withValues(alpha: 0.10)
+                : Colors.white.withValues(alpha: 0.06),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: _hovered ? 0.12 : 0.06),
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              if (widget.hasEmoji)
+                Text(
+                  (widget.workspace.emoji as String?)!,
+                  style: const TextStyle(fontSize: 14),
+                )
+              else
+                Icon(
+                  widget.isShared
+                      ? Icons.group_outlined
+                      : Icons.person_outline,
+                  size: 14,
+                  color: Colors.white.withValues(alpha: 0.6),
+                ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  widget.workspace.name as String,
+                  style: GoogleFonts.manrope(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white.withValues(alpha: 0.85),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Icon(
+                Icons.unfold_more_rounded,
+                size: 14,
+                color: Colors.white.withValues(alpha: 0.30),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Sidebar footer button (dark mode toggle, etc.) ────────────────────────────
+
+class _SidebarFooterBtn extends StatefulWidget {
+  const _SidebarFooterBtn({
+    required this.icon,
+    required this.label,
+    required this.hoverBg,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color hoverBg;
+  final VoidCallback onTap;
+
+  @override
+  State<_SidebarFooterBtn> createState() => _SidebarFooterBtnState();
+}
+
+class _SidebarFooterBtnState extends State<_SidebarFooterBtn> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit:  (_) => setState(() => _hovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: _hovered ? widget.hoverBg : Colors.transparent,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  widget.icon,
+                  size: 17,
+                  color: Colors.white.withValues(alpha: 0.50),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  widget.label,
+                  style: GoogleFonts.manrope(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white.withValues(alpha: 0.50),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -778,86 +935,167 @@ class _NavItem {
   });
 }
 
-class _NavRailItem extends StatelessWidget {
-  final _NavItem item;
-  final bool selected;
-  final Color selectedBg;
-  final Color selectedColor;
-  final Color unselectedColor;
-  final VoidCallback onTap;
+// ── Nav rail item with hover animation ───────────────────────────────────────
 
+class _NavRailItem extends StatefulWidget {
   const _NavRailItem({
     required this.item,
     required this.selected,
     required this.selectedBg,
     required this.selectedColor,
     required this.unselectedColor,
+    required this.hoverBg,
     required this.onTap,
   });
 
+  final _NavItem item;
+  final bool selected;
+  final Color selectedBg;
+  final Color selectedColor;
+  final Color unselectedColor;
+  final Color hoverBg;
+  final VoidCallback onTap;
+
+  @override
+  State<_NavRailItem> createState() => _NavRailItemState();
+}
+
+class _NavRailItemState extends State<_NavRailItem>
+    with SingleTickerProviderStateMixin {
+  bool _hovered = false;
+  late AnimationController _ctrl;
+  late Animation<Offset> _slide;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl  = AnimationController(
+      vsync: this, duration: const Duration(milliseconds: 150),
+    );
+    _slide = Tween(
+      begin: Offset.zero,
+      end: const Offset(0.02, 0),
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+  }
+
+  @override
+  void dispose() { _ctrl.dispose(); super.dispose(); }
+
   @override
   Widget build(BuildContext context) {
-    final color = selected ? selectedColor : unselectedColor;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            color: selected ? selectedBg : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            children: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Icon(
-                    selected ? item.selectedIcon : item.icon,
-                    size: 18,
-                    color: color,
-                  ),
-                  if (item.badge > 0)
-                    Positioned(
-                      top: -5,
-                      right: -7,
-                      child: Container(
-                        width: 15,
-                        height: 15,
-                        decoration: const BoxDecoration(
-                          color: tokens.FarolColors.coral,
-                          shape: BoxShape.circle,
+    final color = widget.selected
+        ? widget.selectedColor
+        : (_hovered
+            ? Colors.white.withValues(alpha: 0.80)
+            : widget.unselectedColor);
+
+    final bg = widget.selected
+        ? widget.selectedBg
+        : (_hovered ? widget.hoverBg : Colors.transparent);
+
+    return MouseRegion(
+      onEnter: (_) {
+        setState(() => _hovered = true);
+        _ctrl.forward();
+      },
+      onExit: (_) {
+        setState(() => _hovered = false);
+        _ctrl.reverse();
+      },
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          child: AnimatedBuilder(
+            animation: _slide,
+            builder: (_, child) => SlideTransition(
+              position: _slide,
+              child: child,
+            ),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: bg,
+                borderRadius: BorderRadius.circular(10),
+                // Subtle left accent for selected state
+                border: widget.selected
+                    ? Border(
+                        left: BorderSide(
+                          color: widget.selectedColor,
+                          width: 2.5,
                         ),
-                        child: Center(
-                          child: Text(
-                            '${item.badge}',
-                            style: const TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
+                      )
+                    : null,
+              ),
+              child: Row(
+                children: [
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 150),
+                        child: Icon(
+                          widget.selected
+                              ? widget.item.selectedIcon
+                              : widget.item.icon,
+                          key: ValueKey(widget.selected),
+                          size: 18,
+                          color: color,
+                        ),
+                      ),
+                      if (widget.item.badge > 0)
+                        Positioned(
+                          top: -5,
+                          right: -7,
+                          child: Container(
+                            width: 15,
+                            height: 15,
+                            decoration: const BoxDecoration(
+                              color: tokens.FarolColors.coral,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text(
+                                '${widget.item.badge}',
+                                style: const TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
                           ),
                         ),
+                    ],
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      widget.item.label,
+                      style: GoogleFonts.manrope(
+                        fontSize: 13,
+                        fontWeight: widget.selected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
+                        color: color,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (widget.selected)
+                    Container(
+                      width: 5,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: widget.selectedColor,
+                        shape: BoxShape.circle,
                       ),
                     ),
                 ],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  item.label,
-                  style: GoogleFonts.manrope(
-                    fontSize: 13,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                    color: color,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

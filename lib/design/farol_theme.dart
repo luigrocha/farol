@@ -69,12 +69,13 @@ ThemeData _build({
     cardTheme: CardThemeData(
       color: surfaceLowest,
       elevation: 0,
+      shadowColor: Colors.transparent,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         side: BorderSide(
           color: isDark
-              ? Colors.white.withValues(alpha: 0.06)
-              : tokens.FarolColors.navy.withValues(alpha: 0.05),
+              ? Colors.white.withValues(alpha: 0.07)
+              : tokens.FarolColors.navy.withValues(alpha: 0.06),
           width: 1,
         ),
       ),

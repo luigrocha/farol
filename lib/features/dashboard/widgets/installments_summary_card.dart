@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/providers/providers.dart';
+import '../../../core/domain/entities/installment_plan.dart';
 import '../../../core/services/financial_calculator_service.dart';
 import '../../../core/widgets/shimmer_box.dart';
+import '../../../design/ds_tokens.dart';
 import '../../../core/theme/farol_colors.dart';
 import '../utils/dashboard_constants.dart';
 
@@ -16,206 +18,204 @@ class InstallmentsSummaryCard extends ConsumerWidget {
     final instAsync = ref.watch(activeInstallmentPlansProvider);
 
     if (instAsync.isLoading) {
-      return const DashboardCardSkeleton(height: 100);
+      return const DashboardCardSkeleton(height: 120);
     }
 
     final installments = instAsync.value ?? [];
+    if (installments.isEmpty) return const SizedBox.shrink();
 
-    if (installments.isEmpty) {
-      return const SizedBox.shrink();
-    }
+    final totalMonthly = installments.fold(0.0, (s, i) => s + i.installmentAmount);
+    final totalRemaining = installments.fold(0.0, (s, i) => s + i.remainingAmount);
 
-    final totalMonthly = installments.fold(
-      0.0,
-      (s, i) => s + i.installmentAmount,
-    );
-    final totalRemaining = installments.fold(
-      0.0,
-      (s, i) => s + i.remainingAmount,
-    );
-
-    return GestureDetector(
+    return DSCard(
       onTap: () => Navigator.pushNamed(context, '/installments'),
-      child: Container(
-        padding: const EdgeInsets.all(kCardPadding),
-        decoration: BoxDecoration(
-          color: colors.surfaceLowest,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: kInstallmentsCardColor.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Center(
-                        child: Text('💳', style: TextStyle(fontSize: 15)),
-                      ),
-                    ),
-                    const SizedBox(width: kSpacingMD),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Parcelas',
-                          style: GoogleFonts.manrope(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: colors.onSurface,
-                          ),
-                        ),
-                        Text(
-                          '${installments.length} ativa${installments.length == 1 ? '' : 's'}',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: colors.onSurfaceSoft,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+      padding: const EdgeInsets.all(DSSpacing.xl),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Header ─────────────────────────────────────────────────────
+          Row(
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: kInstallmentsCardColor.withValues(alpha: 0.12),
+                  borderRadius: DSRadius.smBR,
                 ),
-                const Row(
+                child: const Center(
+                  child: Text('💳', style: TextStyle(fontSize: 15)),
+                ),
+              ),
+              const SizedBox(width: DSSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Ver todas',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: kInstallmentsCardColor,
+                      'Parcelas',
+                      style: GoogleFonts.manrope(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                    Icon(
-                      Icons.chevron_right,
-                      size: 14,
-                      color: kInstallmentsCardColor,
+                    Text(
+                      '${installments.length} ativa${installments.length == 1 ? '' : 's'}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: colors.onSurfaceSoft,
+                      ),
                     ),
                   ],
                 ),
-              ],
+              ),
+              DSTextButton(
+                label: 'Ver todas',
+                onTap: () => Navigator.pushNamed(context, '/installments'),
+                icon: Icons.chevron_right_rounded,
+                color: kInstallmentsCardColor,
+              ),
+            ],
+          ),
+
+          const SizedBox(height: DSSpacing.lg),
+
+          // ── Summary metrics ──────────────────────────────────────────────
+          Row(
+            children: [
+              Expanded(
+                child: _InstallmentMetric(
+                  label: 'MENSAL',
+                  value: FinancialCalculatorService.formatBRL(totalMonthly),
+                  valueColor: kInstallmentsCardColor,
+                ),
+              ),
+              Container(
+                width: 1,
+                height: 36,
+                color: colors.surfaceLow,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: DSSpacing.lg),
+                  child: _InstallmentMetric(
+                    label: 'SALDO RESTANTE',
+                    value: FinancialCalculatorService.formatBRL(totalRemaining),
+                    valueColor: colors.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: DSSpacing.lg),
+
+          // ── Individual installment rows ──────────────────────────────────
+          ...installments.take(3).map((inst) => Padding(
+                padding: const EdgeInsets.only(bottom: DSSpacing.sm),
+                child: _InstallmentRow(inst: inst),
+              )),
+        ],
+      ),
+    );
+  }
+}
+
+class _InstallmentMetric extends StatelessWidget {
+  const _InstallmentMetric({
+    required this.label,
+    required this.value,
+    required this.valueColor,
+  });
+
+  final String label;
+  final String value;
+  final Color valueColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 9,
+            letterSpacing: 0.8,
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+          ),
+        ),
+        const SizedBox(height: 3),
+        Text(
+          value,
+          style: GoogleFonts.manrope(
+            fontSize: 15,
+            fontWeight: FontWeight.w800,
+            color: valueColor,
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _InstallmentRow extends StatelessWidget {
+  const _InstallmentRow({required this.inst});
+
+  final InstallmentPlan inst;
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                inst.description,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: onSurface,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            const SizedBox(height: kSpacingXL),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'MENSAL',
-                        style: TextStyle(
-                          fontSize: 9,
-                          letterSpacing: 1,
-                          fontWeight: FontWeight.w600,
-                          color: colors.onSurfaceFaint,
-                        ),
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        FinancialCalculatorService.formatBRL(totalMonthly),
-                        style: GoogleFonts.inter(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: kInstallmentsCardColor,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
-                      ),
-                    ],
-                  ),
+            const SizedBox(width: DSSpacing.sm),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: DSSpacing.xs,
+                vertical: 2,
+              ),
+              decoration: BoxDecoration(
+                color: kInstallmentsCardColor.withValues(alpha: 0.08),
+                borderRadius: DSRadius.xsBR,
+              ),
+              child: Text(
+                '${inst.paidCount}/${inst.numInstallments}',
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: kInstallmentsCardColor,
                 ),
-                Container(
-                  width: 1,
-                  height: 32,
-                  color: colors.surfaceLow,
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: kSpacingMD),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'SALDO RESTANTE',
-                          style: TextStyle(
-                            fontSize: 9,
-                            letterSpacing: 1,
-                            fontWeight: FontWeight.w600,
-                            color: colors.onSurfaceFaint,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          FinancialCalculatorService.formatBRL(totalRemaining),
-                          style: GoogleFonts.inter(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: colors.onSurface,
-                            fontFeatures: const [FontFeature.tabularFigures()],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-            const SizedBox(height: kSpacingXL),
-            ...installments.take(3).map((inst) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              inst.description,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: colors.onSurface,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Text(
-                            '${inst.paidCount}/${inst.numInstallments}',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: colors.onSurfaceSoft,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(3),
-                        child: LinearProgressIndicator(
-                          value: inst.progressPercent,
-                          minHeight: 4,
-                          backgroundColor:
-                              kInstallmentsCardColor.withValues(alpha: 0.1),
-                          valueColor: const AlwaysStoppedAnimation(
-                            kInstallmentsCardColor,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
           ],
         ),
-      ),
+        const SizedBox(height: DSSpacing.xs),
+        DSProgressBar(
+          value: inst.progressPercent,
+          color: kInstallmentsCardColor,
+          height: 4,
+        ),
+        const SizedBox(height: DSSpacing.xs),
+      ],
     );
   }
 }

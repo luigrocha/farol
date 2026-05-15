@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/providers/providers.dart';
 import '../../core/models/budget_alert.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../core/i18n/app_localizations.dart';
 import '../../core/theme/farol_colors.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../../design/ds_tokens.dart';
 import '../transactions/quick_add_bottom_sheet.dart';
 import 'widgets/alert_banner.dart';
 import 'widgets/period_balance_hero.dart';
@@ -27,110 +28,31 @@ import '../insights/insights_panel.dart';
 import '../workspace/workspace_switcher_sheet.dart';
 import '../../core/providers/workspace_providers.dart' show canWriteProvider;
 
+// ── Layout breakpoints ────────────────────────────────────────────────────────
+
+const _kDesktopWide  = 1200.0; // 3-column layout
+const _kDesktop      = 800.0;  // 2-column layout
+const _kContentMaxW  = 1440.0; // max content width
+
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
-  // Desktop breakpoint: two-column grid above this width.
-  static const double _desktopBreakpoint = 800;
+  // Keep for backward compat
+  static const double _desktopBreakpoint = _kDesktop;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final month = ref.watch(selectedMonthProvider);
-    final year = ref.watch(selectedYearProvider);
+    final year  = ref.watch(selectedYearProvider);
     final period = ref.watch(selectedPeriodProvider);
-    final l10n = AppLocalizations.of(context);
+    final l10n   = AppLocalizations.of(context);
     final months = l10n.months;
     final periodLabel =
         '${period.start.day} ${months[period.start.month - 1]} – '
         '${period.end.day} ${months[period.end.month - 1]}';
-    final isDesktop =
-        MediaQuery.sizeOf(context).width >= _desktopBreakpoint;
-
-    final appBar = SliverAppBar(
-      floating: true,
-      // titleSpacing: 0 lets the title use all available space without extra margins.
-      titleSpacing: 0,
-      toolbarHeight: 56,
-      // Use automaticallyImplyLeading: false so Flutter doesn't reserve space for
-      // a back button, which would shrink the available title width.
-      automaticallyImplyLeading: false,
-      title: Row(
-        children: [
-          // ── Left: chevron + date column + chevron ─────────────────────────
-          IconButton(
-            icon: const Icon(Icons.chevron_left, size: 20),
-            visualDensity: VisualDensity.compact,
-            onPressed: () => _changeMonth(ref, month, year, -1),
-          ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                '${months[month - 1]} $year',
-                style: GoogleFonts.manrope(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 15,
-                ),
-              ),
-              Text(
-                periodLabel,
-                style: GoogleFonts.manrope(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 10,
-                  color: context.colors.onSurfaceSoft,
-                ),
-              ),
-            ],
-          ),
-          IconButton(
-            icon: const Icon(Icons.chevron_right, size: 20),
-            visualDensity: VisualDensity.compact,
-            onPressed: () => _changeMonth(ref, month, year, 1),
-          ),
-          // ── Right: workspace chip + icons (use Expanded + Row so they never overflow)
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                const WorkspaceAppBarChip(),
-                Consumer(builder: (_, ref, __) {
-                  final isPrivate = ref.watch(privacyModeProvider);
-                  return IconButton(
-                    icon: Icon(
-                      isPrivate
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                      size: 20,
-                    ),
-                    visualDensity: VisualDensity.compact,
-                    onPressed: () =>
-                        ref.read(privacyModeProvider.notifier).toggle(),
-                  );
-                }),
-                Consumer(builder: (_, ref, __) {
-                  final alerts = ref.watch(budgetAlertsProvider);
-                  final critical =
-                      alerts.where((a) => a.level != AlertLevel.warning).length;
-                  return Badge(
-                    isLabelVisible: critical > 0,
-                    label: Text('$critical'),
-                    backgroundColor: tokens.FarolColors.coral,
-                    child: IconButton(
-                      icon: const Icon(Icons.notifications_outlined, size: 20),
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () =>
-                          Navigator.pushNamed(context, '/notifications'),
-                    ),
-                  );
-                }),
-                const SizedBox(width: 4),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    final width = MediaQuery.sizeOf(context).width;
+    final isWide = width >= _kDesktopWide;
+    final isDesktop = width >= _kDesktop;
 
     return Scaffold(
       body: Column(children: [
@@ -138,9 +60,18 @@ class DashboardScreen extends ConsumerWidget {
         Expanded(
           child: CustomScrollView(
             slivers: [
-              appBar,
-              if (isDesktop)
-                _DesktopDashboardSliver()
+              _PremiumAppBar(
+                month: month,
+                year: year,
+                months: months,
+                periodLabel: periodLabel,
+                onPrev: () => _changeMonth(ref, month, year, -1),
+                onNext: () => _changeMonth(ref, month, year, 1),
+              ),
+              if (isWide)
+                const _WideDesktopSliver()
+              else if (isDesktop)
+                const _DesktopDashboardSliver()
               else
                 _MobileDashboardSliver(),
             ],
@@ -151,15 +82,12 @@ class DashboardScreen extends ConsumerWidget {
         builder: (context, ref, _) {
           final canWrite = ref.watch(canWriteProvider);
           if (!canWrite) return const SizedBox.shrink();
-          return FloatingActionButton(
-            heroTag: 'fab_dashboard',
-            onPressed: () => showModalBottomSheet(
+          return _PremiumFab(
+            onTap: () => showModalBottomSheet(
               context: context,
               isScrollControlled: true,
               builder: (_) => const QuickAddBottomSheet(),
             ),
-            backgroundColor: tokens.FarolColors.beam,
-            child: const Icon(Icons.add, color: tokens.FarolColors.navy),
           );
         },
       ),
@@ -167,146 +95,521 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   void _changeMonth(WidgetRef ref, int m, int y, int delta) {
-    int nm = m + delta;
-    int ny = y;
-    if (nm < 1) {
-      nm = 12;
-      ny--;
-    } else if (nm > 12) {
-      nm = 1;
-      ny++;
-    }
+    int nm = m + delta, ny = y;
+    if (nm < 1)  { nm = 12; ny--; }
+    else if (nm > 12) { nm = 1;  ny++; }
     ref.read(selectedMonthProvider.notifier).state = nm;
-    ref.read(selectedYearProvider.notifier).state = ny;
+    ref.read(selectedYearProvider.notifier).state  = ny;
   }
 }
 
-// ── Mobile: single-column list (unchanged behaviour) ─────────────────────────
+// ── Premium App Bar ───────────────────────────────────────────────────────────
+
+class _PremiumAppBar extends ConsumerWidget {
+  const _PremiumAppBar({
+    required this.month,
+    required this.year,
+    required this.months,
+    required this.periodLabel,
+    required this.onPrev,
+    required this.onNext,
+  });
+
+  final int month;
+  final int year;
+  final List<String> months;
+  final String periodLabel;
+  final VoidCallback onPrev;
+  final VoidCallback onNext;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return SliverAppBar(
+      floating: true,
+      snap: true,
+      titleSpacing: 0,
+      toolbarHeight: 60,
+      automaticallyImplyLeading: false,
+      backgroundColor: colors.surface,
+      surfaceTintColor: Colors.transparent,
+      shadowColor: Colors.transparent,
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1),
+        child: Container(
+          height: 1,
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : tokens.FarolColors.navy.withValues(alpha: 0.06),
+        ),
+      ),
+      title: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg),
+        child: Row(
+          children: [
+            _MonthPicker(
+              month: month,
+              year: year,
+              months: months,
+              periodLabel: periodLabel,
+              onPrev: onPrev,
+              onNext: onNext,
+            ),
+            const Spacer(),
+            const WorkspaceAppBarChip(),
+            const SizedBox(width: DSSpacing.xs),
+            _PrivacyToggle(),
+            const SizedBox(width: DSSpacing.xs),
+            _NotificationBell(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MonthPicker extends StatelessWidget {
+  const _MonthPicker({
+    required this.month,
+    required this.year,
+    required this.months,
+    required this.periodLabel,
+    required this.onPrev,
+    required this.onNext,
+  });
+
+  final int month;
+  final int year;
+  final List<String> months;
+  final String periodLabel;
+  final VoidCallback onPrev;
+  final VoidCallback onNext;
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _NavArrow(icon: Icons.chevron_left_rounded, onTap: onPrev),
+        const SizedBox(width: DSSpacing.xs),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              '${months[month - 1]} $year',
+              style: GoogleFonts.manrope(
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+                color: onSurface,
+              ),
+            ),
+            Text(
+              periodLabel,
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 10,
+                color: onSurface.withValues(alpha: 0.45),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(width: DSSpacing.xs),
+        _NavArrow(icon: Icons.chevron_right_rounded, onTap: onNext),
+      ],
+    );
+  }
+}
+
+class _NavArrow extends StatefulWidget {
+  const _NavArrow({required this.icon, required this.onTap});
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  State<_NavArrow> createState() => _NavArrowState();
+}
+
+class _NavArrowState extends State<_NavArrow> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit:  (_) => setState(() => _hovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: DSDuration.fast,
+          width: 28,
+          height: 28,
+          decoration: BoxDecoration(
+            color: _hovered
+                ? (isDark
+                    ? Colors.white.withValues(alpha: 0.10)
+                    : tokens.FarolColors.navy.withValues(alpha: 0.08))
+                : Colors.transparent,
+            borderRadius: DSRadius.xsBR,
+          ),
+          child: Icon(
+            widget.icon,
+            size: 18,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PrivacyToggle extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isPrivate = ref.watch(privacyModeProvider);
+    return _AppBarIconBtn(
+      icon: isPrivate ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+      onTap: () => ref.read(privacyModeProvider.notifier).toggle(),
+    );
+  }
+}
+
+class _NotificationBell extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final alerts = ref.watch(budgetAlertsProvider);
+    final critical = alerts.where((a) => a.level != AlertLevel.warning).length;
+    return Badge(
+      isLabelVisible: critical > 0,
+      label: Text('$critical'),
+      backgroundColor: tokens.FarolColors.coral,
+      child: _AppBarIconBtn(
+        icon: Icons.notifications_outlined,
+        onTap: () => Navigator.pushNamed(context, '/notifications'),
+      ),
+    );
+  }
+}
+
+class _AppBarIconBtn extends StatefulWidget {
+  const _AppBarIconBtn({required this.icon, required this.onTap});
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  State<_AppBarIconBtn> createState() => _AppBarIconBtnState();
+}
+
+class _AppBarIconBtnState extends State<_AppBarIconBtn> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit:  (_) => setState(() => _hovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: DSDuration.fast,
+          width: 34,
+          height: 34,
+          decoration: BoxDecoration(
+            color: _hovered
+                ? (isDark
+                    ? Colors.white.withValues(alpha: 0.10)
+                    : tokens.FarolColors.navy.withValues(alpha: 0.07))
+                : Colors.transparent,
+            borderRadius: DSRadius.xsBR,
+          ),
+          child: Icon(
+            widget.icon,
+            size: 19,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Premium FAB ───────────────────────────────────────────────────────────────
+
+class _PremiumFab extends StatefulWidget {
+  const _PremiumFab({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  State<_PremiumFab> createState() => _PremiumFabState();
+}
+
+class _PremiumFabState extends State<_PremiumFab>
+    with SingleTickerProviderStateMixin {
+  bool _hovered = false;
+  late AnimationController _ctrl;
+  late Animation<double> _rot;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(vsync: this, duration: DSDuration.medium);
+    _rot  = Tween(begin: 0.0, end: 0.125).animate(
+      CurvedAnimation(parent: _ctrl, curve: DSCurve.smooth),
+    );
+  }
+
+  @override
+  void dispose() { _ctrl.dispose(); super.dispose(); }
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) { setState(() => _hovered = true);  _ctrl.forward(); },
+      onExit:  (_) { setState(() => _hovered = false); _ctrl.reverse(); },
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: DSDuration.normal,
+          curve: DSCurve.smooth,
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            color: tokens.FarolColors.beam,
+            borderRadius: BorderRadius.circular(
+              _hovered ? DSRadius.lg : DSRadius.full,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: tokens.FarolColors.beam.withValues(
+                  alpha: _hovered ? 0.45 : 0.25,
+                ),
+                blurRadius: _hovered ? 20 : 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: AnimatedBuilder(
+            animation: _rot,
+            builder: (_, child) => Transform.rotate(
+              angle: _rot.value * 3.14159 * 2,
+              child: child,
+            ),
+            child: const Icon(
+              Icons.add_rounded,
+              color: tokens.FarolColors.navyDeep,
+              size: 24,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Mobile: single column ─────────────────────────────────────────────────────
 
 class _MobileDashboardSliver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg),
       sliver: SliverList(
         delegate: SliverChildListDelegate([
-          // 1. Alerts — urgent signals at the top
+          const SizedBox(height: DSSpacing.lg),
           const LiquidityAlertCard(),
           const AlertBanner(),
-          const SizedBox(height: 12),
-          // 2. Period hero — primary financial summary
+          const SizedBox(height: DSSpacing.md),
           const PeriodBalanceHero(),
-          const SizedBox(height: 12),
-          // 3. Insights — contextual alerts beneath the balance
+          const SizedBox(height: DSSpacing.md),
           const InsightsPanel(),
-          const SizedBox(height: 12),
-          // 4. Health + KPIs
+          const SizedBox(height: DSSpacing.md),
           const HealthGaugeCard(),
-          const SizedBox(height: 12),
+          const SizedBox(height: DSSpacing.md),
           const KpiGrid(),
-          const SizedBox(height: 16),
-          // 5. Category spending breakdown
+          const SizedBox(height: DSSpacing.lg),
           const ExpenseBreakdown(),
-          const SizedBox(height: 16),
-          // 6. Monthly savings goal
+          const SizedBox(height: DSSpacing.lg),
           const MonthlyGoalCard(),
-          const SizedBox(height: 16),
-          // 7. Installments
+          const SizedBox(height: DSSpacing.lg),
           const InstallmentsSummaryCard(),
-          const SizedBox(height: 16),
-          // 8. Burn rate
+          const SizedBox(height: DSSpacing.lg),
           const BurnRateCard(),
-          const SizedBox(height: 16),
-          // 9. Recurring rules
+          const SizedBox(height: DSSpacing.lg),
           const RecurringCard(),
-          const SizedBox(height: 16),
+          const SizedBox(height: DSSpacing.lg),
           const RecurringSuggestionsCard(),
-          const SizedBox(height: 16),
-          // 10. Collaboration widgets (only visible in shared workspaces)
+          const SizedBox(height: DSSpacing.lg),
           const ContributionBar(),
-          const SizedBox(height: 12),
+          const SizedBox(height: DSSpacing.md),
           const ActivityFeedPreviewCard(),
-          const SizedBox(height: 80),
+          const SizedBox(height: 100),
         ]),
       ),
     );
   }
 }
 
-// ── Desktop: 3-column grid ────────────────────────────────────────────────────
-//
-//  Row 1:  BalanceHero (45%)  │  InsightsPanel (35%)  │  Health + BurnRate (20%)
-//  Row 2:  KPI mini-cards — 4 cards horizontal (full width)
-//  Row 3:  ExpenseBreakdown   │  InstallmentsSummary  │  SwileDashboardCard
-//  Row 4:  RecentTransactionsCard (full width)
+// ── Desktop 2-column (800–1199px) ────────────────────────────────────────────
 
 class _DesktopDashboardSliver extends StatelessWidget {
+  const _DesktopDashboardSliver();
+
   @override
   Widget build(BuildContext context) {
-    return const SliverPadding(
-      padding: EdgeInsets.fromLTRB(24, 0, 24, 80),
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(
+        DSSpacing.xxl, DSSpacing.xl, DSSpacing.xxl, 100,
+      ),
       sliver: SliverToBoxAdapter(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Alerts (collapsible, shown when needed)
-            LiquidityAlertCard(),
-            AlertBanner(),
-            SizedBox(height: 12),
-
-            // ── Row 1: Balance | Insights | Health+BurnRate ──
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(flex: 45, child: PeriodBalanceHero()),
-                  SizedBox(width: 16),
-                  Expanded(flex: 35, child: InsightsPanel()),
-                  SizedBox(width: 16),
-                  Expanded(
-                    flex: 20,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        HealthGaugeCard(),
-                        SizedBox(height: 12),
-                        BurnRateCard(),
-                      ],
-                    ),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: _kContentMaxW),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ── Left column (primary) ──────────────────────────────
+                Expanded(
+                  flex: 55,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: const [
+                      LiquidityAlertCard(),
+                      AlertBanner(),
+                      SizedBox(height: DSSpacing.md),
+                      PeriodBalanceHero(),
+                      SizedBox(height: DSSpacing.md),
+                      InsightsPanel(),
+                      SizedBox(height: DSSpacing.lg),
+                      ExpenseBreakdown(),
+                      SizedBox(height: DSSpacing.lg),
+                      MonthlyGoalCard(),
+                      SizedBox(height: DSSpacing.lg),
+                      ContributionBar(),
+                      SizedBox(height: DSSpacing.md),
+                      ActivityFeedPreviewCard(),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(width: DSSpacing.xl),
+                // ── Right column (secondary) ───────────────────────────
+                Expanded(
+                  flex: 45,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: const [
+                      HealthGaugeCard(),
+                      SizedBox(height: DSSpacing.md),
+                      KpiGrid(compact: false),
+                      SizedBox(height: DSSpacing.lg),
+                      BurnRateCard(),
+                      SizedBox(height: DSSpacing.lg),
+                      InstallmentsSummaryCard(),
+                      SizedBox(height: DSSpacing.lg),
+                      RecurringCard(),
+                      SizedBox(height: DSSpacing.lg),
+                      RecurringSuggestionsCard(),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 16),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
-            // ── Row 2: 4 KPI mini-cards horizontal ──
-            _KpiRow(),
-            SizedBox(height: 16),
+// ── Wide desktop 3-column (≥1200px) ──────────────────────────────────────────
+//
+//  ┌─────────────┬────────────────────────────┬──────────────────┐
+//  │ Left (28%)  │ Center (44%)               │ Right (28%)      │
+//  │  Alerts     │  PeriodBalanceHero         │  HealthGauge     │
+//  │  KpiGrid    │  InsightsPanel             │  Installments    │
+//  │  BurnRate   │  ExpenseBreakdown          │  ContribBar      │
+//  │  Recurring  │  ActivityFeedPreview       │  MonthlyGoal     │
+//  └─────────────┴────────────────────────────┴──────────────────┘
 
-            // ── Row 3: ExpenseBreakdown | Parcelas | Swile ──
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(flex: 45, child: ExpenseBreakdown()),
-                  SizedBox(width: 16),
-                  Expanded(flex: 35, child: InstallmentsSummaryCard()),
-                  SizedBox(width: 16),
-                  Expanded(flex: 20, child: SwileDashboardCard()),
-                ],
-              ),
+class _WideDesktopSliver extends StatelessWidget {
+  const _WideDesktopSliver();
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(
+        DSSpacing.xxl, DSSpacing.xl, DSSpacing.xxl, 100,
+      ),
+      sliver: SliverToBoxAdapter(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: _kContentMaxW),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ── Left sidebar ─────────────────────────────────────
+                Expanded(
+                  flex: 28,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: const [
+                      LiquidityAlertCard(),
+                      AlertBanner(),
+                      KpiGrid(compact: false),
+                      SizedBox(height: DSSpacing.lg),
+                      BurnRateCard(),
+                      SizedBox(height: DSSpacing.lg),
+                      RecurringCard(),
+                      SizedBox(height: DSSpacing.lg),
+                      RecurringSuggestionsCard(),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: DSSpacing.xl),
+                // ── Center (primary) ──────────────────────────────────
+                Expanded(
+                  flex: 42,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: const [
+                      SizedBox(height: DSSpacing.md),
+                      PeriodBalanceHero(),
+                      SizedBox(height: DSSpacing.md),
+                      InsightsPanel(),
+                      SizedBox(height: DSSpacing.lg),
+                      ExpenseBreakdown(),
+                      SizedBox(height: DSSpacing.lg),
+                      ActivityFeedPreviewCard(),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: DSSpacing.xl),
+                // ── Right sidebar ─────────────────────────────────────
+                Expanded(
+                  flex: 30,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: const [
+                      HealthGaugeCard(),
+                      SizedBox(height: DSSpacing.lg),
+                      InstallmentsSummaryCard(),
+                      SizedBox(height: DSSpacing.lg),
+                      ContributionBar(),
+                      SizedBox(height: DSSpacing.lg),
+                      MonthlyGoalCard(),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 16),
-
-            // ── Row 4: Últimas Transacciones ──
-            RecentTransactionsCard(),
-            SizedBox(height: 16),
-
-            // Collaboration widgets (shared workspaces only)
-            ContributionBar(),
-            SizedBox(height: 12),
-            ActivityFeedPreviewCard(),
-          ],
+          ),
         ),
       ),
     );
