@@ -109,3 +109,5 @@ pubspec.lock
 .claude/settings.local.json
 .remember/
 .claude/
+supabase/.temp/cli-latest
+supabase/.temp/linked-project.json
