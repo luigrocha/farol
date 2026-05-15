@@ -15,6 +15,7 @@
 library invite_notification_overlay;
 
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -171,8 +172,10 @@ class _InviteBannerState extends ConsumerState<_InviteBanner>
     try {
       final repo = ref.read(workspaceRepositoryProvider);
       await repo.declineInvite(widget.notification.inviteToken);
-    } catch (_) {
-      // Best-effort — even if decline fails server-side, dismiss for the user
+    } catch (e) {
+      // Best-effort — even if decline fails server-side, dismiss for the user.
+      // The RPC (V42) handles RLS bypass; errors here are transient network issues.
+      debugPrint('[InviteBanner] declineInvite error (best-effort): $e');
     }
 
     await _markRead();

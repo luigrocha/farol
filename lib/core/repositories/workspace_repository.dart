@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/workspace.dart';
 
@@ -159,44 +160,73 @@ class WorkspaceRepository {
   /// Accept a workspace invite via the Edge Function.
   ///
   /// Uses the server-side Edge Function instead of querying workspace_invites
-  /// directly, because RLS on workspace_invites does not allow the invitee
-  /// (who only knows the token) to read the row. The Edge Function runs with
-  /// service role credentials and handles all validation atomically.
+  /// directly — RLS on workspace_invites blocks the invitee from reading the row.
+  /// The Edge Function runs with service role credentials and handles validation
+  /// and membership creation atomically.
   ///
   /// Returns the joined [Workspace] on success.
-  /// Throws a [WorkspaceInviteException] with a machine-readable [code] on failure.
+  /// Throws [WorkspaceInviteException] with a machine-readable [code] on failure.
+  ///
+  /// IMPORTANT: The Supabase Flutter SDK throws [FunctionException] (not a
+  /// standard Dart Exception) for non-2xx HTTP responses. We catch it explicitly
+  /// and translate it into [WorkspaceInviteException].
   Future<Workspace> acceptInviteViaEdgeFunction(String token) async {
-    final response = await _supabase.functions.invoke(
-      'accept-workspace-invite',
-      body: {'token': token},
-    );
+    try {
+      final response = await _supabase.functions.invoke(
+        'accept-workspace-invite',
+        body: {'token': token},
+      );
 
-    final data = response.data as Map<String, dynamic>?;
+      // On success (200), data is already JSON-decoded by the SDK.
+      // Safe-cast: jsonDecode always returns Map<String, dynamic> for JSON objects.
+      final data = response.data;
+      debugPrint('[InviteAccept] Edge Function response: status=${response.status} data=$data');
 
-    if (response.status != 200) {
-      final code = data?['error'] as String? ?? 'internal_error';
+      final dataMap = data is Map ? Map<String, dynamic>.from(data) : <String, dynamic>{};
+      final wsRaw = dataMap['workspace'];
+      if (wsRaw == null) {
+        throw const WorkspaceInviteException('internal_error');
+      }
+
+      final wsJson = wsRaw is Map
+          ? Map<String, dynamic>.from(wsRaw)
+          : <String, dynamic>{};
+
+      return Workspace.fromEdgeFunctionResponse(wsJson);
+
+    } on FunctionException catch (e) {
+      // FunctionException is thrown for non-2xx responses.
+      // details contains the parsed JSON body: { "error": "<code>" }
+      debugPrint('[InviteAccept] FunctionException: status=${e.status} details=${e.details}');
+      final details = e.details;
+      final code = (details is Map ? details['error'] : null) as String?
+          ?? 'internal_error';
       throw WorkspaceInviteException(code);
+    } catch (e) {
+      debugPrint('[InviteAccept] Unexpected error: $e');
+      rethrow;
     }
-
-    final wsJson = data?['workspace'] as Map<String, dynamic>?;
-    if (wsJson == null) throw const WorkspaceInviteException('internal_error');
-
-    // Build a minimal Workspace from the Edge Function response.
-    // Full workspace data (members, etc.) will be loaded on next getUserWorkspaces().
-    return Workspace.fromEdgeFunctionResponse(wsJson);
   }
 
-  /// Decline a workspace invite — marks declined_at so it won't appear again.
-  /// Also triggers the DB trigger that notifies the workspace owner.
+  /// Decline a workspace invite — marks declined_at via a SECURITY DEFINER RPC.
+  ///
+  /// A direct UPDATE on workspace_invites is blocked by RLS for the invitee
+  /// (only workspace admins/owners can UPDATE the table). The V42 RPC runs
+  /// as DB owner and sets declined_at atomically, which fires the V41 trigger
+  /// that notifies the workspace owner.
   Future<void> declineInvite(String token) async {
-    // The invitee cannot read workspace_invites via RLS, but we use a
-    // SECURITY DEFINER RPC to mark declined_at safely.
-    // Fallback: call the decline edge function or use markRead on the notification.
-    // For now, mark declined via direct update using the token (public lookup).
-    await _supabase
-        .from('workspace_invites')
-        .update({'declined_at': DateTime.now().toIso8601String()})
-        .eq('token', token);
+    final result = await _supabase.rpc(
+      'decline_workspace_invite',
+      params: {'p_token': token},
+    );
+    final map = result is Map ? Map<String, dynamic>.from(result) : <String, dynamic>{};
+    final error = map['error'] as String?;
+    if (error != null && error != 'invite_already_used') {
+      // invite_already_used is idempotent — treat as success for the invitee UX
+      debugPrint('[InviteDecline] RPC returned error: $error');
+      throw WorkspaceInviteException(error);
+    }
+    debugPrint('[InviteDecline] Declined successfully (token=$token)');
   }
 }
 
