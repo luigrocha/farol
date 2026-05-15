@@ -12,14 +12,29 @@
  *   200 { workspace: { id, name, emoji, color, workspace_type } }
  *   400 { error: "missing_token" }
  *   404 { error: "invite_not_found" }
- *   410 { error: "invite_expired" }
+ *   410 { error: "invite_expired" | "invite_already_used" }
  *   409 { error: "already_member" }
  *   500 { error: "internal_error" }
  */
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// ── CORS headers ──────────────────────────────────────────────────────────────
+// Required for Flutter Web / browser clients. The OPTIONS preflight must
+// return 200 with the correct headers before the POST is allowed.
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
+
 Deno.serve(async (req: Request) => {
+  // Handle CORS preflight
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 200, headers: CORS_HEADERS });
+  }
+
   if (req.method !== "POST") {
     return respond(405, { error: "method_not_allowed" });
   }
@@ -91,6 +106,8 @@ Deno.serve(async (req: Request) => {
   if (insertError) return respond(500, { error: "internal_error" });
 
   // ── Mark invite as accepted ───────────────────────────────────────────────
+  // This UPDATE fires trg_notify_owner_invite_resolved (V41) which notifies
+  // the workspace owner that the invite was accepted.
   await supabase
     .from("workspace_invites")
     .update({ accepted_at: new Date().toISOString() })
@@ -119,6 +136,6 @@ Deno.serve(async (req: Request) => {
 function respond(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
   });
 }
