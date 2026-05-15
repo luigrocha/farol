@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/i18n/app_localizations.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
-import '../../core/widgets/shimmer_box.dart';
+import '../../design/ds_tokens.dart';
 
 class CashflowChart extends ConsumerWidget {
   const CashflowChart({super.key});
@@ -18,8 +18,8 @@ class CashflowChart extends ConsumerWidget {
       loading: () => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(context.l10n.cashflowTitle,
             style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w700)),
-        const SizedBox(height: 8),
-        const ShimmerBox(width: double.infinity, height: 200, borderRadius: 12),
+        const SizedBox(height: DSSpacing.sm),
+        DSSkeleton(width: double.infinity, height: 200, radius: DSRadius.lg),
       ]),
       error: (e, _) => Text('${context.l10n.error}: $e'),
       data: (proj) {
@@ -38,15 +38,15 @@ class CashflowChart extends ConsumerWidget {
           const SizedBox(height: 4),
           if (forecast.goesNegative)
             Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              margin: const EdgeInsets.only(bottom: DSSpacing.sm),
+              padding: const EdgeInsets.symmetric(horizontal: DSSpacing.sm + 2, vertical: DSSpacing.xs + 2),
               decoration: BoxDecoration(
                 color: Colors.red.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: DSRadius.smBR,
               ),
               child: Row(children: [
                 const Icon(Icons.warning_amber_rounded, size: 14, color: Colors.red),
-                const SizedBox(width: 6),
+                const SizedBox(width: DSSpacing.xs + 2),
                 Text(
                   context.l10n.cashflowNegativeWarning,
                   style: GoogleFonts.manrope(fontSize: 12, color: Colors.red),
@@ -160,25 +160,25 @@ class CashflowChart extends ConsumerWidget {
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DSSpacing.sm),
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Row(children: [
               _Legend(color: const Color(0xFF00897B), label: context.l10n.cashflowLegendReal, dashed: false),
-              const SizedBox(width: 16),
+              const SizedBox(width: DSSpacing.lg),
               _Legend(color: const Color(0xFFF59E0B), label: context.l10n.cashflowLegendProjection, dashed: true),
-              const SizedBox(width: 16),
+              const SizedBox(width: DSSpacing.lg),
               _Legend(color: Colors.red, label: context.l10n.cashflowLegendCommitment, isDot: true),
             ]),
           ]),
-          const SizedBox(height: 10),
+          const SizedBox(height: DSSpacing.sm + 2),
           // Min-balance summary
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: DSSpacing.md, vertical: DSSpacing.sm),
             decoration: BoxDecoration(
               color: minBalance.isNegative
                   ? Colors.red.withValues(alpha: 0.07)
                   : Colors.grey.withValues(alpha: 0.07),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: DSRadius.smBR,
             ),
             child: Row(children: [
               Icon(
@@ -188,7 +188,7 @@ class CashflowChart extends ConsumerWidget {
                 size: 14,
                 color: minBalance.isNegative ? Colors.red : Colors.grey,
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: DSSpacing.xs + 2),
               Text(
                 context.l10n.cashflowMinBalanceLabel,
                 style: GoogleFonts.manrope(fontSize: 11, color: Colors.grey.shade600),
@@ -231,10 +231,10 @@ class _Legend extends StatelessWidget {
                 width: 20, height: 2,
                 decoration: BoxDecoration(
                   color: color,
-                  borderRadius: BorderRadius.circular(1),
+                  borderRadius: DSRadius.xsBR,
                 ),
               ),
-        const SizedBox(width: 4),
+        const SizedBox(width: DSSpacing.xs),
         Text(label, style: GoogleFonts.manrope(fontSize: 10, color: Colors.grey)),
       ]);
 }

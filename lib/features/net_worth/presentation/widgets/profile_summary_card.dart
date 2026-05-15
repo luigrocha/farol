@@ -5,6 +5,7 @@ import '../../../../core/i18n/app_localizations.dart';
 import '../../../../core/providers/providers.dart';
 import '../../../../core/theme/farol_colors.dart';
 import '../../../../design/farol_colors.dart' as tokens;
+import '../../../../design/ds_tokens.dart';
 import '../../../../design/widgets/farol_card.dart';
 import '../../../../design/widgets/brl_text.dart';
 
@@ -78,7 +79,7 @@ class _MiniPill extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
         decoration: BoxDecoration(
           color: colors.surfaceLow,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: DSRadius.smBR,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

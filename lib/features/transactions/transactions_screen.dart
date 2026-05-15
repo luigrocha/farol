@@ -7,6 +7,7 @@ import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../design/farol_colors.dart' as tokens;
+import '../../design/ds_tokens.dart';
 import '../../core/i18n/app_localizations.dart';
 import '../../core/widgets/farol_dialogs.dart';
 import '../../core/widgets/farol_snackbar.dart';
@@ -258,10 +259,10 @@ class _IncomeTab extends ConsumerWidget {
       slivers: [
         SliverToBoxAdapter(
           child: Container(
-            margin: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-            padding: const EdgeInsets.all(22),
+            margin: const EdgeInsets.fromLTRB(DSSpacing.lg, DSSpacing.lg, DSSpacing.lg, DSSpacing.sm),
+            padding: const EdgeInsets.all(DSSpacing.xl),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: DSRadius.lgBR,
               gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -269,7 +270,7 @@ class _IncomeTab extends ConsumerWidget {
               ),
             ),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('TOTAL INGRESOS',
+              const Text('TOTAL RECEBIDO',
                   style: TextStyle(fontSize: 10, letterSpacing: 1.8, fontWeight: FontWeight.w700, color: Colors.white60)),
               const SizedBox(height: 6),
               _BRLBig(value: total, size: 32, color: Colors.white),
@@ -309,76 +310,118 @@ class _IncomeTab extends ConsumerWidget {
   }
 }
 
-class _IncomeRow extends ConsumerWidget {
+class _IncomeRow extends ConsumerStatefulWidget {
   final Income income;
   const _IncomeRow({required this.income});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_IncomeRow> createState() => _IncomeRowState();
+}
+
+class _IncomeRowState extends ConsumerState<_IncomeRow> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
     final colors = context.colors;
-    final type = IncomeType.fromDb(income.incomeType);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final type = IncomeType.fromDb(widget.income.incomeType);
     final l10n = AppLocalizations.of(context);
     final canWrite = ref.watch(canWriteProvider);
 
     return Dismissible(
-      key: ValueKey(income.id),
+      key: ValueKey(widget.income.id),
       direction: canWrite ? DismissDirection.endToStart : DismissDirection.none,
       background: Container(
-        margin: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-        decoration: BoxDecoration(color: Colors.red.shade700, borderRadius: BorderRadius.circular(16)),
+        margin: const EdgeInsets.fromLTRB(DSSpacing.lg, 0, DSSpacing.lg, DSSpacing.sm),
+        decoration: BoxDecoration(
+          color: Colors.red.shade700,
+          borderRadius: DSRadius.mdBR,
+        ),
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
+        padding: const EdgeInsets.only(right: DSSpacing.lg),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           const Icon(Icons.delete_outline, color: Colors.white, size: 22),
           const SizedBox(height: 4),
-          Text(l10n.delete, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
+          Text(l10n.delete,
+              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
         ]),
       ),
-      confirmDismiss: (_) async => showConfirmDeleteDialog(context, title: l10n.confirmDelete, body: l10n.cannotUndo),
+      confirmDismiss: (_) async =>
+          showConfirmDeleteDialog(context, title: l10n.confirmDelete, body: l10n.cannotUndo),
       onDismissed: (_) async {
         try {
-          await ref.read(incomeNotifierProvider.notifier).delete(income.id);
+          await ref.read(incomeNotifierProvider.notifier).delete(widget.income.id);
           if (context.mounted) context.showSuccessSnackBar(l10n.transactionDeleted);
         } catch (e) {
           if (context.mounted) context.showErrorSnackBar(e);
         }
       },
-      child: GestureDetector(
-        onTap: canWrite
-            ? () => showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (_) => EditIncomeBottomSheet(income: income),
-                )
-            : null,
-        child: Container(
-          margin: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
-          child: Row(children: [
-            Container(
-              width: 38, height: 38,
-              decoration: BoxDecoration(
-                color: tokens.FarolColors.tide.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _hovered = true),
+        onExit: (_) => setState(() => _hovered = false),
+        cursor: canWrite ? SystemMouseCursors.click : SystemMouseCursors.basic,
+        child: GestureDetector(
+          onTap: canWrite
+              ? () => showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (_) => EditIncomeBottomSheet(income: widget.income),
+                  )
+              : null,
+          child: AnimatedContainer(
+            duration: DSDuration.fast,
+            margin: const EdgeInsets.fromLTRB(DSSpacing.lg, 0, DSSpacing.lg, DSSpacing.sm),
+            padding: const EdgeInsets.all(DSSpacing.lg),
+            decoration: BoxDecoration(
+              color: _hovered
+                  ? (isDark
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : const Color(0xFF1B3A5C).withValues(alpha: 0.03))
+                  : colors.surfaceLowest,
+              borderRadius: DSRadius.mdBR,
+              border: Border.all(
+                color: _hovered
+                    ? tokens.FarolColors.tide.withValues(alpha: 0.25)
+                    : Colors.transparent,
               ),
-              child: Center(child: Text(type.emoji, style: const TextStyle(fontSize: 18))),
             ),
-            const SizedBox(width: 14),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(type.label,
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-              if (income.notes != null && income.notes!.isNotEmpty)
-                Text(income.notes!,
-                    style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
-                    maxLines: 1, overflow: TextOverflow.ellipsis),
-            ])),
-            Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-              _BRLSmall(value: income.amount, size: 15, weight: FontWeight.w700, color: tokens.FarolColors.tide),
-              Text(income.isNet ? 'Líquido' : 'Bruto',
-                  style: TextStyle(fontSize: 11, color: colors.onSurfaceFaint)),
+            child: Row(children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: tokens.FarolColors.tide.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(type.emoji, style: const TextStyle(fontSize: 18)),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(type.label,
+                      style: TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
+                  if (widget.income.notes != null && widget.income.notes!.isNotEmpty)
+                    Text(widget.income.notes!,
+                        style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis),
+                ]),
+              ),
+              Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                _BRLSmall(
+                    value: widget.income.amount,
+                    size: 15,
+                    weight: FontWeight.w700,
+                    color: tokens.FarolColors.tide),
+                Text(widget.income.isNet ? 'Líquido' : 'Bruto',
+                    style: TextStyle(fontSize: 11, color: colors.onSurfaceFaint)),
+              ]),
             ]),
-          ]),
+          ),
         ),
       ),
     );
@@ -724,29 +767,39 @@ class _SearchBarState extends ConsumerState<_SearchBar> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(99)),
+      margin: const EdgeInsets.symmetric(
+          horizontal: DSSpacing.lg, vertical: DSSpacing.sm),
+      padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg),
+      decoration: BoxDecoration(
+        color: colors.surfaceLowest,
+        borderRadius: DSRadius.fullBR,
+        border: Border.all(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white.withValues(alpha: 0.06)
+              : const Color(0xFF1B3A5C).withValues(alpha: 0.06),
+        ),
+      ),
       child: Row(children: [
-        Icon(Icons.search, size: 18, color: colors.onSurfaceFaint),
-        const SizedBox(width: 10),
+        Icon(Icons.search_rounded, size: 18, color: colors.onSurfaceFaint),
+        const SizedBox(width: DSSpacing.sm + 2),
         Expanded(
           child: TextField(
             controller: _ctrl,
             onChanged: (v) => ref.read(searchQueryProvider.notifier).state = v,
             style: TextStyle(fontSize: 14, color: colors.onSurface),
             decoration: InputDecoration(
-              hintText: 'Buscar gasto...',
+              hintText: 'Buscar transação...',
               hintStyle: TextStyle(fontSize: 14, color: colors.onSurfaceFaint),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(vertical: 13),
               suffixIcon: _ctrl.text.isNotEmpty
                   ? GestureDetector(
                       onTap: () {
                         _ctrl.clear();
                         ref.read(searchQueryProvider.notifier).state = '';
                       },
-                      child: Icon(Icons.close, size: 16, color: colors.onSurfaceSoft),
+                      child: Icon(Icons.close_rounded,
+                          size: 16, color: colors.onSurfaceSoft),
                     )
                   : null,
             ),
@@ -831,31 +884,64 @@ class _FilterChips extends ConsumerWidget {
   }
 }
 
-class _Chip extends StatelessWidget {
+class _Chip extends StatefulWidget {
   final String label;
   final bool active;
   final bool small;
   final VoidCallback onTap;
-  const _Chip({required this.label, required this.active, required this.onTap, this.small = false});
+  const _Chip(
+      {required this.label,
+      required this.active,
+      required this.onTap,
+      this.small = false});
+
+  @override
+  State<_Chip> createState() => _ChipState();
+}
+
+class _ChipState extends State<_Chip> {
+  bool _hovered = false;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(right: 8),
-        padding: EdgeInsets.symmetric(horizontal: small ? 12 : 18, vertical: small ? 6 : 10),
-        decoration: BoxDecoration(
-          color: active ? tokens.FarolColors.navy : colors.surfaceLowest,
-          borderRadius: BorderRadius.circular(99),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: active ? Colors.white : colors.onSurface,
-            fontSize: small ? 12 : 13,
-            fontWeight: FontWeight.w600,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: DSDuration.fast,
+          margin: const EdgeInsets.only(right: DSSpacing.sm),
+          padding: EdgeInsets.symmetric(
+              horizontal: widget.small ? DSSpacing.md : DSSpacing.lg + 2,
+              vertical: widget.small ? DSSpacing.xs + 2 : DSSpacing.sm + 2),
+          decoration: BoxDecoration(
+            color: widget.active
+                ? tokens.FarolColors.navy
+                : _hovered
+                    ? (isDark
+                        ? Colors.white.withValues(alpha: 0.07)
+                        : const Color(0xFF1B3A5C).withValues(alpha: 0.05))
+                    : colors.surfaceLowest,
+            borderRadius: DSRadius.fullBR,
+            border: Border.all(
+              color: widget.active
+                  ? tokens.FarolColors.navy
+                  : isDark
+                      ? Colors.white.withValues(alpha: 0.07)
+                      : const Color(0xFF1B3A5C).withValues(alpha: 0.08),
+            ),
+          ),
+          child: Text(
+            widget.label,
+            style: TextStyle(
+              color: widget.active ? Colors.white : colors.onSurface,
+              fontSize: widget.small ? 12 : 13,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),
@@ -881,23 +967,33 @@ class _TotalMonthlyHero extends ConsumerWidget {
     if (payFilter == 'cash') label = 'TOTAL CASH';
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(22),
+      margin: const EdgeInsets.symmetric(horizontal: DSSpacing.lg),
+      padding: const EdgeInsets.all(DSSpacing.xl),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: DSRadius.lgBR,
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [Color(0xFF244A72), tokens.FarolColors.navy],
         ),
+        boxShadow: [
+          BoxShadow(
+            color: tokens.FarolColors.navy.withValues(alpha: 0.28),
+            blurRadius: 20,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(label,
             style: const TextStyle(
-                fontSize: 10, letterSpacing: 1.8, fontWeight: FontWeight.w700, color: Colors.white60)),
-        const SizedBox(height: 6),
-        _BRLBig(value: total, size: 32, color: Colors.white),
-        const SizedBox(height: 18),
+                fontSize: 9,
+                letterSpacing: 1.6,
+                fontWeight: FontWeight.w700,
+                color: Colors.white60)),
+        const SizedBox(height: DSSpacing.xs + 2),
+        _BRLBig(value: total, size: 30, color: Colors.white),
+        const SizedBox(height: DSSpacing.lg),
         ...sorted.take(3).map((e) {
           final cat = catsMap[e.key];
           final catLabel = cat?.name ?? e.key;
@@ -918,25 +1014,29 @@ class _HeroBar extends StatelessWidget {
   final double value;
   final double pct;
   final Color color;
-  const _HeroBar({required this.label, required this.value, required this.pct, required this.color});
+  const _HeroBar(
+      {required this.label,
+      required this.value,
+      required this.pct,
+      required this.color});
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: DSSpacing.md),
       child: Column(children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(label, style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.9))),
-          _BRLSmall(value: value, size: 13, weight: FontWeight.w600, color: Colors.white),
+          Text(label,
+              style:
+                  TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.88))),
+          _BRLSmall(value: value, size: 12, weight: FontWeight.w600, color: Colors.white),
         ]),
-        const SizedBox(height: 6),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(2),
-          child: LinearProgressIndicator(
-            value: pct,
-            minHeight: 4,
-            backgroundColor: Colors.white12,
-            valueColor: AlwaysStoppedAnimation(color),
-          ),
+        const SizedBox(height: DSSpacing.xs + 2),
+        DSProgressBar(
+          value: pct,
+          height: 4,
+          color: color,
+          backgroundColor: Colors.white.withValues(alpha: 0.15),
+          radius: 2,
         ),
       ]),
     );
@@ -954,15 +1054,17 @@ class _DaySeparator extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 22, 24, 10),
+      padding: const EdgeInsets.fromLTRB(
+          DSSpacing.xl + 4, DSSpacing.xl, DSSpacing.xl + 4, DSSpacing.sm),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Text('DIA ${date.day}',
             style: TextStyle(
-                fontSize: 10,
+                fontSize: 9,
                 letterSpacing: 1.2,
                 color: colors.onSurfaceSoft,
                 fontWeight: FontWeight.w700)),
-        _BRLSmall(value: total, size: 12, color: colors.onSurfaceSoft, weight: FontWeight.w600),
+        _BRLSmall(
+            value: total, size: 11, color: colors.onSurfaceSoft, weight: FontWeight.w600),
       ]),
     );
   }
@@ -971,55 +1073,65 @@ class _DaySeparator extends StatelessWidget {
 // ─────────────────────────────────────────
 // Transaction row
 // ─────────────────────────────────────────
-class _TxRow extends ConsumerWidget {
+class _TxRow extends ConsumerStatefulWidget {
   final dynamic expense;
   const _TxRow({required this.expense});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_TxRow> createState() => _TxRowState();
+}
+
+class _TxRowState extends ConsumerState<_TxRow> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final colors = context.colors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final canWrite = ref.watch(canWriteProvider);
     final catsMap = ref.watch(categoriesMapProvider);
     final isShared = ref.watch(isSharedWorkspaceProvider);
     final memberMap = ref.watch(memberDisplayMapProvider).valueOrNull ?? {};
 
-    final dbCat = expense.category as String;
+    final dbCat = widget.expense.category as String;
     final cat = catsMap[dbCat];
     final catLabel = cat?.name ?? dbCat;
     final catEmoji = cat?.emoji ?? '💰';
 
-    final txDate = expense.transactionDate as DateTime;
+    final txDate = widget.expense.transactionDate as DateTime;
     final timeLabel =
         '${txDate.hour.toString().padLeft(2, '0')}:${txDate.minute.toString().padLeft(2, '0')}';
 
-    final isSwile = (expense.payType as String) == 'Swile';
-    final author = isShared && expense.authorUserId != null
-        ? memberMap[expense.authorUserId as String]
+    final isSwile = (widget.expense.payType as String) == 'Swile';
+    final author = isShared && widget.expense.authorUserId != null
+        ? memberMap[widget.expense.authorUserId as String]
         : null;
 
     return Dismissible(
-      key: ValueKey(expense.id),
+      key: ValueKey(widget.expense.id),
       direction: canWrite ? DismissDirection.endToStart : DismissDirection.none,
       background: Container(
-        margin: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-        decoration: BoxDecoration(color: Colors.red.shade700, borderRadius: BorderRadius.circular(16)),
+        margin: const EdgeInsets.fromLTRB(
+            DSSpacing.lg, 0, DSSpacing.lg, DSSpacing.sm),
+        decoration: BoxDecoration(
+            color: Colors.red.shade700, borderRadius: DSRadius.mdBR),
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
+        padding: const EdgeInsets.only(right: DSSpacing.lg),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           const Icon(Icons.delete_outline, color: Colors.white, size: 22),
           const SizedBox(height: 4),
           Text(l10n.delete,
-              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
+              style: const TextStyle(
+                  color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
         ]),
       ),
       confirmDismiss: (_) async {
-        final planUuid = expense.installmentPlanUuid;
-        final isFixed = expense.isFixed as bool;
+        final planUuid = widget.expense.installmentPlanUuid;
+        final isFixed = widget.expense.isFixed as bool;
 
-        // Installment expense linked to a plan (new system — UUID only)
         if (planUuid != null) {
-          final numInst = expense.installments as int;
+          final numInst = widget.expense.installments as int;
           final choice = await showDeleteExpenseChoiceDialog(
             context,
             title: 'Excluir parcela',
@@ -1030,19 +1142,18 @@ class _TxRow extends ConsumerWidget {
           if (choice == null) return false;
           if (choice == true) {
             try {
-              await ref.read(installmentPlanRepositoryProvider).delete(planUuid);
+              await ref
+                  .read(installmentPlanRepositoryProvider)
+                  .delete(planUuid);
               if (context.mounted) context.showSuccessSnackBar('Plano excluído');
             } catch (e) {
               if (context.mounted) context.showErrorSnackBar(e);
             }
-            return false; // stream removes all related rows
+            return false;
           }
-          return true; // single row → onDismissed handles it
+          return true;
         }
 
-        // Fixed recurring expense (legacy isFixed pattern).
-        // Series deletion is not supported — show info dialog, allow single delete only.
-        // To manage the full series, convert to a RecurringRule.
         if (isFixed) {
           final confirmed = await showDialog<bool>(
             context: context,
@@ -1068,134 +1179,161 @@ class _TxRow extends ConsumerWidget {
           return confirmed == true;
         }
 
-        // Simple expense
-        return showConfirmDeleteDialog(context, title: l10n.confirmDelete, body: l10n.cannotUndo);
+        return showConfirmDeleteDialog(
+            context, title: l10n.confirmDelete, body: l10n.cannotUndo);
       },
       onDismissed: (_) async {
         try {
-          await ref.read(expenseRepositoryProvider).delete(expense.id as int);
+          await ref
+              .read(expenseRepositoryProvider)
+              .delete(widget.expense.id as int);
           if (context.mounted) context.showSuccessSnackBar(l10n.transactionDeleted);
         } catch (e) {
           if (context.mounted) context.showErrorSnackBar(e);
         }
       },
-      child: GestureDetector(
-        onTap: canWrite
-            ? () => showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (_) => EditExpenseBottomSheet(expense: expense),
-                )
-            : null,
-        child: Container(
-          margin: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
-          child: Row(children: [
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: isSwile
-                    ? const Color(0xFFF97366).withValues(alpha: 0.15)
-                    : colors.surfaceLow,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Text(
-                  catEmoji,
-                  style: const TextStyle(fontSize: 18),
-                ),
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _hovered = true),
+        onExit: (_) => setState(() => _hovered = false),
+        cursor: canWrite ? SystemMouseCursors.click : SystemMouseCursors.basic,
+        child: GestureDetector(
+          onTap: canWrite
+              ? () => showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (_) =>
+                        EditExpenseBottomSheet(expense: widget.expense),
+                  )
+              : null,
+          child: AnimatedContainer(
+            duration: DSDuration.fast,
+            margin: const EdgeInsets.fromLTRB(
+                DSSpacing.lg, 0, DSSpacing.lg, DSSpacing.sm),
+            padding: const EdgeInsets.all(DSSpacing.lg),
+            decoration: BoxDecoration(
+              color: _hovered
+                  ? (isDark
+                      ? Colors.white.withValues(alpha: 0.04)
+                      : const Color(0xFF1B3A5C).withValues(alpha: 0.025))
+                  : colors.surfaceLowest,
+              borderRadius: DSRadius.mdBR,
+              border: Border.all(
+                color: _hovered
+                    ? (isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : const Color(0xFF1B3A5C).withValues(alpha: 0.08))
+                    : Colors.transparent,
               ),
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(
-                  expense.storeDescription as String? ?? 'Gasto',
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: colors.onSurface,
-                      height: 1.3),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+            child: Row(children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: isSwile
+                      ? const Color(0xFFF97366).withValues(alpha: 0.14)
+                      : colors.surfaceLow,
+                  shape: BoxShape.circle,
                 ),
-                const SizedBox(height: 4),
-                Row(children: [
-                  Text(catLabel, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
-                  const SizedBox(width: 6),
-                  Text('•', style: TextStyle(color: colors.onSurfaceFaint)),
-                  const SizedBox(width: 6),
-                  if (isSwile)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: tokens.FarolColors.tide.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Text('SWILE',
-                          style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w700,
-                              color: tokens.FarolColors.tide,
-                              letterSpacing: 0.5)),
-                    )
-                  else
-                    Text(expense.payType as String? ?? 'Cash',
-                        style: TextStyle(
-                            fontSize: 10,
-                            color: colors.onSurfaceSoft,
-                            letterSpacing: 0.5,
-                            fontWeight: FontWeight.w600)),
-                  if (expense.isFixed as bool) ...[
+                child: Center(
+                  child: Text(catEmoji, style: const TextStyle(fontSize: 18)),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(
+                    widget.expense.storeDescription as String? ?? 'Gasto',
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: colors.onSurface,
+                        height: 1.3),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Row(children: [
+                    Text(catLabel,
+                        style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
                     const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                          color: Colors.blue.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(6)),
-                      child: const Text('FIXO',
-                          style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.blue,
-                              letterSpacing: 0.5)),
-                    ),
-                  ],
-                  if (expense.isProjected as bool) ...[
+                    Text('·', style: TextStyle(color: colors.onSurfaceFaint)),
                     const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                          color: Colors.orange.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: Colors.orange.withValues(alpha: 0.4))),
-                      child: const Text('PREVISTO',
+                    if (isSwile)
+                      _TxBadge(
+                          label: 'SWILE',
+                          color: tokens.FarolColors.tide,
+                          bgAlpha: 0.14)
+                    else
+                      Text(widget.expense.payType as String? ?? 'Cash',
                           style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.orange,
-                              letterSpacing: 0.5)),
-                    ),
+                              fontSize: 10,
+                              color: colors.onSurfaceSoft,
+                              letterSpacing: 0.4,
+                              fontWeight: FontWeight.w600)),
+                    if (widget.expense.isFixed as bool) ...[
+                      const SizedBox(width: 6),
+                      const _TxBadge(label: 'FIXO', color: Color(0xFF3B6A9C), bgAlpha: 0.14),
+                    ],
+                    if (widget.expense.isProjected as bool) ...[
+                      const SizedBox(width: 6),
+                      _TxBadge(
+                          label: 'PREVISTO',
+                          color: Colors.orange.shade600,
+                          bgAlpha: 0.14,
+                          outlined: true),
+                    ],
+                  ]),
+                  if (author != null) ...[
+                    const SizedBox(height: 4),
+                    MemberChip(member: author),
                   ],
                 ]),
-                // Attribution chip — only in shared workspaces
-                if (author != null) ...[
-                  const SizedBox(height: 4),
-                  MemberChip(member: author),
-                ],
+              ),
+              Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                _BRLSmall(
+                    value: widget.expense.amount as double,
+                    size: 15,
+                    weight: FontWeight.w700),
+                Text(timeLabel,
+                    style: TextStyle(fontSize: 11, color: colors.onSurfaceFaint)),
               ]),
-            ),
-            Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-              _BRLSmall(value: expense.amount as double, size: 15, weight: FontWeight.w700),
-              Text(timeLabel, style: TextStyle(fontSize: 11, color: colors.onSurfaceFaint)),
             ]),
-          ]),
+          ),
         ),
       ),
     );
   }
+}
+
+class _TxBadge extends StatelessWidget {
+  final String label;
+  final Color color;
+  final double bgAlpha;
+  final bool outlined;
+  const _TxBadge(
+      {required this.label,
+      required this.color,
+      required this.bgAlpha,
+      this.outlined = false});
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: bgAlpha),
+          borderRadius: DSRadius.xsBR,
+          border: outlined ? Border.all(color: color.withValues(alpha: 0.35)) : null,
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.w700,
+              color: color,
+              letterSpacing: 0.4),
+        ),
+      );
 }
 
 // ─────────────────────────────────────────

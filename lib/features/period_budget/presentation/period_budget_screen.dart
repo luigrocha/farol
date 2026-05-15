@@ -7,6 +7,7 @@ import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';
 import '../../../core/theme/farol_colors.dart';
 import '../../../design/farol_colors.dart' as tokens;
+import '../../../design/ds_tokens.dart';
 import '../../../core/domain/value_objects/money.dart';
 import 'budget_edit_sheet.dart';
 import '../../../core/providers/workspace_providers.dart'
@@ -246,7 +247,7 @@ class PeriodBudgetScreen extends ConsumerWidget {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _EntryCard extends ConsumerWidget {
+class _EntryCard extends ConsumerStatefulWidget {
   final PeriodBudgetEntry entry;
   final bool isSwileBacked;
   final VoidCallback onTap;
@@ -260,21 +261,28 @@ class _EntryCard extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_EntryCard> createState() => _EntryCardState();
+}
+
+class _EntryCardState extends ConsumerState<_EntryCard> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
     final colors = context.colors;
     final catsMap = ref.watch(categoriesMapProvider);
-    // Normalize to lowercase slug — period_budgets may store legacy UPPERCASE values.
-    final cat = catsMap[entry.category] ?? catsMap[entry.category.toLowerCase()];
+    final cat = catsMap[widget.entry.category] ??
+        catsMap[widget.entry.category.toLowerCase()];
 
-    final slug = entry.category.toLowerCase();
+    final slug = widget.entry.category.toLowerCase();
     final envelopes = ref.watch(envelopesProvider);
     final envelope = envelopes.where((e) => e.category.slug == slug).firstOrNull;
     final rollover = envelope?.rolloverAmount ?? Money.zero;
 
-    final pct = entry.percentage.clamp(0.0, 1.0);
+    final pct = widget.entry.percentage.clamp(0.0, 1.0);
 
     final Color progressColor;
-    switch (entry.status) {
+    switch (widget.entry.status) {
       case BudgetStatus.overspent:
         progressColor = Colors.red;
       case BudgetStatus.warning:
@@ -283,166 +291,148 @@ class _EntryCard extends ConsumerWidget {
         progressColor = tokens.FarolColors.navy;
     }
 
-    final bool hasBorder = entry.status != BudgetStatus.ok;
-    final borderColor = entry.status == BudgetStatus.overspent
+    final bool hasStatusBorder = widget.entry.status != BudgetStatus.ok;
+    final statusBorderColor = widget.entry.status == BudgetStatus.overspent
         ? Colors.red.withValues(alpha: 0.4)
         : Colors.orange.withValues(alpha: 0.4);
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: colors.surfaceLow,
-          borderRadius: BorderRadius.circular(14),
-          border: hasBorder
-              ? Border.all(color: borderColor, width: 1.5)
-              : null,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(cat?.emoji ?? '💰',
-                    style: const TextStyle(fontSize: 22)),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        cat?.name ?? entry.category,
-                        style: GoogleFonts.manrope(
-                            fontSize: 14, fontWeight: FontWeight.w600),
-                      ),
-                      if (entry.isCustom && entry.goalAmount != null)
+    return Padding(
+      padding: const EdgeInsets.only(bottom: DSSpacing.md),
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _hovered = true),
+        onExit: (_) => setState(() => _hovered = false),
+        cursor: SystemMouseCursors.click,
+        child: DSCard(
+          onTap: widget.onTap,
+          enableHover: true,
+          padding: const EdgeInsets.all(DSSpacing.lg),
+          borderColor: hasStatusBorder ? statusBorderColor : null,
+          borderWidth: hasStatusBorder ? 1.5 : 1.0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(cat?.emoji ?? '💰',
+                      style: const TextStyle(fontSize: 22)),
+                  const SizedBox(width: DSSpacing.sm + 2),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Text(
-                          'Goal: ${FinancialCalculatorService.formatBRL(entry.goalAmount!)}',
-                          style: TextStyle(
-                              fontSize: 10, color: colors.onSurfaceFaint),
+                          cat?.name ?? widget.entry.category,
+                          style: GoogleFonts.manrope(
+                              fontSize: 14, fontWeight: FontWeight.w600),
                         ),
-                    ],
-                  ),
-                ),
-                if (rollover.isPositive)
-                  Container(
-                    margin: const EdgeInsets.only(right: 6),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1A4A3A).withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(4),
+                        if (widget.entry.isCustom && widget.entry.goalAmount != null)
+                          Text(
+                            'Goal: ${FinancialCalculatorService.formatBRL(widget.entry.goalAmount!)}',
+                            style: TextStyle(
+                                fontSize: 10, color: colors.onSurfaceFaint),
+                          ),
+                      ],
                     ),
-                    child: Text(
-                      '+${rollover.formatted}',
-                      style: const TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF1A7A5A),
+                  ),
+                  if (rollover.isPositive)
+                    _BudgetBadge(
+                      label: '+${rollover.formatted}',
+                      color: const Color(0xFF1A7A5A),
+                    ),
+                  if (widget.isSwileBacked)
+                    const _BudgetBadge(
+                      label: 'Swile',
+                      color: Color(0xFF00A86B),
+                    )
+                  else if (widget.entry.isCustom)
+                    _BudgetBadge(
+                      label: 'Custom',
+                      color: tokens.FarolColors.navy,
+                    ),
+                  if (widget.entry.overrideId != null)
+                    IconButton(
+                      icon: Icon(
+                        widget.entry.goal != null
+                            ? Icons.restart_alt_outlined
+                            : Icons.delete_outline,
+                        size: 18,
                       ),
+                      onPressed: widget.onAction,
+                      color: colors.onSurfaceSoft,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
                     ),
-                  ),
-                if (isSwileBacked)
-                  Container(
-                    margin: const EdgeInsets.only(right: 6),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF00A86B).withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Text(
-                      'Swile',
-                      style: TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF00A86B),
-                      ),
-                    ),
-                  )
-                else if (entry.isCustom)
-                  Container(
-                    margin: const EdgeInsets.only(right: 6),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: colors.iconTintBlue,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Text(
-                      'Custom',
-                      style: TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                        color: tokens.FarolColors.navy,
-                      ),
-                    ),
-                  ),
-                if (entry.overrideId != null)
-                  IconButton(
-                    icon: Icon(
-                      entry.goal != null
-                          ? Icons.restart_alt_outlined
-                          : Icons.delete_outline,
-                      size: 18,
-                    ),
-                    onPressed: onAction,
-                    color: colors.onSurfaceSoft,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: pct,
-                minHeight: 6,
-                backgroundColor:
-                    colors.onSurfaceFaint.withValues(alpha: 0.2),
-                valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Spent: ${FinancialCalculatorService.formatBRL(entry.spent)}',
-                  style: TextStyle(
-                      fontSize: 11, color: colors.onSurfaceSoft),
-                ),
-                Text(
-                  entry.remaining >= 0
-                      ? 'Left: ${FinancialCalculatorService.formatBRL(entry.remaining)}'
-                      : 'Over: ${FinancialCalculatorService.formatBRL(entry.remaining.abs())}',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: entry.remaining < 0
-                        ? Colors.red
-                        : colors.onSurfaceMuted,
+              const SizedBox(height: DSSpacing.sm + 2),
+              DSProgressBar(
+                value: pct,
+                height: 6,
+                color: progressColor,
+                backgroundColor: colors.onSurfaceFaint.withValues(alpha: 0.15),
+              ),
+              const SizedBox(height: DSSpacing.sm),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Gasto: ${FinancialCalculatorService.formatBRL(widget.entry.spent)}',
+                    style:
+                        TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
                   ),
-                ),
-                Text(
-                  isSwileBacked
-                      ? 'of Swile balance'
-                      : 'of ${FinancialCalculatorService.formatBRL(entry.amount)}',
-                  style: TextStyle(
-                      fontSize: 11, color: colors.onSurfaceFaint),
-                ),
-              ],
-            ),
-            // ── Last edit by (shared workspaces only) ──
-            _BudgetLastEditLine(categorySlug: entry.category.toLowerCase()),
-          ],
+                  Text(
+                    widget.entry.remaining >= 0
+                        ? 'Restam: ${FinancialCalculatorService.formatBRL(widget.entry.remaining)}'
+                        : 'Excedido: ${FinancialCalculatorService.formatBRL(widget.entry.remaining.abs())}',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: widget.entry.remaining < 0
+                          ? Colors.red
+                          : colors.onSurfaceMuted,
+                    ),
+                  ),
+                  Text(
+                    widget.isSwileBacked
+                        ? 'do saldo Swile'
+                        : 'de ${FinancialCalculatorService.formatBRL(widget.entry.amount)}',
+                    style:
+                        TextStyle(fontSize: 11, color: colors.onSurfaceFaint),
+                  ),
+                ],
+              ),
+              _BudgetLastEditLine(categorySlug: widget.entry.category.toLowerCase()),
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+class _BudgetBadge extends StatelessWidget {
+  final String label;
+  final Color color;
+  const _BudgetBadge({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) => Container(
+        margin: const EdgeInsets.only(right: DSSpacing.xs + 2),
+        padding:
+            const EdgeInsets.symmetric(horizontal: DSSpacing.xs + 2, vertical: 2),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.12),
+          borderRadius: DSRadius.xsBR,
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w700,
+            color: color,
+          ),
+        ),
+      );
 }
 
 // ── Budget last-edit attribution ──────────────────────────────────────────────

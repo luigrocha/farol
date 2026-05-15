@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/domain/entities/recurring_rule.dart';
 import '../../core/domain/entities/recurring_occurrence.dart';
 import '../../core/i18n/app_localizations.dart';
+import '../../design/ds_tokens.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/widgets/farol_snackbar.dart';
@@ -127,25 +128,24 @@ class _HeroCard extends StatelessWidget {
     final active = rulesAsync.value?.where((r) => r.status == RecurringStatus.active).toList() ?? [];
     final monthlyTotal = active.fold<double>(0, (sum, r) => sum + _monthlyEquivalent(r));
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: _teal,
-        borderRadius: BorderRadius.circular(16),
-      ),
+    return DSCard(
+      color: _teal,
+      radius: DSRadius.lg,
+      padding: const EdgeInsets.all(DSSpacing.xl),
+      enableHover: false,
       child: Builder(builder: (context) {
         final l10n = context.l10n;
         return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(l10n.recurringTotalMonthly,
               style: GoogleFonts.manrope(
                   fontSize: 12, color: Colors.white70, fontWeight: FontWeight.w500)),
-          const SizedBox(height: 4),
+          const SizedBox(height: DSSpacing.xs),
           Text(
             FinancialCalculatorService.formatBRL(monthlyTotal),
             style: GoogleFonts.manrope(
                 fontSize: 28, color: Colors.white, fontWeight: FontWeight.w800),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DSSpacing.sm),
           Text(
             l10n.recurringActiveCount(active.length),
             style: GoogleFonts.manrope(fontSize: 13, color: Colors.white70),
@@ -184,12 +184,13 @@ class _FilterChips extends StatelessWidget {
         };
         final isSelected = f == selected;
         return Padding(
-          padding: const EdgeInsets.only(right: 8),
+          padding: const EdgeInsets.only(right: DSSpacing.sm),
           child: ChoiceChip(
             label: Text(label),
             selected: isSelected,
             onSelected: (_) => onChanged(f),
             selectedColor: _teal,
+            shape: RoundedRectangleBorder(borderRadius: DSRadius.fullBR),
             labelStyle: GoogleFonts.manrope(
               fontSize: 12,
               color: isSelected ? Colors.white : null,
@@ -216,43 +217,42 @@ class _RuleTile extends ConsumerWidget {
         ? memberMap[rule.authorUserId]
         : null;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: DSSpacing.sm + 2),
+      child: DSCard(
         onTap: () => _showDetail(context, ref),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(children: [
-            _CategoryIcon(slug: rule.categorySlug),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(rule.name,
-                    style: GoogleFonts.manrope(
-                        fontSize: 14, fontWeight: FontWeight.w700)),
-                const SizedBox(height: 2),
-                Text(
-                  '${rule.frequency.localizedLabel(context.l10n.locale.languageCode)}  ·  dia ${rule.dayOfMonth ?? '—'}',
-                  style: GoogleFonts.manrope(fontSize: 12, color: Colors.grey),
-                ),
-                if (author != null) ...[
-                  const SizedBox(height: 4),
-                  MemberChip(member: author),
-                ],
-              ]),
-            ),
-            Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+        padding: const EdgeInsets.all(DSSpacing.lg),
+        child: Row(children: [
+          _CategoryIcon(slug: rule.categorySlug),
+          const SizedBox(width: DSSpacing.md),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(rule.name,
+                  style: GoogleFonts.manrope(
+                      fontSize: 14, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 2),
               Text(
-                FinancialCalculatorService.formatBRL(rule.baseAmount),
+                '${rule.frequency.localizedLabel(context.l10n.locale.languageCode)}  ·  dia ${rule.dayOfMonth ?? '—'}',
                 style: GoogleFonts.manrope(
-                    fontSize: 14, fontWeight: FontWeight.w700, color: _teal),
+                    fontSize: 12,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
-              _StatusBadge(status: rule.status),
+              if (author != null) ...[
+                const SizedBox(height: DSSpacing.xs),
+                MemberChip(member: author),
+              ],
             ]),
+          ),
+          Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+            Text(
+              FinancialCalculatorService.formatBRL(rule.baseAmount),
+              style: GoogleFonts.manrope(
+                  fontSize: 14, fontWeight: FontWeight.w700, color: _teal),
+            ),
+            const SizedBox(height: DSSpacing.xs),
+            _StatusBadge(status: rule.status),
           ]),
-        ),
+        ]),
       ),
     );
   }
@@ -285,19 +285,24 @@ class _RuleDetailSheet extends ConsumerWidget {
       builder: (ctx, ctrl) => Container(
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(DSRadius.xl)),
         ),
-        padding: EdgeInsets.fromLTRB(20, 12, 20, bottom + 24),
+        padding: EdgeInsets.fromLTRB(
+            DSSpacing.xl, DSSpacing.md, DSSpacing.xl, bottom + DSSpacing.xxl),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Center(
             child: Container(
-              width: 40, height: 4,
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(2)),
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white.withValues(alpha: 0.12)
+                      : Colors.grey.shade300,
+                  borderRadius: DSRadius.xsBR),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DSSpacing.lg),
           Row(children: [
             _CategoryIcon(slug: rule.categorySlug),
             const SizedBox(width: 12),
@@ -446,8 +451,9 @@ class _ActionBtn extends StatelessWidget {
       label: Text(label, style: GoogleFonts.manrope(fontSize: 12, color: c)),
       style: OutlinedButton.styleFrom(
         side: BorderSide(color: c.withValues(alpha: 0.4)),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        padding: const EdgeInsets.symmetric(
+            horizontal: DSSpacing.md, vertical: DSSpacing.sm),
+        shape: RoundedRectangleBorder(borderRadius: DSRadius.smBR),
       ),
     );
   }
@@ -493,10 +499,11 @@ class _CategoryIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 40, height: 40,
+      width: 40,
+      height: 40,
       decoration: BoxDecoration(
         color: _teal.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: DSRadius.smBR,
       ),
       child: Icon(_iconFor(slug), size: 20, color: _teal),
     );
@@ -529,10 +536,11 @@ class _StatusBadge extends StatelessWidget {
       RecurringStatus.cancelled => (l10n.recurringStatusCancelled, Colors.red),
     };
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: const EdgeInsets.symmetric(
+          horizontal: DSSpacing.sm, vertical: 3),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: DSRadius.fullBR,
       ),
       child: Text(label,
           style: GoogleFonts.manrope(

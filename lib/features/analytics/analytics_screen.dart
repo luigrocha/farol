@@ -4,6 +4,7 @@ import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../design/farol_colors.dart' as tokens;
+import '../../design/ds_tokens.dart';
 import '../../core/models/expense.dart';
 import '../../core/models/income.dart';
 import '../../core/i18n/app_localizations.dart';
@@ -47,7 +48,16 @@ class AnalyticsScreen extends ConsumerWidget {
             onSelect: (r) => ref.read(analyticsRangeProvider.notifier).state = r,
           )),
           expensesAsync.when(
-            loading: () => const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
+            loading: () => SliverFillRemaining(child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: DSSpacing.xl, vertical: DSSpacing.xxl),
+            child: Column(children: [
+              DSSkeleton(width: double.infinity, height: 80, radius: DSRadius.lg),
+              const SizedBox(height: DSSpacing.lg),
+              DSSkeleton(width: double.infinity, height: 180, radius: DSRadius.lg),
+              const SizedBox(height: DSSpacing.lg),
+              DSSkeleton(width: double.infinity, height: 160, radius: DSRadius.lg),
+            ]),
+          )),
             error: (e, _) => SliverFillRemaining(child: Center(child: Text('Error: $e'))),
             data: (expenses) {
               final incomes = incomesAsync.value ?? [];
@@ -157,19 +167,19 @@ class _RangePicker extends StatelessWidget {
       (AnalyticsRange.twelveMonths, '12M'),
     ];
     return Container(
-      margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(12)),
+      margin: const EdgeInsets.fromLTRB(DSSpacing.xl, DSSpacing.xl, DSSpacing.xl, 0),
+      padding: const EdgeInsets.all(DSSpacing.xs),
+      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
       child: Row(children: items.map((item) {
         final active = current == item.$1;
         return Expanded(child: GestureDetector(
           onTap: () => onSelect(item.$1),
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(vertical: 8),
+            duration: DSDuration.normal,
+            padding: const EdgeInsets.symmetric(vertical: DSSpacing.sm),
             decoration: BoxDecoration(
               color: active ? tokens.FarolColors.navy : Colors.transparent,
-              borderRadius: BorderRadius.circular(9),
+              borderRadius: DSRadius.smBR,
             ),
             child: Center(child: Text(item.$2, style: TextStyle(
               fontSize: 13, fontWeight: FontWeight.w700,
@@ -280,13 +290,19 @@ class _MetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+    return DSCard(
+      enableHover: true,
+      padding: const EdgeInsets.all(DSSpacing.md),
+      radius: DSRadius.lg,
+      color: colors.surfaceLowest,
+      enableShadow: true,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Container(width: 30, height: 30, decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(8)),
-          child: Icon(icon, size: 15, color: color)),
-        const SizedBox(height: 8),
+        Container(
+          width: 30, height: 30,
+          decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: DSRadius.xsBR),
+          child: Icon(icon, size: 15, color: color),
+        ),
+        const SizedBox(height: DSSpacing.sm),
         Text(label, style: TextStyle(fontSize: 9, letterSpacing: 0.8, fontWeight: FontWeight.w700, color: colors.onSurfaceSoft)),
         const SizedBox(height: 2),
         Text(value, style: GoogleFonts.manrope(fontSize: 12, fontWeight: FontWeight.w700, color: colors.onSurface), maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -326,11 +342,14 @@ class _MonthlyTrendCard extends StatelessWidget {
           if (hasIncome) ...[const SizedBox(width: 12), _Legend(color: tokens.FarolColors.navy, label: l10n.income)],
         ]),
       ]),
-      const SizedBox(height: 12),
-      Container(
+      const SizedBox(height: DSSpacing.md),
+      DSCard(
+        enableHover: false,
+        enableShadow: true,
+        padding: const EdgeInsets.fromLTRB(DSSpacing.xs, DSSpacing.md, DSSpacing.md, DSSpacing.sm),
+        radius: DSRadius.lg,
+        color: colors.surfaceLowest,
         height: 160,
-        padding: const EdgeInsets.fromLTRB(4, 12, 12, 8),
-        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(18)),
         child: LineChart(LineChartData(
           gridData: FlGridData(show: true, drawVerticalLine: false, getDrawingHorizontalLine: (_) => FlLine(color: colors.surfaceLow, strokeWidth: 1)),
           borderData: FlBorderData(show: false),
@@ -373,8 +392,8 @@ class _Legend extends StatelessWidget {
   const _Legend({required this.color, required this.label});
   @override
   Widget build(BuildContext context) => Row(children: [
-    Container(width: 12, height: 3, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(2))),
-    const SizedBox(width: 4),
+    Container(width: 12, height: 3, decoration: BoxDecoration(color: color, borderRadius: DSRadius.xsBR)),
+    const SizedBox(width: DSSpacing.xs),
     Text(label, style: TextStyle(fontSize: 10, color: context.colors.onSurfaceSoft)),
   ]);
 }
@@ -394,31 +413,39 @@ class _CategoryBreakdown extends ConsumerWidget {
     final catsMap = ref.watch(categoriesMapProvider);
     if (sorted.isEmpty) return const SizedBox.shrink();
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(context.l10n.analyticsCategoryDistribution, style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
-      const SizedBox(height: 16),
-      Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        _DonutChart(data: byCat, total: total),
-        const SizedBox(width: 16),
-        Expanded(child: Column(children: sorted.take(5).map((e) {
-          final cat = catsMap[e.key];
-          final label = cat?.name ?? e.key;
-          final pct = total > 0 ? e.value / total : 0.0;
-          return Padding(padding: const EdgeInsets.only(bottom: 8), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Flexible(child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: colors.onSurface), overflow: TextOverflow.ellipsis)),
-              Text('${(pct * 100).toInt()}%', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: colors.onSurfaceSoft)),
-            ]),
-            const SizedBox(height: 3),
-            ClipRRect(borderRadius: BorderRadius.circular(2), child: LinearProgressIndicator(
-              value: pct, minHeight: 3,
-              backgroundColor: colors.surfaceLow,
-              valueColor: AlwaysStoppedAnimation(tokens.FarolColors.getCategoryColor(e.key)),
-            )),
-          ]));
-        }).toList())),
+    return DSCard(
+      enableHover: false,
+      enableShadow: true,
+      padding: const EdgeInsets.all(DSSpacing.lg),
+      radius: DSRadius.lg,
+      color: colors.surfaceLowest,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(context.l10n.analyticsCategoryDistribution, style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
+        const SizedBox(height: DSSpacing.lg),
+        Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          _DonutChart(data: byCat, total: total),
+          const SizedBox(width: DSSpacing.lg),
+          Expanded(child: Column(children: sorted.take(5).map((e) {
+            final cat = catsMap[e.key];
+            final label = cat?.name ?? e.key;
+            final pct = total > 0 ? e.value / total : 0.0;
+            return Padding(padding: const EdgeInsets.only(bottom: DSSpacing.sm), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Flexible(child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: colors.onSurface), overflow: TextOverflow.ellipsis)),
+                Text('${(pct * 100).toInt()}%', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: colors.onSurfaceSoft)),
+              ]),
+              const SizedBox(height: 3),
+              DSProgressBar(
+                value: pct,
+                height: 3,
+                color: tokens.FarolColors.getCategoryColor(e.key),
+                backgroundColor: colors.surfaceLow,
+              ),
+            ]));
+          }).toList())),
+        ]),
       ]),
-    ]);
+    );
   }
 }
 
@@ -455,38 +482,45 @@ class _MonthlyBarsCard extends StatelessWidget {
     final maxVal = sorted.map((e) => e.value).fold(0.0, (a, b) => a > b ? a : b);
     final avgVal = sorted.fold(0.0, (s, e) => s + e.value) / sorted.length;
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(l10n.analyticsMonthlyComparison, style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
-      const SizedBox(height: 12),
-      ...sorted.map((entry) {
-        final pct = maxVal > 0 ? entry.value / maxVal : 0.0;
-        final isAboveAvg = entry.value > avgVal * 1.05;
-        final barColor = isAboveAvg ? Colors.orange.shade600 : tokens.FarolColors.beam;
-        return Padding(padding: const EdgeInsets.only(bottom: 10), child: Row(children: [
-          SizedBox(width: 30, child: Text(_shortMonth(entry.key, l10n),
-            style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, fontWeight: FontWeight.w600))),
-          const SizedBox(width: 8),
-          Expanded(child: LayoutBuilder(builder: (ctx, constraints) => ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: Stack(children: [
-              Container(height: 22, width: constraints.maxWidth, color: colors.surfaceLowest),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.easeOut,
-                width: constraints.maxWidth * pct,
-                height: 22,
-                color: barColor.withValues(alpha: 0.85),
-              ),
-            ]),
-          ))),
-          const SizedBox(width: 8),
-          SizedBox(width: 80, child: Text(FinancialCalculatorService.formatBRL(entry.value),
-            style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.onSurface),
-            textAlign: TextAlign.right)),
-          if (isAboveAvg)
-            Padding(padding: const EdgeInsets.only(left: 4), child: Icon(Icons.arrow_upward, size: 10, color: Colors.orange.shade600)),
-        ]));
-      }),
-    ]);
+    return DSCard(
+      enableHover: false,
+      enableShadow: true,
+      padding: const EdgeInsets.all(DSSpacing.lg),
+      radius: DSRadius.lg,
+      color: colors.surfaceLowest,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(l10n.analyticsMonthlyComparison, style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700)),
+        const SizedBox(height: DSSpacing.md),
+        ...sorted.map((entry) {
+          final pct = maxVal > 0 ? entry.value / maxVal : 0.0;
+          final isAboveAvg = entry.value > avgVal * 1.05;
+          final barColor = isAboveAvg ? Colors.orange.shade600 : tokens.FarolColors.beam;
+          return Padding(padding: const EdgeInsets.only(bottom: DSSpacing.sm + 2), child: Row(children: [
+            SizedBox(width: 30, child: Text(_shortMonth(entry.key, l10n),
+              style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, fontWeight: FontWeight.w600))),
+            const SizedBox(width: DSSpacing.sm),
+            Expanded(child: LayoutBuilder(builder: (ctx, constraints) => ClipRRect(
+              borderRadius: DSRadius.xsBR,
+              child: Stack(children: [
+                Container(height: 22, width: constraints.maxWidth, color: colors.surfaceLow),
+                AnimatedContainer(
+                  duration: DSDuration.slow,
+                  curve: DSCurve.smooth,
+                  width: constraints.maxWidth * pct,
+                  height: 22,
+                  color: barColor.withValues(alpha: 0.85),
+                ),
+              ]),
+            ))),
+            const SizedBox(width: DSSpacing.sm),
+            SizedBox(width: 80, child: Text(FinancialCalculatorService.formatBRL(entry.value),
+              style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.onSurface),
+              textAlign: TextAlign.right)),
+            if (isAboveAvg)
+              Padding(padding: const EdgeInsets.only(left: DSSpacing.xs), child: Icon(Icons.arrow_upward, size: 10, color: Colors.orange.shade600)),
+          ]));
+        }),
+      ]),
+    );
   }
 }

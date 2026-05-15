@@ -8,6 +8,7 @@ import '../../../../core/models/net_worth_snapshot.dart';
 import '../../../../core/providers/providers.dart';
 import '../../../../core/theme/farol_colors.dart';
 import '../../../../design/farol_colors.dart' as tokens;
+import '../../../../design/ds_tokens.dart';
 
 class NetWorthEvolutionChart extends ConsumerWidget {
   const NetWorthEvolutionChart({super.key});
@@ -20,7 +21,7 @@ class NetWorthEvolutionChart extends ConsumerWidget {
 
     return Container(
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.lgBR, border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFF1B3A5C).withValues(alpha: 0.06))),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text(context.l10n.evolution, style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700)),
@@ -69,7 +70,7 @@ class _FilterChips extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
             color: isSelected ? tokens.FarolColors.beam : context.colors.surfaceLow,
-            borderRadius: BorderRadius.circular(99),
+            borderRadius: DSRadius.fullBR,
           ),
           child: Text(
             opt.$2,

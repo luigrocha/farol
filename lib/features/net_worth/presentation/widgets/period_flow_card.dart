@@ -5,6 +5,7 @@ import '../../../../core/i18n/app_localizations.dart';
 import '../../../../core/providers/providers.dart';
 import '../../../../core/theme/farol_colors.dart';
 import '../../../../design/farol_colors.dart' as tokens;
+import '../../../../design/ds_tokens.dart';
 import '../../../../design/widgets/farol_card.dart';
 import '../../../../design/widgets/brl_text.dart';
 
@@ -67,7 +68,7 @@ class PeriodFlowCard extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
                   color: colors.surfaceLow,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: DSRadius.mdBR,
                 ),
                 child: Text('$transferCount', style: GoogleFonts.manrope(fontSize: 12, fontWeight: FontWeight.w700, color: colors.onSurface)),
               ),
@@ -95,7 +96,7 @@ class _FlowBlock extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: DSRadius.mdBR,
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(label, style: GoogleFonts.manrope(fontSize: 11, fontWeight: FontWeight.w600, color: colors.onSurfaceSoft)),

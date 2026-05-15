@@ -12,6 +12,7 @@ import '../../core/widgets/farol_charts.dart';
 import '../../core/widgets/farol_dialogs.dart';
 import '../../core/widgets/farol_snackbar.dart';
 import '../../design/farol_colors.dart' as tokens;
+import '../../design/ds_tokens.dart';
 import 'add_investment_bottom_sheet.dart';
 
 class InvestmentsScreen extends ConsumerWidget {
@@ -67,10 +68,11 @@ class _ConsolidatedHero extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final balance = ref.watch(totalInvestmentBalanceProvider);
     return Container(
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(DSSpacing.xl),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: DSRadius.lgBR,
         gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF244A72), tokens.FarolColors.navy]),
+        boxShadow: [BoxShadow(color: tokens.FarolColors.navy.withValues(alpha: 0.28), blurRadius: 20, offset: const Offset(0, 6))],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -106,8 +108,8 @@ class _StatPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(child: Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.25), borderRadius: BorderRadius.circular(99)),
+      padding: const EdgeInsets.symmetric(vertical: DSSpacing.sm),
+      decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.25), borderRadius: DSRadius.fullBR),
       child: Column(children: [
         Text(label.toUpperCase(), style: const TextStyle(fontSize: 9, letterSpacing: 1, fontWeight: FontWeight.w600, color: Colors.white60)),
         const SizedBox(height: 2),
@@ -127,9 +129,9 @@ class _AllocationCard extends ConsumerWidget {
     final byType = <String, double>{};
     for (final inv in investments) { byType[inv.type] = (byType[inv.type] ?? 0) + inv.currentBalance; }
     final total = byType.values.fold(0.0, (s, v) => s + v);
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(20)),
+    return DSCard(
+      enableHover: false,
+      padding: const EdgeInsets.all(DSSpacing.lg + 2),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -159,9 +161,10 @@ class _IASuggestionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: BorderRadius.circular(20)),
+    return DSCard(
+      enableHover: false,
+      color: colors.secondaryContainer,
+      padding: const EdgeInsets.all(DSSpacing.lg + 2),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         const Icon(Icons.auto_awesome, color: tokens.FarolColors.beam, size: 18),
         const SizedBox(height: 10),
@@ -171,7 +174,7 @@ class _IASuggestionCard extends StatelessWidget {
         const SizedBox(height: 12),
         ElevatedButton(
           onPressed: () {},
-          style: ElevatedButton.styleFrom(backgroundColor: tokens.FarolColors.beam, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0, padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10)),
+          style: ElevatedButton.styleFrom(backgroundColor: tokens.FarolColors.beam, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: DSRadius.mdBR), elevation: 0, padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg, vertical: DSSpacing.sm + 2)),
           child: Text(AppLocalizations.of(context).investmentsExploreFiis, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
         ),
       ]),
@@ -233,10 +236,10 @@ class _InvRow extends ConsumerWidget {
       key: ValueKey(inv.id),
       direction: DismissDirection.endToStart,
       background: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        decoration: BoxDecoration(color: Colors.red.shade700, borderRadius: BorderRadius.circular(16)),
+        margin: const EdgeInsets.only(bottom: DSSpacing.sm + 2),
+        decoration: BoxDecoration(color: Colors.red.shade700, borderRadius: DSRadius.mdBR),
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
+        padding: const EdgeInsets.only(right: DSSpacing.lg),
         child: const Column(mainAxisSize: MainAxisSize.min, children: [
           Icon(Icons.delete_outline, color: Colors.white, size: 22),
           SizedBox(height: 4),
@@ -260,17 +263,16 @@ class _InvRow extends ConsumerWidget {
           }
         }
       },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
-        child: InkWell(
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: DSSpacing.sm + 2),
+        child: DSCard(
           onTap: () => Navigator.pushNamed(context, '/investment_detail', arguments: inv),
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(padding: const EdgeInsets.all(16), child: Column(children: [
+          padding: const EdgeInsets.all(DSSpacing.lg),
+          child: Column(children: [
             Row(children: [
               Container(
                 width: 40, height: 40,
-                decoration: BoxDecoration(color: typeColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(color: typeColor.withValues(alpha: 0.12), borderRadius: DSRadius.mdBR),
                 child: Center(child: Text(
                   () { try { return InvestmentType.fromDb(inv.type).emoji; } catch (_) { return '📋'; } }(),
                   style: const TextStyle(fontSize: 18),
@@ -307,9 +309,8 @@ class _InvRow extends ConsumerWidget {
               ]),
             ]),
           ])),
-        ),
-      ),
-    );
+        )
+      );
   }
 }
 
@@ -323,11 +324,37 @@ class _BRLBig extends StatelessWidget {
     final f = parts[0];
     final cents = parts.length > 1 ? parts[1] : '00';
     const w = FontWeight.w800;
-    return Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
-      Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.48, fontWeight: FontWeight.w500, color: c)),
-      Text(f.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: w, color: c, letterSpacing: -size * 0.028)),
-      Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: w, color: c.withValues(alpha: 0.85))),
-    ]);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.baseline,
+      textBaseline: TextBaseline.alphabetic,
+      children: [
+        Text(
+          'R\$ ',
+          style: GoogleFonts.manrope(
+            fontSize: size * 0.48,
+            fontWeight: FontWeight.w500,
+            color: c,
+          ),
+        ),
+        Text(
+          f.replaceFirst('R\$ ', ''),
+          style: GoogleFonts.manrope(
+            fontSize: size,
+            fontWeight: w,
+            color: c,
+            letterSpacing: -size * 0.028,
+          ),
+        ),
+        Text(
+          ',$cents',
+          style: GoogleFonts.manrope(
+            fontSize: size * 0.56,
+            fontWeight: w,
+            color: c.withValues(alpha: 0.85),
+          ),
+        ),
+      ],
+    );
   }
 }
 

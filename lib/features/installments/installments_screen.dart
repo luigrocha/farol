@@ -7,6 +7,7 @@ import '../../core/domain/entities/installment_payment.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../design/farol_colors.dart' as tokens;
+import '../../design/ds_tokens.dart';
 import '../../core/i18n/app_localizations.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../core/providers/workspace_providers.dart'
@@ -139,16 +140,15 @@ class _HeroCard extends StatelessWidget {
     final remaining =
         plans.fold(0.0, (s, p) => s + p.remainingAmount);
 
-    return Container(
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF2D1B69), Color(0xFF6B3FA0)],
-        ),
+    return DSCard(
+      radius: DSRadius.lg,
+      padding: const EdgeInsets.all(DSSpacing.xxl),
+      gradient: const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0xFF2D1B69), Color(0xFF6B3FA0)],
       ),
+      enableHover: false,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(context.l10n.installmentsMonthlyCommitment,
             style: const TextStyle(
@@ -156,12 +156,12 @@ class _HeroCard extends StatelessWidget {
                 letterSpacing: 1.8,
                 fontWeight: FontWeight.w700,
                 color: Colors.white60)),
-        const SizedBox(height: 6),
+        const SizedBox(height: DSSpacing.sm - 2),
         _BRLBig(value: monthly, size: 32, color: Colors.white),
-        const SizedBox(height: 18),
+        const SizedBox(height: DSSpacing.xl - 2),
         Row(children: [
           _HeroPill(label: context.l10n.installmentsActivePlans, value: '${plans.length}'),
-          const SizedBox(width: 8),
+          const SizedBox(width: DSSpacing.sm),
           _HeroPill(
               label: context.l10n.remainingBalance,
               value: FinancialCalculatorService.formatBRL(remaining)),
@@ -178,10 +178,10 @@ class _HeroPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: DSSpacing.md),
         decoration: BoxDecoration(
           color: Colors.black.withValues(alpha: 0.22),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: DSRadius.mdBR,
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(label,
@@ -239,11 +239,11 @@ class _Chip extends StatelessWidget {
     return GestureDetector(
       onTap: () => onTap(value),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 160),
+        duration: DSDuration.normal,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
           color: active ? _purple : context.colors.surfaceLowest,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: DSRadius.fullBR,
           border: Border.all(
               color: active ? _purple : context.colors.surfaceLow),
         ),
@@ -273,14 +273,13 @@ class _PlanTile extends ConsumerWidget {
         ? memberMap[plan.authorUserId]
         : null;
 
-    return GestureDetector(
-      onTap: () => _openDetail(context, ref),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-            color: colors.surfaceLowest,
-            borderRadius: BorderRadius.circular(16)),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: DSSpacing.sm + 2),
+      child: DSCard(
+        onTap: () => _openDetail(context, ref),
+        radius: DSRadius.lg,
+        padding: const EdgeInsets.all(DSSpacing.lg),
+        color: colors.surfaceLowest,
         child: Column(children: [
           Row(children: [
             Container(
@@ -288,7 +287,7 @@ class _PlanTile extends ConsumerWidget {
               height: 40,
               decoration: BoxDecoration(
                 color: _purple.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: DSRadius.mdBR,
               ),
               child: const Center(
                   child: Text('💳', style: TextStyle(fontSize: 18))),
@@ -310,7 +309,7 @@ class _PlanTile extends ConsumerWidget {
                           paid: plan.paidCount,
                           total: plan.numInstallments),
                       if (nextDue != null) ...[
-                        const SizedBox(width: 6),
+                        const SizedBox(width: DSSpacing.sm - 2),
                         Icon(Icons.schedule,
                             size: 10, color: colors.onSurfaceFaint),
                         const SizedBox(width: 2),
@@ -321,7 +320,7 @@ class _PlanTile extends ConsumerWidget {
                     ]),
                   ]),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: DSSpacing.sm + 2),
             Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
               _BRLSmall(value: plan.installmentAmount, size: 14),
               const SizedBox(height: 2),
@@ -330,7 +329,7 @@ class _PlanTile extends ConsumerWidget {
                       fontSize: 10, color: colors.onSurfaceFaint)),
             ]),
           ]),
-          const SizedBox(height: 12),
+          const SizedBox(height: DSSpacing.md),
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Text(
@@ -344,20 +343,16 @@ class _PlanTile extends ConsumerWidget {
                       fontWeight: FontWeight.w600,
                       color: colors.onSurfaceSoft)),
             ]),
-            const SizedBox(height: 6),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: plan.progressPercent,
-                minHeight: 5,
-                backgroundColor: _purple.withValues(alpha: 0.12),
-                valueColor: AlwaysStoppedAnimation(
-                    plan.isComplete ? Colors.green : _purple),
-              ),
+            const SizedBox(height: DSSpacing.sm - 2),
+            DSProgressBar(
+              value: plan.progressPercent,
+              height: 5,
+              color: plan.isComplete ? Colors.green : _purple,
+              backgroundColor: _purple.withValues(alpha: 0.12),
             ),
             // Attribution — shared workspaces only
             if (author != null) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: DSSpacing.sm),
               MemberChip(member: author),
             ],
           ]),
@@ -423,9 +418,9 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(DSRadius.xl)),
       ),
-      padding: EdgeInsets.fromLTRB(20, 12, 20, bottom + 24),
+      padding: EdgeInsets.fromLTRB(DSSpacing.xl, DSSpacing.md, DSSpacing.xl, bottom + DSSpacing.xxl),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         Center(
             child: Container(
@@ -433,7 +428,7 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
                 height: 4,
                 decoration: BoxDecoration(
                     color: colors.surfaceLow,
-                    borderRadius: BorderRadius.circular(2)))),
+                    borderRadius: DSRadius.xsBR))),
         const SizedBox(height: 20),
 
         // Header
@@ -443,7 +438,7 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
             height: 44,
             decoration: BoxDecoration(
                 color: _purple.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(14)),
+                borderRadius: DSRadius.mdBR),
             child: const Center(
                 child: Text('💳', style: TextStyle(fontSize: 20))),
           ),
@@ -462,15 +457,11 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
         const SizedBox(height: 16),
 
         // Progress bar
-        ClipRRect(
-          borderRadius: BorderRadius.circular(6),
-          child: LinearProgressIndicator(
-            value: plan.progressPercent,
-            minHeight: 8,
-            backgroundColor: _purple.withValues(alpha: 0.1),
-            valueColor: AlwaysStoppedAnimation(
-                plan.isComplete ? Colors.green : _purple),
-          ),
+        DSProgressBar(
+          value: plan.progressPercent,
+          height: 8,
+          color: plan.isComplete ? Colors.green : _purple,
+          backgroundColor: _purple.withValues(alpha: 0.1),
         ),
         const SizedBox(height: 6),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -486,10 +477,10 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
 
         // Stats row
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(DSSpacing.lg),
           decoration: BoxDecoration(
               color: colors.surfaceLowest,
-              borderRadius: BorderRadius.circular(16)),
+              borderRadius: DSRadius.lgBR),
           child: Row(children: [
             _StatBox(
                 label: context.l10n.installmentsPerInstallmentLabel,
@@ -564,7 +555,7 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
                 backgroundColor: _purple,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14)),
+                    borderRadius: DSRadius.mdBR),
                 elevation: 0,
               ),
             ),
@@ -584,7 +575,7 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
                 foregroundColor: colors.onSurfaceSoft,
                 side: BorderSide(color: colors.surfaceLow),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14)),
+                    borderRadius: DSRadius.mdBR),
               ),
             ),
           ),
@@ -757,7 +748,7 @@ class _EmptyState extends StatelessWidget {
           height: 64,
           decoration: BoxDecoration(
               color: colors.surfaceLowest,
-              borderRadius: BorderRadius.circular(20)),
+              borderRadius: DSRadius.lgBR),
           child:
               const Center(child: Text('💳', style: TextStyle(fontSize: 28))),
         ),
@@ -783,10 +774,10 @@ class _ProgressBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: DSSpacing.sm, vertical: 3),
       decoration: BoxDecoration(
         color: _purple.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: DSRadius.xsBR,
       ),
       child: Text(context.l10n.installmentsPaidOf(paid, total),
           style: const TextStyle(

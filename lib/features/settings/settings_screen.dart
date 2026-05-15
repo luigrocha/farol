@@ -8,6 +8,7 @@ import '../../core/models/financial_period.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../design/farol_colors.dart' as tokens;
+import '../../design/ds_tokens.dart';
 import '../../core/i18n/app_localizations.dart';
 import '../../core/widgets/farol_snackbar.dart';
 import '../auth/presentation/auth_providers.dart';
@@ -95,8 +96,16 @@ class _ProfileCard extends ConsumerWidget {
     final displayName = profileAsync.whenOrNull(data: (p) => p?.displayName) ?? '';
 
     return Container(
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(24)),
+      padding: const EdgeInsets.all(DSSpacing.xl),
+      decoration: BoxDecoration(
+        color: colors.surfaceLowest,
+        borderRadius: DSRadius.xlBR,
+        border: Border.all(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white.withValues(alpha: 0.06)
+              : const Color(0xFF1B3A5C).withValues(alpha: 0.06),
+        ),
+      ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(l10n.translate('profile').toUpperCase(), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 1.6, color: colors.onSurfaceFaint)),
         const SizedBox(height: 6),
@@ -110,7 +119,7 @@ class _ProfileCard extends ConsumerWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: tokens.FarolColors.navy, foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            shape: RoundedRectangleBorder(borderRadius: DSRadius.mdBR),
             elevation: 0,
           ),
           child: Text(l10n.editProfile, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
@@ -221,7 +230,7 @@ class _CutoffDaySheetState extends ConsumerState<_CutoffDaySheet> {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
       decoration: BoxDecoration(
         color: colors.surfaceLowest,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(DSRadius.xl)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -238,7 +247,7 @@ class _CutoffDaySheetState extends ConsumerState<_CutoffDaySheet> {
             children: [
               Container(
                 width: 38, height: 38,
-                decoration: BoxDecoration(color: colors.iconTintBlue, borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(color: colors.iconTintBlue, borderRadius: DSRadius.smBR),
                 child: const Icon(Icons.calendar_month_outlined, size: 20, color: tokens.FarolColors.navy),
               ),
               const SizedBox(width: 12),
@@ -295,7 +304,7 @@ class _CutoffDaySheetState extends ConsumerState<_CutoffDaySheet> {
                 backgroundColor: tokens.FarolColors.navy,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(borderRadius: DSRadius.mdBR),
                 elevation: 0,
               ),
               child: _saving
@@ -335,7 +344,7 @@ class _LangRow extends ConsumerWidget {
       onTap: () => ref.read(localeProvider.notifier).setLocale(locale),
       child: Container(
         margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16), border: Border.all(color: selected ? tokens.FarolColors.beam : Colors.transparent, width: 2)),
+        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR, border: Border.all(color: selected ? tokens.FarolColors.beam : Colors.transparent, width: 2)),
         child: Row(children: [
           Container(width: 34, height: 34, decoration: BoxDecoration(color: colors.surfaceLow, shape: BoxShape.circle), child: Center(child: Text(flag, style: const TextStyle(fontSize: 18)))),
           const SizedBox(width: 14),
@@ -358,14 +367,14 @@ class _AppearanceCard extends ConsumerWidget {
     final theme = ref.watch(themeModeProvider);
     return Container(
       padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF244A72), tokens.FarolColors.navy])),
+      decoration: BoxDecoration(borderRadius: DSRadius.xlBR, gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF244A72), tokens.FarolColors.navy])),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(l10n.appearance, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
         const SizedBox(height: 4),
         Text(l10n.customizeInterface, style: const TextStyle(fontSize: 12, color: Colors.white70, height: 1.5)),
         const SizedBox(height: 16),
         Container(
-          padding: const EdgeInsets.all(4), decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(99)),
+          padding: const EdgeInsets.all(4), decoration: BoxDecoration(color: Colors.black26, borderRadius: DSRadius.fullBR),
           child: Row(children: [
             _ThemeBtn(label: l10n.translate('light_mode'), icon: Icons.light_mode, active: theme == ThemeMode.light, onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.light)),
             _ThemeBtn(label: l10n.translate('dark_mode'), icon: Icons.dark_mode, active: theme == ThemeMode.dark, onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark)),
@@ -385,7 +394,7 @@ class _ThemeBtn extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(color: active ? Colors.white : Colors.transparent, borderRadius: BorderRadius.circular(99)),
+        decoration: BoxDecoration(color: active ? Colors.white : Colors.transparent, borderRadius: DSRadius.fullBR),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Icon(icon, size: 14, color: active ? tokens.FarolColors.navy : Colors.white),
           const SizedBox(width: 6),
@@ -410,9 +419,9 @@ class _DataRow extends StatelessWidget {
       onTap: isLoading ? null : onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
         child: Row(children: [
-          Container(width: 34, height: 34, decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: BorderRadius.circular(10)), child: Icon(icon, size: 18, color: color)),
+          Container(width: 34, height: 34, decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: DSRadius.smBR), child: Icon(icon, size: 18, color: color)),
           const SizedBox(width: 14),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(name, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
@@ -533,9 +542,9 @@ class _SupportCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Container(
-      padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(18)),
+      padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.lgBR),
       child: Column(children: [
-        Container(width: 44, height: 44, decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: BorderRadius.circular(12)), child: Icon(icon, size: 22, color: tokens.FarolColors.beam)),
+        Container(width: 44, height: 44, decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: DSRadius.mdBR), child: Icon(icon, size: 22, color: tokens.FarolColors.beam)),
         const SizedBox(height: 10),
         Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurface), textAlign: TextAlign.center),
       ]),
@@ -563,7 +572,7 @@ class _SalarySection extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
             color: colors.surfaceLowest,
-            borderRadius: BorderRadius.circular(16)),
+            borderRadius: DSRadius.mdBR),
         child: salaryAsync.when(
           loading: () => const Center(
               child: SizedBox(
@@ -645,7 +654,7 @@ class _BudgetSection extends ConsumerWidget {
         ),
         child: Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
           child: budgetAsync.when(
             loading: () => const Center(child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))),
             error: (_, __) => Text(AppLocalizations.of(context).couldNotLoadBudget),
@@ -809,7 +818,7 @@ class _BudgetChip extends StatelessWidget {
     final colors = context.colors;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: BorderRadius.circular(6)),
+      decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: DSRadius.xsBR),
       child: Text(
         '$label: ${FinancialCalculatorService.formatBRL(value)}',
         style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, fontWeight: FontWeight.w500),
@@ -842,7 +851,7 @@ class _NetWorthSection extends ConsumerWidget {
         ),
         child: Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
           child: snapAsync.when(
             loading: () => const Center(child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))),
             error: (_, __) => Text(AppLocalizations.of(context).couldNotLoadNetWorth),
@@ -896,11 +905,11 @@ class _NetWorthSection extends ConsumerWidget {
         ),
         child: Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
           child: Row(children: [
             Container(
               width: 34, height: 34,
-              decoration: BoxDecoration(color: colors.iconTintBlue, borderRadius: BorderRadius.circular(10)),
+              decoration: BoxDecoration(color: colors.iconTintBlue, borderRadius: DSRadius.smBR),
               child: Icon(Icons.account_balance_outlined, size: 18, color: colors.onSurface),
             ),
             const SizedBox(width: 14),
@@ -919,7 +928,7 @@ class _NetWorthSection extends ConsumerWidget {
         ),
         child: Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
           child: Row(children: [
             Container(
               width: 34, height: 34,
@@ -1008,11 +1017,11 @@ class _SimulatorsSection extends StatelessWidget {
         onTap: () => Navigator.of(context).pushNamed('/thirteenth_salary'),
         child: Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
           child: Row(children: [
             Container(
               width: 34, height: 34,
-              decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: BorderRadius.circular(10)),
+              decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: DSRadius.smBR),
               child: const Icon(Icons.payments_outlined, size: 18, color: tokens.FarolColors.beam),
             ),
             const SizedBox(width: 14),
@@ -1029,7 +1038,7 @@ class _SimulatorsSection extends StatelessWidget {
           onTap: () => Navigator.of(context).pushNamed('/fgts_aniversario'),
           child: Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+            decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
             child: Row(children: [
               Container(
                 width: 34, height: 34,
@@ -1053,11 +1062,11 @@ class _SimulatorsSection extends StatelessWidget {
           onTap: () => Navigator.of(context).pushNamed('/rescission_simulator'),
           child: Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+            decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
             child: Row(children: [
               Container(
                 width: 34, height: 34,
-                decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: DSRadius.smBR),
                 child: const Icon(Icons.assignment_outlined, size: 18, color: tokens.FarolColors.beam),
               ),
               const SizedBox(width: 14),
@@ -1084,11 +1093,11 @@ class _PrivacyToggleRow extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
       child: Row(children: [
         Container(
           width: 34, height: 34,
-          decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: BorderRadius.circular(10)),
+          decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: DSRadius.smBR),
           child: Icon(isPrivate ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 18, color: colors.onSurface),
         ),
         const SizedBox(width: 14),

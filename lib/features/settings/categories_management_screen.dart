@@ -5,6 +5,7 @@ import '../../core/models/category.dart';
 import '../../core/providers/providers.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../design/farol_colors.dart' as tokens;
+import '../../design/ds_tokens.dart';
 import '../../core/i18n/app_localizations.dart';
 import '../../core/widgets/farol_snackbar.dart';
 import '../../core/providers/workspace_providers.dart' show canWriteProvider;
@@ -159,20 +160,19 @@ class _CategoryTile extends StatelessWidget {
     final (typeLabel, typeColor) = _financialTypeLabel(category.financialType);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: DSSpacing.md),
       decoration: BoxDecoration(
         color: colors.surfaceLowest,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        borderRadius: DSRadius.mdBR,
+        border: Border.all(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white.withValues(alpha: 0.06)
+              : const Color(0xFF1B3A5C).withValues(alpha: 0.06),
+        ),
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: DSSpacing.lg, vertical: DSSpacing.xs),
         leading: Container(
           width: 40,
           height: 40,
@@ -245,10 +245,11 @@ class _Chip extends StatelessWidget {
   final Color color;
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        padding: const EdgeInsets.symmetric(
+            horizontal: DSSpacing.xs + 2, vertical: 2),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: DSRadius.xsBR,
         ),
         child: Text(
           label,

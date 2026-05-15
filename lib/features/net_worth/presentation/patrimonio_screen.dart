@@ -8,6 +8,7 @@ import '../../../core/services/financial_calculator_service.dart';
 import '../../../core/theme/farol_colors.dart';
 import '../../../core/widgets/shimmer_box.dart';
 import '../../../design/farol_colors.dart' as tokens;
+import '../../../design/ds_tokens.dart';
 import 'widgets/asset_allocation_card.dart';
 import 'widgets/net_worth_evolution_chart.dart';
 import 'widgets/period_flow_card.dart';
@@ -106,14 +107,21 @@ class _PatrimonioHero extends ConsumerWidget {
         : ((snap?.fgtsBalance ?? 0.0) + (snap?.emergencyFund ?? 0.0));
 
     return Container(
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(DSSpacing.xl),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: DSRadius.lgBR,
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [Color(0xFF244A72), tokens.FarolColors.navy],
         ),
+        boxShadow: [
+          BoxShadow(
+            color: tokens.FarolColors.navy.withValues(alpha: 0.28),
+            blurRadius: 20,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(context.l10n.netWorthTitle.toUpperCase(),
@@ -145,10 +153,10 @@ class _MiniStat extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(DSSpacing.md),
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: DSRadius.mdBR,
           border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
