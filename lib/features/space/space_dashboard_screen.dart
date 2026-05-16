@@ -19,6 +19,7 @@ import '../../core/models/space.dart';
 import '../../core/models/space_transaction.dart';
 import '../../core/providers/space_providers.dart';
 import 'add_space_transaction_sheet.dart';
+import 'space_activity_card.dart';
 import 'space_app_bar_chip.dart';
 import 'space_settings_screen.dart';
 import 'space_transactions_screen.dart';
@@ -245,6 +246,12 @@ class _MobileContentSliver extends StatelessWidget {
           ),
           error: (e, _) => Center(child: Text('Erro: $e')),
         ),
+
+        // Activity feed preview
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+          child: SpaceActivityCard(),
+        ),
       ]),
     );
   }
@@ -349,6 +356,10 @@ class _DesktopContentSliver extends StatelessWidget {
                     ),
                     error: (e, _) => Center(child: Text('Erro: $e')),
                   ),
+
+                  // Activity feed preview
+                  const SizedBox(height: 16),
+                  const SpaceActivityCard(),
                 ],
               ),
             ),

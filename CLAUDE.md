@@ -216,7 +216,8 @@ farol/
 | Sprint 3 | `SpaceSettingsScreen`, `SpaceMembersScreen`, `SpaceTransactionsScreen`, realtime, `SpaceAppBarChip` | ✅ Complete |
 | Sprint 4 | `spaceMemberDisplayMapProvider`, `SpaceContributionsCard`, onboarding empty state, web layout | ✅ Complete |
 | Sprint 5 | `accept-space-invite` Edge Function, `AcceptSpaceInviteScreen`, `/join/:token` deep-link | ✅ Complete |
-| Sprint 6 | Space activity log, push notifications (FCM), invite notification overlay | 🔲 Next |
+| Sprint 6 | `V45__space_activity.sql`, `SpaceActivity` entity, `SpaceActivityRepository`, `spaceActivityProvider`, `spaceActivityRealtimeProvider`, `SpaceActivityCard`, `SpaceActivityScreen` | ✅ Complete |
+| Sprint 7 | Push notifications (FCM), invite notification overlay | 🔲 Next |
 
 **Key files:**
 - Schema: `database/migrations/V43__spaces_foundation.sql`, `V44__spaces_backfill.sql`

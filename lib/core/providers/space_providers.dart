@@ -12,9 +12,11 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../domain/entities/space_activity.dart';
 import '../models/member_display.dart' show MemberDisplay, avatarColorForUserId;
 import '../models/space.dart';
 import '../models/space_transaction.dart';
+import '../repositories/space_activity_repository.dart';
 import '../repositories/space_repository.dart';
 import 'providers.dart' show databaseProvider;
 
@@ -283,6 +285,72 @@ final spaceTransactionsRealtimeProvider = StreamProvider.autoDispose<void>((ref)
       // Invalidate caches so consumers auto-rebuild
       ref.invalidate(spaceTransactionsProvider);
       ref.invalidate(settlementSuggestionsProvider);
+      ref.invalidate(spaceActivityProvider);
+      if (!controller.isClosed) controller.add(null);
+    },
+  );
+
+  channel.subscribe();
+
+  ref.onDispose(() {
+    client.removeChannel(channel);
+    controller.close();
+  });
+
+  return controller.stream;
+});
+
+// ─────────────────────────────────────────────────────────────────
+// Space activity repository
+// ─────────────────────────────────────────────────────────────────
+
+final spaceActivityRepositoryProvider = Provider<SpaceActivityRepository>(
+  (ref) => SpaceActivityRepository(Supabase.instance.client),
+);
+
+// ─────────────────────────────────────────────────────────────────
+// Space activity feed
+// ─────────────────────────────────────────────────────────────────
+
+/// Most recent [limit] activity items for the active space.
+/// Family param is the limit (typically 3 for the preview card).
+final spaceActivityProvider = FutureProvider.autoDispose
+    .family<List<SpaceActivity>, int>((ref, limit) async {
+  final spaceId = ref.watch(activeSpaceIdProvider);
+  if (spaceId == null) return [];
+  return ref
+      .read(spaceActivityRepositoryProvider)
+      .fetchLatest(spaceId: spaceId, limit: limit);
+});
+
+// ─────────────────────────────────────────────────────────────────
+// Realtime — space_activity INSERT events
+// ─────────────────────────────────────────────────────────────────
+
+/// Listens to INSERT events on `space_activity` for the active space.
+/// On each event: invalidates `spaceActivityProvider` so the card auto-refreshes.
+///
+/// Keep this alive by watching it in SpaceActivityCard.
+final spaceActivityRealtimeProvider = StreamProvider.autoDispose<void>((ref) {
+  final spaceId = ref.watch(activeSpaceIdProvider);
+  if (spaceId == null) return const Stream.empty();
+
+  final client     = Supabase.instance.client;
+  final controller = StreamController<void>.broadcast();
+
+  final channel = client.channel('space_act:$spaceId');
+
+  channel.onPostgresChanges(
+    event:  PostgresChangeEvent.insert,
+    schema: 'public',
+    table:  'space_activity',
+    filter: PostgresChangeFilter(
+      type:   PostgresChangeFilterType.eq,
+      column: 'space_id',
+      value:  spaceId,
+    ),
+    callback: (_) {
+      ref.invalidate(spaceActivityProvider);
       if (!controller.isClosed) controller.add(null);
     },
   );
