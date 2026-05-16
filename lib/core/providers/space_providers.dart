@@ -16,16 +16,21 @@ import '../domain/entities/space_activity.dart';
 import '../models/member_display.dart' show MemberDisplay, avatarColorForUserId;
 import '../models/space.dart';
 import '../models/space_transaction.dart';
+import '../repositories/push_token_repository.dart';
 import '../repositories/space_activity_repository.dart';
 import '../repositories/space_repository.dart';
 import 'providers.dart' show databaseProvider;
 
 // ─────────────────────────────────────────────────────────────────
-// Repository
+// Repositories
 // ─────────────────────────────────────────────────────────────────
 
 final spaceRepositoryProvider = Provider<SpaceRepository>(
   (ref) => SpaceRepository(Supabase.instance.client),
+);
+
+final pushTokenRepositoryProvider = Provider<PushTokenRepository>(
+  (ref) => PushTokenRepository(Supabase.instance.client),
 );
 
 // ─────────────────────────────────────────────────────────────────

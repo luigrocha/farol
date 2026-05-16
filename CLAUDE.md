@@ -217,14 +217,15 @@ farol/
 | Sprint 4 | `spaceMemberDisplayMapProvider`, `SpaceContributionsCard`, onboarding empty state, web layout | ✅ Complete |
 | Sprint 5 | `accept-space-invite` Edge Function, `AcceptSpaceInviteScreen`, `/join/:token` deep-link | ✅ Complete |
 | Sprint 6 | `V45__space_activity.sql`, `SpaceActivity` entity, `SpaceActivityRepository`, `spaceActivityProvider`, `spaceActivityRealtimeProvider`, `SpaceActivityCard`, `SpaceActivityScreen` | ✅ Complete |
-| Sprint 7 | Push notifications (FCM), invite notification overlay | 🔲 Next |
+| Sprint 7 | `V46__push_tokens.sql`, `PushTokenRepository`, `send-space-notification` Edge Function, `SpaceNotificationService` (stub, awaits Firebase setup), `InviteAcceptedBanner` + `InviteAcceptedOverlayMixin`, `member_joined` activity event, overlay wired into `SpaceDashboardScreen` | ✅ Complete |
 
 **Key files:**
-- Schema: `database/migrations/V43__spaces_foundation.sql`, `V44__spaces_backfill.sql`
+- Schema: `database/migrations/V43__spaces_foundation.sql`, `V44__spaces_backfill.sql`, `V46__push_tokens.sql`
 - Models: `lib/core/models/space.dart`, `lib/core/models/space_transaction.dart`
-- Repository: `lib/core/repositories/space_repository.dart`
+- Repository: `lib/core/repositories/space_repository.dart`, `lib/core/repositories/push_token_repository.dart`
 - Providers: `lib/core/providers/space_providers.dart`
-- Screens: `lib/features/space/` (7 screens + 1 edge function)
+- Services: `lib/core/services/space_notification_service.dart`
+- Screens: `lib/features/space/` (7 screens + overlay + 2 edge functions)
 - Dashboard card: `lib/features/dashboard/widgets/space_contributions_card.dart`
 - Edge Functions: `supabase/functions/accept-space-invite/`
 

@@ -127,6 +127,48 @@ Deno.serve(async (req: Request) => {
 
   if (spaceError || !space) return respond(500, { error: "internal_error" });
 
+  // ── Log member_joined to space_activity ──────────────────────────────────
+  // Fetch display name for the notification body.
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("display_name, email")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const actorName: string =
+    profile?.display_name ?? profile?.email?.split("@")[0] ?? user.id.substring(0, 6);
+
+  // Insert activity row (bypasses RLS via service role).
+  await supabase.from("space_activity").insert({
+    space_id:     invite.space_id,
+    user_id:      user.id,
+    action:       "member_joined",
+    entity_type:  "space_member",
+    entity_label: actorName,
+    metadata:     {},
+  });
+
+  // ── Dispatch push notification to existing members ────────────────────────
+  // Fire-and-forget — invite acceptance succeeds even if push delivery fails.
+  try {
+    await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-space-notification`, {
+      method: "POST",
+      headers: {
+        Authorization:  `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        spaceId:     invite.space_id,
+        event:       "member_joined",
+        actorUserId: user.id,
+        actorName,
+        payload:     {},
+      }),
+    });
+  } catch (e) {
+    console.warn("[accept-space-invite] push notification failed:", e);
+  }
+
   return respond(200, { space });
 });
 

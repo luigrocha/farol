@@ -18,7 +18,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/models/space.dart';
 import '../../core/models/space_transaction.dart';
 import '../../core/providers/space_providers.dart';
+import '../../core/domain/entities/space_activity.dart';
 import 'add_space_transaction_sheet.dart';
+import 'invite_accepted_overlay.dart';
 import 'space_activity_card.dart';
 import 'space_app_bar_chip.dart';
 import 'space_settings_screen.dart';
@@ -31,7 +33,7 @@ final _dateFmt = DateFormat('dd/MM');
 // Screen
 // ─────────────────────────────────────────────────────────────────
 
-class SpaceDashboardScreen extends ConsumerWidget {
+class SpaceDashboardScreen extends ConsumerStatefulWidget {
   final Space space;
 
   const SpaceDashboardScreen({super.key, required this.space});
@@ -41,94 +43,146 @@ class SpaceDashboardScreen extends ConsumerWidget {
         MaterialPageRoute(builder: (_) => SpaceDashboardScreen(space: space)),
       );
 
+  @override
+  ConsumerState<SpaceDashboardScreen> createState() =>
+      _SpaceDashboardScreenState();
+}
+
+class _SpaceDashboardScreenState extends ConsumerState<SpaceDashboardScreen>
+    with InviteAcceptedOverlayMixin<SpaceDashboardScreen> {
   String get _currentUserId =>
       Supabase.instance.client.auth.currentUser!.id;
 
   static const double _kDesktopBreakpoint = 800.0;
 
+  // Track the latest activity id we have already shown an overlay for,
+  // so that a rebuild doesn't re-trigger the same banner.
+  String? _lastShownActivityId;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final txAsync          = ref.watch(spaceTransactionsProvider);
     final suggestionsAsync = ref.watch(settlementSuggestionsProvider);
     final canSeeBalances   = ref.watch(canSeeBalancesProvider);
     final canWrite         = ref.watch(canWriteInSpaceProvider);
+    final displayMap       = ref.watch(spaceMemberDisplayMapProvider).valueOrNull ?? {};
     final theme            = Theme.of(context);
     final width            = MediaQuery.sizeOf(context).width;
     final isDesktop        = width >= _kDesktopBreakpoint;
 
-    // Keep the realtime subscription alive while dashboard is mounted.
+    // Keep the realtime subscriptions alive while dashboard is mounted.
     ref.watch(spaceTransactionsRealtimeProvider);
 
+    // Listen for member_joined events from the activity feed.
+    ref.listen<AsyncValue<List<SpaceActivity>>>(
+      spaceActivityProvider(10),
+      (_, next) {
+        final items = next.valueOrNull;
+        if (items == null || items.isEmpty) return;
+        final latest = items.first;
+        if (!latest.isMemberJoin) return;
+        if (latest.id == _lastShownActivityId) return;
+        // Don't show banner for own joins (current user accepted this invite).
+        if (latest.userId == _currentUserId) return;
+
+        _lastShownActivityId = latest.id;
+
+        final display   = displayMap[latest.userId];
+        final name      = display?.displayName
+            ?? latest.entityLabel
+            ?? latest.userId.substring(0, 6);
+        final initials  = display?.initials;
+        final photoUrl  = display?.photoUrl;
+        final bgColor   = display?.avatarColor;
+
+        showBannerForMember(
+          memberName:  name,
+          initials:    initials,
+          photoUrl:    photoUrl,
+          avatarColor: bgColor,
+        );
+      },
+    );
+
     return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: () async {
-          ref.invalidate(spaceTransactionsProvider);
-          ref.invalidate(settlementSuggestionsProvider);
-        },
-        child: CustomScrollView(
-          slivers: [
-            // ── AppBar ──────────────────────────────────────────
-            SliverAppBar(
-              expandedHeight: 140,
-              pinned:         true,
-              backgroundColor: theme.colorScheme.surface,
-              title: const SpaceAppBarChip(),
-              centerTitle: false,
-              flexibleSpace: FlexibleSpaceBar(
-                titlePadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                title: _SpaceHeaderTitle(space: space),
-              ),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.settings_outlined),
-                  onPressed: () => SpaceSettingsScreen.push(context, space),
+      body: Stack(
+        children: [
+          RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(spaceTransactionsProvider);
+              ref.invalidate(settlementSuggestionsProvider);
+            },
+            child: CustomScrollView(
+              slivers: [
+                // ── AppBar ──────────────────────────────────────────
+                SliverAppBar(
+                  expandedHeight: 140,
+                  pinned:         true,
+                  backgroundColor: theme.colorScheme.surface,
+                  title: const SpaceAppBarChip(),
+                  centerTitle: false,
+                  flexibleSpace: FlexibleSpaceBar(
+                    titlePadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                    title: _SpaceHeaderTitle(space: widget.space),
+                  ),
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.settings_outlined),
+                      onPressed: () =>
+                          SpaceSettingsScreen.push(context, widget.space),
+                    ),
+                  ],
                 ),
+
+                // ── Member Avatars ──────────────────────────────────
+                SliverToBoxAdapter(
+                  child: _MemberAvatarRow(space: widget.space),
+                ),
+
+                // ── Privacy notice ──────────────────────────────────
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: _PrivacyChip(type: widget.space.type),
+                  ),
+                ),
+
+                const SliverToBoxAdapter(child: SizedBox(height: 16)),
+
+                // ── Content — mobile vs desktop ─────────────────────
+                if (isDesktop)
+                  _DesktopContentSliver(
+                    space:            widget.space,
+                    txAsync:          txAsync,
+                    suggestionsAsync: suggestionsAsync,
+                    canSeeBalances:   canSeeBalances,
+                    canWrite:         canWrite,
+                    currentUserId:    _currentUserId,
+                  )
+                else
+                  _MobileContentSliver(
+                    space:            widget.space,
+                    txAsync:          txAsync,
+                    suggestionsAsync: suggestionsAsync,
+                    canSeeBalances:   canSeeBalances,
+                    canWrite:         canWrite,
+                    currentUserId:    _currentUserId,
+                  ),
+
+                // Bottom padding for FAB
+                const SliverToBoxAdapter(child: SizedBox(height: 80)),
               ],
             ),
+          ),
 
-            // ── Member Avatars ──────────────────────────────────
-            SliverToBoxAdapter(
-              child: _MemberAvatarRow(space: space),
-            ),
-
-            // ── Privacy notice ──────────────────────────────────
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                child: _PrivacyChip(type: space.type),
-              ),
-            ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 16)),
-
-            // ── Content — mobile vs desktop ─────────────────────
-            if (isDesktop)
-              _DesktopContentSliver(
-                space:         space,
-                txAsync:       txAsync,
-                suggestionsAsync: suggestionsAsync,
-                canSeeBalances:  canSeeBalances,
-                canWrite:      canWrite,
-                currentUserId: _currentUserId,
-              )
-            else
-              _MobileContentSliver(
-                space:         space,
-                txAsync:       txAsync,
-                suggestionsAsync: suggestionsAsync,
-                canSeeBalances:  canSeeBalances,
-                canWrite:      canWrite,
-                currentUserId: _currentUserId,
-              ),
-
-            // Bottom padding for FAB
-            const SliverToBoxAdapter(child: SizedBox(height: 80)),
-          ],
-        ),
+          // ── Invite accepted overlay ─────────────────────────────
+          buildInviteOverlay(context),
+        ],
       ),
       floatingActionButton: canWrite
           ? FloatingActionButton.extended(
-              onPressed: () => AddSpaceTransactionSheet.show(context, space),
+              onPressed: () =>
+                  AddSpaceTransactionSheet.show(context, widget.space),
               icon:  const Icon(Icons.add),
               label: const Text('Novo gasto'),
             )
