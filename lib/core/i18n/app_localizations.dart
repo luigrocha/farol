@@ -134,7 +134,10 @@ class AppLocalizations {
       'budget_pct_used': '%s% used',
       'budget_pct_over_limit': '%s% over limit',
       'budget_pct_remaining': '%s% remaining',
-      'budget_free_up': 'Adjusting this would exceed your 100%% budget limit. Free up %s% first.',
+      'budget_free_up': 'Adjusting this would exceed your 100% budget limit. Free up %s% first.',
+      'budget_rec_title': 'View budget suggestions (50/30/20)',
+      'budget_rec_history_subtitle': 'Suggestions based on your spending history this period.',
+      'budget_rec_rule_subtitle': 'No spending history yet — suggestions based on the 50/30/20 rule.',
       'reset_to_goal': 'Reset to goal amount?',
       'reset_to_goal_desc': 'This will remove the custom amount and revert to your goal.',
       'remove_budget': 'Remove budget for %s?',
@@ -816,7 +819,10 @@ class AppLocalizations {
       'budget_pct_used': '%s% utilizado',
       'budget_pct_over_limit': '%s% sobre el límite',
       'budget_pct_remaining': '%s% restante',
-      'budget_free_up': 'Esto excedería tu límite del 100%%. Libera %s% primero.',
+      'budget_free_up': 'Esto excedería tu límite del 100%. Libera %s% primero.',
+      'budget_rec_title': 'Ver sugerencias de presupuesto (50/30/20)',
+      'budget_rec_history_subtitle': 'Sugerencias basadas en tus gastos de este período.',
+      'budget_rec_rule_subtitle': 'Sin historial de gastos — sugerencias basadas en la regla 50/30/20.',
       'reset_to_goal': '¿Restablecer al monto de la meta?',
       'reset_to_goal_desc': 'Esto eliminará el monto personalizado y volverá a tu meta.',
       'remove_budget': '¿Eliminar presupuesto de %s?',
@@ -1490,6 +1496,14 @@ class AppLocalizations {
       'budget_amount': 'Valor do orçamento',
       'cash_budget': 'Orçamento Caixa',
       'swile_budget': 'Orçamento Swile',
+      'swile_label': 'Swile',
+      'budget_pct_used': '%s% utilizado',
+      'budget_pct_over_limit': '%s% acima do limite',
+      'budget_pct_remaining': '%s% restante',
+      'budget_free_up': 'Isso ultrapassaria o limite de 100% do orçamento. Libere %s% primeiro.',
+      'budget_rec_title': 'Ver sugestões de orçamento (50/30/20)',
+      'budget_rec_history_subtitle': 'Sugestões com base nos seus gastos deste período.',
+      'budget_rec_rule_subtitle': 'Sem histórico de gastos — sugestões pela regra 50/30/20.',
       'period_budget': 'Orçamento do Período',
       'copy_from_previous': 'Copiar do período anterior',
       'no_budgets_period': 'Sem orçamentos para este período',
@@ -2189,6 +2203,11 @@ class AppLocalizations {
   String get budgetAmount => translate('budget_amount');
   String get cashBudget => translate('cash_budget');
   String get swileBudget => translate('swile_budget');
+  String get swileLabel => translate('swile_label');
+  String budgetPctUsed(String pct) => translate('budget_pct_used').replaceFirst('%s', pct);
+  String budgetPctOverLimit(String pct) => translate('budget_pct_over_limit').replaceFirst('%s', pct);
+  String budgetPctRemaining(String pct) => translate('budget_pct_remaining').replaceFirst('%s', pct);
+  String budgetFreeUp(String pct) => translate('budget_free_up').replaceFirst('%s', pct);
   String get periodBudget => translate('period_budget');
   String get copyFromPrevious => translate('copy_from_previous');
   String get noBudgetsPeriod => translate('no_budgets_period');

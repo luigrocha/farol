@@ -231,8 +231,7 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    'Adjusting this would exceed your 100% budget limit. '
-                                    'Free up ${(_totalPct - 100).toStringAsFixed(1)}% first.',
+                                    l10n.budgetFreeUp((_totalPct - 100).toStringAsFixed(1)),
                                     style: const TextStyle(
                                         fontSize: 12, color: Colors.red),
                                   ),
@@ -426,7 +425,7 @@ class _PercentageBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${totalPct.toStringAsFixed(1)}% used',
+                AppLocalizations.of(context).budgetPctUsed(totalPct.toStringAsFixed(1)),
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -435,8 +434,8 @@ class _PercentageBar extends StatelessWidget {
               ),
               Text(
                 isOver
-                    ? '${(totalPct - 100).toStringAsFixed(1)}% over limit'
-                    : '${remaining.toStringAsFixed(1)}% remaining',
+                    ? AppLocalizations.of(context).budgetPctOverLimit((totalPct - 100).toStringAsFixed(1))
+                    : AppLocalizations.of(context).budgetPctRemaining(remaining.toStringAsFixed(1)),
                 style: TextStyle(
                   fontSize: 12,
                   color: isOver ? Colors.red : colors.onSurfaceSoft,
@@ -494,9 +493,9 @@ class _BudgetCategoryRow extends StatelessWidget {
           color: const Color(0xFF00A86B).withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(4),
         ),
-        child: const Text(
-          'Swile',
-          style: TextStyle(
+        child: Text(
+          l10n.swileLabel,
+          style: const TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w700,
             color: Color(0xFF00A86B),
