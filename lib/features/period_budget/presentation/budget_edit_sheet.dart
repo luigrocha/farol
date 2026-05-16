@@ -169,7 +169,7 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isEdit ? 'Edit Budget' : 'New Budget',
+                        isEdit ? AppLocalizations.of(context).editBudget : AppLocalizations.of(context).newBudget,
                         style: GoogleFonts.manrope(
                             fontSize: 18, fontWeight: FontWeight.w700),
                       ),
@@ -185,7 +185,7 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Category',
+              AppLocalizations.of(context).budgetCategoryLabel,
               style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -230,7 +230,7 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
             Row(
               children: [
                 Text(
-                  'Amount',
+                  AppLocalizations.of(context).budgetAmount,
                   style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -239,7 +239,7 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
                 if (goalAmount != null) ...[
                   const SizedBox(width: 8),
                   Text(
-                    'Goal: ${FinancialCalculatorService.formatBRL(goalAmount)}',
+                    AppLocalizations.of(context).budgetGoalLabel(FinancialCalculatorService.formatBRL(goalAmount)),
                     style: TextStyle(
                         fontSize: 11, color: colors.onSurfaceFaint),
                   ),
@@ -292,7 +292,7 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
                             strokeWidth: 2, color: Colors.white),
                       )
                     : Text(
-                        isEdit ? 'Save Changes' : 'Create Budget',
+                        isEdit ? AppLocalizations.of(context).saveChanges : AppLocalizations.of(context).createBudget,
                         style: const TextStyle(
                             fontSize: 15, fontWeight: FontWeight.w600),
                       ),

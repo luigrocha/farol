@@ -30,7 +30,16 @@ class NetWorthEvolutionChart extends ConsumerWidget {
         const SizedBox(height: 16),
         historyAsync.when(
           loading: () => const SizedBox(height: 160, child: Center(child: CircularProgressIndicator(strokeWidth: 2))),
-          error: (_, __) => const SizedBox.shrink(),
+          error: (_, __) => const SizedBox(
+            height: 80,
+            child: Center(
+              child: Text(
+                'Não foi possível carregar o histórico.',
+                style: TextStyle(fontSize: 12),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
           data: (snapshots) => snapshots.length < 2
               ? SizedBox(
                   height: 80,

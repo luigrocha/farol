@@ -74,7 +74,16 @@ class RecentTransactionsCard extends ConsumerWidget {
                 ),
               ),
             ),
-            error: (_, __) => const SizedBox.shrink(),
+            error: (_, __) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: DSSpacing.xl),
+              child: Center(
+                child: Text(
+                  'Não foi possível carregar as transações.',
+                  style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
             data: (expenses) {
               final recent = expenses.take(5).toList();
               if (recent.isEmpty) {

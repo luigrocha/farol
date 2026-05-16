@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/i18n/app_localizations.dart';
 import '../../core/models/workspace.dart';
 import '../../core/providers/workspace_providers.dart';
 
@@ -96,7 +97,7 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error creating workspace: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context).errorCreatingWorkspace(e.toString()))),
         );
       }
     } finally {
@@ -132,7 +133,7 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
 
             // ── Title ─────────────────────────────────────────────
             Text(
-              'New workspace',
+              AppLocalizations.of(context).newWorkspace,
               style: GoogleFonts.manrope(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -140,7 +141,7 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
             ),
             const SizedBox(height: 6),
             Text(
-              'Workspaces let you organize and share finances with others.',
+              AppLocalizations.of(context).workspaceDescription,
               style: TextStyle(
                 color: colorScheme.onSurfaceVariant,
                 fontSize: 13,
@@ -149,15 +150,15 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
             const SizedBox(height: 24),
 
             // ── Type picker ────────────────────────────────────────
-            const _SectionLabel(label: 'Type'),
+            _SectionLabel(label: AppLocalizations.of(context).type),
             const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
                   child: _TypeCard(
                     icon: '🏠',
-                    title: 'Personal',
-                    subtitle: 'Just for you',
+                    title: AppLocalizations.of(context).workspacePersonal,
+                    subtitle: AppLocalizations.of(context).workspacePersonalSubtitle,
                     selected: _type == WorkspaceType.personal,
                     onTap: () => _onTypeChanged(WorkspaceType.personal),
                   ),
@@ -166,8 +167,8 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
                 Expanded(
                   child: _TypeCard(
                     icon: '👥',
-                    title: 'Shared',
-                    subtitle: 'With others',
+                    title: AppLocalizations.of(context).workspaceShared,
+                    subtitle: AppLocalizations.of(context).workspaceSharedSubtitle,
                     selected: _type == WorkspaceType.shared,
                     onTap: () => _onTypeChanged(WorkspaceType.shared),
                   ),
@@ -177,7 +178,7 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
             const SizedBox(height: 24),
 
             // ── Name field ─────────────────────────────────────────
-            const _SectionLabel(label: 'Name'),
+            _SectionLabel(label: AppLocalizations.of(context).name),
             const SizedBox(height: 8),
             TextFormField(
               controller: _nameController,
@@ -185,14 +186,15 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
               textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(
                 hintText: _type == WorkspaceType.shared
-                    ? 'e.g. Nossa Casa, Family, Freelance'
-                    : 'e.g. My Finances, Savings Plan',
+                    ? AppLocalizations.of(context).workspaceHintShared
+                    : AppLocalizations.of(context).workspaceHintPersonal,
                 border: const OutlineInputBorder(),
               ),
               validator: (v) {
-                if (v == null || v.trim().isEmpty) return 'Name is required';
-                if (v.trim().length < 2) return 'Name is too short';
-                if (v.trim().length > 50) return 'Name is too long';
+                final l10n = AppLocalizations.of(context);
+                if (v == null || v.trim().isEmpty) return l10n.nameRequired;
+                if (v.trim().length < 2) return l10n.nameTooShort;
+                if (v.trim().length > 50) return l10n.nameTooLong;
                 return null;
               },
               onFieldSubmitted: (_) => _submit(),
@@ -200,7 +202,7 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
             const SizedBox(height: 24),
 
             // ── Emoji picker ───────────────────────────────────────
-            const _SectionLabel(label: 'Icon'),
+            _SectionLabel(label: AppLocalizations.of(context).icon),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -231,7 +233,7 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
             const SizedBox(height: 24),
 
             // ── Color picker ───────────────────────────────────────
-            const _SectionLabel(label: 'Color'),
+            _SectionLabel(label: AppLocalizations.of(context).color),
             const SizedBox(height: 8),
             Wrap(
               spacing: 10,
@@ -273,7 +275,7 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text('Create workspace'),
+                    : Text(AppLocalizations.of(context).createWorkspace),
               ),
             ),
           ],

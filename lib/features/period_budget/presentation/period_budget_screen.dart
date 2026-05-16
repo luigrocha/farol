@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/i18n/app_localizations.dart';
 import '../../../core/models/period_budget.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';
@@ -39,7 +40,7 @@ class PeriodBudgetScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Period Budget',
+                  AppLocalizations.of(context).periodBudget,
                   style: GoogleFonts.manrope(
                       fontSize: 17, fontWeight: FontWeight.w700),
                 ),
@@ -53,7 +54,7 @@ class PeriodBudgetScreen extends ConsumerWidget {
             actions: [
               IconButton(
                 icon: const Icon(Icons.copy_outlined, size: 20),
-                tooltip: 'Copy from previous period',
+                tooltip: AppLocalizations.of(context).copyFromPrevious,
                 onPressed: () => _copyFromPrevious(context, ref),
               ),
               IconButton(
@@ -70,7 +71,7 @@ class PeriodBudgetScreen extends ConsumerWidget {
               child: Center(child: CircularProgressIndicator()),
             ),
             error: (e, _) => SliverFillRemaining(
-              child: Center(child: Text('Error: $e')),
+              child: Center(child: Text('${AppLocalizations.of(context).error}: $e')),
             ),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 80)),
@@ -99,11 +100,11 @@ class PeriodBudgetScreen extends ConsumerWidget {
               Icon(Icons.pie_chart_outline,
                   size: 48, color: colors.onSurfaceFaint),
               const SizedBox(height: 12),
-              Text('No budgets for this period',
+              Text(AppLocalizations.of(context).noBudgetsPeriod,
                   style:
                       TextStyle(color: colors.onSurfaceSoft, fontSize: 14)),
               const SizedBox(height: 8),
-              Text('Add budget goals in Settings to see defaults here',
+              Text(AppLocalizations.of(context).budgetsHint,
                   style: TextStyle(
                       color: colors.onSurfaceFaint, fontSize: 12)),
             ],
@@ -190,11 +191,12 @@ class PeriodBudgetScreen extends ConsumerWidget {
 
     if (!hasOverride) return; // nothing to delete/reset
 
-    final label = hasGoal ? 'Reset to goal amount?' : 'Delete budget?';
+    final l10n = AppLocalizations.of(context);
+    final label = hasGoal ? l10n.resetToGoal : l10n.deleteBudget;
     final body = hasGoal
-        ? 'This will remove the custom amount and revert to your goal (${FinancialCalculatorService.formatBRL(entry.goal!.targetAmount)}).'
-        : 'Remove budget for ${_catLabel(entry.category, ref)}?';
-    final confirm = hasGoal ? 'Reset' : 'Delete';
+        ? l10n.resetToGoalWithAmount(FinancialCalculatorService.formatBRL(entry.goal!.targetAmount))
+        : l10n.removeBudget(_catLabel(entry.category, ref));
+    final confirm = hasGoal ? l10n.reset : l10n.delete;
 
     final ok = await showDialog<bool>(
       context: context,
@@ -204,7 +206,7 @@ class PeriodBudgetScreen extends ConsumerWidget {
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel')),
+              child: Text(AppLocalizations.of(ctx).cancel)),
           TextButton(
               onPressed: () => Navigator.pop(ctx, true),
               child: Text(confirm,
@@ -225,10 +227,11 @@ class PeriodBudgetScreen extends ConsumerWidget {
         .read(periodBudgetNotifierProvider.notifier)
         .copyFromPreviousPeriod();
     if (context.mounted) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(count > 0
-            ? 'Copied $count budget(s) from previous period'
-            : 'No new budgets to copy'),
+            ? l10n.copiedBudgets(count)
+            : l10n.noBudgetsToCopy),
         backgroundColor: count > 0 ? Colors.green : Colors.grey,
       ));
     }
@@ -327,7 +330,7 @@ class _EntryCardState extends ConsumerState<_EntryCard> {
                         ),
                         if (widget.entry.isCustom && widget.entry.goalAmount != null)
                           Text(
-                            'Goal: ${FinancialCalculatorService.formatBRL(widget.entry.goalAmount!)}',
+                            AppLocalizations.of(context).budgetGoalLabel(FinancialCalculatorService.formatBRL(widget.entry.goalAmount!)),
                             style: TextStyle(
                                 fontSize: 10, color: colors.onSurfaceFaint),
                           ),
@@ -340,13 +343,13 @@ class _EntryCardState extends ConsumerState<_EntryCard> {
                       color: const Color(0xFF1A7A5A),
                     ),
                   if (widget.isSwileBacked)
-                    const _BudgetBadge(
-                      label: 'Swile',
-                      color: Color(0xFF00A86B),
+                    _BudgetBadge(
+                      label: AppLocalizations.of(context).swileLabel,
+                      color: const Color(0xFF00A86B),
                     )
                   else if (widget.entry.isCustom)
                     _BudgetBadge(
-                      label: 'Custom',
+                      label: AppLocalizations.of(context).budgetCustomLabel,
                       color: tokens.FarolColors.navy,
                     ),
                   if (widget.entry.overrideId != null)

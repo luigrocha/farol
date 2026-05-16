@@ -529,10 +529,10 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
             selectedIcon: const Icon(Icons.bar_chart),
             label: l10n.analytics,
           ),
-          const NavigationDestination(
-            icon: Icon(Icons.pie_chart_outline),
-            selectedIcon: Icon(Icons.pie_chart),
-            label: 'Budget',
+          NavigationDestination(
+            icon: const Icon(Icons.pie_chart_outline),
+            selectedIcon: const Icon(Icons.pie_chart),
+            label: l10n.budgetNav,
           ),
           NavigationDestination(
             icon: const Icon(Icons.trending_up_outlined),
@@ -625,7 +625,7 @@ class _DesktopNavRailState extends ConsumerState<_DesktopNavRail> {
       _NavItem(icon: Icons.home_outlined,         selectedIcon: Icons.home_rounded,           label: widget.l10n.dashboard,    badge: dashboardBadge),
       _NavItem(icon: Icons.receipt_long_outlined,  selectedIcon: Icons.receipt_long_rounded,   label: widget.l10n.transactions),
       _NavItem(icon: Icons.bar_chart_outlined,     selectedIcon: Icons.bar_chart_rounded,      label: widget.l10n.analytics),
-      _NavItem(icon: Icons.pie_chart_outline_rounded, selectedIcon: Icons.pie_chart_rounded,   label: 'Budget',                 badge: budgetBadge),
+      _NavItem(icon: Icons.pie_chart_outline_rounded, selectedIcon: Icons.pie_chart_rounded,   label: widget.l10n.budgetNav,    badge: budgetBadge),
       _NavItem(icon: Icons.trending_up_outlined,   selectedIcon: Icons.trending_up_rounded,    label: widget.l10n.investments),
     ];
 
@@ -720,7 +720,7 @@ class _DesktopNavRailState extends ConsumerState<_DesktopNavRail> {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
               child: Text(
-                'MENU',
+                widget.l10n.navSectionMenu,
                 style: TextStyle(
                   fontSize: 9,
                   letterSpacing: 1.4,
@@ -762,7 +762,7 @@ class _DesktopNavRailState extends ConsumerState<_DesktopNavRail> {
               icon: themeMode == ThemeMode.dark
                   ? Icons.light_mode_outlined
                   : Icons.dark_mode_outlined,
-              label: themeMode == ThemeMode.dark ? 'Light mode' : 'Dark mode',
+              label: themeMode == ThemeMode.dark ? widget.l10n.lightMode : widget.l10n.darkMode,
               hoverBg: Colors.white.withValues(alpha: 0.06),
               onTap: () {
                 final next = themeMode == ThemeMode.dark

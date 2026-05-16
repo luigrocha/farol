@@ -17,8 +17,12 @@ class AppLocalizations {
       'dashboard': 'Dashboard',
       'transactions': 'Transactions',
       'analytics': 'Analytics',
+      'budget_nav': 'Budget',
       'investments': 'Investments',
       'settings': 'Settings',
+      'nav_section_menu': 'MENU',
+      'light_mode': 'Light mode',
+      'dark_mode': 'Dark mode',
       'income': 'Income',
       'expenses': 'Expenses',
       'net_worth': 'Net Worth',
@@ -140,7 +144,13 @@ class AppLocalizations {
       'budget_rec_rule_subtitle': 'No spending history yet — suggestions based on the 50/30/20 rule.',
       'reset_to_goal': 'Reset to goal amount?',
       'reset_to_goal_desc': 'This will remove the custom amount and revert to your goal.',
+      'reset_to_goal_with_amount': 'This will remove the custom amount and revert to your goal (%s).',
+      'delete_budget': 'Delete budget?',
       'remove_budget': 'Remove budget for %s?',
+      'budget_custom_label': 'Custom',
+      'budget_category_label': 'Category',
+      'budget_goal_label': 'Goal: %s',
+      'create_budget': 'Create Budget',
       'edit_budget': 'Edit Budget',
       'new_budget': 'New Budget',
       'copied_budgets': 'Copied %d budget(s) from previous period',
@@ -536,6 +546,57 @@ class AppLocalizations {
       'onboarding_f3': 'Support in your language, 24/7',
       'onboarding_button': 'Create my Farol account',
       'onboarding_login': 'Already a client · Log in',
+      // Workspace members & invite UI
+      'members_title': 'Members',
+      'invite_member': 'Invite member',
+      'refresh': 'Refresh',
+      'no_members_found': 'No members found',
+      'role_owner': 'Owner',
+      'role_admin': 'Admin',
+      'role_member': 'Member',
+      'role_viewer': 'Viewer',
+      'you': 'You',
+      'make_admin': 'Make Admin',
+      'make_member': 'Make Member',
+      'make_viewer': 'Make Viewer',
+      'remove_member_title': 'Remove member?',
+      'remove_member_confirm': "This will remove the member from '{name}'. Their data will remain but they will lose access.",
+      'error_updating_role': 'Error updating role: %s',
+      'error_removing_member': 'Error removing member: %s',
+      'email_address': 'Email address',
+      'email_required': 'Email is required',
+      'email_invalid': 'Enter a valid email',
+      'role': 'Role',
+      'send_invite': 'Send invite',
+      'role_admin_desc': 'Can add, edit, delete, and invite others',
+      'role_member_desc': 'Can add and edit data',
+      'role_viewer_desc': 'Read-only access',
+      'whatsapp_unavailable': 'WhatsApp not available',
+      'link_copied': 'Link copied to clipboard',
+      'invite_created': 'Invite created!',
+      'invite_share_with': 'Share with %s',
+      'copy_link': 'Copy link',
+      'invite_expires_7_days': 'Expires in 7 days',
+      'share_email': 'Email',
+      'share_whatsapp': 'WhatsApp',
+      'share': 'Share',
+      'done': 'Done',
+      'error_sending_invite': 'Error sending invite: %s',
+      // Workspace create
+      'new_workspace': 'New workspace',
+      'workspace_description': 'Workspaces let you organize and share finances with others.',
+      'workspace_personal': 'Personal',
+      'workspace_personal_subtitle': 'Just for you',
+      'workspace_shared': 'Shared',
+      'workspace_shared_subtitle': 'With others',
+      'workspace_hint_shared': 'e.g. Nossa Casa, Family, Freelance',
+      'workspace_hint_personal': 'e.g. My Finances, Savings Plan',
+      'name_too_short': 'Name is too short',
+      'name_too_long': 'Name is too long',
+      'icon': 'Icon',
+      'color': 'Color',
+      'create_workspace': 'Create workspace',
+      'error_creating_workspace': 'Error creating workspace: %s',
       // Workspace invite
       'invite_share_text': "You're invited to '{name}' on Farol! Join: {link}",
       'invite_share_email_subject': 'Join {name} on Farol',
@@ -702,8 +763,12 @@ class AppLocalizations {
       'dashboard': 'Panel',
       'transactions': 'Movimientos',
       'analytics': 'Análisis',
+      'budget_nav': 'Presupuesto',
       'investments': 'Inversiones',
       'settings': 'Ajustes',
+      'nav_section_menu': 'MENÚ',
+      'light_mode': 'Modo claro',
+      'dark_mode': 'Modo oscuro',
       'income': 'Ingresos',
       'expenses': 'Gastos',
       'net_worth': 'Patrimonio',
@@ -825,7 +890,13 @@ class AppLocalizations {
       'budget_rec_rule_subtitle': 'Sin historial de gastos — sugerencias basadas en la regla 50/30/20.',
       'reset_to_goal': '¿Restablecer al monto de la meta?',
       'reset_to_goal_desc': 'Esto eliminará el monto personalizado y volverá a tu meta.',
+      'reset_to_goal_with_amount': 'Esto eliminará el monto personalizado y volverá a tu meta (%s).',
+      'delete_budget': '¿Eliminar presupuesto?',
       'remove_budget': '¿Eliminar presupuesto de %s?',
+      'budget_custom_label': 'Personalizado',
+      'budget_category_label': 'Categoría',
+      'budget_goal_label': 'Meta: %s',
+      'create_budget': 'Crear Presupuesto',
       'edit_budget': 'Editar Presupuesto',
       'new_budget': 'Nuevo Presupuesto',
       'copied_budgets': 'Se copiaron %d presupuesto(s) del período anterior',
@@ -1221,6 +1292,57 @@ class AppLocalizations {
       'onboarding_f3': 'Soporte en tu idioma, 24/7',
       'onboarding_button': 'Crear mi cuenta Farol',
       'onboarding_login': 'Ya soy cliente · Iniciar sesión',
+      // Workspace members & invite UI
+      'members_title': 'Miembros',
+      'invite_member': 'Invitar miembro',
+      'refresh': 'Actualizar',
+      'no_members_found': 'No se encontraron miembros',
+      'role_owner': 'Propietario',
+      'role_admin': 'Admin',
+      'role_member': 'Miembro',
+      'role_viewer': 'Visualizador',
+      'you': 'Tú',
+      'make_admin': 'Hacer Admin',
+      'make_member': 'Hacer Miembro',
+      'make_viewer': 'Hacer Visualizador',
+      'remove_member_title': '¿Eliminar miembro?',
+      'remove_member_confirm': "Esto eliminará al miembro de '{name}'. Sus datos se conservarán pero perderá el acceso.",
+      'error_updating_role': 'Error al actualizar rol: %s',
+      'error_removing_member': 'Error al eliminar miembro: %s',
+      'email_address': 'Correo electrónico',
+      'email_required': 'El correo es obligatorio',
+      'email_invalid': 'Ingresa un correo válido',
+      'role': 'Rol',
+      'send_invite': 'Enviar invitación',
+      'role_admin_desc': 'Puede agregar, editar, eliminar e invitar a otros',
+      'role_member_desc': 'Puede agregar y editar datos',
+      'role_viewer_desc': 'Solo lectura',
+      'whatsapp_unavailable': 'WhatsApp no está disponible',
+      'link_copied': 'Enlace copiado al portapapeles',
+      'invite_created': '¡Invitación creada!',
+      'invite_share_with': 'Compartir con %s',
+      'copy_link': 'Copiar enlace',
+      'invite_expires_7_days': 'Expira en 7 días',
+      'share_email': 'Correo',
+      'share_whatsapp': 'WhatsApp',
+      'share': 'Compartir',
+      'done': 'Listo',
+      'error_sending_invite': 'Error al enviar invitación: %s',
+      // Workspace create
+      'new_workspace': 'Nuevo workspace',
+      'workspace_description': 'Los workspaces te permiten organizar y compartir finanzas con otros.',
+      'workspace_personal': 'Personal',
+      'workspace_personal_subtitle': 'Solo para ti',
+      'workspace_shared': 'Compartido',
+      'workspace_shared_subtitle': 'Con otros',
+      'workspace_hint_shared': 'ej. Mi Casa, Familia, Freelance',
+      'workspace_hint_personal': 'ej. Mis Finanzas, Plan de Ahorro',
+      'name_too_short': 'El nombre es muy corto',
+      'name_too_long': 'El nombre es muy largo',
+      'icon': 'Ícono',
+      'color': 'Color',
+      'create_workspace': 'Crear workspace',
+      'error_creating_workspace': 'Error al crear workspace: %s',
       // Workspace invite
       'invite_share_text': "Te invito a '{name}' en Farol. Únete: {link}",
       'invite_share_email_subject': 'Únete a {name} en Farol',
@@ -1387,8 +1509,12 @@ class AppLocalizations {
       'dashboard': 'Início',
       'transactions': 'Transações',
       'analytics': 'Análises',
+      'budget_nav': 'Orçamento',
       'investments': 'Investir',
       'settings': 'Configurações',
+      'nav_section_menu': 'MENU',
+      'light_mode': 'Modo claro',
+      'dark_mode': 'Modo escuro',
       'income': 'Receitas',
       'expenses': 'Despesas',
       'net_worth': 'Patrimônio',
@@ -1510,7 +1636,13 @@ class AppLocalizations {
       'budgets_hint': 'Adicione metas em Configurações para ver os valores aqui',
       'reset_to_goal': 'Redefinir para o valor da meta?',
       'reset_to_goal_desc': 'Isso removerá o valor personalizado e voltará à sua meta.',
+      'reset_to_goal_with_amount': 'Isso removerá o valor personalizado e voltará à sua meta (%s).',
+      'delete_budget': 'Excluir orçamento?',
       'remove_budget': 'Remover orçamento de %s?',
+      'budget_custom_label': 'Personalizado',
+      'budget_category_label': 'Categoria',
+      'budget_goal_label': 'Meta: %s',
+      'create_budget': 'Criar Orçamento',
       'edit_budget': 'Editar Orçamento',
       'new_budget': 'Novo Orçamento',
       'copied_budgets': '%d orçamento(s) copiado(s) do período anterior',
@@ -1906,6 +2038,57 @@ class AppLocalizations {
       'onboarding_f3': 'Suporte em português, 24/7',
       'onboarding_button': 'Criar minha conta Farol',
       'onboarding_login': 'Já sou cliente · Entrar',
+      // Workspace members & invite UI
+      'members_title': 'Membros',
+      'invite_member': 'Convidar membro',
+      'refresh': 'Atualizar',
+      'no_members_found': 'Nenhum membro encontrado',
+      'role_owner': 'Proprietário',
+      'role_admin': 'Admin',
+      'role_member': 'Membro',
+      'role_viewer': 'Visualizador',
+      'you': 'Você',
+      'make_admin': 'Tornar Admin',
+      'make_member': 'Tornar Membro',
+      'make_viewer': 'Tornar Visualizador',
+      'remove_member_title': 'Remover membro?',
+      'remove_member_confirm': "Isso removerá o membro de '{name}'. Os dados permanecerão, mas o acesso será revogado.",
+      'error_updating_role': 'Erro ao atualizar função: %s',
+      'error_removing_member': 'Erro ao remover membro: %s',
+      'email_address': 'E-mail',
+      'email_required': 'E-mail obrigatório',
+      'email_invalid': 'Informe um e-mail válido',
+      'role': 'Função',
+      'send_invite': 'Enviar convite',
+      'role_admin_desc': 'Pode adicionar, editar, excluir e convidar outros',
+      'role_member_desc': 'Pode adicionar e editar dados',
+      'role_viewer_desc': 'Acesso somente leitura',
+      'whatsapp_unavailable': 'WhatsApp não disponível',
+      'link_copied': 'Link copiado!',
+      'invite_created': 'Convite criado!',
+      'invite_share_with': 'Compartilhar com %s',
+      'copy_link': 'Copiar link',
+      'invite_expires_7_days': 'Expira em 7 dias',
+      'share_email': 'E-mail',
+      'share_whatsapp': 'WhatsApp',
+      'share': 'Compartilhar',
+      'done': 'Concluído',
+      'error_sending_invite': 'Erro ao enviar convite: %s',
+      // Workspace create
+      'new_workspace': 'Novo workspace',
+      'workspace_description': 'Workspaces permitem organizar e compartilhar finanças com outras pessoas.',
+      'workspace_personal': 'Pessoal',
+      'workspace_personal_subtitle': 'Só para você',
+      'workspace_shared': 'Compartilhado',
+      'workspace_shared_subtitle': 'Com outras pessoas',
+      'workspace_hint_shared': 'ex. Nossa Casa, Família, Freelance',
+      'workspace_hint_personal': 'ex. Minhas Finanças, Plano de Poupança',
+      'name_too_short': 'Nome muito curto',
+      'name_too_long': 'Nome muito longo',
+      'icon': 'Ícone',
+      'color': 'Cor',
+      'create_workspace': 'Criar workspace',
+      'error_creating_workspace': 'Erro ao criar workspace: %s',
       // Workspace invite
       'invite_share_text': "Te convido para '{name}' no Farol! Acesse: {link}",
       'invite_share_email_subject': 'Junte-se a {name} no Farol',
@@ -2095,8 +2278,10 @@ class AppLocalizations {
   String get dashboard => translate('dashboard');
   String get transactions => translate('transactions');
   String get analytics => translate('analytics');
+  String get budgetNav => translate('budget_nav');
   String get investments => translate('investments');
   String get settings => translate('settings');
+  String get navSectionMenu => translate('nav_section_menu');
   String get income => translate('income');
   String get expenses => translate('expenses');
   String get netWorth => translate('net_worth');
@@ -2214,9 +2399,17 @@ class AppLocalizations {
   String get budgetsHint => translate('budgets_hint');
   String get resetToGoal => translate('reset_to_goal');
   String get resetToGoalDesc => translate('reset_to_goal_desc');
+  String resetToGoalWithAmount(String amount) => translate('reset_to_goal_with_amount').replaceFirst('%s', amount);
+  String get deleteBudget => translate('delete_budget');
+  String removeBudget(String category) => translate('remove_budget').replaceFirst('%s', category);
+  String get budgetCustomLabel => translate('budget_custom_label');
+  String get budgetCategoryLabel => translate('budget_category_label');
+  String budgetGoalLabel(String amount) => translate('budget_goal_label').replaceFirst('%s', amount);
+  String get createBudget => translate('create_budget');
   String get editBudget => translate('edit_budget');
   String get newBudget => translate('new_budget');
   String get noBudgetsToCopy => translate('no_budgets_to_copy');
+  String copiedBudgets(int count) => translate('copied_budgets').replaceFirst('%d', '$count');
   String get rebalanceBudget => translate('rebalance_budget');
   String get rebalanceSubtitle => translate('rebalance_subtitle');
   String get normalize => translate('normalize');
@@ -2621,6 +2814,56 @@ class AppLocalizations {
       translate('invite_share_text').replaceAll('{name}', name).replaceAll('{link}', link);
   String inviteShareEmailSubject(String name) =>
       translate('invite_share_email_subject').replaceAll('{name}', name);
+  // Workspace members
+  String get membersTitle => translate('members_title');
+  String get inviteMember => translate('invite_member');
+  String get refresh => translate('refresh');
+  String get noMembersFound => translate('no_members_found');
+  String get roleOwner => translate('role_owner');
+  String get roleAdmin => translate('role_admin');
+  String get roleMember => translate('role_member');
+  String get roleViewer => translate('role_viewer');
+  String get you => translate('you');
+  String get makeAdmin => translate('make_admin');
+  String get makeMember => translate('make_member');
+  String get makeViewer => translate('make_viewer');
+  String get removeMemberTitle => translate('remove_member_title');
+  String removeMemberConfirm(String name) => translate('remove_member_confirm').replaceFirst('{name}', name);
+  String errorUpdatingRole(String e) => translate('error_updating_role').replaceFirst('%s', e);
+  String errorRemovingMember(String e) => translate('error_removing_member').replaceFirst('%s', e);
+  String get emailAddress => translate('email_address');
+  String get emailInvalid => translate('email_invalid');
+  String get role => translate('role');
+  String get sendInvite => translate('send_invite');
+  String get roleAdminDesc => translate('role_admin_desc');
+  String get roleMemberDesc => translate('role_member_desc');
+  String get roleViewerDesc => translate('role_viewer_desc');
+  String get whatsappUnavailable => translate('whatsapp_unavailable');
+  String get linkCopied => translate('link_copied');
+  String get inviteCreated => translate('invite_created');
+  String inviteShareWith(String email) => translate('invite_share_with').replaceFirst('%s', email);
+  String get copyLink => translate('copy_link');
+  String get inviteExpires7Days => translate('invite_expires_7_days');
+  String get shareEmail => translate('share_email');
+  String get shareWhatsapp => translate('share_whatsapp');
+  String get share => translate('share');
+  String get done => translate('done');
+  String errorSendingInvite(String e) => translate('error_sending_invite').replaceFirst('%s', e);
+  // Workspace create
+  String get newWorkspace => translate('new_workspace');
+  String get workspaceDescription => translate('workspace_description');
+  String get workspacePersonal => translate('workspace_personal');
+  String get workspacePersonalSubtitle => translate('workspace_personal_subtitle');
+  String get workspaceShared => translate('workspace_shared');
+  String get workspaceSharedSubtitle => translate('workspace_shared_subtitle');
+  String get workspaceHintShared => translate('workspace_hint_shared');
+  String get workspaceHintPersonal => translate('workspace_hint_personal');
+  String get nameTooShort => translate('name_too_short');
+  String get nameTooLong => translate('name_too_long');
+  String get icon => translate('icon');
+  String get color => translate('color');
+  String get createWorkspace => translate('create_workspace');
+  String errorCreatingWorkspace(String e) => translate('error_creating_workspace').replaceFirst('%s', e);
   String get inviteAccepting => translate('invite_accepting');
   String inviteSuccessJoined(String name) =>
       translate('invite_success_joined').replaceAll('{name}', name);

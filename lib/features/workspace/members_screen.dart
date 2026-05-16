@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../core/i18n/app_localizations.dart';
 import '../../core/models/member_display.dart';
 import '../../core/models/workspace.dart';
 import '../../core/providers/workspace_providers.dart';
@@ -63,35 +64,36 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error updating role: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context).errorUpdatingRole(e.toString()))),
         );
       }
     }
   }
 
   Future<void> _removeMember(WorkspaceMember member) async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Remove member?'),
-        content: Text(
-          'This will remove the member from "${_workspace.name}". '
-          'Their data will remain but they will lose access.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(ctx).colorScheme.error,
+      builder: (ctx) {
+        final l10nCtx = AppLocalizations.of(ctx);
+        return AlertDialog(
+          title: Text(l10nCtx.removeMemberTitle),
+          content: Text(l10nCtx.removeMemberConfirm(_workspace.name)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l10nCtx.cancel),
             ),
-            child: const Text('Remove'),
-          ),
-        ],
-      ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(ctx).colorScheme.error,
+              ),
+              child: Text(l10nCtx.remove),
+            ),
+          ],
+        );
+      },
     );
 
     if (confirmed != true) return;
@@ -104,7 +106,7 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error removing member: $e')),
+          SnackBar(content: Text(l10n.errorRemovingMember(e.toString()))),
         );
       }
     }
@@ -121,7 +123,7 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Members',
+              AppLocalizations.of(context).membersTitle,
               style: GoogleFonts.manrope(fontWeight: FontWeight.w700),
             ),
             Text(
@@ -138,7 +140,7 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
           if (_canManage)
             IconButton(
               icon: const Icon(Icons.person_add_outlined),
-              tooltip: 'Invite member',
+              tooltip: AppLocalizations.of(context).inviteMember,
               onPressed: () async {
                 await InviteMemberSheet.show(context, _workspace);
                 _refresh();
@@ -146,7 +148,7 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
             ),
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
+            tooltip: AppLocalizations.of(context).refresh,
             onPressed: _loading ? null : _refresh,
           ),
         ],
@@ -154,7 +156,7 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : members.isEmpty
-              ? const Center(child: Text('No members found'))
+              ? Center(child: Text(AppLocalizations.of(context).noMembersFound))
               : ListView.separated(
                   itemCount: members.length,
                   separatorBuilder: (_, __) =>
@@ -198,18 +200,21 @@ class _MemberTile extends StatelessWidget {
   final ValueChanged<WorkspaceRole> onChangeRole;
   final VoidCallback onRemove;
 
-  String _roleLabel(WorkspaceRole r) => switch (r) {
-        WorkspaceRole.owner  => 'Owner',
-        WorkspaceRole.admin  => 'Admin',
-        WorkspaceRole.member => 'Member',
-        WorkspaceRole.viewer => 'Viewer',
-      };
+  String _roleLabel(BuildContext context, WorkspaceRole r) {
+    final l10n = AppLocalizations.of(context);
+    return switch (r) {
+      WorkspaceRole.owner  => l10n.roleOwner,
+      WorkspaceRole.admin  => l10n.roleAdmin,
+      WorkspaceRole.member => l10n.roleMember,
+      WorkspaceRole.viewer => l10n.roleViewer,
+    };
+  }
 
   String get _initials =>
       display?.initials ?? member.userId.substring(0, 2).toUpperCase();
 
-  String get _displayName {
-    if (isSelf) return 'You';
+  String _displayName(BuildContext context) {
+    if (isSelf) return AppLocalizations.of(context).you;
     return display?.displayName ?? '${member.userId.substring(0, 8)}…';
   }
 
@@ -245,7 +250,7 @@ class _MemberTile extends StatelessWidget {
         children: [
           Flexible(
             child: Text(
-              _displayName,
+              _displayName(context),
               style: GoogleFonts.manrope(
                 fontWeight: isSelf ? FontWeight.w700 : FontWeight.w500,
               ),
@@ -255,7 +260,7 @@ class _MemberTile extends StatelessWidget {
         ],
       ),
       subtitle: Text(
-        _roleLabel(member.role),
+        _roleLabel(context, member.role),
         style: TextStyle(
           color: roleColor,
           fontSize: 12,
@@ -265,19 +270,22 @@ class _MemberTile extends StatelessWidget {
       trailing: canManage
           ? PopupMenuButton<String>(
               icon: const Icon(Icons.more_vert),
-              itemBuilder: (context) => [
-                const PopupMenuItem(value: 'admin',  child: Text('Make Admin')),
-                const PopupMenuItem(value: 'member', child: Text('Make Member')),
-                const PopupMenuItem(value: 'viewer', child: Text('Make Viewer')),
-                const PopupMenuDivider(),
-                PopupMenuItem(
-                  value: 'remove',
-                  child: Text(
-                    'Remove',
-                    style: TextStyle(color: colorScheme.error),
+              itemBuilder: (context) {
+                final l10n = AppLocalizations.of(context);
+                return [
+                  PopupMenuItem(value: 'admin',  child: Text(l10n.makeAdmin)),
+                  PopupMenuItem(value: 'member', child: Text(l10n.makeMember)),
+                  PopupMenuItem(value: 'viewer', child: Text(l10n.makeViewer)),
+                  const PopupMenuDivider(),
+                  PopupMenuItem(
+                    value: 'remove',
+                    child: Text(
+                      l10n.remove,
+                      style: TextStyle(color: colorScheme.error),
+                    ),
                   ),
-                ),
-              ],
+                ];
+              },
               onSelected: (action) {
                 if (action == 'remove') {
                   onRemove();

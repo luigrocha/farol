@@ -85,7 +85,13 @@ class ActivityFeedPreviewCard extends ConsumerWidget {
               padding: EdgeInsets.all(20),
               child: Center(child: CircularProgressIndicator()),
             ),
-            error: (_, __) => const SizedBox.shrink(),
+            error: (_, __) => Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: Text(
+                'Não foi possível carregar a atividade.',
+                style: GoogleFonts.manrope(fontSize: 12, color: cs.onSurfaceVariant),
+              ),
+            ),
             data: (items) {
               if (items.isEmpty) {
                 return Padding(

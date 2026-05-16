@@ -59,7 +59,7 @@ class _InviteMemberSheetState extends ConsumerState<InviteMemberSheet> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error sending invite: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context).errorSendingInvite(e.toString()))),
         );
       }
     } finally {
@@ -99,7 +99,7 @@ class _InviteMemberSheetState extends ConsumerState<InviteMemberSheet> {
                     ),
                   ),
                   Text(
-                    'Invite member',
+                    AppLocalizations.of(context).inviteMember,
                     style: GoogleFonts.manrope(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
@@ -119,27 +119,24 @@ class _InviteMemberSheetState extends ConsumerState<InviteMemberSheet> {
                     controller: _emailController,
                     autofocus: true,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Email address',
-                      prefixIcon: Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context).emailAddress,
+                      prefixIcon: const Icon(Icons.email_outlined),
+                      border: const OutlineInputBorder(),
                     ),
                     validator: (v) {
-                      if (v == null || v.trim().isEmpty) {
-                        return 'Email is required';
-                      }
+                      final l10n = AppLocalizations.of(context);
+                      if (v == null || v.trim().isEmpty) return l10n.emailRequired;
                       final emailRegex = RegExp(
                           r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$');
-                      if (!emailRegex.hasMatch(v.trim())) {
-                        return 'Enter a valid email';
-                      }
+                      if (!emailRegex.hasMatch(v.trim())) return l10n.emailInvalid;
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
                   // ── Role picker ───────────────────────────────
                   Text(
-                    'Role',
+                    AppLocalizations.of(context).role,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: colorScheme.onSurfaceVariant,
@@ -164,7 +161,7 @@ class _InviteMemberSheetState extends ConsumerState<InviteMemberSheet> {
                                   CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                             )
                           : const Icon(Icons.send_outlined),
-                      label: const Text('Send invite'),
+                      label: Text(AppLocalizations.of(context).sendInvite),
                     ),
                   ),
                 ],
@@ -187,19 +184,25 @@ class _RolePicker extends StatelessWidget {
     WorkspaceRole.viewer,
   ];
 
-  static String _label(WorkspaceRole r) => switch (r) {
-        WorkspaceRole.admin  => 'Admin',
-        WorkspaceRole.member => 'Member',
-        WorkspaceRole.viewer => 'Viewer',
-        _                    => r.name,
-      };
+  static String _label(BuildContext context, WorkspaceRole r) {
+    final l10n = AppLocalizations.of(context);
+    return switch (r) {
+      WorkspaceRole.admin  => l10n.roleAdmin,
+      WorkspaceRole.member => l10n.roleMember,
+      WorkspaceRole.viewer => l10n.roleViewer,
+      _                    => r.name,
+    };
+  }
 
-  static String _description(WorkspaceRole r) => switch (r) {
-        WorkspaceRole.admin  => 'Can add, edit, delete, and invite others',
-        WorkspaceRole.member => 'Can add and edit data',
-        WorkspaceRole.viewer => 'Read-only access',
-        _                    => '',
-      };
+  static String _description(BuildContext context, WorkspaceRole r) {
+    final l10n = AppLocalizations.of(context);
+    return switch (r) {
+      WorkspaceRole.admin  => l10n.roleAdminDesc,
+      WorkspaceRole.member => l10n.roleMemberDesc,
+      WorkspaceRole.viewer => l10n.roleViewerDesc,
+      _                    => '',
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -209,14 +212,14 @@ class _RolePicker extends StatelessWidget {
       children: [
         SegmentedButton<WorkspaceRole>(
           segments: _roles
-              .map((r) => ButtonSegment(value: r, label: Text(_label(r))))
+              .map((r) => ButtonSegment(value: r, label: Text(_label(context, r))))
               .toList(),
           selected: {value},
           onSelectionChanged: (s) => onChanged(s.first),
         ),
         const SizedBox(height: 6),
         Text(
-          _description(value),
+          _description(context, value),
           style: TextStyle(
             fontSize: 12,
             color: colorScheme.onSurfaceVariant,
@@ -259,7 +262,7 @@ class _InviteSuccessView extends StatelessWidget {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('WhatsApp not available')),
+        SnackBar(content: Text(AppLocalizations.of(context).whatsappUnavailable)),
       );
     }
   }
@@ -281,7 +284,7 @@ class _InviteSuccessView extends StatelessWidget {
   void _copyLink(BuildContext context) {
     Clipboard.setData(ClipboardData(text: _inviteLink));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Link copied to clipboard')),
+      SnackBar(content: Text(AppLocalizations.of(context).linkCopied)),
     );
   }
 
@@ -317,12 +320,12 @@ class _InviteSuccessView extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Text(
-          'Invite created!',
+          AppLocalizations.of(context).inviteCreated,
           style: GoogleFonts.manrope(fontSize: 20, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 6),
         Text(
-          'Share with ${invite.invitedEmail}',
+          AppLocalizations.of(context).inviteShareWith(invite.invitedEmail),
           style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 13),
           textAlign: TextAlign.center,
         ),
@@ -351,7 +354,7 @@ class _InviteSuccessView extends StatelessWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.copy_rounded, size: 18),
-                tooltip: 'Copy link',
+                tooltip: AppLocalizations.of(context).copyLink,
                 visualDensity: VisualDensity.compact,
                 onPressed: () => _copyLink(context),
               ),
@@ -360,7 +363,7 @@ class _InviteSuccessView extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          'Expires in 7 days',
+          AppLocalizations.of(context).inviteExpires7Days,
           style: TextStyle(fontSize: 11, color: colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 20),
@@ -371,7 +374,7 @@ class _InviteSuccessView extends StatelessWidget {
             Expanded(
               child: _ShareButton(
                 icon: Icons.email_outlined,
-                label: 'Email',
+                label: AppLocalizations.of(context).shareEmail,
                 onTap: () => _shareEmail(context),
               ),
             ),
@@ -379,7 +382,7 @@ class _InviteSuccessView extends StatelessWidget {
             Expanded(
               child: _ShareButton(
                 icon: Icons.chat_outlined,
-                label: 'WhatsApp',
+                label: AppLocalizations.of(context).shareWhatsapp,
                 onTap: () => _shareWhatsApp(context),
               ),
             ),
@@ -387,7 +390,7 @@ class _InviteSuccessView extends StatelessWidget {
             Expanded(
               child: _ShareButton(
                 icon: Icons.ios_share_rounded,
-                label: 'Share',
+                label: AppLocalizations.of(context).share,
                 onTap: () => _shareNative(context),
               ),
             ),
@@ -400,7 +403,7 @@ class _InviteSuccessView extends StatelessWidget {
           width: double.infinity,
           child: FilledButton(
             onPressed: onDone,
-            child: const Text('Done'),
+            child: Text(AppLocalizations.of(context).done),
           ),
         ),
       ],
