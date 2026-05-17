@@ -19,9 +19,12 @@
 /// - [FarolEmptyState.custom] — custom-copy empty state
 /// - [SliverFarolEmptyState] — sliver wrapper for CustomScrollViews
 /// - [FarolEmptyStateType]  — type enum driving i18n key resolution
+/// - [FarolPainter]        — CustomPainter that draws the lighthouse mark
+/// - [FarolMarkScheme]     — full / white / navy painter color schemes
 library branding;
 
 export 'farol_brand.dart';
+export 'farol_painter.dart';
 export 'farol_logo.dart';
 export 'farol_greeting.dart';
 export 'farol_empty_state.dart';

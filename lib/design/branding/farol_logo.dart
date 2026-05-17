@@ -20,6 +20,7 @@ library farol_logo;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'farol_brand.dart';
+import 'farol_painter.dart';
 import '../farol_colors.dart' as palette;
 
 // ── Logo variant ──────────────────────────────────────────────────────────────
@@ -38,14 +39,23 @@ enum FarolLogoVariant {
 
 // ── FarolMark ─────────────────────────────────────────────────────────────────
 
-/// The Farol icon mark — a rounded square with the beam symbol inside.
+/// The Farol icon mark — a rounded square with the lighthouse (farol) symbol.
 ///
-/// This is the smallest atomic branding unit. Use it wherever a compact
-/// brand presence is needed: nav rail, app bar chips, list tiles.
+/// Rendered via [FarolPainter] — a CustomPainter that faithfully reproduces
+/// the brand SVG: white mast + amber beams on navy background (dark variant),
+/// or monochrome navy/white for light/mono variants.
 ///
-/// The beam symbol is currently rendered as [Icons.anchor_rounded] as a
-/// placeholder. TODO(branding): replace with custom BeamPainter once the
-/// vector asset is available.
+/// Usage:
+/// ```dart
+/// // On dark/navy background — white mast + amber beams on navy bg
+/// FarolMark(variant: FarolLogoVariant.dark, showGlow: true)
+///
+/// // On light background — navy monochrome on white bg
+/// FarolMark(variant: FarolLogoVariant.light)
+///
+/// // Embedded in a dark container — white monochrome, translucent bg
+/// FarolMark(variant: FarolLogoVariant.mono)
+/// ```
 class FarolMark extends StatelessWidget {
   const FarolMark({
     super.key,
@@ -62,7 +72,7 @@ class FarolMark extends StatelessWidget {
   /// Corner radius. Defaults to a proportional value based on [size].
   final double? radius;
 
-  /// Controls foreground/background colors.
+  /// Controls background color and painter color scheme.
   final FarolLogoVariant variant;
 
   /// Whether to render the amber glow beneath the mark.
@@ -83,7 +93,7 @@ class FarolMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (bg, fg) = _colors(variant);
+    final (bg, scheme) = _config(variant);
 
     return Container(
       width: size,
@@ -93,20 +103,26 @@ class FarolMark extends StatelessWidget {
         borderRadius: BorderRadius.circular(_radius),
         boxShadow: showGlow ? FarolBrand.markGlow(opacity: glowOpacity) : null,
       ),
-      child: Icon(
-        // TODO(branding): replace with custom BeamPainter asset
-        Icons.anchor_rounded,
-        color: fg,
-        size: size * 0.54,
+      child: Padding(
+        // Inset so the painter has visual breathing room within the container
+        padding: EdgeInsets.all(size * 0.12),
+        child: CustomPaint(
+          painter: FarolPainter(scheme: scheme),
+        ),
       ),
     );
   }
 
-  static (Color bg, Color fg) _colors(FarolLogoVariant variant) {
+  /// Returns (backgroundColor, painterScheme) for each variant.
+  ///
+  /// - dark  → navy bg, full-color painter (white mast + amber beams) — matches the app icon
+  /// - light → white bg, navy mono painter — for use on light surfaces
+  /// - mono  → translucent white bg, white mono painter — for dark surfaces without the navy bg
+  static (Color bg, FarolMarkScheme scheme) _config(FarolLogoVariant variant) {
     return switch (variant) {
-      FarolLogoVariant.light => (palette.FarolColors.navy, Colors.white),
-      FarolLogoVariant.dark  => (palette.FarolColors.beam, palette.FarolColors.navyDeep),
-      FarolLogoVariant.mono  => (Colors.white.withValues(alpha: 0.15), Colors.white),
+      FarolLogoVariant.dark  => (palette.FarolColors.navy,                            FarolMarkScheme.full),
+      FarolLogoVariant.light => (Colors.white,                                         FarolMarkScheme.navy),
+      FarolLogoVariant.mono  => (Colors.white.withValues(alpha: 0.15),                 FarolMarkScheme.white),
     };
   }
 }
