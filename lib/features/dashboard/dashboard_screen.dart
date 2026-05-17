@@ -28,6 +28,7 @@ import 'widgets/recent_transactions_card.dart';
 import '../insights/insights_panel.dart';
 import '../workspace/workspace_switcher_sheet.dart';
 import '../../core/providers/workspace_providers.dart' show canWriteProvider;
+import '../../design/branding/branding.dart';
 
 // ── Layout breakpoints ────────────────────────────────────────────────────────
 
@@ -61,6 +62,8 @@ class DashboardScreen extends ConsumerWidget {
         Expanded(
           child: CustomScrollView(
             slivers: [
+              // Greeting shown on mobile only — desktop gets it in the nav rail
+              if (!isDesktop) const _GreetingSliver(),
               _PremiumAppBar(
                 month: month,
                 year: year,
@@ -101,6 +104,24 @@ class DashboardScreen extends ConsumerWidget {
     else if (nm > 12) { nm = 1;  ny++; }
     ref.read(selectedMonthProvider.notifier).state = nm;
     ref.read(selectedYearProvider.notifier).state  = ny;
+  }
+}
+
+// ── Greeting Sliver ───────────────────────────────────────────────────────────
+//
+// Shown on mobile only. Collapses naturally as the user scrolls because it
+// sits above the floating SliverAppBar — no SliverPersistentHeader delegate
+// needed; a simple SliverToBoxAdapter is sufficient and avoids the complexity
+// of a custom delegate for such a small height.
+
+class _GreetingSliver extends StatelessWidget {
+  const _GreetingSliver();
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: FarolGreeting(variant: FarolGreetingVariant.dashboard),
+    );
   }
 }
 

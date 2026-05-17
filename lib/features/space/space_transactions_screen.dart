@@ -20,6 +20,7 @@ import '../../core/models/space.dart';
 import '../../core/models/space_transaction.dart';
 import '../../core/providers/space_providers.dart';
 import 'add_space_transaction_sheet.dart';
+import '../../design/branding/branding.dart';
 
 final _brlFmt  = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 final _dateFmt = DateFormat('dd/MM/yy');
@@ -190,16 +191,7 @@ class _SpaceTransactionsScreenState
 
             // ── Transaction list ─────────────────────────────────
             if (filtered.isEmpty && !_loading)
-              SliverFillRemaining(
-                child: Center(
-                  child: Text(
-                    'Nenhuma transação encontrada.',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              )
+              const SliverFarolEmptyState(type: FarolEmptyStateType.spaceTransactions)
             else
               SliverList(
                 delegate: SliverChildBuilderDelegate(

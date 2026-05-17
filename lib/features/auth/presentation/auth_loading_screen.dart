@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../design/farol_colors.dart' as tokens;
+import '../../../design/branding/branding.dart';
 import '../domain/auth_state.dart';
 import 'auth_providers.dart';
 
@@ -107,25 +108,12 @@ class _AuthLoadingScreenState extends ConsumerState<AuthLoadingScreen>
                   // Animated logo
                   ScaleTransition(
                     scale: _pulse,
-                    child: Container(
-                      width: 72,
-                      height: 72,
-                      decoration: BoxDecoration(
-                        color: tokens.FarolColors.beam,
-                        borderRadius: BorderRadius.circular(22),
-                        boxShadow: [
-                          BoxShadow(
-                            color: tokens.FarolColors.beam.withValues(alpha: 0.45),
-                            blurRadius: 32,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.anchor_rounded,
-                        color: tokens.FarolColors.navy,
-                        size: 36,
-                      ),
+                    child: FarolMark(
+                      size: 72,
+                      radius: 22,
+                      variant: FarolLogoVariant.dark,
+                      showGlow: true,
+                      glowOpacity: 0.45,
                     ),
                   ),
                   const SizedBox(height: 28),

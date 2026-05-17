@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/i18n/app_localizations.dart';
 import '../../design/farol_colors.dart' as tokens;
+import '../../design/branding/branding.dart';
 import 'onboarding_carousel.dart';
 
 class OnboardingScreen extends ConsumerWidget {
@@ -64,40 +65,11 @@ class OnboardingScreen extends ConsumerWidget {
                       Padding(
                         padding: EdgeInsets.symmetric(
                             horizontal: isWide ? 40 : 32),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 46,
-                              height: 46,
-                              decoration: BoxDecoration(
-                                color: tokens.FarolColors.beam,
-                                borderRadius: BorderRadius.circular(14),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: tokens.FarolColors.beam
-                                        .withValues(alpha: 0.40),
-                                    blurRadius: 24,
-                                    offset: const Offset(0, 8),
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.anchor_rounded,
-                                color: tokens.FarolColors.navy,
-                                size: 26,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'Farol',
-                              style: GoogleFonts.manrope(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                          ],
+                        child: FarolLogo(
+                          variant: FarolLogoVariant.dark,
+                          markSize: FarolBrand.markSizeOnboarding,
+                          showGlow: true,
+                          wordmarkFontSize: 24,
                         ),
                       ),
 

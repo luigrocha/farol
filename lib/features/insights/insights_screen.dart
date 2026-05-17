@@ -6,6 +6,7 @@ import '../../core/domain/entities/insight_stats.dart';
 import '../../core/i18n/app_localizations.dart';
 import '../../core/providers/providers.dart';
 import 'insight_card.dart';
+import '../../design/branding/branding.dart';
 
 class InsightsScreen extends ConsumerWidget {
   const InsightsScreen({super.key});
@@ -183,13 +184,6 @@ class _EmptyState extends StatelessWidget {
   const _EmptyState();
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 60),
-        child: Center(
-          child: Text(
-            context.l10n.insightsEmpty,
-            textAlign: TextAlign.center,
-          ),
-        ),
-      );
+  Widget build(BuildContext context) =>
+      const FarolEmptyState(type: FarolEmptyStateType.insights);
 }

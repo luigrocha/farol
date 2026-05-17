@@ -9,6 +9,7 @@ import '../space/create_space_sheet.dart';
 import '../space/space_dashboard_screen.dart';
 import 'create_workspace_sheet.dart';
 import 'members_screen.dart';
+import '../../design/branding/branding.dart';
 
 // ─────────────────────────────────────────────────────────────
 // WorkspaceSwitcherSheet
@@ -114,6 +115,7 @@ class WorkspaceSwitcherSheet extends ConsumerWidget {
                     ],
                     // Spaces v2
                     _SectionHeader('Espaços'),
+                    if (spaces.isEmpty) _SpaceEmptyHint(),
                     ...spaces.map((s) => _SpaceItem(s)),
                     _SpaceCreateItem(),
                   ];
@@ -158,6 +160,15 @@ class WorkspaceSwitcherSheet extends ConsumerWidget {
                               ),
                             );
                           },
+                        );
+                      }
+                      if (item is _SpaceEmptyHint) {
+                        return const Padding(
+                          padding: EdgeInsets.fromLTRB(20, 4, 20, 4),
+                          child: FarolEmptyState(
+                            type: FarolEmptyStateType.workspaces,
+                            compact: true,
+                          ),
                         );
                       }
                       if (item is _SpaceCreateItem) {
@@ -209,6 +220,8 @@ class _SpaceItem extends _ListItem {
 }
 
 class _SpaceCreateItem extends _ListItem {}
+
+class _SpaceEmptyHint extends _ListItem {}
 
 // ─────────────────────────────────────────────────────────────
 // _SectionHeaderTile

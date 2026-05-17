@@ -17,6 +17,7 @@ import '../../core/models/space.dart';
 import '../../core/providers/space_providers.dart';
 import '../../core/repositories/space_repository.dart' show SpaceInviteException;
 import '../../design/farol_colors.dart' as tokens;
+import '../../design/branding/branding.dart';
 import '../auth/domain/auth_state.dart';
 import '../auth/presentation/auth_providers.dart';
 import 'space_dashboard_screen.dart';
@@ -149,25 +150,11 @@ class _AcceptSpaceInviteScreenState
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // ── Logo ────────────────────────────────────────────
-                    Container(
-                      width:  56,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        color:        tokens.FarolColors.beam,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color:      tokens.FarolColors.beam.withValues(alpha: 0.40),
-                            blurRadius: 28,
-                            offset:     const Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.anchor_rounded,
-                        color: tokens.FarolColors.navy,
-                        size:  30,
-                      ),
+                    FarolMark(
+                      size: FarolBrand.markSizeAuth,
+                      radius: 16,
+                      variant: FarolLogoVariant.dark,
+                      showGlow: true,
                     ),
                     const SizedBox(height: 32),
 

@@ -6,6 +6,7 @@ import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';
 import '../../../design/farol_colors.dart' as tokens;
 import '../../../design/ds_tokens.dart';
+import '../../../design/branding/branding.dart';
 import 'shared/brl_display.dart';
 
 class PeriodBalanceHero extends ConsumerStatefulWidget {
@@ -51,8 +52,8 @@ class _PeriodBalanceHeroState extends ConsumerState<PeriodBalanceHero>
 
     // Premium dark gradient: deep navy-teal for positive, dark wine for negative
     final gradientColors = isPositive
-        ? [const Color(0xFF0D2238), const Color(0xFF1A3A5C), const Color(0xFF0D3328)]
-        : [const Color(0xFF2A0A0A), const Color(0xFF3D1515), const Color(0xFF1A0808)];
+        ? FarolBrand.heroGradientPositive
+        : FarolBrand.heroGradientNegative;
 
     final accentColor = isPositive
         ? const Color(0xFF2EB06A)
@@ -86,8 +87,8 @@ class _PeriodBalanceHeroState extends ConsumerState<PeriodBalanceHero>
               boxShadow: [
                 BoxShadow(
                   color: (isPositive
-                      ? const Color(0xFF1B3A5C)
-                      : const Color(0xFF8B0000)).withValues(alpha: 0.30),
+                      ? FarolBrand.heroShadowPositive
+                      : FarolBrand.heroShadowNegative).withValues(alpha: 0.30),
                   blurRadius: 28,
                   spreadRadius: -4,
                   offset: const Offset(0, 12),

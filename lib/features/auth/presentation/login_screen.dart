@@ -12,6 +12,7 @@ import '../../../core/widgets/farol_snackbar.dart';
 import '../../../core/theme/farol_colors.dart';
 import '../../../design/farol_colors.dart' as tokens;
 import '../../../design/widgets/farol_button.dart';
+import '../../../design/branding/branding.dart';
 import 'auth_providers.dart';
 import 'widgets/auth_buttons.dart';
 
@@ -78,7 +79,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 children: [
                   // ── Logo ────────────────────────────────────────────
                   const SizedBox(height: 12),
-                  _FarolMark(),
+                  FarolMark(
+                    size: FarolBrand.markSizeAuth,
+                    variant: FarolLogoVariant.light,
+                  ),
                   const SizedBox(height: 28),
 
                   // ── Title ────────────────────────────────────────────
@@ -279,24 +283,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 }
 
-// ── Widgets locais ────────────────────────────────────────────────────────────
-
-class _FarolMark extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(children: [
-      Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          color: tokens.FarolColors.navy,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Icon(Icons.anchor_rounded, color: Colors.white, size: 30),
-      ),
-    ]);
-  }
-}
 
 class _SocialBtn extends StatelessWidget {
   final IconData icon;

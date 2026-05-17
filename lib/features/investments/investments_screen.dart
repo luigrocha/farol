@@ -14,6 +14,7 @@ import '../../core/widgets/farol_snackbar.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../design/ds_tokens.dart';
 import 'add_investment_bottom_sheet.dart';
+import '../../design/branding/branding.dart';
 
 class InvestmentsScreen extends ConsumerWidget {
   const InvestmentsScreen({super.key});
@@ -208,12 +209,7 @@ class _InvestmentsList extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final investments = ref.watch(investmentsProvider).value ?? [];
     if (investments.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 40),
-        child: Center(child: Text(l10n.noInvestmentsYet,
-          textAlign: TextAlign.center,
-          style: TextStyle(color: context.colors.onSurfaceSoft, height: 1.6))),
-      );
+      return const FarolEmptyState(type: FarolEmptyStateType.investments);
     }
     return Column(children: investments.map((inv) => _InvRow(inv: inv)).toList());
   }

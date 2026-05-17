@@ -7,6 +7,7 @@ import '../../core/providers/workspace_providers.dart';
 import '../../core/repositories/workspace_repository.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../design/ds_tokens.dart';
+import '../../design/branding/branding.dart';
 import '../auth/presentation/auth_providers.dart';
 import '../auth/domain/auth_state.dart';
 
@@ -157,25 +158,11 @@ class _AcceptInviteScreenState extends ConsumerState<AcceptInviteScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // ── Logo ─────────────────────────────────────────────
-                    Container(
-                      width: 56,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        color: tokens.FarolColors.beam,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: tokens.FarolColors.beam.withValues(alpha: 0.40),
-                            blurRadius: 28,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.anchor_rounded,
-                        color: tokens.FarolColors.navy,
-                        size: 30,
-                      ),
+                    FarolMark(
+                      size: FarolBrand.markSizeAuth,
+                      radius: 16,
+                      variant: FarolLogoVariant.dark,
+                      showGlow: true,
                     ),
                     const SizedBox(height: 32),
 

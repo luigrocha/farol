@@ -16,6 +16,7 @@ import '../../core/widgets/member_chip.dart';
 import 'add_installment_bottom_sheet.dart';
 import '../../core/widgets/farol_dialogs.dart';
 import '../../core/widgets/farol_snackbar.dart';
+import '../../design/branding/branding.dart';
 
 const _purple = Color(0xFF6B3FA0);
 
@@ -734,35 +735,7 @@ class _EmptyState extends StatelessWidget {
   const _EmptyState({required this.filter});
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    final l10n = context.l10n;
-    final msg = filter == _Filter.completed
-        ? l10n.installmentsEmptyCompleted
-        : l10n.installmentsEmptyActive;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 48),
-      child: Center(
-          child: Column(children: [
-        Container(
-          width: 64,
-          height: 64,
-          decoration: BoxDecoration(
-              color: colors.surfaceLowest,
-              borderRadius: DSRadius.lgBR),
-          child:
-              const Center(child: Text('💳', style: TextStyle(fontSize: 28))),
-        ),
-        const SizedBox(height: 16),
-        Text(msg,
-            style: GoogleFonts.manrope(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: colors.onSurface)),
-        const SizedBox(height: 6),
-        Text(l10n.installmentsEmptyHint,
-            style: TextStyle(fontSize: 13, color: colors.onSurfaceSoft)),
-      ])),
-    );
+    return const FarolEmptyState(type: FarolEmptyStateType.installments);
   }
 }
 

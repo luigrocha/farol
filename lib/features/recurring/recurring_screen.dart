@@ -12,6 +12,7 @@ import 'add_recurring_bottom_sheet.dart';
 import '../../core/providers/workspace_providers.dart'
     show canWriteProvider, isSharedWorkspaceProvider, memberDisplayMapProvider;
 import '../../core/widgets/member_chip.dart';
+import '../../design/branding/branding.dart';
 
 const _teal = Color(0xFF00897B);
 
@@ -557,20 +558,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final msg = switch (filter) {
-      _Filter.active => l10n.recurringEmptyActive,
-      _Filter.paused => l10n.recurringEmptyPaused,
-      _Filter.cancelled => l10n.recurringEmptyCancelled,
-    };
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 60),
-      child: Center(
-        child: Text(msg,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.manrope(color: Colors.grey, height: 1.6)),
-      ),
-    );
+    return const FarolEmptyState(type: FarolEmptyStateType.recurring);
   }
 }
 

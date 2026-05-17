@@ -20,6 +20,7 @@ import 'edit_income_bottom_sheet.dart';
 import '../../core/providers/workspace_providers.dart'
     show canWriteProvider, isSharedWorkspaceProvider, memberDisplayMapProvider;
 import '../../core/widgets/member_chip.dart';
+import '../../design/branding/branding.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
   const TransactionsScreen({super.key});
@@ -150,7 +151,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         else if (filteredAsync.hasError)
           SliverFillRemaining(child: Center(child: Text('Erro: ${filteredAsync.error}')))
         else if (filteredExpenses.isEmpty)
-          const SliverFillRemaining(child: Center(child: Text('Nenhum gasto encontrado')))
+          const SliverFarolEmptyState(type: FarolEmptyStateType.transactions)
         else
           SliverList(delegate: _buildExpenseDelegate(filteredExpenses)),
         const SliverToBoxAdapter(child: SizedBox(height: 80)),
@@ -285,19 +286,7 @@ class _IncomeTab extends ConsumerWidget {
           error: (e, _) => SliverFillRemaining(child: Center(child: Text('Erro: $e'))),
           data: (incomes) {
             if (incomes.isEmpty) {
-              return SliverFillRemaining(
-                child: Center(
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Icon(Icons.account_balance_wallet_outlined, size: 56, color: colors.onSurfaceFaint),
-                    const SizedBox(height: 12),
-                    Text(context.l10n.noIncomeThisMonth,
-                        style: GoogleFonts.manrope(fontSize: 15, color: colors.onSurfaceSoft)),
-                    const SizedBox(height: 6),
-                    Text(context.l10n.noIncomeHint,
-                        style: TextStyle(fontSize: 12, color: colors.onSurfaceFaint)),
-                  ]),
-                ),
-              );
+              return const SliverFarolEmptyState(type: FarolEmptyStateType.transactions);
             }
             return SliverList(
               delegate: SliverChildBuilderDelegate(

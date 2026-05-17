@@ -735,6 +735,39 @@ class AppLocalizations {
       'welcome_back': 'Welcome back!',
       'error_loading': 'Error loading',
       'save_changes': 'Save changes',
+      // Greeting system
+      'good_morning': 'Good morning',
+      'good_afternoon': 'Good afternoon',
+      'good_evening': 'Good evening',
+      // Financial subtitles
+      'subtitle_on_track': 'Your money on the right course.',
+      'subtitle_adjust': "Let's adjust the course.",
+      'subtitle_new_period': 'New period, new goals.',
+      'subtitle_controlled': 'Everything under control.',
+      'subtitle_neutral': 'Tracking your money.',
+      // Empty states
+      'empty_transactions_title': 'No transactions yet',
+      'empty_transactions_sub': 'Add your first income or expense.',
+      'empty_installments_title': 'No active installments',
+      'empty_installments_sub': 'Your installment plans will appear here.',
+      'empty_recurring_title': 'No recurring transactions',
+      'empty_recurring_sub': 'Set up expenses and income that repeat.',
+      'empty_investments_title': 'Empty portfolio',
+      'empty_investments_sub': 'Add your first investments.',
+      'empty_insights_title': 'No insights right now',
+      'empty_insights_sub': 'Farol is monitoring your financial data.',
+      'empty_workspaces_title': 'Just your personal space',
+      'empty_workspaces_sub': 'Create or accept an invite to collaborate.',
+      'empty_space_transactions_title': 'No transactions in this space',
+      'empty_space_transactions_sub': 'Add the first shared transaction.',
+      'empty_generic_title': 'Nothing here yet',
+      'empty_generic_sub': 'Your data will appear here.',
+      // Bottom nav labels
+      'nav_home': 'Home',
+      'nav_investments': 'Invest',
+      'nav_add': 'Add',
+      'nav_cards': 'Cards',
+      'nav_settings': 'Settings',
       // Budget overflow
       'budget_overflow_warning': 'Your budget allocations exceed 100%. Tap a category to adjust.',
       'rebalance': 'Rebalance',
@@ -1481,6 +1514,39 @@ class AppLocalizations {
       'welcome_back': '¡Bienvenido de vuelta!',
       'error_loading': 'Error al cargar',
       'save_changes': 'Guardar cambios',
+      // Greeting system
+      'good_morning': 'Buenos días',
+      'good_afternoon': 'Buenas tardes',
+      'good_evening': 'Buenas noches',
+      // Financial subtitles
+      'subtitle_on_track': 'Tu dinero en el rumbo correcto.',
+      'subtitle_adjust': 'Ajustemos el rumbo.',
+      'subtitle_new_period': 'Nuevo período, nuevas metas.',
+      'subtitle_controlled': 'Todo bajo control.',
+      'subtitle_neutral': 'Siguiendo tu dinero.',
+      // Empty states
+      'empty_transactions_title': 'Sin transacciones aún',
+      'empty_transactions_sub': 'Agrega tu primer ingreso o gasto.',
+      'empty_installments_title': 'Sin cuotas activas',
+      'empty_installments_sub': 'Tus planes de cuotas aparecerán aquí.',
+      'empty_recurring_title': 'Sin transacciones recurrentes',
+      'empty_recurring_sub': 'Configura gastos e ingresos que se repiten.',
+      'empty_investments_title': 'Cartera vacía',
+      'empty_investments_sub': 'Agrega tus primeras inversiones.',
+      'empty_insights_title': 'Sin insights por ahora',
+      'empty_insights_sub': 'Farol está monitoreando tus finanzas.',
+      'empty_workspaces_title': 'Solo tu espacio personal',
+      'empty_workspaces_sub': 'Crea o acepta una invitación para colaborar.',
+      'empty_space_transactions_title': 'Sin transacciones en este espacio',
+      'empty_space_transactions_sub': 'Agrega la primera transacción compartida.',
+      'empty_generic_title': 'Nada aquí todavía',
+      'empty_generic_sub': 'Tus datos aparecerán aquí.',
+      // Bottom nav labels
+      'nav_home': 'Inicio',
+      'nav_investments': 'Invertir',
+      'nav_add': 'Agregar',
+      'nav_cards': 'Tarjetas',
+      'nav_settings': 'Ajustes',
       // Budget overflow
       'budget_overflow_warning': 'Tus asignaciones de presupuesto superan el 100%. Toca una categoría para ajustar.',
       'rebalance': 'Rebalancear',
@@ -2227,6 +2293,39 @@ class AppLocalizations {
       'welcome_back': 'Bem-vindo de volta!',
       'error_loading': 'Erro ao carregar',
       'save_changes': 'Salvar alterações',
+      // Greeting system
+      'good_morning': 'Bom dia',
+      'good_afternoon': 'Boa tarde',
+      'good_evening': 'Boa noite',
+      // Financial subtitles
+      'subtitle_on_track': 'Seu dinheiro no rumo certo.',
+      'subtitle_adjust': 'Vamos ajustar o rumo.',
+      'subtitle_new_period': 'Novo período, novas metas.',
+      'subtitle_controlled': 'Tudo sob controle.',
+      'subtitle_neutral': 'Acompanhando seu dinheiro.',
+      // Empty states
+      'empty_transactions_title': 'Nenhuma transação ainda',
+      'empty_transactions_sub': 'Adicione sua primeira receita ou despesa.',
+      'empty_installments_title': 'Sem parcelamentos ativos',
+      'empty_installments_sub': 'Seus parcelamentos aparecerão aqui.',
+      'empty_recurring_title': 'Sem lançamentos recorrentes',
+      'empty_recurring_sub': 'Configure despesas e receitas que se repetem.',
+      'empty_investments_title': 'Carteira vazia',
+      'empty_investments_sub': 'Adicione seus primeiros investimentos.',
+      'empty_insights_title': 'Sem insights no momento',
+      'empty_insights_sub': 'O Farol está monitorando seus dados.',
+      'empty_workspaces_title': 'Apenas seu espaço pessoal',
+      'empty_workspaces_sub': 'Crie ou aceite um convite para colaborar.',
+      'empty_space_transactions_title': 'Nenhuma transação no espaço',
+      'empty_space_transactions_sub': 'Adicione a primeira transação compartilhada.',
+      'empty_generic_title': 'Nada por aqui ainda',
+      'empty_generic_sub': 'Seus dados aparecerão aqui.',
+      // Bottom nav labels
+      'nav_home': 'Início',
+      'nav_investments': 'Investir',
+      'nav_add': 'Adicionar',
+      'nav_cards': 'Cartões',
+      'nav_settings': 'Configurações',
       // Budget overflow
       'budget_overflow_warning': 'Suas alocações de orçamento excedem 100%. Toque em uma categoria para ajustar.',
       'rebalance': 'Rebalancear',
@@ -2998,6 +3097,37 @@ class AppLocalizations {
   String get welcomeBack => translate('welcome_back');
   String get errorLoading => translate('error_loading');
   String get saveChanges => translate('save_changes');
+  // Greeting system
+  String get goodMorning => translate('good_morning');
+  String get goodAfternoon => translate('good_afternoon');
+  String get goodEvening => translate('good_evening');
+  // Financial subtitles
+  String get subtitleOnTrack => translate('subtitle_on_track');
+  String get subtitleAdjust => translate('subtitle_adjust');
+  String get subtitleNewPeriod => translate('subtitle_new_period');
+  String get subtitleControlled => translate('subtitle_controlled');
+  String get subtitleNeutral => translate('subtitle_neutral');
+  // Empty states
+  String get emptyTransactionsTitle => translate('empty_transactions_title');
+  String get emptyTransactionsSub => translate('empty_transactions_sub');
+  String get emptyInstallmentsTitle => translate('empty_installments_title');
+  String get emptyInstallmentsSub => translate('empty_installments_sub');
+  String get emptyRecurringTitle => translate('empty_recurring_title');
+  String get emptyRecurringSub => translate('empty_recurring_sub');
+  String get emptyInvestmentsTitle => translate('empty_investments_title');
+  String get emptyInvestmentsSub => translate('empty_investments_sub');
+  String get emptyInsightsTitle => translate('empty_insights_title');
+  String get emptyInsightsSub => translate('empty_insights_sub');
+  String get emptyWorkspacesTitle => translate('empty_workspaces_title');
+  String get emptyWorkspacesSub => translate('empty_workspaces_sub');
+  String get emptySpaceTransactionsTitle => translate('empty_space_transactions_title');
+  String get emptySpaceTransactionsSub => translate('empty_space_transactions_sub');
+  // Bottom nav labels
+  String get navHome => translate('nav_home');
+  String get navInvestments => translate('nav_investments');
+  String get navAdd => translate('nav_add');
+  String get navCards => translate('nav_cards');
+  String get navSettings => translate('nav_settings');
   // Budget overflow
   String get budgetOverflowWarning => translate('budget_overflow_warning');
   String get rebalance => translate('rebalance');

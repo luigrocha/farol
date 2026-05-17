@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../farol_colors.dart' as tokens;
+import '../../core/i18n/app_localizations.dart';
 
 class FarolBottomNav extends StatelessWidget {
   final int currentIndex;
@@ -13,20 +14,31 @@ class FarolBottomNav extends StatelessWidget {
     required this.onTap,
   });
 
-  static const _items = [
-    (Icons.home_outlined, Icons.home_rounded, 'Inicio'),
-    (Icons.trending_up_outlined, Icons.trending_up_rounded, 'Invertir'),
-    (null, null, 'Lanzar'), // FAB central
-    (Icons.credit_card_outlined, Icons.credit_card_rounded, 'Tarjetas'),
-    (Icons.settings_outlined, Icons.settings_rounded, 'Ajustes'),
+  // Icon pairs only — labels are resolved via l10n at build time.
+  static const _icons = [
+    (Icons.home_outlined, Icons.home_rounded),
+    (Icons.trending_up_outlined, Icons.trending_up_rounded),
+    (null, null), // FAB central
+    (Icons.credit_card_outlined, Icons.credit_card_rounded),
+    (Icons.settings_outlined, Icons.settings_rounded),
   ];
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
     final bgColor = isDark
         ? const Color(0xFF0E1117).withValues(alpha: 0.85)
         : Colors.white.withValues(alpha: 0.85);
+
+    // Labels resolved from l10n — no hardcoded strings.
+    final labels = [
+      l10n.navHome,
+      l10n.navInvestments,
+      l10n.navAdd,
+      l10n.navCards,
+      l10n.navSettings,
+    ];
 
     return ClipRect(
       child: BackdropFilter(
@@ -48,9 +60,9 @@ class FarolBottomNav extends StatelessWidget {
             top: false,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(_items.length, (i) {
-                if (i == 2) return _FabItem(onTap: () => onTap(i));
-                final (iconOff, iconOn, label) = _items[i];
+              children: List.generate(_icons.length, (i) {
+                if (i == 2) return _FabItem(label: labels[i], onTap: () => onTap(i));
+                final (iconOff, iconOn) = _icons[i];
                 final selected = currentIndex == i;
                 final color = selected
                     ? (isDark ? tokens.FarolColors.beam : tokens.FarolColors.navy)
@@ -59,7 +71,7 @@ class FarolBottomNav extends StatelessWidget {
                         : tokens.FarolColors.lOnSurfaceFaint);
                 return _NavItem(
                   icon: selected ? iconOn! : iconOff!,
-                  label: label,
+                  label: labels[i],
                   color: color,
                   selected: selected,
                   onTap: () => onTap(i),
@@ -116,8 +128,9 @@ class _NavItem extends StatelessWidget {
 }
 
 class _FabItem extends StatelessWidget {
+  final String label;
   final VoidCallback onTap;
-  const _FabItem({required this.onTap});
+  const _FabItem({required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +163,7 @@ class _FabItem extends StatelessWidget {
             ),
             const SizedBox(height: 3),
             Text(
-              'Lanzar',
+              label,
               style: GoogleFonts.inter(
                 fontSize: 10,
                 fontWeight: FontWeight.w700,

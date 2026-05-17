@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'design/farol_colors.dart' as tokens;
 import 'core/theme/farol_colors.dart' show FarolColorsContext;
 import 'design/farol_theme.dart';
+import 'design/branding/branding.dart';
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/transactions/transactions_screen.dart';
 import 'features/analytics/analytics_screen.dart';
@@ -599,11 +600,11 @@ class _DesktopNavRail extends ConsumerStatefulWidget {
 }
 
 class _DesktopNavRailState extends ConsumerState<_DesktopNavRail> {
-  // Premium sidebar palette — deep navy with subtle glass finish
-  static const _navyBg    = Color(0xFF111827); // near-black with cool tint
-  static const _navyBg2   = Color(0xFF1A2436); // slightly lighter for hover
-  static const _amber      = Color(0xFFF5A623);
-  static const _selectedBg = Color(0x1FF5A623); // amber 12%
+  // Premium sidebar palette — sourced from FarolBrand tokens
+  static const _navyBg    = FarolBrand.navySidebar;
+  static const _navyBg2   = FarolBrand.navySidebarHover;
+  static const _amber      = FarolBrand.beam;
+  static Color get _selectedBg => FarolBrand.beamSubtle;
 
   @override
   Widget build(BuildContext context) {
@@ -647,58 +648,12 @@ class _DesktopNavRailState extends ConsumerState<_DesktopNavRail> {
             // ── Logo / brand ──────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
-              child: Row(
-                children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Color(0xFFF5A623), Color(0xFFE8891A)],
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: _amber.withValues(alpha: 0.35),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.local_fire_department_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Farol',
-                        style: GoogleFonts.manrope(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      Text(
-                        'Finanças',
-                        style: TextStyle(
-                          fontSize: 9,
-                          letterSpacing: 1.2,
-                          color: Colors.white.withValues(alpha: 0.35),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+              child: FarolLogo(
+                variant: FarolLogoVariant.dark,
+                markSize: FarolBrand.markSizeNavRail,
+                wordmarkFontSize: 17,
+                showGlow: false,
+                spacing: 10,
               ),
             ),
 
@@ -713,6 +668,12 @@ class _DesktopNavRailState extends ConsumerState<_DesktopNavRail> {
                   navyBg2: _navyBg2,
                 ),
               ),
+
+            // ── Compact greeting ──────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 6, 16, 2),
+              child: FarolGreeting(variant: FarolGreetingVariant.compact),
+            ),
 
             const SizedBox(height: 8),
 
