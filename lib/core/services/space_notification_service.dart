@@ -23,8 +23,6 @@ import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../providers/space_providers.dart'
-    show pushTokenRepositoryProvider;
 
 // ── Conditional firebase imports ──────────────────────────────────────────────
 // Uncomment these once firebase_* packages are added to pubspec.yaml:

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/widgets/feature_gate.dart';
 import '../../design/farol_colors.dart' as tokens;
+import '../../design/branding/branding.dart';
 
 class PaywallScreen extends StatelessWidget {
   const PaywallScreen({super.key});
@@ -17,6 +18,10 @@ class PaywallScreen extends StatelessWidget {
               icon: const Icon(Icons.arrow_back_ios_rounded),
               onPressed: () => Navigator.pop(context),
             ),
+            actions: const [
+              FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+              SizedBox(width: 16),
+            ],
           ),
           SliverToBoxAdapter(
             child: Padding(

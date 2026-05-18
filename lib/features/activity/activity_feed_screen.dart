@@ -10,6 +10,7 @@ import '../../core/providers/workspace_providers.dart'
         memberDisplayMapProvider,
         workspaceActivityRepositoryProvider;
 import 'activity_feed_tile.dart';
+import '../../design/branding/branding.dart';
 
 class ActivityFeedScreen extends ConsumerStatefulWidget {
   const ActivityFeedScreen({super.key});
@@ -104,24 +105,20 @@ class _ActivityFeedScreenState extends ConsumerState<ActivityFeedScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Atividade',
-              style: GoogleFonts.manrope(fontWeight: FontWeight.w700),
-            ),
-            if (ws != null)
-              Text(
-                ws.name,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-          ],
-        ),
+        title: Row(children: [
+          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Atividade', style: GoogleFonts.manrope(fontWeight: FontWeight.w700, fontSize: 15)),
+              if (ws != null)
+                Text(ws.name, style: TextStyle(fontSize: 11,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant)),
+            ],
+          ),
+        ]),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

@@ -23,6 +23,7 @@ import '../accounts/presentation/accounts_screen.dart';
 import '../profile/presentation/profile_providers.dart';
 import 'salary_settings_sheet.dart';
 import 'categories_management_screen.dart';
+import '../../design/branding/branding.dart';
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -36,7 +37,11 @@ class SettingsScreen extends ConsumerWidget {
         slivers: [
           SliverAppBar(
             floating: true,
-            title: Text('Farol', style: GoogleFonts.manrope(fontSize: 22, fontWeight: FontWeight.w700, letterSpacing: -0.3)),
+            title: Row(children: [
+              const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+              const SizedBox(width: 10),
+              Text('Farol', style: GoogleFonts.manrope(fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: -0.3)),
+            ]),
             actions: const [Icon(Icons.settings_outlined, size: 22), SizedBox(width: 24)],
           ),
           SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),

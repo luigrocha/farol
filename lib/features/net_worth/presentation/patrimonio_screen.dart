@@ -12,6 +12,7 @@ import '../../../design/ds_tokens.dart';
 import 'widgets/asset_allocation_card.dart';
 import 'widgets/net_worth_evolution_chart.dart';
 import 'widgets/period_flow_card.dart';
+import '../../../design/branding/branding.dart';
 
 class PatrimonioScreen extends ConsumerStatefulWidget {
   const PatrimonioScreen({super.key});
@@ -48,8 +49,12 @@ class _PatrimonioScreenState extends ConsumerState<PatrimonioScreen> with Widget
       appBar: AppBar(
         backgroundColor: colors.surface,
         elevation: 0,
-        title: Text(context.l10n.netWorthTitle,
-            style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700, color: colors.onSurface)),
+        title: Row(children: [
+          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const SizedBox(width: 10),
+          Text(context.l10n.netWorthTitle,
+              style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700, color: colors.onSurface)),
+        ]),
         iconTheme: IconThemeData(color: colors.onSurface),
       ),
       body: ListView(

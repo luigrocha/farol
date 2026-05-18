@@ -8,6 +8,7 @@ import '../../../core/widgets/farol_snackbar.dart';
 import '../../../core/widgets/cpf_input_formatter.dart';
 import '../../../core/theme/farol_colors.dart';
 import '../../../design/farol_colors.dart' as tokens;
+import '../../../design/branding/branding.dart';
 import '../../auth/presentation/password_reset_screen.dart';
 import '../data/profile_repository.dart';
 import 'profile_providers.dart';
@@ -148,7 +149,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         ),
                       ),
               ),
-              const SizedBox(width: 8),
+              const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+              const SizedBox(width: 16),
             ],
           ),
           body: Form(

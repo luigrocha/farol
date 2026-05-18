@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../design/farol_colors.dart' as tokens;
+import '../../design/branding/branding.dart';
 
 class RescissionSimulatorScreen extends ConsumerStatefulWidget {
   const RescissionSimulatorScreen({super.key});
@@ -63,6 +64,10 @@ class _RescissionSimulatorScreenState extends ConsumerState<RescissionSimulatorS
         title: Text('Simulador de Rescisão', style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700)),
         backgroundColor: colors.surfaceLow,
         elevation: 0,
+        actions: const [
+          FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          SizedBox(width: 16),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),

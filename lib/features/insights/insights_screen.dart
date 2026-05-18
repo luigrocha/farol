@@ -26,6 +26,10 @@ class InsightsScreen extends ConsumerWidget {
           title: Text(context.l10n.insightsLabel,
               style: GoogleFonts.manrope(
                   fontSize: 17, fontWeight: FontWeight.w800)),
+          actions: const [
+            FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+            SizedBox(width: 16),
+          ],
         ),
         SliverPadding(
           padding: const EdgeInsets.all(16),

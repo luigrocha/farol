@@ -25,6 +25,7 @@ import 'space_activity_card.dart';
 import 'space_app_bar_chip.dart';
 import 'space_settings_screen.dart';
 import 'space_transactions_screen.dart';
+import '../../design/branding/branding.dart';
 
 final _brlFmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 final _dateFmt = DateFormat('dd/MM');
@@ -119,7 +120,11 @@ class _SpaceDashboardScreenState extends ConsumerState<SpaceDashboardScreen>
                   expandedHeight: 140,
                   pinned:         true,
                   backgroundColor: theme.colorScheme.surface,
-                  title: const SpaceAppBarChip(),
+                  title: Row(children: [
+                    const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+                    const SizedBox(width: 8),
+                    const SpaceAppBarChip(),
+                  ]),
                   centerTitle: false,
                   flexibleSpace: FlexibleSpaceBar(
                     titlePadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),

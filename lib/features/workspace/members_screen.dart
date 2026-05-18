@@ -7,6 +7,7 @@ import '../../core/models/member_display.dart';
 import '../../core/models/workspace.dart';
 import '../../core/providers/workspace_providers.dart';
 import 'invite_member_sheet.dart';
+import '../../design/branding/branding.dart';
 
 /// Screen for listing and managing workspace members.
 /// Accessible to all members (read), but role/remove actions gated to owner/admin.
@@ -119,23 +120,20 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppLocalizations.of(context).membersTitle,
-              style: GoogleFonts.manrope(fontWeight: FontWeight.w700),
-            ),
-            Text(
-              _workspace.name,
-              style: TextStyle(
-                fontSize: 12,
-                color: colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
-        ),
+        title: Row(children: [
+          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(AppLocalizations.of(context).membersTitle,
+                  style: GoogleFonts.manrope(fontWeight: FontWeight.w700, fontSize: 15)),
+              Text(_workspace.name,
+                  style: TextStyle(fontSize: 11, color: colorScheme.onSurfaceVariant)),
+            ],
+          ),
+        ]),
         actions: [
           if (_canManage)
             IconButton(

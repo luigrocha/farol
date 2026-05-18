@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/theme/farol_colors.dart';
+import '../../design/branding/branding.dart';
 
 const _kTeal = Color(0xFF006D5B);
 const _kTealLight = Color(0xFF007A67);
@@ -76,6 +77,10 @@ class _FgtsAniversarioState extends ConsumerState<FgtsAniversarioScreen> {
         ),
         backgroundColor: colors.surfaceLow,
         elevation: 0,
+        actions: const [
+          FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          SizedBox(width: 16),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),

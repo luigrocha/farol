@@ -6,6 +6,7 @@ import '../../core/services/financial_calculator_service.dart';
 import '../../core/models/constants.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../design/farol_colors.dart' as tokens;
+import '../../design/branding/branding.dart';
 
 class ThirteenthSalaryScreen extends StatefulWidget {
   const ThirteenthSalaryScreen({super.key});
@@ -42,6 +43,10 @@ class _ThirteenthSalaryScreenState extends State<ThirteenthSalaryScreen> {
         title: Text('Simulador 13º Salário', style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700)),
         backgroundColor: colors.surfaceLow,
         elevation: 0,
+        actions: const [
+          FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          SizedBox(width: 16),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),

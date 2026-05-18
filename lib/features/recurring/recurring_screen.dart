@@ -72,6 +72,10 @@ class _RecurringScreenState extends ConsumerState<RecurringScreen> {
           ),
           title: Text(context.l10n.recurringScreenTitle,
               style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w800)),
+          actions: const [
+            FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+            SizedBox(width: 16),
+          ],
         ),
         if (isDesktop)
           SliverLayoutBuilder(

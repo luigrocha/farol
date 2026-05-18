@@ -10,6 +10,7 @@ import '../../core/i18n/app_localizations.dart';
 import '../../core/widgets/farol_dialogs.dart';
 import '../../core/widgets/farol_snackbar.dart';
 import '../../design/farol_colors.dart' as tokens;
+import '../../design/branding/branding.dart';
 
 class InvestmentDetailScreen extends ConsumerWidget {
   final Investment investment;
@@ -58,7 +59,8 @@ class InvestmentDetailScreen extends ConsumerWidget {
                 color: tokens.FarolColors.coral,
                 onPressed: () => _confirmDelete(context, ref),
               ),
-              const SizedBox(width: 8),
+              const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+              const SizedBox(width: 16),
             ],
           ),
           SliverPadding(

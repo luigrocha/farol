@@ -7,6 +7,7 @@ import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../core/theme/farol_colors.dart';
+import '../../design/branding/branding.dart';
 
 class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
@@ -20,7 +21,11 @@ class NotificationsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
-        title: Text('Farol', style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w800)),
+        title: Row(children: [
+          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const SizedBox(width: 10),
+          Text('Farol', style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w800)),
+        ]),
         actions: [Icon(Icons.notifications_active_outlined, size: 22, color: colors.onSurface), const SizedBox(width: 20)],
       ),
       body: SingleChildScrollView(

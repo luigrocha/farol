@@ -180,6 +180,8 @@ class _PremiumAppBar extends ConsumerWidget {
               onNext: onNext,
             ),
             const Spacer(),
+            const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+            const SizedBox(width: DSSpacing.xs),
             const WorkspaceAppBarChip(),
             const SizedBox(width: DSSpacing.xs),
             _PrivacyToggle(),

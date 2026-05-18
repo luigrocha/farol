@@ -26,7 +26,11 @@ class InvestmentsScreen extends ConsumerWidget {
         slivers: [
           SliverAppBar(
             floating: true,
-            title: Text(AppLocalizations.of(context).translate('portfolio'), style: GoogleFonts.manrope(fontSize: 22, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
+            title: Row(children: [
+              const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+              const SizedBox(width: 10),
+              Text(AppLocalizations.of(context).translate('portfolio'), style: GoogleFonts.manrope(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
+            ]),
             actions: [
               IconButton(icon: const Icon(Icons.language, size: 22), onPressed: () {}),
               IconButton(icon: const Icon(Icons.settings_outlined, size: 22), onPressed: () {}),

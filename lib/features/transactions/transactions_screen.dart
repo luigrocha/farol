@@ -86,6 +86,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
       appBar: AppBar(
         toolbarHeight: 64,
         title: Row(children: [
+          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const SizedBox(width: 10),
           _Avatar(),
           const SizedBox(width: 10),
           Text(

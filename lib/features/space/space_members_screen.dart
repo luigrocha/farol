@@ -19,6 +19,7 @@ import '../../core/models/member_display.dart';
 import '../../core/models/space.dart';
 import '../../core/models/space_transaction.dart';
 import '../../core/providers/space_providers.dart';
+import '../../design/branding/branding.dart';
 
 final _brlFmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 
@@ -57,10 +58,11 @@ class SpaceMembersScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Membros',
-          style: GoogleFonts.manrope(fontWeight: FontWeight.w700),
-        ),
+        title: Row(children: [
+          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const SizedBox(width: 10),
+          Text('Membros', style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
+        ]),
         actions: [
           if (canAdmin)
             IconButton(

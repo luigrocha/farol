@@ -9,6 +9,7 @@ import '../../design/ds_tokens.dart';
 import '../../core/i18n/app_localizations.dart';
 import '../../core/widgets/farol_snackbar.dart';
 import '../../core/providers/workspace_providers.dart' show canWriteProvider;
+import '../../design/branding/branding.dart';
 
 class CategoriesManagementScreen extends ConsumerWidget {
   const CategoriesManagementScreen({super.key});
@@ -22,10 +23,11 @@ class CategoriesManagementScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: colors.surfaceLow,
       appBar: AppBar(
-        title: Text(
-          l10n.categories,
-          style: GoogleFonts.manrope(fontWeight: FontWeight.w700),
-        ),
+        title: Row(children: [
+          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const SizedBox(width: 10),
+          Text(l10n.categories, style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
+        ]),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),

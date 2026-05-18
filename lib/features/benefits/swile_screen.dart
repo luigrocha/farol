@@ -9,6 +9,7 @@ import '../../core/widgets/shimmer_box.dart';
 import '../../features/auth/presentation/auth_providers.dart';
 import '../../features/auth/domain/auth_state.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../design/branding/branding.dart';
 
 class SwileScreen extends ConsumerWidget {
   const SwileScreen({super.key});
@@ -37,6 +38,10 @@ class SwileScreen extends ConsumerWidget {
             onPressed: () => Navigator.pop(context)),
         title: Text(l10n.corporateBenefits,
             style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700)),
+        actions: const [
+          FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          SizedBox(width: 16),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24),

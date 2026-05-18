@@ -8,6 +8,7 @@ import '../../design/farol_colors.dart' as tokens;
 import '../../core/theme/farol_colors.dart';
 import '../../core/widgets/health_gauge.dart';
 import '../../core/models/health_snapshot.dart';
+import '../../design/branding/branding.dart';
 
 class HealthScreen extends ConsumerWidget {
   const HealthScreen({super.key});
@@ -55,6 +56,10 @@ class HealthScreen extends ConsumerWidget {
               style: GoogleFonts.manrope(fontWeight: FontWeight.w700, fontSize: 17),
             ),
             centerTitle: false,
+            actions: const [
+              FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+              SizedBox(width: 16),
+            ],
           ),
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16),

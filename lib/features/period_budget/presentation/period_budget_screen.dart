@@ -17,6 +17,7 @@ import '../../../core/providers/workspace_providers.dart'
         canWriteProvider,
         isSharedWorkspaceProvider,
         memberDisplayMapProvider;
+import '../../../design/branding/branding.dart';
 
 class PeriodBudgetScreen extends ConsumerWidget {
   const PeriodBudgetScreen({super.key});
@@ -36,21 +37,25 @@ class PeriodBudgetScreen extends ConsumerWidget {
         slivers: [
           SliverAppBar(
             floating: true,
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppLocalizations.of(context).periodBudget,
-                  style: GoogleFonts.manrope(
-                      fontSize: 17, fontWeight: FontWeight.w700),
-                ),
-                Text(
-                  period.label,
-                  style:
-                      TextStyle(fontSize: 12, color: colors.onSurfaceSoft),
-                ),
-              ],
-            ),
+            title: Row(children: [
+              const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    AppLocalizations.of(context).periodBudget,
+                    style: GoogleFonts.manrope(
+                        fontSize: 15, fontWeight: FontWeight.w700),
+                  ),
+                  Text(
+                    period.label,
+                    style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
+                  ),
+                ],
+              ),
+            ]),
             actions: [
               IconButton(
                 icon: const Icon(Icons.copy_outlined, size: 20),

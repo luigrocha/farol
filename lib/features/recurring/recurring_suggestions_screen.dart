@@ -7,6 +7,7 @@ import '../../core/i18n/app_localizations.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/widgets/farol_snackbar.dart';
+import '../../design/branding/branding.dart';
 
 const _teal = Color(0xFF00897B);
 
@@ -27,6 +28,10 @@ class RecurringSuggestionsScreen extends ConsumerWidget {
           ),
           title: Text(context.l10n.recurringSuggestionsTitle,
               style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w800)),
+          actions: const [
+            FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+            SizedBox(width: 16),
+          ],
         ),
         SliverPadding(
           padding: const EdgeInsets.all(16),

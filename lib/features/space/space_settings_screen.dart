@@ -15,6 +15,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/models/space.dart';
 import '../../core/providers/space_providers.dart';
 import 'space_members_screen.dart';
+import '../../design/branding/branding.dart';
 
 class SpaceSettingsScreen extends ConsumerStatefulWidget {
   final Space space;
@@ -206,10 +207,11 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Configurações',
-          style: GoogleFonts.manrope(fontWeight: FontWeight.w700),
-        ),
+        title: Row(children: [
+          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const SizedBox(width: 10),
+          Text('Configurações', style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
+        ]),
         actions: [
           if (_dirty && isOwner)
             Padding(

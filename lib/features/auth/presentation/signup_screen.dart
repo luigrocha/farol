@@ -13,6 +13,7 @@ import '../../../core/i18n/app_localizations.dart';
 import '../../../core/widgets/cpf_input_formatter.dart';
 import 'auth_providers.dart';
 import 'widgets/auth_buttons.dart';
+import '../../../design/branding/branding.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key});
@@ -99,6 +100,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         padding: EdgeInsets.zero,
                       ),
                     ),
+                  ),
+                  const SizedBox(height: 4),
+                  const FarolMark(
+                    size: FarolBrand.markSizeAuth,
+                    variant: FarolLogoVariant.light,
                   ),
                   const SizedBox(height: 8),
 

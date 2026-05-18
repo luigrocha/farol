@@ -11,6 +11,7 @@ import '../../core/i18n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'cashflow_chart.dart';
+import '../../design/branding/branding.dart';
 
 class AnalyticsScreen extends ConsumerWidget {
   const AnalyticsScreen({super.key});
@@ -30,8 +31,11 @@ class AnalyticsScreen extends ConsumerWidget {
         slivers: [
           SliverAppBar(
             floating: true,
-            title: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Text('Farol', style: GoogleFonts.manrope(fontSize: 22, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
+            title: Row(children: [
+              const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+              const SizedBox(width: 10),
+              Text('Farol', style: GoogleFonts.manrope(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
+              const Spacer(),
               Icon(Icons.notifications_outlined, size: 22, color: context.colors.onSurface),
             ]),
           ),

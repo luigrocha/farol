@@ -12,6 +12,7 @@ import '../../../core/i18n/app_localizations.dart';
 import '../../../core/widgets/farol_snackbar.dart';
 import 'auth_providers.dart';
 import 'widgets/auth_buttons.dart';
+import '../../../design/branding/branding.dart';
 
 class PasswordResetScreen extends ConsumerStatefulWidget {
   const PasswordResetScreen({super.key});
@@ -79,6 +80,12 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // ── Logo ────────────────────────────────────────────
+                  const SizedBox(height: 8),
+                  const FarolMark(
+                    size: FarolBrand.markSizeAuth,
+                    variant: FarolLogoVariant.light,
+                  ),
                   // ── Icon ─────────────────────────────────────────────
                   const SizedBox(height: 24),
                   Container(

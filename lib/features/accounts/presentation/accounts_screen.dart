@@ -10,6 +10,7 @@ import '../../../core/theme/farol_colors.dart';
 import '../../../design/farol_colors.dart' as tokens;
 import '../../../design/widgets/farol_card.dart';
 import '../../../core/providers/workspace_providers.dart' show canWriteProvider;
+import '../../../design/branding/branding.dart';
 
 class AccountsScreen extends ConsumerWidget {
   const AccountsScreen({super.key});
@@ -24,8 +25,12 @@ class AccountsScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: colors.surface,
         elevation: 0,
-        title: Text(context.l10n.accountsLabel,
-            style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700, color: colors.onSurface)),
+        title: Row(children: [
+          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const SizedBox(width: 10),
+          Text(context.l10n.accountsLabel,
+              style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700, color: colors.onSurface)),
+        ]),
         iconTheme: IconThemeData(color: colors.onSurface),
         actions: [
           IconButton(

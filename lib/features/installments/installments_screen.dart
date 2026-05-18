@@ -76,6 +76,10 @@ class _InstallmentsScreenState extends ConsumerState<InstallmentsScreen> {
           ),
           title: Text(context.l10n.installments,
               style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w800)),
+          actions: const [
+            FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+            SizedBox(width: 16),
+          ],
         ),
         if (isDesktop)
           SliverLayoutBuilder(

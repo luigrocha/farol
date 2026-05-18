@@ -151,10 +151,11 @@ class _SpaceTransactionsScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Transações',
-          style: GoogleFonts.manrope(fontWeight: FontWeight.w700),
-        ),
+        title: Row(children: [
+          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const SizedBox(width: 10),
+          Text('Transações', style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
+        ]),
       ),
       floatingActionButton: canWrite
           ? FloatingActionButton(
