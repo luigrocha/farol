@@ -12,11 +12,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'cashflow_chart.dart';
 import '../../design/branding/branding.dart';
+import '../../design/layout/layout.dart';
 
 class AnalyticsScreen extends ConsumerWidget {
   const AnalyticsScreen({super.key});
 
-  static const double _desktopBreakpoint = 800;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,7 +24,7 @@ class AnalyticsScreen extends ConsumerWidget {
     final range = ref.watch(analyticsRangeProvider);
     final expensesAsync = ref.watch(analyticsExpensesProvider);
     final incomesAsync = ref.watch(analyticsIncomesProvider);
-    final isDesktop = MediaQuery.sizeOf(context).width >= _desktopBreakpoint;
+    final isDesktop = FarolBreakpoints.isDesktop(context);
 
     return Scaffold(
       body: CustomScrollView(
@@ -93,7 +93,7 @@ class AnalyticsScreen extends ConsumerWidget {
   ) {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 80),
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 20),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -149,7 +149,7 @@ class AnalyticsScreen extends ConsumerWidget {
         _MonthlyBarsCard(expenses: expenses, l10n: l10n),
         const SizedBox(height: 24),
         const CashflowChart(),
-        const SizedBox(height: 80),
+        const FarolBottomPadding(),
       ])),
     );
   }

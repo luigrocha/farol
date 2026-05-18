@@ -11,6 +11,7 @@ import '../../../design/farol_colors.dart' as tokens;
 import '../../../design/widgets/farol_card.dart';
 import '../../../core/providers/workspace_providers.dart' show canWriteProvider;
 import '../../../design/branding/branding.dart';
+import '../../../design/layout/layout.dart';
 
 class AccountsScreen extends ConsumerWidget {
   const AccountsScreen({super.key});
@@ -74,7 +75,7 @@ class AccountsScreen extends ConsumerWidget {
                 const SizedBox(height: 8),
                 ...fgtsList.map((a) => _AccountTile(account: a)),
               ],
-              const SizedBox(height: 80),
+              const FarolBottomPadding(),
             ],
           );
         },

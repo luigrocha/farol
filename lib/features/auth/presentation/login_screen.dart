@@ -77,11 +77,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // ── Logo ────────────────────────────────────────────
+                  // ── Logo lockup ──────────────────────────────────────
                   const SizedBox(height: 12),
-                  const FarolMark(
-                    size: FarolBrand.markSizeAuth,
-                    variant: FarolLogoVariant.light,
+                  const FarolLogo(
+                    variant: FarolLogoVariant.dark,
+                    markSize: FarolBrand.markSizeAuth,
+                    wordmarkFontSize: 28,
+                    showGlow: true,
+                    spacing: 14,
                   ),
                   const SizedBox(height: 28),
 

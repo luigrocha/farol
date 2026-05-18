@@ -21,6 +21,7 @@ import '../../core/providers/workspace_providers.dart'
     show canWriteProvider, isSharedWorkspaceProvider, memberDisplayMapProvider;
 import '../../core/widgets/member_chip.dart';
 import '../../design/branding/branding.dart';
+import '../../design/layout/layout.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
   const TransactionsScreen({super.key});
@@ -67,7 +68,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
 
   bool get _onExpensesTab => _tabController.index == 0;
 
-  static const double _desktopBreakpoint = 900;
+  // Transactions desktop at 900px keeps the two-panel side-by-side UX readable.
+  // Deliberately wider than FarolBreakpoints.desktop (800) for this screen.
+  static const double _desktopBreakpoint = FarolBreakpoints.desktop + 100;
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +159,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           const SliverFarolEmptyState(type: FarolEmptyStateType.transactions)
         else
           SliverList(delegate: _buildExpenseDelegate(filteredExpenses)),
-        const SliverToBoxAdapter(child: SizedBox(height: 80)),
+        const SliverToBoxAdapter(child: FarolBottomPadding()),
       ],
     );
   }
@@ -297,7 +300,7 @@ class _IncomeTab extends ConsumerWidget {
             );
           },
         ),
-        const SliverToBoxAdapter(child: SizedBox(height: 80)),
+        const SliverToBoxAdapter(child: FarolBottomPadding()),
       ],
     );
   }

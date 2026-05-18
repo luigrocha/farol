@@ -17,6 +17,7 @@ import 'add_installment_bottom_sheet.dart';
 import '../../core/widgets/farol_dialogs.dart';
 import '../../core/widgets/farol_snackbar.dart';
 import '../../design/branding/branding.dart';
+import '../../design/layout/layout.dart';
 
 const _purple = Color(0xFF6B3FA0);
 
@@ -31,13 +32,12 @@ class InstallmentsScreen extends ConsumerStatefulWidget {
 class _InstallmentsScreenState extends ConsumerState<InstallmentsScreen> {
   _Filter _filter = _Filter.active;
 
-  static const double _desktopBreakpoint = 800;
-  static const double _contentMaxWidth = 900;
+  static const double _contentMaxWidth = FarolBreakpoints.contentMedium;
 
   @override
   Widget build(BuildContext context) {
     final plansAsync = ref.watch(installmentPlansStreamProvider);
-    final isDesktop = MediaQuery.sizeOf(context).width >= _desktopBreakpoint;
+    final isDesktop = FarolBreakpoints.isDesktop(context);
 
     final content = SliverList(
       delegate: SliverChildListDelegate([
@@ -62,7 +62,7 @@ class _InstallmentsScreenState extends ConsumerState<InstallmentsScreen> {
             );
           },
         ),
-        const SizedBox(height: 80),
+        const FarolBottomPadding(),
       ]),
     );
 

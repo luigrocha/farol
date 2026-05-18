@@ -21,6 +21,7 @@ import '../../core/models/space_transaction.dart';
 import '../../core/providers/space_providers.dart';
 import 'add_space_transaction_sheet.dart';
 import '../../design/branding/branding.dart';
+import '../../design/layout/layout.dart';
 
 final _brlFmt  = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 final _dateFmt = DateFormat('dd/MM/yy');
@@ -147,7 +148,7 @@ class _SpaceTransactionsScreenState
     final cats       = ref.watch(spaceCategoriesProvider).valueOrNull ?? [];
     final displayMap = ref.watch(spaceMemberDisplayMapProvider).valueOrNull ?? {};
     final filtered   = _filtered;
-    final isDesktop  = MediaQuery.sizeOf(context).width >= 800;
+    final isDesktop  = FarolBreakpoints.isDesktop(context);
 
     final scrollBody = RefreshIndicator(
       onRefresh: () => _loadPage(reset: true),
@@ -186,7 +187,7 @@ class _SpaceTransactionsScreenState
                             padding: EdgeInsets.all(16),
                             child: Center(child: CircularProgressIndicator()),
                           )
-                        : const SizedBox(height: 80);
+                        : const FarolBottomPadding();
                   }
                   final tx = filtered[i];
                   return _TxRow(

@@ -9,6 +9,7 @@ import '../../core/theme/farol_colors.dart';
 import '../../core/widgets/health_gauge.dart';
 import '../../core/models/health_snapshot.dart';
 import '../../design/branding/branding.dart';
+import '../../design/layout/layout.dart';
 
 class HealthScreen extends ConsumerWidget {
   const HealthScreen({super.key});
@@ -61,11 +62,13 @@ class HealthScreen extends ConsumerWidget {
               SizedBox(width: 16),
             ],
           ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                const SizedBox(height: 8),
+          SliverToBoxAdapter(
+            child: FarolContentConstraint(
+              maxWidth: FarolBreakpoints.contentNarrow,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
                 // ── Gauge card ──
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
@@ -152,10 +155,11 @@ class HealthScreen extends ConsumerWidget {
                     );
                   },
                 ),
-                const SizedBox(height: 80),
-              ]),
+                const FarolBottomPadding(hasFab: false),
+              ],
             ),
           ),
+        ),
         ],
       ),
     );

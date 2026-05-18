@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/i18n/app_localizations.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../design/branding/branding.dart';
+import '../../design/layout/layout.dart';
 import 'onboarding_carousel.dart';
 
 class OnboardingScreen extends ConsumerWidget {
@@ -15,8 +16,7 @@ class OnboardingScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final isWide = screenWidth >= 800;
+    final isWide = FarolBreakpoints.isDesktop(context);
 
     return Scaffold(
       body: Container(

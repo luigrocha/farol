@@ -7,6 +7,7 @@ import '../../core/i18n/app_localizations.dart';
 import '../../core/providers/providers.dart';
 import 'insight_card.dart';
 import '../../design/branding/branding.dart';
+import '../../design/layout/layout.dart';
 
 class InsightsScreen extends ConsumerWidget {
   const InsightsScreen({super.key});
@@ -55,7 +56,7 @@ class InsightsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 32),
               const _DismissStats(),
-              const SizedBox(height: 80),
+              const FarolBottomPadding(hasFab: false),
             ]),
           ),
         ),

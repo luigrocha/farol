@@ -8,6 +8,7 @@ import '../../core/providers/providers.dart';
 import '../../core/services/financial_calculator_service.dart';
 import '../../core/widgets/farol_snackbar.dart';
 import '../../design/branding/branding.dart';
+import '../../design/layout/layout.dart';
 
 const _teal = Color(0xFF00897B);
 
@@ -59,7 +60,7 @@ class RecurringSuggestionsScreen extends ConsumerWidget {
                   );
                 },
               ),
-              const SizedBox(height: 80),
+              const FarolBottomPadding(hasFab: false),
             ]),
           ),
         ),

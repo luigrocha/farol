@@ -8,6 +8,7 @@ import 'design/farol_colors.dart' as tokens;
 import 'core/theme/farol_colors.dart' show FarolColorsContext;
 import 'design/farol_theme.dart';
 import 'design/branding/branding.dart';
+import 'design/layout/layout.dart';
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/transactions/transactions_screen.dart';
 import 'features/analytics/analytics_screen.dart';
@@ -461,8 +462,7 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final width = MediaQuery.sizeOf(context).width;
-    final isDesktop = width >= 600;
+    final isDesktop = FarolBreakpoints.isTablet(context); // NavigationRail at ≥600 (tablet+)
 
     // Re-sync realtime service whenever the active workspace changes.
     // Invite notifications are now handled by InviteNotificationManager overlay

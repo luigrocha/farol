@@ -24,6 +24,7 @@ import '../profile/presentation/profile_providers.dart';
 import 'salary_settings_sheet.dart';
 import 'categories_management_screen.dart';
 import '../../design/branding/branding.dart';
+import '../../design/layout/layout.dart';
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -44,8 +45,15 @@ class SettingsScreen extends ConsumerWidget {
             ]),
             actions: const [Icon(Icons.settings_outlined, size: 22), SizedBox(width: 24)],
           ),
-          SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            sliver: SliverList(delegate: SliverChildListDelegate([
+          // FarolContentConstraint caps width at 680px on desktop — prevents
+          // settings cards from stretching full-width on wide screens.
+          SliverToBoxAdapter(
+            child: FarolContentConstraint(
+              maxWidth: FarolBreakpoints.contentNarrow,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
               const _ProfileCard(),
               const SizedBox(height: 16),
               const _BudgetSection(),
@@ -84,7 +92,9 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 40),
-            ]))),
+            ]),
+          ),
+        ),
         ],
       ),
     );

@@ -7,6 +7,7 @@ import '../../design/farol_colors.dart' as tokens;
 import '../../core/i18n/app_localizations.dart';
 import '../../core/theme/farol_colors.dart';
 import '../../design/ds_tokens.dart';
+import '../../design/layout/layout.dart';
 import '../transactions/quick_add_bottom_sheet.dart';
 import 'widgets/alert_banner.dart';
 import 'widgets/period_balance_hero.dart';
@@ -28,11 +29,11 @@ import '../workspace/workspace_switcher_sheet.dart';
 import '../../core/providers/workspace_providers.dart' show canWriteProvider;
 import '../../design/branding/branding.dart';
 
-// ── Layout breakpoints ────────────────────────────────────────────────────────
+// ── Layout breakpoints — sourced from FarolBreakpoints ───────────────────────
 
-const _kDesktopWide  = 1200.0; // 3-column layout
-const _kDesktop      = 800.0;  // 2-column layout
-const _kContentMaxW  = 1440.0; // max content width
+const _kDesktopWide  = FarolBreakpoints.wide;          // 1200 — 3-column layout
+const _kDesktop      = FarolBreakpoints.desktop;        // 800  — 2-column layout
+const _kContentMaxW  = FarolBreakpoints.contentMaxWidth; // 1440 — max content width
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -73,6 +74,9 @@ class DashboardScreen extends ConsumerWidget {
                 const _DesktopDashboardSliver()
               else
                 _MobileDashboardSliver(),
+              // Dynamic bottom padding — accounts for FAB + NavigationBar + safe area.
+              // Replaces hardcoded SizedBox(height: 80/100) at end of each sliver.
+              const SliverToBoxAdapter(child: FarolBottomPadding()),
             ],
           ),
         ),
@@ -489,7 +493,7 @@ class _MobileDashboardSliver extends StatelessWidget {
           const SpaceContributionsCard(),
           const SizedBox(height: DSSpacing.md),
           const ActivityFeedPreviewCard(),
-          const SizedBox(height: 100),
+          const FarolBottomPadding(),
         ]),
       ),
     );
@@ -505,7 +509,7 @@ class _DesktopDashboardSliver extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(
-        DSSpacing.xxl, DSSpacing.xl, DSSpacing.xxl, 100,
+        DSSpacing.xxl, DSSpacing.xl, DSSpacing.xxl, DSSpacing.xl,
       ),
       sliver: SliverToBoxAdapter(
         child: Center(
@@ -586,7 +590,7 @@ class _WideDesktopSliver extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(
-        DSSpacing.xxl, DSSpacing.xl, DSSpacing.xxl, 100,
+        DSSpacing.xxl, DSSpacing.xl, DSSpacing.xxl, DSSpacing.xl,
       ),
       sliver: SliverToBoxAdapter(
         child: Center(

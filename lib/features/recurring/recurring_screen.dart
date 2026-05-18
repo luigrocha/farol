@@ -13,6 +13,7 @@ import '../../core/providers/workspace_providers.dart'
     show canWriteProvider, isSharedWorkspaceProvider, memberDisplayMapProvider;
 import '../../core/widgets/member_chip.dart';
 import '../../design/branding/branding.dart';
+import '../../design/layout/layout.dart';
 
 const _teal = Color(0xFF00897B);
 
@@ -27,13 +28,12 @@ class RecurringScreen extends ConsumerStatefulWidget {
 class _RecurringScreenState extends ConsumerState<RecurringScreen> {
   _Filter _filter = _Filter.active;
 
-  static const double _desktopBreakpoint = 800;
-  static const double _contentMaxWidth = 900;
+  static const double _contentMaxWidth = FarolBreakpoints.contentMedium;
 
   @override
   Widget build(BuildContext context) {
     final rulesAsync = ref.watch(recurringRulesStreamProvider);
-    final isDesktop = MediaQuery.sizeOf(context).width >= _desktopBreakpoint;
+    final isDesktop = FarolBreakpoints.isDesktop(context);
 
     final content = SliverList(
       delegate: SliverChildListDelegate([
@@ -58,7 +58,7 @@ class _RecurringScreenState extends ConsumerState<RecurringScreen> {
             );
           },
         ),
-        const SizedBox(height: 80),
+        const FarolBottomPadding(),
       ]),
     );
 

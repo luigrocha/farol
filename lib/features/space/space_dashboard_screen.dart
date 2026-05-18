@@ -26,6 +26,7 @@ import 'space_app_bar_chip.dart';
 import 'space_settings_screen.dart';
 import 'space_transactions_screen.dart';
 import '../../design/branding/branding.dart';
+import '../../design/layout/layout.dart';
 
 final _brlFmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 final _dateFmt = DateFormat('dd/MM');
@@ -54,7 +55,6 @@ class _SpaceDashboardScreenState extends ConsumerState<SpaceDashboardScreen>
   String get _currentUserId =>
       Supabase.instance.client.auth.currentUser!.id;
 
-  static const double _kDesktopBreakpoint = 800.0;
 
   // Track the latest activity id we have already shown an overlay for,
   // so that a rebuild doesn't re-trigger the same banner.
@@ -69,7 +69,7 @@ class _SpaceDashboardScreenState extends ConsumerState<SpaceDashboardScreen>
     final displayMap       = ref.watch(spaceMemberDisplayMapProvider).valueOrNull ?? {};
     final theme            = Theme.of(context);
     final width            = MediaQuery.sizeOf(context).width;
-    final isDesktop        = width >= _kDesktopBreakpoint;
+    final isDesktop        = FarolBreakpoints.isDesktop(context);
 
     // Keep the realtime subscriptions alive while dashboard is mounted.
     ref.watch(spaceTransactionsRealtimeProvider);
@@ -175,7 +175,7 @@ class _SpaceDashboardScreenState extends ConsumerState<SpaceDashboardScreen>
                   ),
 
                 // Bottom padding for FAB
-                const SliverToBoxAdapter(child: SizedBox(height: 80)),
+                const SliverToBoxAdapter(child: FarolBottomPadding()),
               ],
             ),
           ),

@@ -18,12 +18,12 @@ import '../../../core/providers/workspace_providers.dart'
         isSharedWorkspaceProvider,
         memberDisplayMapProvider;
 import '../../../design/branding/branding.dart';
+import '../../../design/layout/layout.dart';
 
 class PeriodBudgetScreen extends ConsumerWidget {
   const PeriodBudgetScreen({super.key});
 
-  static const double _desktopBreakpoint = 800;
-  static const double _contentMaxWidth = 860;
+  static const double _contentMaxWidth = 860; // intentionally narrower than contentMedium
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -79,7 +79,7 @@ class PeriodBudgetScreen extends ConsumerWidget {
               child: Center(child: Text('${AppLocalizations.of(context).error}: $e')),
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 80)),
+          const SliverToBoxAdapter(child: FarolBottomPadding()),
         ],
       ),
       floatingActionButton: Consumer(
@@ -124,7 +124,7 @@ class PeriodBudgetScreen extends ConsumerWidget {
     FarolColors colors,
   ) {
     final isDesktop =
-        MediaQuery.sizeOf(context).width >= _desktopBreakpoint;
+        FarolBreakpoints.isDesktop(context);
     final list = SliverList(
       delegate: SliverChildBuilderDelegate(
         (_, i) => _EntryCard(
@@ -162,7 +162,7 @@ class PeriodBudgetScreen extends ConsumerWidget {
 
   void _openEdit(BuildContext context, PeriodBudgetEntry? entry) {
     final isDesktop =
-        MediaQuery.sizeOf(context).width >= _desktopBreakpoint;
+        FarolBreakpoints.isDesktop(context);
 
     if (isDesktop) {
       // On desktop open as a centered Dialog instead of a bottom sheet.

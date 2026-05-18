@@ -15,6 +15,7 @@ import '../../design/farol_colors.dart' as tokens;
 import '../../design/ds_tokens.dart';
 import 'add_investment_bottom_sheet.dart';
 import '../../design/branding/branding.dart';
+import '../../design/layout/layout.dart';
 
 class InvestmentsScreen extends ConsumerWidget {
   const InvestmentsScreen({super.key});
@@ -37,19 +38,25 @@ class InvestmentsScreen extends ConsumerWidget {
               const SizedBox(width: 8),
             ],
           ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            sliver: SliverList(delegate: SliverChildListDelegate([
-              const _ConsolidatedHero(),
-              const SizedBox(height: 12),
-              const _AllocationCard(),
-              const SizedBox(height: 12),
-              const _IASuggestionCard(),
-              const SizedBox(height: 16),
-              const _InversionesHeader(),
-              const _InvestmentsList(),
-              const SizedBox(height: 80),
-            ])),
+          SliverToBoxAdapter(
+            child: FarolContentConstraint(
+              maxWidth: FarolBreakpoints.contentMedium,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const _ConsolidatedHero(),
+                  const SizedBox(height: 12),
+                  const _AllocationCard(),
+                  const SizedBox(height: 12),
+                  const _IASuggestionCard(),
+                  const SizedBox(height: 16),
+                  const _InversionesHeader(),
+                  const _InvestmentsList(),
+                  const FarolBottomPadding(),
+                ],
+              ),
+            ),
           ),
         ],
       ),

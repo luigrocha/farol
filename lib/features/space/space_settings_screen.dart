@@ -16,6 +16,7 @@ import '../../core/models/space.dart';
 import '../../core/providers/space_providers.dart';
 import 'space_members_screen.dart';
 import '../../design/branding/branding.dart';
+import '../../design/layout/layout.dart';
 
 class SpaceSettingsScreen extends ConsumerStatefulWidget {
   final Space space;
@@ -204,7 +205,7 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
   Widget build(BuildContext context) {
     final theme     = Theme.of(context);
     final isOwner   = ref.watch(currentUserSpaceRoleProvider).isOwner;
-    final isDesktop = MediaQuery.sizeOf(context).width >= 800;
+    final isDesktop = FarolBreakpoints.isDesktop(context);
 
     // ── Identity column (left on desktop, top on mobile) ────────────
     final identityColumn = [

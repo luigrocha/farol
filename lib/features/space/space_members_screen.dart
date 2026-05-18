@@ -19,6 +19,7 @@ import '../../core/models/member_display.dart';
 import '../../core/models/space.dart';
 import '../../core/providers/space_providers.dart';
 import '../../design/branding/branding.dart';
+import '../../design/layout/layout.dart';
 
 final _brlFmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 
@@ -55,7 +56,7 @@ class SpaceMembersScreen extends ConsumerWidget {
       }
     });
 
-    final isDesktop = MediaQuery.sizeOf(context).width >= 800;
+    final isDesktop = FarolBreakpoints.isDesktop(context);
 
     final memberList = ListView.separated(
       padding: const EdgeInsets.symmetric(vertical: 8),

@@ -11,6 +11,7 @@ import '../../core/widgets/farol_dialogs.dart';
 import '../../core/widgets/farol_snackbar.dart';
 import '../../design/farol_colors.dart' as tokens;
 import '../../design/branding/branding.dart';
+import '../../design/layout/layout.dart';
 
 class InvestmentDetailScreen extends ConsumerWidget {
   final Investment investment;
@@ -196,7 +197,7 @@ class InvestmentDetailScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
                 ],
 
-                const SizedBox(height: 80),
+                const FarolBottomPadding(hasFab: false),
               ]),
             ),
           ),
