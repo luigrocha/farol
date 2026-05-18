@@ -29,8 +29,12 @@ import 'farol_brand.dart';
 
 enum FarolGreetingVariant {
   /// Full two-line greeting: salutation + financial subtitle.
-  /// Used in the dashboard collapsible header.
+  /// Used in the dashboard collapsible header (legacy standalone sliver).
   dashboard,
+
+  /// Two-line greeting embedded inside the AppBar: smaller font, no padding.
+  /// Used in the mobile dashboard AppBar first row.
+  appBar,
 
   /// Single line: salutation only (no subtitle).
   /// Used in the compact nav rail header.
@@ -133,6 +137,12 @@ class FarolGreeting extends ConsumerWidget {
           subtitle: subtitle,
           colors: colors,
         ),
+      FarolGreetingVariant.appBar => _AppBarGreeting(
+          greetingWord: greetingWord,
+          name: name,
+          subtitle: subtitle,
+          colors: colors,
+        ),
       FarolGreetingVariant.compact => _CompactGreeting(
           greetingWord: greetingWord,
           name: name,
@@ -198,6 +208,60 @@ class _DashboardGreeting extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ── AppBar embedded variant ───────────────────────────────────────────────────
+//
+// Two-line greeting sized for the AppBar first row: smaller headline (15px),
+// no padding (the AppBar provides it), and a tighter subtitle (11px).
+
+class _AppBarGreeting extends StatelessWidget {
+  const _AppBarGreeting({
+    required this.greetingWord,
+    required this.name,
+    required this.subtitle,
+    required this.colors,
+  });
+
+  final String greetingWord;
+  final String? name;
+  final String subtitle;
+  final FarolColors colors;
+
+  @override
+  Widget build(BuildContext context) {
+    final greeting = name != null ? '$greetingWord, $name' : greetingWord;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          greeting,
+          style: GoogleFonts.manrope(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: colors.onSurface,
+            height: 1.2,
+            letterSpacing: -0.2,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        Text(
+          subtitle,
+          style: GoogleFonts.inter(
+            fontSize: 11,
+            fontWeight: FontWeight.w400,
+            color: colors.onSurfaceSoft,
+            height: 1.3,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
     );
   }
 }

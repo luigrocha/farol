@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/i18n/app_localizations.dart';
 import '../../core/models/workspace.dart';
 import '../../core/models/space.dart';
 import '../../core/providers/workspace_providers.dart';
@@ -393,6 +394,7 @@ class WorkspaceAppBarChip extends ConsumerWidget {
     if (activeWs == null) return const SizedBox.shrink();
 
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final isShared = activeWs.type == WorkspaceType.shared;
     final hasEmoji = activeWs.emoji != null && activeWs.emoji!.isNotEmpty;
 
@@ -402,6 +404,11 @@ class WorkspaceAppBarChip extends ConsumerWidget {
     final fgColor = isShared
         ? const Color(0xFF00695C)
         : colorScheme.onSecondaryContainer;
+
+    // Personal workspaces show a semantic label instead of the user's profile name.
+    final chipLabel = isShared
+        ? activeWs.name
+        : l10n.translate('workspace_personal');
 
     // Presence: show green dot when co-members are online
     final onlineUsers =
@@ -414,7 +421,7 @@ class WorkspaceAppBarChip extends ConsumerWidget {
         clipBehavior: Clip.none,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: bgColor,
               borderRadius: BorderRadius.circular(20),
@@ -424,20 +431,20 @@ class WorkspaceAppBarChip extends ConsumerWidget {
               children: [
                 // Emoji or icon
                 if (hasEmoji)
-                  Text(activeWs.emoji!, style: const TextStyle(fontSize: 13))
+                  Text(activeWs.emoji!, style: const TextStyle(fontSize: 12))
                 else
                   Icon(
                     isShared ? Icons.group_outlined : Icons.person_outline,
-                    size: 14,
+                    size: 13,
                     color: fgColor,
                   ),
                 const SizedBox(width: 4),
                 ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 100),
+                  constraints: const BoxConstraints(maxWidth: 80),
                   child: Text(
-                    activeWs.name,
+                    chipLabel,
                     style: GoogleFonts.manrope(
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: fgColor,
                     ),
@@ -446,7 +453,7 @@ class WorkspaceAppBarChip extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 2),
-                Icon(Icons.arrow_drop_down, size: 16, color: fgColor),
+                Icon(Icons.arrow_drop_down, size: 14, color: fgColor),
               ],
             ),
           ),

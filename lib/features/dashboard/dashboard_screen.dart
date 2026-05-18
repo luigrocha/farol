@@ -57,8 +57,8 @@ class DashboardScreen extends ConsumerWidget {
         Expanded(
           child: CustomScrollView(
             slivers: [
-              // Greeting shown on mobile only — desktop gets it in the nav rail
-              if (!isDesktop) const _GreetingSliver(),
+              // Greeting is now embedded in _PremiumAppBar (mobile two-row layout).
+              // Desktop gets it in the nav rail header.
               _PremiumAppBar(
                 month: month,
                 year: year,
@@ -102,25 +102,14 @@ class DashboardScreen extends ConsumerWidget {
   }
 }
 
-// ── Greeting Sliver ───────────────────────────────────────────────────────────
-//
-// Shown on mobile only. Collapses naturally as the user scrolls because it
-// sits above the floating SliverAppBar — no SliverPersistentHeader delegate
-// needed; a simple SliverToBoxAdapter is sufficient and avoids the complexity
-// of a custom delegate for such a small height.
-
-class _GreetingSliver extends StatelessWidget {
-  const _GreetingSliver();
-
-  @override
-  Widget build(BuildContext context) {
-    return const SliverToBoxAdapter(
-      child: FarolGreeting(variant: FarolGreetingVariant.dashboard),
-    );
-  }
-}
-
 // ── Premium App Bar ───────────────────────────────────────────────────────────
+//
+// Two-row layout:
+//   Row 1 (top)    — greeting (name + subtitle) on the left, actions on the right
+//   Row 2 (bottom) — period navigator centered
+//
+// The greeting is embedded here directly so the separate _GreetingSliver is no
+// longer needed on mobile, reducing top-of-page visual clutter.
 
 class _PremiumAppBar extends ConsumerWidget {
   const _PremiumAppBar({
@@ -143,12 +132,14 @@ class _PremiumAppBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDesktop = MediaQuery.sizeOf(context).width >= _kDesktop;
 
     return SliverAppBar(
       floating: true,
       snap: true,
       titleSpacing: 0,
-      toolbarHeight: 60,
+      // Two rows: ~52px greeting row + ~44px period row
+      toolbarHeight: isDesktop ? 60 : 96,
       automaticallyImplyLeading: false,
       backgroundColor: colors.surface,
       surfaceTintColor: Colors.transparent,
@@ -162,29 +153,66 @@ class _PremiumAppBar extends ConsumerWidget {
               : tokens.FarolColors.navy.withValues(alpha: 0.06),
         ),
       ),
-      title: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg),
-        child: Row(
-          children: [
-            _MonthPicker(
-              month: month,
-              year: year,
-              months: months,
-              periodLabel: periodLabel,
-              onPrev: onPrev,
-              onNext: onNext,
+      title: isDesktop
+          // Desktop: keep the original single-row compact layout
+          ? Padding(
+              padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg),
+              child: Row(
+                children: [
+                  _MonthPicker(
+                    month: month,
+                    year: year,
+                    months: months,
+                    periodLabel: periodLabel,
+                    onPrev: onPrev,
+                    onNext: onNext,
+                  ),
+                  const Spacer(),
+                  const WorkspaceAppBarChip(),
+                  const SizedBox(width: DSSpacing.xs),
+                  _PrivacyToggle(),
+                  const SizedBox(width: DSSpacing.xs),
+                  _NotificationBell(),
+                ],
+              ),
+            )
+          // Mobile: two-row layout
+          : Padding(
+              padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // ── Row 1: greeting + actions ─────────────────────────
+                  Row(
+                    children: [
+                      const Expanded(
+                        child: FarolGreeting(variant: FarolGreetingVariant.appBar),
+                      ),
+                      const WorkspaceAppBarChip(),
+                      const SizedBox(width: DSSpacing.xs),
+                      _PrivacyToggle(),
+                      const SizedBox(width: DSSpacing.xs),
+                      _NotificationBell(),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  // ── Row 2: period navigator — centered ────────────────
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _MonthPicker(
+                        month: month,
+                        year: year,
+                        months: months,
+                        periodLabel: periodLabel,
+                        onPrev: onPrev,
+                        onNext: onNext,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            const Spacer(),
-            const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
-            const SizedBox(width: DSSpacing.xs),
-            const WorkspaceAppBarChip(),
-            const SizedBox(width: DSSpacing.xs),
-            _PrivacyToggle(),
-            const SizedBox(width: DSSpacing.xs),
-            _NotificationBell(),
-          ],
-        ),
-      ),
     );
   }
 }
