@@ -73,7 +73,7 @@ class BrlBig extends ConsumerWidget {
   }
 }
 
-class BrlSmall extends StatelessWidget {
+class BrlSmall extends ConsumerWidget {
   final double value;
   final double size;
   final Color? color;
@@ -87,7 +87,19 @@ class BrlSmall extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final c = color ?? context.colors.onSurface;
+    final isPrivate = ref.watch(privacyModeProvider);
+    if (isPrivate) {
+      return Text(
+        '•••••',
+        style: GoogleFonts.manrope(
+          fontSize: size,
+          fontWeight: weight,
+          color: c,
+        ),
+      );
+    }
     final f = FinancialCalculatorService.formatBRL(value);
     return Text(
       f,
@@ -95,7 +107,7 @@ class BrlSmall extends StatelessWidget {
       style: GoogleFonts.inter(
         fontSize: size,
         fontWeight: weight,
-        color: color ?? context.colors.onSurface,
+        color: c,
         fontFeatures: const [FontFeature.tabularFigures()],
       ),
     );

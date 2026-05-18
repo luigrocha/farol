@@ -159,6 +159,8 @@ class _PremiumAppBar extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg),
               child: Row(
                 children: [
+                  const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+                  const SizedBox(width: DSSpacing.sm),
                   _MonthPicker(
                     month: month,
                     year: year,
@@ -169,8 +171,6 @@ class _PremiumAppBar extends ConsumerWidget {
                   ),
                   const Spacer(),
                   const WorkspaceAppBarChip(),
-                  const SizedBox(width: DSSpacing.xs),
-                  _PrivacyToggle(),
                   const SizedBox(width: DSSpacing.xs),
                   _NotificationBell(),
                 ],
@@ -185,12 +185,12 @@ class _PremiumAppBar extends ConsumerWidget {
                   // ── Row 1: greeting + actions ─────────────────────────
                   Row(
                     children: [
+                      const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+                      const SizedBox(width: DSSpacing.sm),
                       const Expanded(
                         child: FarolGreeting(variant: FarolGreetingVariant.appBar),
                       ),
                       const WorkspaceAppBarChip(),
-                      const SizedBox(width: DSSpacing.xs),
-                      _PrivacyToggle(),
                       const SizedBox(width: DSSpacing.xs),
                       _NotificationBell(),
                     ],
@@ -315,16 +315,6 @@ class _NavArrowState extends State<_NavArrow> {
   }
 }
 
-class _PrivacyToggle extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isPrivate = ref.watch(privacyModeProvider);
-    return _AppBarIconBtn(
-      icon: isPrivate ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-      onTap: () => ref.read(privacyModeProvider.notifier).toggle(),
-    );
-  }
-}
 
 class _NotificationBell extends ConsumerWidget {
   @override

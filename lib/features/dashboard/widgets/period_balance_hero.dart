@@ -1,3 +1,4 @@
+import 'package:farol/design/branding/farol_brand.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,7 +7,6 @@ import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';
 import '../../../design/farol_colors.dart' as tokens;
 import '../../../design/ds_tokens.dart';
-import '../../../design/branding/branding.dart';
 import 'shared/brl_display.dart';
 
 class PeriodBalanceHero extends ConsumerStatefulWidget {
@@ -121,6 +121,8 @@ class _PeriodBalanceHeroState extends ConsumerState<PeriodBalanceHero>
                       ),
                     ),
                     const Spacer(),
+                    _HeroPrivacyBtn(),
+                    const SizedBox(width: DSSpacing.xs),
                     AnimatedOpacity(
                       opacity: _hovered ? 1.0 : 0.4,
                       duration: DSDuration.normal,
@@ -263,6 +265,7 @@ class _PeriodBalanceHeroState extends ConsumerState<PeriodBalanceHero>
   }
 }
 
+
 class _HeroStat extends StatelessWidget {
   const _HeroStat({
     required this.label,
@@ -306,6 +309,35 @@ class _HeroStat extends StatelessWidget {
           color: Colors.white.withValues(alpha: 0.92),
         ),
       ],
+    );
+  }
+}
+
+// ── Hero privacy button ───────────────────────────────────────────────────────
+
+class _HeroPrivacyBtn extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isPrivate = ref.watch(privacyModeProvider);
+    return GestureDetector(
+      onTap: () => ref.read(privacyModeProvider.notifier).toggle(),
+      child: AnimatedContainer(
+        duration: DSDuration.fast,
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: isPrivate ? 0.18 : 0.10),
+          borderRadius: DSRadius.smBR,
+          border: Border.all(
+            color: Colors.white.withValues(alpha: isPrivate ? 0.35 : 0.0),
+            width: 1,
+          ),
+        ),
+        child: Icon(
+          isPrivate ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+          size: 13,
+          color: Colors.white.withValues(alpha: isPrivate ? 1.0 : 0.55),
+        ),
+      ),
     );
   }
 }
