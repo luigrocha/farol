@@ -17,7 +17,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/models/member_display.dart';
 
 import '../../core/models/space.dart';
-import '../../core/models/space_transaction.dart';
 import '../../core/providers/space_providers.dart';
 import '../../design/branding/branding.dart';
 
@@ -56,6 +55,30 @@ class SpaceMembersScreen extends ConsumerWidget {
       }
     });
 
+    final isDesktop = MediaQuery.sizeOf(context).width >= 800;
+
+    final memberList = ListView.separated(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: space.members.length,
+      separatorBuilder: (_, __) =>
+          Divider(height: 1, indent: 72, color: theme.colorScheme.outlineVariant),
+      itemBuilder: (_, i) {
+        final member = space.members[i];
+        final isSelf = member.userId == _currentUserId;
+        final net    = canSeeBalances ? (netMap[member.userId] ?? 0.0) : null;
+
+        return _MemberTile(
+          member:      member,
+          display:     displayMap[member.userId],
+          isSelf:      isSelf,
+          net:         net,
+          canAdmin:    canAdmin && !isSelf,
+          onRoleChange: (role) => _changeRole(context, ref, member, role),
+          onRemove:     () => _removeMember(context, ref, member),
+        );
+      },
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Row(children: [
@@ -72,27 +95,30 @@ class SpaceMembersScreen extends ConsumerWidget {
             ),
         ],
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        itemCount: space.members.length,
-        separatorBuilder: (_, __) =>
-            Divider(height: 1, indent: 72, color: theme.colorScheme.outlineVariant),
-        itemBuilder: (_, i) {
-          final member = space.members[i];
-          final isSelf = member.userId == _currentUserId;
-          final net    = canSeeBalances ? (netMap[member.userId] ?? 0.0) : null;
-
-          return _MemberTile(
-            member:      member,
-            display:     displayMap[member.userId],
-            isSelf:      isSelf,
-            net:         net,
-            canAdmin:    canAdmin && !isSelf,
-            onRoleChange: (role) => _changeRole(context, ref, member, role),
-            onRemove:     () => _removeMember(context, ref, member),
-          );
-        },
-      ),
+      body: isDesktop
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Left: member list, constrained
+                Expanded(
+                  flex: 3,
+                  child: memberList,
+                ),
+                VerticalDivider(width: 1, color: theme.colorScheme.outlineVariant),
+                // Right: summary panel
+                SizedBox(
+                  width: 280,
+                  child: _MembersSummaryPanel(
+                    space:         space,
+                    netMap:        netMap,
+                    canSeeBalances: canSeeBalances,
+                    displayMap:    displayMap,
+                    currentUserId: _currentUserId,
+                  ),
+                ),
+              ],
+            )
+          : memberList,
     );
   }
 
@@ -383,6 +409,137 @@ class _MemberTile extends StatelessWidget {
 }
 
 enum _MemberAction { makeAdmin, makeMember, makeViewer, remove }
+
+// ─────────────────────────────────────────────────────────────────
+// Desktop summary panel (right column)
+// ─────────────────────────────────────────────────────────────────
+
+class _MembersSummaryPanel extends StatelessWidget {
+  final Space space;
+  final Map<String, double> netMap;
+  final bool canSeeBalances;
+  final Map<String, MemberDisplay> displayMap;
+  final String currentUserId;
+
+  const _MembersSummaryPanel({
+    required this.space,
+    required this.netMap,
+    required this.canSeeBalances,
+    required this.displayMap,
+    required this.currentUserId,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final totalMembers = space.members.length;
+    final admins = space.members.where((m) => m.role.isAdmin).length;
+
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        Text(
+          'RESUMO',
+          style: GoogleFonts.manrope(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.8,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 16),
+        _SummaryCard(
+          icon: Icons.group_outlined,
+          label: 'Membros',
+          value: '$totalMembers',
+          theme: theme,
+        ),
+        const SizedBox(height: 8),
+        _SummaryCard(
+          icon: Icons.admin_panel_settings_outlined,
+          label: 'Admins',
+          value: '$admins',
+          theme: theme,
+        ),
+        if (canSeeBalances && netMap.isNotEmpty) ...[
+          const SizedBox(height: 24),
+          Text(
+            'SALDOS',
+            style: GoogleFonts.manrope(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.8,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ...netMap.entries.map((e) {
+            final display = displayMap[e.key];
+            final name = e.key == currentUserId
+                ? 'Você'
+                : display?.displayName ?? e.key.substring(0, 6);
+            final isPositive = e.value > 0;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(name,
+                      style: GoogleFonts.manrope(
+                          fontSize: 13, fontWeight: FontWeight.w500)),
+                  Text(
+                    _brlFmt.format(e.value.abs()),
+                    style: GoogleFonts.manrope(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: isPositive
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.error,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ],
+    );
+  }
+}
+
+class _SummaryCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final ThemeData theme;
+
+  const _SummaryCard({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(children: [
+          Icon(icon, size: 18, color: theme.colorScheme.onSurfaceVariant),
+          const SizedBox(width: 10),
+          Text(label,
+              style: GoogleFonts.manrope(
+                  fontSize: 13, color: theme.colorScheme.onSurfaceVariant)),
+          const Spacer(),
+          Text(value,
+              style: GoogleFonts.manrope(
+                  fontSize: 15, fontWeight: FontWeight.w700)),
+        ]),
+      );
+}
 
 // ─────────────────────────────────────────────────────────────────
 // Role badge

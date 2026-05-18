@@ -52,13 +52,13 @@ class AnalyticsScreen extends ConsumerWidget {
             onSelect: (r) => ref.read(analyticsRangeProvider.notifier).state = r,
           )),
           expensesAsync.when(
-            loading: () => SliverFillRemaining(child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: DSSpacing.xl, vertical: DSSpacing.xxl),
+            loading: () => const SliverFillRemaining(child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: DSSpacing.xl, vertical: DSSpacing.xxl),
             child: Column(children: [
               DSSkeleton(width: double.infinity, height: 80, radius: DSRadius.lg),
-              const SizedBox(height: DSSpacing.lg),
+              SizedBox(height: DSSpacing.lg),
               DSSkeleton(width: double.infinity, height: 180, radius: DSRadius.lg),
-              const SizedBox(height: DSSpacing.lg),
+              SizedBox(height: DSSpacing.lg),
               DSSkeleton(width: double.infinity, height: 160, radius: DSRadius.lg),
             ]),
           )),

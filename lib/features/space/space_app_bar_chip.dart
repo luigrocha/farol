@@ -28,7 +28,7 @@ class SpaceAppBarChip extends ConsumerWidget {
     if (space == null) return const SizedBox.shrink();
 
     final accentColor = _parseColor(space.color) ?? const Color(0xFF6366F1);
-    final bgColor     = accentColor.withOpacity(0.15);
+    final bgColor     = accentColor.withValues(alpha: 0.15);
     final fgColor     = accentColor;
 
     return GestureDetector(

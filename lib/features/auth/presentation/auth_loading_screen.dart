@@ -108,7 +108,7 @@ class _AuthLoadingScreenState extends ConsumerState<AuthLoadingScreen>
                   // Animated logo
                   ScaleTransition(
                     scale: _pulse,
-                    child: FarolMark(
+                    child: const FarolMark(
                       size: 72,
                       radius: 22,
                       variant: FarolLogoVariant.dark,

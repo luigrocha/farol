@@ -120,10 +120,10 @@ class _SpaceDashboardScreenState extends ConsumerState<SpaceDashboardScreen>
                   expandedHeight: 140,
                   pinned:         true,
                   backgroundColor: theme.colorScheme.surface,
-                  title: Row(children: [
-                    const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
-                    const SizedBox(width: 8),
-                    const SpaceAppBarChip(),
+                  title: const Row(children: [
+                    FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+                    SizedBox(width: 8),
+                    SpaceAppBarChip(),
                   ]),
                   centerTitle: false,
                   flexibleSpace: FlexibleSpaceBar(
@@ -502,7 +502,6 @@ class _MemberAvatarRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: SizedBox(
@@ -739,9 +738,9 @@ class _SettlementRowState extends ConsumerState<_SettlementRow> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color:        color.withOpacity(0.08),
+          color:        color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(10),
-          border:       Border.all(color: color.withOpacity(0.3)),
+          border:       Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Row(
           children: [
@@ -1043,10 +1042,10 @@ class _EmptyTransactions extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
             decoration: BoxDecoration(
-              color:        accentColor.withOpacity(0.07),
+              color:        accentColor.withValues(alpha: 0.07),
               borderRadius: BorderRadius.circular(20),
               border:       Border.all(
-                color: accentColor.withOpacity(0.18),
+                color: accentColor.withValues(alpha: 0.18),
                 width: 1,
               ),
             ),
@@ -1176,7 +1175,7 @@ class _OnboardingStep extends StatelessWidget {
           width: 32,
           height: 32,
           decoration: BoxDecoration(
-            color:  color.withOpacity(0.12),
+            color:  color.withValues(alpha: 0.12),
             shape:  BoxShape.circle,
           ),
           child: Center(

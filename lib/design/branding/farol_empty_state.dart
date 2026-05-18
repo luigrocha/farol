@@ -31,7 +31,6 @@ import '../../core/theme/farol_colors.dart';
 import '../ds_tokens.dart';
 import '../widgets/farol_button.dart';
 import 'farol_logo.dart';
-import 'farol_brand.dart';
 
 // ── Type ──────────────────────────────────────────────────────────────────────
 

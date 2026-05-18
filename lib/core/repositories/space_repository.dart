@@ -32,7 +32,7 @@ class SpaceRepository {
         .limit(1);
 
     if (rows.isNotEmpty) {
-      return PersonalLedger.fromJson(rows.first as Map<String, dynamic>);
+      return PersonalLedger.fromJson(rows.first);
     }
 
     // Create if missing (e.g. for users who signed up before V41)
@@ -218,7 +218,7 @@ class SpaceRepository {
         })
         .select()
         .single();
-    return row as Map<String, dynamic>;
+    return row;
   }
 
   /// Accept a space invite via the Edge Function.

@@ -259,7 +259,6 @@ class _IncomeTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final incomesAsync = ref.watch(incomesProvider);
     final total = ref.watch(totalIncomeProvider);
-    final colors = context.colors;
 
     return CustomScrollView(
       slivers: [
@@ -1254,7 +1253,7 @@ class _TxRowState extends ConsumerState<_TxRow> {
                     Text('·', style: TextStyle(color: colors.onSurfaceFaint)),
                     const SizedBox(width: 6),
                     if (isSwile)
-                      _TxBadge(
+                      const _TxBadge(
                           label: 'SWILE',
                           color: tokens.FarolColors.tide,
                           bgAlpha: 0.14)

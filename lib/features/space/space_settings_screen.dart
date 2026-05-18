@@ -202,8 +202,137 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme   = Theme.of(context);
-    final isOwner = ref.watch(currentUserSpaceRoleProvider).isOwner;
+    final theme     = Theme.of(context);
+    final isOwner   = ref.watch(currentUserSpaceRoleProvider).isOwner;
+    final isDesktop = MediaQuery.sizeOf(context).width >= 800;
+
+    // ── Identity column (left on desktop, top on mobile) ────────────
+    final identityColumn = [
+      _sectionHeader('Identidade', theme),
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _EmojiButton(
+            emoji:   _currentEmoji,
+            emojis:  _emojiPalettes[_type]!,
+            onPick: (e) {
+              setState(() => _emoji = e);
+              _markDirty();
+            },
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: TextField(
+              controller: _nameCtrl,
+              enabled:    isOwner,
+              decoration: const InputDecoration(
+                labelText: 'Nome do espaço',
+                border:    OutlineInputBorder(),
+              ),
+              textCapitalization: TextCapitalization.words,
+              onChanged: (_) => _markDirty(),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 16),
+      TextField(
+        controller: _descCtrl,
+        enabled:    isOwner,
+        decoration: const InputDecoration(
+          labelText: 'Descrição (opcional)',
+          border:    OutlineInputBorder(),
+        ),
+        maxLines: 2,
+        onChanged: (_) => _markDirty(),
+      ),
+      const SizedBox(height: 16),
+      Text(
+        'Cor',
+        style: GoogleFonts.manrope(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
+      const SizedBox(height: 8),
+      Wrap(
+        spacing: 12, runSpacing: 12,
+        children: _colors.map((hex) {
+          final color  = _hexColor(hex);
+          final active = hex == _color;
+          return GestureDetector(
+            onTap: isOwner
+                ? () {
+                    setState(() => _color = hex);
+                    _markDirty();
+                  }
+                : null,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              width: 36, height: 36,
+              decoration: BoxDecoration(
+                color:  color,
+                shape:  BoxShape.circle,
+                border: active
+                    ? Border.all(color: theme.colorScheme.onSurface, width: 3)
+                    : null,
+                boxShadow: active
+                    ? [BoxShadow(color: color.withValues(alpha: 0.45), blurRadius: 6)]
+                    : null,
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+      const SizedBox(height: 8),
+    ];
+
+    // ── Secondary column (right on desktop, bottom on mobile) ────────
+    final secondaryColumn = [
+      _sectionHeader('Membros', theme),
+      Card(
+        margin: EdgeInsets.zero,
+        child: ListTile(
+          leading: const Icon(Icons.group_outlined),
+          title: Text(
+            '${widget.space.members.length} '
+            '${widget.space.members.length == 1 ? 'membro' : 'membros'}',
+          ),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => SpaceMembersScreen.push(context, widget.space),
+        ),
+      ),
+      const SizedBox(height: 24),
+      _sectionHeader('Convite', theme),
+      Card(
+        margin: EdgeInsets.zero,
+        child: ListTile(
+          leading: const Icon(Icons.link_outlined),
+          title: const Text('Copiar link de convite'),
+          subtitle: const Text('Qualquer pessoa com o link pode entrar como membro'),
+          onTap: isOwner ? _copyInviteLink : null,
+        ),
+      ),
+      const SizedBox(height: 32),
+      if (isOwner) ...[
+        _sectionHeader('Zona de perigo', theme, danger: true),
+        Card(
+          margin: EdgeInsets.zero,
+          color: theme.colorScheme.errorContainer.withValues(alpha: 0.3),
+          child: ListTile(
+            leading: Icon(Icons.archive_outlined, color: theme.colorScheme.error),
+            title: Text(
+              'Arquivar espaço',
+              style: TextStyle(color: theme.colorScheme.error),
+            ),
+            subtitle: const Text('O espaço deixará de aparecer na lista'),
+            onTap: _archiveSpace,
+          ),
+        ),
+        const SizedBox(height: 32),
+      ],
+    ];
 
     return Scaffold(
       appBar: AppBar(
@@ -228,151 +357,31 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
             ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        children: [
-          // ── Identity ────────────────────────────────────────────
-          _sectionHeader('Identidade', theme),
-
-          // Emoji + Name row
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Emoji picker popover
-              _EmojiButton(
-                emoji:   _currentEmoji,
-                emojis:  _emojiPalettes[_type]!,
-                onPick: (e) {
-                  setState(() => _emoji = e);
-                  _markDirty();
-                },
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: TextField(
-                  controller: _nameCtrl,
-                  enabled:    isOwner,
-                  decoration: const InputDecoration(
-                    labelText: 'Nome do espaço',
-                    border:    OutlineInputBorder(),
-                  ),
-                  textCapitalization: TextCapitalization.words,
-                  onChanged: (_) => _markDirty(),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // Description
-          TextField(
-            controller: _descCtrl,
-            enabled:    isOwner,
-            decoration: const InputDecoration(
-              labelText: 'Descrição (opcional)',
-              border:    OutlineInputBorder(),
-            ),
-            maxLines: 2,
-            onChanged: (_) => _markDirty(),
-          ),
-          const SizedBox(height: 16),
-
-          // Color picker
-          Text(
-            'Cor',
-            style: GoogleFonts.manrope(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 12, runSpacing: 12,
-            children: _colors.map((hex) {
-              final color  = _hexColor(hex);
-              final active = hex == _color;
-              return GestureDetector(
-                onTap: isOwner
-                    ? () {
-                        setState(() => _color = hex);
-                        _markDirty();
-                      }
-                    : null,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 150),
-                  width: 36, height: 36,
-                  decoration: BoxDecoration(
-                    color:  color,
-                    shape:  BoxShape.circle,
-                    border: active
-                        ? Border.all(
-                            color: theme.colorScheme.onSurface,
-                            width: 3,
-                          )
-                        : null,
-                    boxShadow: active
-                        ? [BoxShadow(color: color.withOpacity(0.45), blurRadius: 6)]
-                        : null,
+      body: isDesktop
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: ListView(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+                    children: identityColumn,
                   ),
                 ),
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 24),
-
-          // ── Members shortcut ─────────────────────────────────────
-          _sectionHeader('Membros', theme),
-          Card(
-            margin: EdgeInsets.zero,
-            child: ListTile(
-              leading: const Icon(Icons.group_outlined),
-              title: Text(
-                '${widget.space.members.length} '
-                '${widget.space.members.length == 1 ? 'membro' : 'membros'}',
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => SpaceMembersScreen.push(context, widget.space),
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // ── Invite ───────────────────────────────────────────────
-          _sectionHeader('Convite', theme),
-          Card(
-            margin: EdgeInsets.zero,
-            child: ListTile(
-              leading: const Icon(Icons.link_outlined),
-              title: const Text('Copiar link de convite'),
-              subtitle: const Text('Qualquer pessoa com o link pode entrar como membro'),
-              onTap: isOwner ? _copyInviteLink : null,
-            ),
-          ),
-          const SizedBox(height: 32),
-
-          // ── Danger zone ──────────────────────────────────────────
-          if (isOwner) ...[
-            _sectionHeader('Zona de perigo', theme, danger: true),
-            Card(
-              margin: EdgeInsets.zero,
-              color: theme.colorScheme.errorContainer.withOpacity(0.3),
-              child: ListTile(
-                leading: Icon(
-                  Icons.archive_outlined,
-                  color: theme.colorScheme.error,
+                VerticalDivider(width: 1, color: theme.colorScheme.outlineVariant),
+                Expanded(
+                  flex: 2,
+                  child: ListView(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+                    children: secondaryColumn,
+                  ),
                 ),
-                title: Text(
-                  'Arquivar espaço',
-                  style: TextStyle(color: theme.colorScheme.error),
-                ),
-                subtitle: const Text('O espaço deixará de aparecer na lista'),
-                onTap: _archiveSpace,
-              ),
+              ],
+            )
+          : ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              children: [...identityColumn, const SizedBox(height: 16), ...secondaryColumn],
             ),
-            const SizedBox(height: 32),
-          ],
-        ],
-      ),
     );
   }
 
@@ -451,7 +460,7 @@ class _EmojiButtonState extends State<_EmojiButton> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color:      Colors.black.withOpacity(0.08),
+                  color:      Colors.black.withValues(alpha: 0.08),
                   blurRadius: 8,
                   offset:     const Offset(0, 2),
                 ),

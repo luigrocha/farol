@@ -81,8 +81,8 @@ class _SpaceTransactionsScreenState
   }
 
   Future<void> _loadPage({bool reset = false}) async {
-    if (_loading) return;
-    if (!_hasMore && !reset) return;
+    if (_loading) { return; }
+    if (!_hasMore && !reset) { return; }
 
     setState(() => _loading = true);
 
@@ -130,9 +130,9 @@ class _SpaceTransactionsScreenState
 
   List<SpaceTransaction> get _filtered {
     return _items.where((tx) {
-      if (_filterCatId != null && tx.categoryId != _filterCatId) return false;
+      if (_filterCatId != null && tx.categoryId != _filterCatId) { return false; }
       if (_filterUserId != null &&
-          !tx.shares.any((s) => s.userId == _filterUserId)) return false;
+          !tx.shares.any((s) => s.userId == _filterUserId)) { return false; }
       return true;
     }).toList();
   }
@@ -143,11 +143,66 @@ class _SpaceTransactionsScreenState
 
   @override
   Widget build(BuildContext context) {
-    final theme      = Theme.of(context);
     final canWrite   = ref.watch(canWriteInSpaceProvider);
     final cats       = ref.watch(spaceCategoriesProvider).valueOrNull ?? [];
     final displayMap = ref.watch(spaceMemberDisplayMapProvider).valueOrNull ?? {};
     final filtered   = _filtered;
+    final isDesktop  = MediaQuery.sizeOf(context).width >= 800;
+
+    final scrollBody = RefreshIndicator(
+      onRefresh: () => _loadPage(reset: true),
+      child: CustomScrollView(
+        controller: _scroll,
+        slivers: [
+          // ── Filter chips ─────────────────────────────────────
+          SliverToBoxAdapter(
+            child: _FilterBar(
+              categories:      cats,
+              members:         widget.space.members,
+              displayMap:      displayMap,
+              selectedCatId:   _filterCatId,
+              selectedUserId:  _filterUserId,
+              onCatChanged:    (id) => setState(() => _filterCatId = id),
+              onUserChanged:   (id) => setState(() => _filterUserId = id),
+            ),
+          ),
+
+          // ── Summary strip ────────────────────────────────────
+          if (_items.isNotEmpty)
+            SliverToBoxAdapter(
+              child: _SummaryStrip(items: filtered),
+            ),
+
+          // ── Transaction list ─────────────────────────────────
+          if (filtered.isEmpty && !_loading)
+            const SliverFarolEmptyState(type: FarolEmptyStateType.spaceTransactions)
+          else
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (_, i) {
+                  if (i == filtered.length) {
+                    return _loading
+                        ? const Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Center(child: CircularProgressIndicator()),
+                          )
+                        : const SizedBox(height: 80);
+                  }
+                  final tx = filtered[i];
+                  return _TxRow(
+                    tx:            tx,
+                    currentUserId: _currentUserId,
+                    displayMap:    displayMap,
+                    canDelete:     canWrite && tx.paidBy == _currentUserId,
+                    onDelete:      () => _delete(tx),
+                  );
+                },
+                childCount: filtered.length + 1, // +1 for loader/padding
+              ),
+            ),
+        ],
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -166,60 +221,14 @@ class _SpaceTransactionsScreenState
               child: const Icon(Icons.add),
             )
           : null,
-      body: RefreshIndicator(
-        onRefresh: () => _loadPage(reset: true),
-        child: CustomScrollView(
-          controller: _scroll,
-          slivers: [
-            // ── Filter chips ─────────────────────────────────────
-            SliverToBoxAdapter(
-              child: _FilterBar(
-                categories:      cats,
-                members:         widget.space.members,
-                displayMap:      displayMap,
-                selectedCatId:   _filterCatId,
-                selectedUserId:  _filterUserId,
-                onCatChanged:    (id) => setState(() => _filterCatId = id),
-                onUserChanged:   (id) => setState(() => _filterUserId = id),
+      body: isDesktop
+          ? Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 800),
+                child: scrollBody,
               ),
-            ),
-
-            // ── Summary strip ────────────────────────────────────
-            if (_items.isNotEmpty)
-              SliverToBoxAdapter(
-                child: _SummaryStrip(items: filtered),
-              ),
-
-            // ── Transaction list ─────────────────────────────────
-            if (filtered.isEmpty && !_loading)
-              const SliverFarolEmptyState(type: FarolEmptyStateType.spaceTransactions)
-            else
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (_, i) {
-                    if (i == filtered.length) {
-                      return _loading
-                          ? const Padding(
-                              padding: EdgeInsets.all(16),
-                              child: Center(child: CircularProgressIndicator()),
-                            )
-                          : const SizedBox(height: 80);
-                    }
-                    final tx = filtered[i];
-                    return _TxRow(
-                      tx:            tx,
-                      currentUserId: _currentUserId,
-                      displayMap:    displayMap,
-                      canDelete:     canWrite && tx.paidBy == _currentUserId,
-                      onDelete:      () => _delete(tx),
-                    );
-                  },
-                  childCount: filtered.length + 1, // +1 for loader/padding
-                ),
-              ),
-          ],
-        ),
-      ),
+            )
+          : scrollBody,
     );
   }
 }

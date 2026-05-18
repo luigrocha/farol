@@ -14,12 +14,6 @@ class PushTokenRepository {
 
   const PushTokenRepository(this._supabase);
 
-  String get _platform {
-    if (kIsWeb) return 'web';
-    // We use a try/catch import-style check to avoid dart:io on web.
-    // Platform detection for mobile is done at the call site via firebase_messaging.
-    return 'android'; // caller overrides with the real platform string
-  }
 
   /// Upserts [token] for [platform] ('android' | 'ios' | 'web').
   /// No-ops if the user is not authenticated.

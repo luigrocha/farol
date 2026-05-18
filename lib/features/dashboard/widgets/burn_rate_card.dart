@@ -7,7 +7,6 @@ import '../../../core/providers/providers.dart';
 import '../../../core/services/financial_calculator_service.dart';
 import '../../../core/widgets/shimmer_box.dart';
 import '../../../design/ds_tokens.dart';
-import '../../../core/theme/farol_colors.dart';
 
 class BurnRateCard extends ConsumerWidget {
   const BurnRateCard({super.key});

@@ -203,7 +203,7 @@ class _TxRowState extends State<_TxRow> {
                     const _Badge('FIXO', Color(0xFF3B6A9C)),
                   ] else if (isSwile) ...[
                     const SizedBox(width: 4),
-                    _Badge('SWILE', tokens.FarolColors.tide),
+                    const _Badge('SWILE', tokens.FarolColors.tide),
                   ],
                 ],
               ),

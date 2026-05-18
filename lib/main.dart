@@ -646,8 +646,8 @@ class _DesktopNavRailState extends ConsumerState<_DesktopNavRail> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // ── Logo / brand ──────────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 24, 16, 16),
               child: FarolLogo(
                 variant: FarolLogoVariant.dark,
                 markSize: FarolBrand.markSizeNavRail,
@@ -670,8 +670,8 @@ class _DesktopNavRailState extends ConsumerState<_DesktopNavRail> {
               ),
 
             // ── Compact greeting ──────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 6, 16, 2),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 6, 16, 2),
               child: FarolGreeting(variant: FarolGreetingVariant.compact),
             ),
 

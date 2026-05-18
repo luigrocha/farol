@@ -79,7 +79,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 children: [
                   // ── Logo ────────────────────────────────────────────
                   const SizedBox(height: 12),
-                  FarolMark(
+                  const FarolMark(
                     size: FarolBrand.markSizeAuth,
                     variant: FarolLogoVariant.light,
                   ),

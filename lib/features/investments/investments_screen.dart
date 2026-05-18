@@ -210,7 +210,6 @@ class _InvestmentsList extends ConsumerWidget {
   const _InvestmentsList();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
     final investments = ref.watch(investmentsProvider).value ?? [];
     if (investments.isEmpty) {
       return const FarolEmptyState(type: FarolEmptyStateType.investments);

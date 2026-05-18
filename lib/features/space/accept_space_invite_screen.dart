@@ -150,7 +150,7 @@ class _AcceptSpaceInviteScreenState
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // ── Logo ────────────────────────────────────────────
-                    FarolMark(
+                    const FarolMark(
                       size: FarolBrand.markSizeAuth,
                       radius: 16,
                       variant: FarolLogoVariant.dark,

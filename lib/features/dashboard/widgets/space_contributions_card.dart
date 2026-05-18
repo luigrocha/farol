@@ -188,9 +188,9 @@ class _SpaceRow extends StatelessWidget {
             child: LinearProgressIndicator(
               value:            fraction,
               minHeight:        4,
-              backgroundColor:  theme.colorScheme.outlineVariant.withOpacity(0.3),
+              backgroundColor:  theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
               valueColor:       AlwaysStoppedAnimation<Color>(
-                theme.colorScheme.primary.withOpacity(0.7),
+                theme.colorScheme.primary.withValues(alpha: 0.7),
               ),
             ),
           ),

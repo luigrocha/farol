@@ -19,7 +19,7 @@ class CashflowChart extends ConsumerWidget {
         Text(context.l10n.cashflowTitle,
             style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w700)),
         const SizedBox(height: DSSpacing.sm),
-        DSSkeleton(width: double.infinity, height: 200, radius: DSRadius.lg),
+        const DSSkeleton(width: double.infinity, height: 200, radius: DSRadius.lg),
       ]),
       error: (e, _) => Text('${context.l10n.error}: $e'),
       data: (proj) {

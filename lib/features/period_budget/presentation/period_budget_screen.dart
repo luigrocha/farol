@@ -273,8 +273,6 @@ class _EntryCard extends ConsumerStatefulWidget {
 }
 
 class _EntryCardState extends ConsumerState<_EntryCard> {
-  bool _hovered = false;
-
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -307,8 +305,6 @@ class _EntryCardState extends ConsumerState<_EntryCard> {
     return Padding(
       padding: const EdgeInsets.only(bottom: DSSpacing.md),
       child: MouseRegion(
-        onEnter: (_) => setState(() => _hovered = true),
-        onExit: (_) => setState(() => _hovered = false),
         cursor: SystemMouseCursors.click,
         child: DSCard(
           onTap: widget.onTap,

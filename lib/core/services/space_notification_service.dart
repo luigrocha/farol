@@ -31,13 +31,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-/// Detects the FCM platform string for push_tokens.
-String get _fcmPlatform {
-  if (kIsWeb) return 'web';
-  if (Platform.isIOS) return 'ios';
-  return 'android';
-}
-
 // ─────────────────────────────────────────────────────────────────
 // Singleton service
 // ─────────────────────────────────────────────────────────────────

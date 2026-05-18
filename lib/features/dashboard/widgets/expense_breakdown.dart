@@ -190,7 +190,6 @@ class _CategoryBudgetRowState extends State<_CategoryBudgetRow>
   Widget build(BuildContext context) {
     final colors = context.colors;
     final pctDisplay = (widget.pct * 100).round();
-    final isExceeded = widget.actual > widget.target;
     final valueColor = widget.isOverBudget ? widget.barColor : colors.onSurface;
 
     return MouseRegion(

@@ -23,8 +23,6 @@ import 'widgets/connectivity_banner.dart';
 import 'widgets/activity_feed_preview_card.dart';
 import 'widgets/contribution_bar.dart';
 import 'widgets/space_contributions_card.dart';
-import 'widgets/swile_dashboard_card.dart';
-import 'widgets/recent_transactions_card.dart';
 import '../insights/insights_panel.dart';
 import '../workspace/workspace_switcher_sheet.dart';
 import '../../core/providers/workspace_providers.dart' show canWriteProvider;
@@ -38,9 +36,6 @@ const _kContentMaxW  = 1440.0; // max content width
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
-
-  // Keep for backward compat
-  static const double _desktopBreakpoint = _kDesktop;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -119,7 +114,7 @@ class _GreetingSliver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
+    return const SliverToBoxAdapter(
       child: FarolGreeting(variant: FarolGreetingVariant.dashboard),
     );
   }
@@ -498,7 +493,7 @@ class _DesktopDashboardSliver extends StatelessWidget {
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: _kContentMaxW),
-            child: Row(
+            child: const Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // ── Left column (primary) ──────────────────────────────
@@ -506,7 +501,7 @@ class _DesktopDashboardSliver extends StatelessWidget {
                   flex: 55,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: const [
+                    children: [
                       LiquidityAlertCard(),
                       AlertBanner(),
                       SizedBox(height: DSSpacing.md),
@@ -532,7 +527,7 @@ class _DesktopDashboardSliver extends StatelessWidget {
                   flex: 45,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: const [
+                    children: [
                       HealthGaugeCard(),
                       SizedBox(height: DSSpacing.md),
                       KpiGrid(compact: false),
@@ -579,7 +574,7 @@ class _WideDesktopSliver extends StatelessWidget {
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: _kContentMaxW),
-            child: Row(
+            child: const Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // ── Left sidebar ─────────────────────────────────────
@@ -587,7 +582,7 @@ class _WideDesktopSliver extends StatelessWidget {
                   flex: 28,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: const [
+                    children: [
                       LiquidityAlertCard(),
                       AlertBanner(),
                       KpiGrid(compact: false),
@@ -606,7 +601,7 @@ class _WideDesktopSliver extends StatelessWidget {
                   flex: 42,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: const [
+                    children: [
                       SizedBox(height: DSSpacing.md),
                       PeriodBalanceHero(),
                       SizedBox(height: DSSpacing.md),
@@ -626,7 +621,7 @@ class _WideDesktopSliver extends StatelessWidget {
                   flex: 30,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: const [
+                    children: [
                       HealthGaugeCard(),
                       SizedBox(height: DSSpacing.lg),
                       InstallmentsSummaryCard(),
@@ -641,77 +636,6 @@ class _WideDesktopSliver extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _KpiRow extends ConsumerWidget {
-  const _KpiRow();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final snap = ref.watch(financialSnapshotProvider);
-    final colors = context.colors;
-
-    final items = [
-      (
-        icon: Icons.account_balance_wallet,
-        bg: colors.iconTintBlue,
-        label: 'Salário Líquido',
-        value: snap.cashIncome.amount,
-        color: null as Color?,
-      ),
-      (
-        icon: Icons.fastfood,
-        bg: colors.secondaryContainer,
-        label: 'Beneficios Swile',
-        value: snap.swileIncome.amount,
-        color: tokens.FarolColors.beam as Color?,
-      ),
-      (
-        icon: Icons.trending_down,
-        bg: colors.iconTintRed,
-        label: 'Gastos Totais',
-        value: snap.cashSpent.amount,
-        color: tokens.FarolColors.coral as Color?,
-      ),
-      (
-        icon: Icons.savings,
-        bg: colors.iconTintBlue,
-        label: 'Taxa de Ahorro',
-        value: null as double?,
-        color: null as Color?,
-      ),
-    ];
-    final sr = snap.savingsRate;
-
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (int i = 0; i < items.length; i++) ...[
-            if (i > 0) const SizedBox(width: 12),
-            Expanded(
-              child: i == 3
-                  ? KpiCard(
-                      icon: items[i].icon,
-                      bg: items[i].bg,
-                      label: items[i].label,
-                      raw: '${sr.toStringAsFixed(1)}%',
-                      compact: false,
-                    )
-                  : KpiCard(
-                      icon: items[i].icon,
-                      bg: items[i].bg,
-                      label: items[i].label,
-                      value: items[i].value,
-                      color: items[i].color,
-                      compact: false,
-                    ),
-            ),
-          ],
-        ],
       ),
     );
   }

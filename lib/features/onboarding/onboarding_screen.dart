@@ -65,7 +65,7 @@ class OnboardingScreen extends ConsumerWidget {
                       Padding(
                         padding: EdgeInsets.symmetric(
                             horizontal: isWide ? 40 : 32),
-                        child: FarolLogo(
+                        child: const FarolLogo(
                           variant: FarolLogoVariant.dark,
                           markSize: FarolBrand.markSizeOnboarding,
                           showGlow: true,

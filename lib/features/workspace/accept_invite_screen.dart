@@ -85,29 +85,6 @@ class _AcceptInviteScreenState extends ConsumerState<AcceptInviteScreen> {
     }
   }
 
-  Future<void> _doDecline() async {
-    if (!mounted) return;
-    setState(() {
-      _state = _ScreenState.declining;
-      _errorMessage = null;
-    });
-
-    try {
-      final repo = ref.read(workspaceRepositoryProvider);
-      await repo.declineInvite(widget.token);
-      if (!mounted) return;
-
-      // Mark notification as read
-      await _markNotificationRead();
-
-      if (!mounted) return;
-      setState(() => _state = _ScreenState.declined);
-    } catch (_) {
-      // Even if decline fails server-side, dismiss from the user's perspective
-      if (!mounted) return;
-      setState(() => _state = _ScreenState.declined);
-    }
-  }
 
   Future<void> _markNotificationRead() async {
     try {
@@ -158,7 +135,7 @@ class _AcceptInviteScreenState extends ConsumerState<AcceptInviteScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // ── Logo ─────────────────────────────────────────────
-                    FarolMark(
+                    const FarolMark(
                       size: FarolBrand.markSizeAuth,
                       radius: 16,
                       variant: FarolLogoVariant.dark,

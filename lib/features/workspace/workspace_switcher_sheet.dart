@@ -499,7 +499,7 @@ class _SpaceTile extends StatelessWidget {
       onTap: onTap,
       leading: CircleAvatar(
         radius: 22,
-        backgroundColor: isActive ? accentColor : accentColor.withOpacity(0.18),
+        backgroundColor: isActive ? accentColor : accentColor.withValues(alpha: 0.18),
         child: Text(
           space.emoji ?? space.type.defaultEmoji,
           style: const TextStyle(fontSize: 18),

@@ -14,7 +14,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/models/space.dart';
 import '../../core/providers/space_providers.dart';
-import '../../core/repositories/space_repository.dart';
 
 // ─────────────────────────────────────────────────────────────────
 // Entry point
@@ -556,7 +555,7 @@ class _ColorPicker extends StatelessWidget {
                     )
                   : null,
               boxShadow: active
-                  ? [BoxShadow(color: color.withOpacity(0.5), blurRadius: 6)]
+                  ? [BoxShadow(color: color.withValues(alpha: 0.5), blurRadius: 6)]
                   : null,
             ),
           ),
