@@ -309,9 +309,6 @@ class FarolBottomPadding extends StatelessWidget {
   /// Extra padding on top of the calculated amount.
   final double extra;
 
-  /// Approximate height of the M3 NavigationBar.
-  static const double _navBarHeight = 80.0;
-
   /// FAB size + its margin from the bottom edge.
   static const double _fabClearance = 88.0;
 

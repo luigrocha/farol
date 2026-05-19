@@ -6,7 +6,7 @@
 // Called once on startup (after Firebase.initializeApp) and again
 // whenever FirebaseMessaging issues a token-refresh event.
 
-import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PushTokenRepository {

@@ -67,7 +67,6 @@ class _SpaceDashboardScreenState extends ConsumerState<SpaceDashboardScreen>
     final displayMap =
         ref.watch(spaceMemberDisplayMapProvider).valueOrNull ?? {};
     final theme = Theme.of(context);
-    final width = MediaQuery.sizeOf(context).width;
     final isDesktop = FarolBreakpoints.isDesktop(context);
 
     // Keep the realtime subscriptions alive while dashboard is mounted.
