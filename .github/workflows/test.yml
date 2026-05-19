@@ -188,12 +188,8 @@ jobs:
 
           script: |
             adb devices
-
             flutter devices
-
-            flutter test integration_test/auth_flow_test.dart \
-              -d emulator-5554 \
-              --reporter github
+            flutter test integration_test/auth_flow_test.dart -d emulator-5554
 
   # ─────────────────────────────────────────────────────────────
   # Web Build Smoke Test
