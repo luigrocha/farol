@@ -411,8 +411,9 @@ class _ActionRow extends ConsumerWidget {
           onTap: () async {
             Navigator.pop(context);
             await ref.read(recurringServiceProvider).pauseRule(rule.id);
-            if (context.mounted)
+            if (context.mounted) {
               context.showSuccessSnackBar(context.l10n.recurringPausedSnack);
+            }
           },
         ),
       if (rule.status == RecurringStatus.paused) ...[
@@ -422,8 +423,9 @@ class _ActionRow extends ConsumerWidget {
           onTap: () async {
             Navigator.pop(context);
             await ref.read(recurringServiceProvider).resumeRule(rule.id);
-            if (context.mounted)
+            if (context.mounted) {
               context.showSuccessSnackBar(context.l10n.recurringResumedSnack);
+            }
           },
         ),
       ],
@@ -454,8 +456,9 @@ class _ActionRow extends ConsumerWidget {
           if (!context.mounted) return;
           Navigator.pop(context);
           await ref.read(recurringServiceProvider).cancelRule(rule.id);
-          if (context.mounted)
+          if (context.mounted) {
             context.showSuccessSnackBar(context.l10n.recurringCancelledSnack);
+          }
         },
       ),
     ]);

@@ -28,14 +28,18 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
     super.initState();
     final snap = ref.read(netWorthSnapshotProvider).value;
     if (snap != null) {
-      if (snap.patrimonyTotal > 0)
+      if (snap.patrimonyTotal > 0) {
         _patrimonyCtrl.text = snap.patrimonyTotal.toStringAsFixed(2);
-      if (snap.fgtsBalance > 0)
+      }
+      if (snap.fgtsBalance > 0) {
         _fgtsCtrl.text = snap.fgtsBalance.toStringAsFixed(2);
-      if (snap.investmentsTotal > 0)
+      }
+      if (snap.investmentsTotal > 0) {
         _investmentsCtrl.text = snap.investmentsTotal.toStringAsFixed(2);
-      if (snap.emergencyFund > 0)
+      }
+      if (snap.emergencyFund > 0) {
         _emergencyCtrl.text = snap.emergencyFund.toStringAsFixed(2);
+      }
     }
   }
 

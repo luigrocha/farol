@@ -73,7 +73,9 @@ class RecurringDetector {
     for (final expense in history) {
       if (expense.isProjected) continue;
       if (expense.installmentPlanId != null ||
-          expense.installmentPlanUuid != null) continue;
+          expense.installmentPlanUuid != null) {
+        continue;
+      }
 
       final desc = (expense.storeDescription ?? '').trim().toLowerCase();
       if (desc.isEmpty) continue;

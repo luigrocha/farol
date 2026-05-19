@@ -175,11 +175,13 @@ class SpaceRepository {
     final updates = <String, dynamic>{};
     if (canAddExpenses != null) updates['can_add_expenses'] = canAddExpenses;
     if (canSeeBalances != null) updates['can_see_balances'] = canSeeBalances;
-    if (canSeeMemberBalances != null)
+    if (canSeeMemberBalances != null) {
       updates['can_see_member_balances'] = canSeeMemberBalances;
+    }
     if (canExport != null) updates['can_export'] = canExport;
-    if (canSeeSettlements != null)
+    if (canSeeSettlements != null) {
       updates['can_see_settlements'] = canSeeSettlements;
+    }
 
     final updated = await _client
         .from('space_members')

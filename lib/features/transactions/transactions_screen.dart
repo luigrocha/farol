@@ -377,8 +377,9 @@ class _IncomeRowState extends ConsumerState<_IncomeRow> {
           await ref
               .read(incomeNotifierProvider.notifier)
               .delete(widget.income.id);
-          if (context.mounted)
+          if (context.mounted) {
             context.showSuccessSnackBar(l10n.transactionDeleted);
+          }
         } catch (e) {
           if (context.mounted) context.showErrorSnackBar(e);
         }
@@ -1240,8 +1241,9 @@ class _TxRowState extends ConsumerState<_TxRow> {
               await ref
                   .read(installmentPlanRepositoryProvider)
                   .delete(planUuid);
-              if (context.mounted)
+              if (context.mounted) {
                 context.showSuccessSnackBar('Plano excluído');
+              }
             } catch (e) {
               if (context.mounted) context.showErrorSnackBar(e);
             }
@@ -1283,8 +1285,9 @@ class _TxRowState extends ConsumerState<_TxRow> {
           await ref
               .read(expenseRepositoryProvider)
               .delete(widget.expense.id as int);
-          if (context.mounted)
+          if (context.mounted) {
             context.showSuccessSnackBar(l10n.transactionDeleted);
+          }
         } catch (e) {
           if (context.mounted) context.showErrorSnackBar(e);
         }

@@ -49,7 +49,9 @@ class _RescissionSimulatorScreenState
         vacation == null ||
         vacation < 0 ||
         fgts == null ||
-        fgts < 0) return;
+        fgts < 0) {
+      return;
+    }
 
     setState(() {
       _result = _RescissionResult.compute(

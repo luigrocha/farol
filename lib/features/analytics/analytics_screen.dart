@@ -454,8 +454,9 @@ class _MonthlyTrendCard extends StatelessWidget {
               reservedSize: 20,
               getTitlesWidget: (v, _) {
                 final i = v.toInt();
-                if (i < 0 || i >= allKeys.length)
+                if (i < 0 || i >= allKeys.length) {
                   return const SizedBox.shrink();
+                }
                 return Text(_shortMonth(allKeys[i], l10n),
                     style: TextStyle(fontSize: 9, color: colors.onSurfaceSoft));
               },

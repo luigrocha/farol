@@ -565,7 +565,7 @@ class _DesktopDashboardSliver extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(width: DSSpacing.xl),
+                SizedBox(width: DSSpacing.xl),
                 // ── Right column (secondary) ───────────────────────────
                 Expanded(
                   flex: 45,
@@ -642,7 +642,7 @@ class _WideDesktopSliver extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(width: DSSpacing.xl),
+                SizedBox(width: DSSpacing.xl),
                 // ── Center (primary) ──────────────────────────────────
                 Expanded(
                   flex: 42,
@@ -662,7 +662,7 @@ class _WideDesktopSliver extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(width: DSSpacing.xl),
+                SizedBox(width: DSSpacing.xl),
                 // ── Right sidebar ─────────────────────────────────────
                 Expanded(
                   flex: 30,

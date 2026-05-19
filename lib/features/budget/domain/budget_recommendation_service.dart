@@ -46,8 +46,9 @@ class BudgetRecommendationService {
       // Skip Swile categories — they have their own budget pool
       if (cat.isSwile) continue;
       // Skip income / transfer types
-      if (cat.financialType == 'income' || cat.financialType == 'transfer')
+      if (cat.financialType == 'income' || cat.financialType == 'transfer') {
         continue;
+      }
       final bucket = _bucketFor(cat.financialType);
       bucketCats.putIfAbsent(bucket, () => []).add(cat);
     }

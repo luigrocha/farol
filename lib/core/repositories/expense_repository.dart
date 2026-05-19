@@ -245,8 +245,9 @@ class ExpenseRepository {
         .eq('payment_method', from.paymentMethod);
     final ids = (data as List)
         .where((r) {
-          if ((r['store_description'] as String?) != from.storeDescription)
+          if ((r['store_description'] as String?) != from.storeDescription) {
             return false;
+          }
           final y = (r['year'] as num).toInt();
           final m = (r['month'] as num).toInt();
           return y * 12 + m >= from.year * 12 + from.month;

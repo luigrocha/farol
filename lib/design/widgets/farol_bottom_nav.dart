@@ -61,8 +61,9 @@ class FarolBottomNav extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List.generate(_icons.length, (i) {
-                if (i == 2)
+                if (i == 2) {
                   return _FabItem(label: labels[i], onTap: () => onTap(i));
+                }
                 final (iconOff, iconOn) = _icons[i];
                 final selected = currentIndex == i;
                 final color = selected

@@ -47,22 +47,22 @@ class InvestmentsScreen extends ConsumerWidget {
               const SizedBox(width: 8),
             ],
           ),
-          SliverToBoxAdapter(
+          const SliverToBoxAdapter(
             child: FarolContentConstraint(
               maxWidth: FarolBreakpoints.contentMedium,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const _ConsolidatedHero(),
-                  const SizedBox(height: 12),
-                  const _AllocationCard(),
-                  const SizedBox(height: 12),
-                  const _IASuggestionCard(),
-                  const SizedBox(height: 16),
-                  const _InversionesHeader(),
-                  const _InvestmentsList(),
-                  const FarolBottomPadding(),
+                  _ConsolidatedHero(),
+                  SizedBox(height: 12),
+                  _AllocationCard(),
+                  SizedBox(height: 12),
+                  _IASuggestionCard(),
+                  SizedBox(height: 16),
+                  _InversionesHeader(),
+                  _InvestmentsList(),
+                  FarolBottomPadding(),
                 ],
               ),
             ),

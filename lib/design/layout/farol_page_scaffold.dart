@@ -124,7 +124,7 @@ class FarolPageScaffold extends StatelessWidget {
           child: Center(
             child: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: desktopMaxWidth),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Inner slivers rendered as box widgets inside the constraint

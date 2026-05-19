@@ -17,8 +17,9 @@ class CpfInputFormatter extends TextInputFormatter {
 
   static String _format(String digits) {
     if (digits.length <= 3) return digits;
-    if (digits.length <= 6)
+    if (digits.length <= 6) {
       return '${digits.substring(0, 3)}.${digits.substring(3)}';
+    }
     if (digits.length <= 9) {
       return '${digits.substring(0, 3)}.${digits.substring(3, 6)}.${digits.substring(6)}';
     }

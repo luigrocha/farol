@@ -258,8 +258,9 @@ mixin InviteAcceptedOverlayMixin<T extends StatefulWidget> on State<T> {
 
   /// Returns the overlay widget. Place inside a [Stack] as the last child.
   Widget buildInviteOverlay(BuildContext context) {
-    if (!_showBanner || _pendingMemberName == null)
+    if (!_showBanner || _pendingMemberName == null) {
       return const SizedBox.shrink();
+    }
 
     return Positioned(
       top: MediaQuery.of(context).padding.top + 8,

@@ -123,8 +123,9 @@ class SupabaseAuthRepository implements AuthRepository {
         accessToken: accessToken,
       );
 
-      if (response.user == null)
+      if (response.user == null) {
         throw Exception('User is null after Google sign in');
+      }
       return AppUser.fromSupabase(response.user!);
     } on GoogleRedirectException {
       rethrow;

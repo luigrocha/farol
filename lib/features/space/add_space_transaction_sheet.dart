@@ -287,8 +287,9 @@ class _AddSpaceTransactionSheetState
                             fontWeight: FontWeight.w700,
                           ),
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty)
+                            if (v == null || v.trim().isEmpty) {
                               return 'Digite o valor';
+                            }
                             final n = double.tryParse(v.replaceAll(',', '.'));
                             if (n == null || n <= 0) return 'Valor inválido';
                             return null;
@@ -308,8 +309,9 @@ class _AddSpaceTransactionSheetState
                           ),
                           textCapitalization: TextCapitalization.sentences,
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty)
+                            if (v == null || v.trim().isEmpty) {
                               return 'Digite uma descrição';
+                            }
                             return null;
                           },
                         ),

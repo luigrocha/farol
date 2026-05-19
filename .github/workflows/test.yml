@@ -63,7 +63,7 @@ jobs:
         run: dart format . --output=none --set-exit-if-changed
 
       - name: Analyze project
-        run: flutter analyze --no-fatal-infos
+        run: flutter analyze
 
       - name: Run Auth tests
         run: |

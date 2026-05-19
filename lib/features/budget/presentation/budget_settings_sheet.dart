@@ -29,12 +29,15 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
     super.initState();
     final budget = ref.read(budgetSettingsProvider).value;
     if (budget != null) {
-      if (budget.netSalary > 0)
+      if (budget.netSalary > 0) {
         _netSalaryController.text = budget.netSalary.toStringAsFixed(2);
-      if (budget.swileMeal > 0)
+      }
+      if (budget.swileMeal > 0) {
         _swileMealController.text = budget.swileMeal.toStringAsFixed(2);
-      if (budget.swileFood > 0)
+      }
+      if (budget.swileFood > 0) {
         _swileFoodController.text = budget.swileFood.toStringAsFixed(2);
+      }
     }
   }
 
@@ -205,8 +208,9 @@ class _AmountField extends StatelessWidget {
       validator: (v) {
         if (v == null || v.trim().isEmpty) return null;
         final val = double.tryParse(v.trim().replaceAll(',', '.'));
-        if (val == null || val < 0)
+        if (val == null || val < 0) {
           return AppLocalizations.of(context).translate('invalid_amount');
+        }
         return null;
       },
     );

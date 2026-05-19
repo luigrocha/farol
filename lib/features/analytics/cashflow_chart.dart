@@ -147,8 +147,9 @@ class CashflowChart extends ConsumerWidget {
                       show: true,
                       checkToShowDot: (spot, barData) {
                         final idx = spot.x.toInt();
-                        if (idx < 0 || idx >= forecast.points.length)
+                        if (idx < 0 || idx >= forecast.points.length) {
                           return false;
+                        }
                         return forecast.points[idx].hasObligation;
                       },
                       getDotPainter: (_, __, ___, ____) => FlDotCirclePainter(
