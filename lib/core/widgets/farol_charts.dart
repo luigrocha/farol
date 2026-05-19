@@ -31,17 +31,28 @@ class FarolDonutChart extends StatelessWidget {
           PieChart(PieChartData(
             sectionsSpace: 0,
             centerSpaceRadius: 70,
-            sections: data.entries.map((e) => PieChartSectionData(
-              color: tokens.FarolColors.getCategoryColor(e.key),
-              value: e.value,
-              radius: 18,
-              showTitle: false,
-            )).toList(),
+            sections: data.entries
+                .map((e) => PieChartSectionData(
+                      color: tokens.FarolColors.getCategoryColor(e.key),
+                      value: e.value,
+                      radius: 18,
+                      showTitle: false,
+                    ))
+                .toList(),
           )),
           Column(mainAxisSize: MainAxisSize.min, children: [
-            Text(label.toUpperCase(), style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, fontWeight: FontWeight.w700, letterSpacing: 1)),
+            Text(label.toUpperCase(),
+                style: TextStyle(
+                    fontSize: 10,
+                    color: colors.onSurfaceSoft,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1)),
             const SizedBox(height: 4),
-            Text('R\$ ${(total / 1000).toStringAsFixed(1)}k', style: GoogleFonts.manrope(fontSize: 20, fontWeight: FontWeight.w800, color: colors.onSurface)),
+            Text('R\$ ${(total / 1000).toStringAsFixed(1)}k',
+                style: GoogleFonts.manrope(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: colors.onSurface)),
           ]),
         ],
       ),
@@ -53,7 +64,8 @@ class FarolTrendChart extends StatelessWidget {
   final List<double> points;
   final Color color;
 
-  const FarolTrendChart({super.key, required this.points, this.color = tokens.FarolColors.beam});
+  const FarolTrendChart(
+      {super.key, required this.points, this.color = tokens.FarolColors.beam});
 
   @override
   Widget build(BuildContext context) {
@@ -63,17 +75,26 @@ class FarolTrendChart extends StatelessWidget {
       borderData: FlBorderData(show: false),
       lineBarsData: [
         LineChartBarData(
-          spots: points.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value)).toList(),
+          spots: points
+              .asMap()
+              .entries
+              .map((e) => FlSpot(e.key.toDouble(), e.value))
+              .toList(),
           isCurved: true,
           color: color,
           barWidth: 3,
           isStrokeCapRound: true,
           dotData: const FlDotData(show: false),
-          belowBarData: BarAreaData(show: true, gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [color.withValues(alpha: 0.2), color.withValues(alpha: 0)],
-          )),
+          belowBarData: BarAreaData(
+              show: true,
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  color.withValues(alpha: 0.2),
+                  color.withValues(alpha: 0)
+                ],
+              )),
         ),
       ],
     ));
@@ -95,7 +116,11 @@ class FarolCandleChart extends StatelessWidget {
 
 class CandleData {
   final double open, close, low, high;
-  CandleData({required this.open, required this.close, required this.low, required this.high});
+  CandleData(
+      {required this.open,
+      required this.close,
+      required this.low,
+      required this.high});
 }
 
 class _CandlePainter extends CustomPainter {
@@ -120,12 +145,22 @@ class _CandlePainter extends CustomPainter {
       final yL = size.height - ((d.low - minVal) / range) * size.height;
       final yO = size.height - ((d.open - minVal) / range) * size.height;
       final yC = size.height - ((d.close - minVal) / range) * size.height;
-      canvas.drawLine(Offset(x, yH), Offset(x, yL), Paint()..color = col..strokeWidth = 1.2);
+      canvas.drawLine(
+          Offset(x, yH),
+          Offset(x, yL),
+          Paint()
+            ..color = col
+            ..strokeWidth = 1.2);
       final top = math.min(yO, yC);
       final bottom = math.max(yO, yC);
       canvas.drawRRect(
-        RRect.fromRectAndRadius(Rect.fromLTRB(x - candleWidth / 2, top, x + candleWidth / 2, math.max(top + 2, bottom)), const Radius.circular(2)),
-        Paint()..color = col..style = PaintingStyle.fill,
+        RRect.fromRectAndRadius(
+            Rect.fromLTRB(x - candleWidth / 2, top, x + candleWidth / 2,
+                math.max(top + 2, bottom)),
+            const Radius.circular(2)),
+        Paint()
+          ..color = col
+          ..style = PaintingStyle.fill,
       );
     }
   }

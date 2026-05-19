@@ -189,14 +189,14 @@ class PdfReportService {
   PdfReportService._();
 
   // Farol brand colors
-  static const _navy   = PdfColor(0.1059, 0.2275, 0.3608); // #1B3A5C
-  static const _amber  = PdfColor(0.9608, 0.6510, 0.1373); // #F5A623
-  static const _green  = PdfColor(0.1020, 0.4784, 0.2902); // #1A7A4A
-  static const _red    = PdfColor(0.9098, 0.2824, 0.3333); // #E84855
+  static const _navy = PdfColor(0.1059, 0.2275, 0.3608); // #1B3A5C
+  static const _amber = PdfColor(0.9608, 0.6510, 0.1373); // #F5A623
+  static const _green = PdfColor(0.1020, 0.4784, 0.2902); // #1A7A4A
+  static const _red = PdfColor(0.9098, 0.2824, 0.3333); // #E84855
   static const _orange = PdfColor(0.95, 0.55, 0.10);
   static const _surface = PdfColor(0.9412, 0.9333, 0.9137);
-  static const _textDark  = PdfColor(0.08, 0.08, 0.08);
-  static const _textMuted = PdfColor(0.5,  0.5,  0.5);
+  static const _textDark = PdfColor(0.08, 0.08, 0.08);
+  static const _textMuted = PdfColor(0.5, 0.5, 0.5);
 
   static Future<Uint8List> generate({
     required int month,
@@ -230,7 +230,8 @@ class PdfReportService {
     final savingsRate = netSalary > 0 ? balance / netSalary * 100 : 0.0;
 
     final expByCategory = <String, double>{};
-    for (final e in expenses.where((e) => !e.isProjected && e.payType == 'Cash')) {
+    for (final e
+        in expenses.where((e) => !e.isProjected && e.payType == 'Cash')) {
       expByCategory[e.category] = (expByCategory[e.category] ?? 0) + e.amount;
     }
     final sortedCats = expByCategory.entries.toList()
@@ -254,10 +255,12 @@ class PdfReportService {
         pw.SizedBox(height: 8),
         sortedCats.isEmpty
             ? _emptyNote(l.noCashExpenses)
-            : _categoryTable(sortedCats, netSalary, goalsMap, locale, categoryNames, l),
+            : _categoryTable(
+                sortedCats, netSalary, goalsMap, locale, categoryNames, l),
         if (swileExpenses > 0) ...[
           pw.SizedBox(height: 6),
-          _noteText('${l.swileNote}: ${FinancialCalculatorService.formatBRL(swileExpenses)}'),
+          _noteText(
+              '${l.swileNote}: ${FinancialCalculatorService.formatBRL(swileExpenses)}'),
         ],
         pw.SizedBox(height: 24),
         _sectionTitle(l.monthlyIncome),
@@ -272,8 +275,11 @@ class PdfReportService {
           _installmentsTable(installments, l),
         ],
         if (netWorth != null &&
-            (netWorth.fgtsBalance + netWorth.investmentsTotal +
-                netWorth.emergencyFund + netWorth.patrimonyTotal) > 0) ...[
+            (netWorth.fgtsBalance +
+                    netWorth.investmentsTotal +
+                    netWorth.emergencyFund +
+                    netWorth.patrimonyTotal) >
+                0) ...[
           pw.SizedBox(height: 24),
           _sectionTitle(l.netWorth),
           pw.SizedBox(height: 8),
@@ -283,9 +289,7 @@ class PdfReportService {
     ));
 
     // Page 2: Health score + insights (only when there's data)
-    final topInsights = insights
-        .where((i) => !i.isExpired())
-        .toList()
+    final topInsights = insights.where((i) => !i.isExpired()).toList()
       ..sort((a, b) => a.priority.index.compareTo(b.priority.index));
     final visibleInsights = topInsights.take(6).toList();
 
@@ -371,15 +375,23 @@ class PdfReportService {
   static pw.Widget _kpiRow(double netSalary, double cashExpenses,
       double balance, double savingsRate, _L l) {
     return pw.Row(children: [
-      _kpiCard(l.netSalary, FinancialCalculatorService.formatBRL(netSalary), _navy),
+      _kpiCard(
+          l.netSalary, FinancialCalculatorService.formatBRL(netSalary), _navy),
       pw.SizedBox(width: 8),
-      _kpiCard(l.cashExpenses, FinancialCalculatorService.formatBRL(cashExpenses), _red),
+      _kpiCard(l.cashExpenses,
+          FinancialCalculatorService.formatBRL(cashExpenses), _red),
       pw.SizedBox(width: 8),
       _kpiCard(l.balance, FinancialCalculatorService.formatBRL(balance),
           balance >= 0 ? _green : _red),
       pw.SizedBox(width: 8),
-      _kpiCard(l.savingsRate, '${savingsRate.toStringAsFixed(1)}%',
-          savingsRate >= 20 ? _green : savingsRate >= 10 ? _amber : _red),
+      _kpiCard(
+          l.savingsRate,
+          '${savingsRate.toStringAsFixed(1)}%',
+          savingsRate >= 20
+              ? _green
+              : savingsRate >= 10
+                  ? _amber
+                  : _red),
     ]);
   }
 
@@ -391,18 +403,22 @@ class PdfReportService {
           border: pw.Border.all(color: accent, width: 1),
           borderRadius: const pw.BorderRadius.all(pw.Radius.circular(6)),
         ),
-        child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
-          pw.Text(label.toUpperCase(),
-              style: pw.TextStyle(
-                  font: pw.Font.helvetica(),
-                  fontSize: 7,
-                  color: _textMuted,
-                  letterSpacing: 0.6)),
-          pw.SizedBox(height: 5),
-          pw.Text(value,
-              style: pw.TextStyle(
-                  font: pw.Font.helveticaBold(), fontSize: 13, color: accent)),
-        ]),
+        child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(label.toUpperCase(),
+                  style: pw.TextStyle(
+                      font: pw.Font.helvetica(),
+                      fontSize: 7,
+                      color: _textMuted,
+                      letterSpacing: 0.6)),
+              pw.SizedBox(height: 5),
+              pw.Text(value,
+                  style: pw.TextStyle(
+                      font: pw.Font.helveticaBold(),
+                      fontSize: 13,
+                      color: accent)),
+            ]),
       ),
     );
   }
@@ -435,21 +451,46 @@ class PdfReportService {
           final limit = goal?.targetAmount ?? (netSalary * 0.1);
           final over = amount > limit;
           final nearLimit = !over && limit > 0 && amount / limit >= 0.8;
-          final statusText = over ? l.exceeded : nearLimit ? l.alert : l.ok;
-          final statusColor = over ? _red : nearLimit ? _amber : _green;
+          final statusText = over
+              ? l.exceeded
+              : nearLimit
+                  ? l.alert
+                  : l.ok;
+          final statusColor = over
+              ? _red
+              : nearLimit
+                  ? _amber
+                  : _green;
           final rowBg = i.isEven ? PdfColors.white : _surface;
           return pw.TableRow(
             decoration: pw.BoxDecoration(color: rowBg),
             children: [
-              _cell(label, pw.TextStyle(font: pw.Font.helvetica(), fontSize: 9, color: _textDark)),
-              _cell(FinancialCalculatorService.formatBRL(amount),
-                  pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 9, color: _textDark),
+              _cell(
+                  label,
+                  pw.TextStyle(
+                      font: pw.Font.helvetica(),
+                      fontSize: 9,
+                      color: _textDark)),
+              _cell(
+                  FinancialCalculatorService.formatBRL(amount),
+                  pw.TextStyle(
+                      font: pw.Font.helveticaBold(),
+                      fontSize: 9,
+                      color: _textDark),
                   align: pw.TextAlign.right),
-              _cell('${pctSalary.toStringAsFixed(1)}%',
-                  pw.TextStyle(font: pw.Font.helvetica(), fontSize: 9, color: _textMuted),
+              _cell(
+                  '${pctSalary.toStringAsFixed(1)}%',
+                  pw.TextStyle(
+                      font: pw.Font.helvetica(),
+                      fontSize: 9,
+                      color: _textMuted),
                   align: pw.TextAlign.right),
-              _cell(statusText,
-                  pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 9, color: statusColor),
+              _cell(
+                  statusText,
+                  pw.TextStyle(
+                      font: pw.Font.helveticaBold(),
+                      fontSize: 9,
+                      color: statusColor),
                   align: pw.TextAlign.center),
             ],
           );
@@ -474,15 +515,28 @@ class PdfReportService {
           final i = entry.key;
           final inc = entry.value;
           return pw.TableRow(
-            decoration: pw.BoxDecoration(color: i.isEven ? PdfColors.white : _surface),
+            decoration:
+                pw.BoxDecoration(color: i.isEven ? PdfColors.white : _surface),
             children: [
-              _cell(_incomeLabel(inc.incomeType, locale),
-                  pw.TextStyle(font: pw.Font.helvetica(), fontSize: 9, color: _textDark)),
-              _cell(FinancialCalculatorService.formatBRL(inc.amount),
-                  pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 9, color: _textDark),
+              _cell(
+                  _incomeLabel(inc.incomeType, locale),
+                  pw.TextStyle(
+                      font: pw.Font.helvetica(),
+                      fontSize: 9,
+                      color: _textDark)),
+              _cell(
+                  FinancialCalculatorService.formatBRL(inc.amount),
+                  pw.TextStyle(
+                      font: pw.Font.helveticaBold(),
+                      fontSize: 9,
+                      color: _textDark),
                   align: pw.TextAlign.right),
-              _cell(inc.isNet ? l.yes : l.no,
-                  pw.TextStyle(font: pw.Font.helvetica(), fontSize: 9, color: _textMuted),
+              _cell(
+                  inc.isNet ? l.yes : l.no,
+                  pw.TextStyle(
+                      font: pw.Font.helvetica(),
+                      fontSize: 9,
+                      color: _textMuted),
                   align: pw.TextAlign.center),
             ],
           );
@@ -490,10 +544,16 @@ class PdfReportService {
         pw.TableRow(
           decoration: const pw.BoxDecoration(color: _navy),
           children: [
-            _cell(l.total,
-                pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 9, color: PdfColors.white)),
-            _cell(FinancialCalculatorService.formatBRL(total),
-                pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 9, color: _amber),
+            _cell(
+                l.total,
+                pw.TextStyle(
+                    font: pw.Font.helveticaBold(),
+                    fontSize: 9,
+                    color: PdfColors.white)),
+            _cell(
+                FinancialCalculatorService.formatBRL(total),
+                pw.TextStyle(
+                    font: pw.Font.helveticaBold(), fontSize: 9, color: _amber),
                 align: pw.TextAlign.right),
             _cell('', pw.TextStyle(font: pw.Font.helvetica(), fontSize: 9)),
           ],
@@ -504,8 +564,10 @@ class PdfReportService {
 
   // ── Installments table ───────────────────────────────────────────────────────
 
-  static pw.Widget _installmentsTable(List<InstallmentPlan> installments, _L l) {
-    final totalMonthly = installments.fold(0.0, (s, i) => s + i.installmentAmount);
+  static pw.Widget _installmentsTable(
+      List<InstallmentPlan> installments, _L l) {
+    final totalMonthly =
+        installments.fold(0.0, (s, i) => s + i.installmentAmount);
     return pw.Table(
       columnWidths: const {
         0: pw.FlexColumnWidth(4),
@@ -518,15 +580,28 @@ class PdfReportService {
           final i = entry.key;
           final inst = entry.value;
           return pw.TableRow(
-            decoration: pw.BoxDecoration(color: i.isEven ? PdfColors.white : _surface),
+            decoration:
+                pw.BoxDecoration(color: i.isEven ? PdfColors.white : _surface),
             children: [
-              _cell('${inst.description} (${inst.paidCount}/${inst.numInstallments})',
-                  pw.TextStyle(font: pw.Font.helvetica(), fontSize: 9, color: _textDark)),
-              _cell(FinancialCalculatorService.formatBRL(inst.installmentAmount),
-                  pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 9, color: _textDark),
+              _cell(
+                  '${inst.description} (${inst.paidCount}/${inst.numInstallments})',
+                  pw.TextStyle(
+                      font: pw.Font.helvetica(),
+                      fontSize: 9,
+                      color: _textDark)),
+              _cell(
+                  FinancialCalculatorService.formatBRL(inst.installmentAmount),
+                  pw.TextStyle(
+                      font: pw.Font.helveticaBold(),
+                      fontSize: 9,
+                      color: _textDark),
                   align: pw.TextAlign.right),
-              _cell(FinancialCalculatorService.formatBRL(inst.remainingAmount),
-                  pw.TextStyle(font: pw.Font.helvetica(), fontSize: 9, color: _textMuted),
+              _cell(
+                  FinancialCalculatorService.formatBRL(inst.remainingAmount),
+                  pw.TextStyle(
+                      font: pw.Font.helvetica(),
+                      fontSize: 9,
+                      color: _textMuted),
                   align: pw.TextAlign.right),
             ],
           );
@@ -534,10 +609,16 @@ class PdfReportService {
         pw.TableRow(
           decoration: const pw.BoxDecoration(color: _navy),
           children: [
-            _cell(l.totalMonthly,
-                pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 9, color: PdfColors.white)),
-            _cell(FinancialCalculatorService.formatBRL(totalMonthly),
-                pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 9, color: _amber),
+            _cell(
+                l.totalMonthly,
+                pw.TextStyle(
+                    font: pw.Font.helveticaBold(),
+                    fontSize: 9,
+                    color: PdfColors.white)),
+            _cell(
+                FinancialCalculatorService.formatBRL(totalMonthly),
+                pw.TextStyle(
+                    font: pw.Font.helveticaBold(), fontSize: 9, color: _amber),
                 align: pw.TextAlign.right),
             _cell('', pw.TextStyle(font: pw.Font.helvetica(), fontSize: 9)),
           ],
@@ -561,7 +642,8 @@ class PdfReportService {
       decoration: const pw.BoxDecoration(
           color: _navy,
           borderRadius: pw.BorderRadius.all(pw.Radius.circular(8))),
-      child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
+      child:
+          pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
         pw.Row(children: [
           _nwStat('FGTS', snap.fgtsBalance),
           _nwStat('Investimentos', snap.investmentsTotal),
@@ -581,7 +663,9 @@ class PdfReportService {
                     color: const PdfColor(1, 1, 1, 0.65))),
             pw.Text(FinancialCalculatorService.formatBRL(nw),
                 style: pw.TextStyle(
-                    font: pw.Font.helveticaBold(), fontSize: 16, color: _amber)),
+                    font: pw.Font.helveticaBold(),
+                    fontSize: 16,
+                    color: _amber)),
           ],
         ),
       ]),
@@ -590,7 +674,8 @@ class PdfReportService {
 
   static pw.Widget _nwStat(String label, double value) {
     return pw.Expanded(
-      child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
+      child:
+          pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
         pw.Text(label.toUpperCase(),
             style: pw.TextStyle(
                 font: pw.Font.helvetica(),
@@ -600,7 +685,9 @@ class PdfReportService {
         pw.SizedBox(height: 3),
         pw.Text(FinancialCalculatorService.formatBRL(value),
             style: pw.TextStyle(
-                font: pw.Font.helveticaBold(), fontSize: 10, color: PdfColors.white)),
+                font: pw.Font.helveticaBold(),
+                fontSize: 10,
+                color: PdfColors.white)),
       ]),
     );
   }
@@ -611,8 +698,16 @@ class PdfReportService {
     // score is 0–10
     final clamped = score.clamp(0.0, 10.0);
     final pct = clamped / 10.0;
-    final scoreColor = clamped >= 7 ? _green : clamped >= 4 ? _amber : _red;
-    final scoreLabel = clamped >= 7 ? l.healthy : clamped >= 4 ? l.warning : l.critical;
+    final scoreColor = clamped >= 7
+        ? _green
+        : clamped >= 4
+            ? _amber
+            : _red;
+    final scoreLabel = clamped >= 7
+        ? l.healthy
+        : clamped >= 4
+            ? l.warning
+            : l.critical;
 
     return pw.Container(
       padding: const pw.EdgeInsets.all(20),
@@ -620,23 +715,29 @@ class PdfReportService {
         border: pw.Border.all(color: scoreColor, width: 1.5),
         borderRadius: const pw.BorderRadius.all(pw.Radius.circular(8)),
       ),
-      child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
+      child:
+          pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
         // Score headline
         pw.Row(
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           crossAxisAlignment: pw.CrossAxisAlignment.center,
           children: [
-            pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
-              pw.Text(scoreLabel,
-                  style: pw.TextStyle(
-                      font: pw.Font.helveticaBold(),
-                      fontSize: 18,
-                      color: scoreColor)),
-              pw.SizedBox(height: 2),
-              pw.Text('${l.score}: ${clamped.toStringAsFixed(1)} ${l.outOf} 10',
-                  style: pw.TextStyle(
-                      font: pw.Font.helvetica(), fontSize: 10, color: _textMuted)),
-            ]),
+            pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Text(scoreLabel,
+                      style: pw.TextStyle(
+                          font: pw.Font.helveticaBold(),
+                          fontSize: 18,
+                          color: scoreColor)),
+                  pw.SizedBox(height: 2),
+                  pw.Text(
+                      '${l.score}: ${clamped.toStringAsFixed(1)} ${l.outOf} 10',
+                      style: pw.TextStyle(
+                          font: pw.Font.helvetica(),
+                          fontSize: 10,
+                          color: _textMuted)),
+                ]),
             // Score circle
             pw.Container(
               width: 56,
@@ -684,9 +785,15 @@ class PdfReportService {
         pw.Row(
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           children: [
-            pw.Text('0', style: pw.TextStyle(font: pw.Font.helvetica(), fontSize: 7, color: _textMuted)),
-            pw.Text('5', style: pw.TextStyle(font: pw.Font.helvetica(), fontSize: 7, color: _textMuted)),
-            pw.Text('10', style: pw.TextStyle(font: pw.Font.helvetica(), fontSize: 7, color: _textMuted)),
+            pw.Text('0',
+                style: pw.TextStyle(
+                    font: pw.Font.helvetica(), fontSize: 7, color: _textMuted)),
+            pw.Text('5',
+                style: pw.TextStyle(
+                    font: pw.Font.helvetica(), fontSize: 7, color: _textMuted)),
+            pw.Text('10',
+                style: pw.TextStyle(
+                    font: pw.Font.helvetica(), fontSize: 7, color: _textMuted)),
           ],
         ),
       ]),
@@ -704,7 +811,8 @@ class PdfReportService {
           margin: const pw.EdgeInsets.only(bottom: 8),
           padding: const pw.EdgeInsets.all(12),
           decoration: pw.BoxDecoration(
-            border: pw.Border(left: pw.BorderSide(color: accentColor, width: 3)),
+            border:
+                pw.Border(left: pw.BorderSide(color: accentColor, width: 3)),
             color: _surface,
             borderRadius: const pw.BorderRadius.all(pw.Radius.circular(4)),
           ),
@@ -720,7 +828,8 @@ class PdfReportService {
                       height: 6,
                       decoration: pw.BoxDecoration(
                         color: accentColor,
-                        borderRadius: const pw.BorderRadius.all(pw.Radius.circular(3)),
+                        borderRadius:
+                            const pw.BorderRadius.all(pw.Radius.circular(3)),
                       ),
                     ),
                     pw.Expanded(
@@ -791,7 +900,8 @@ class PdfReportService {
     return pw.TableRow(
       decoration: const pw.BoxDecoration(color: _navy),
       children: headers
-          .map((h) => _cell(h,
+          .map((h) => _cell(
+              h,
               pw.TextStyle(
                   font: pw.Font.helveticaBold(),
                   fontSize: 9,

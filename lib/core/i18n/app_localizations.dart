@@ -53,7 +53,20 @@ class AppLocalizations {
       'optional': 'optional',
       'required': 'Required',
       'error': 'Error',
-      'months': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      'months': [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ],
       // Expenses & Transactions
       'add_expense': 'Add Expense',
       'edit_expense': 'Edit Expense',
@@ -85,7 +98,8 @@ class AppLocalizations {
       // Net Worth Screen
       'evolution': 'Evolution',
       'period_flow': 'Period Flow',
-      'no_history_data': 'No historical data yet.\nSnapshots are saved automatically.',
+      'no_history_data':
+          'No historical data yet.\nSnapshots are saved automatically.',
       'no_net_worth': 'No net worth data',
       'no_accounts_registered': 'No accounts registered',
       'filter_all_time': 'All',
@@ -138,13 +152,18 @@ class AppLocalizations {
       'budget_pct_used': '%s% used',
       'budget_pct_over_limit': '%s% over limit',
       'budget_pct_remaining': '%s% remaining',
-      'budget_free_up': 'Adjusting this would exceed your 100% budget limit. Free up %s% first.',
+      'budget_free_up':
+          'Adjusting this would exceed your 100% budget limit. Free up %s% first.',
       'budget_rec_title': 'View budget suggestions (50/30/20)',
-      'budget_rec_history_subtitle': 'Suggestions based on your spending history this period.',
-      'budget_rec_rule_subtitle': 'No spending history yet — suggestions based on the 50/30/20 rule.',
+      'budget_rec_history_subtitle':
+          'Suggestions based on your spending history this period.',
+      'budget_rec_rule_subtitle':
+          'No spending history yet — suggestions based on the 50/30/20 rule.',
       'reset_to_goal': 'Reset to goal amount?',
-      'reset_to_goal_desc': 'This will remove the custom amount and revert to your goal.',
-      'reset_to_goal_with_amount': 'This will remove the custom amount and revert to your goal (%s).',
+      'reset_to_goal_desc':
+          'This will remove the custom amount and revert to your goal.',
+      'reset_to_goal_with_amount':
+          'This will remove the custom amount and revert to your goal (%s).',
       'delete_budget': 'Delete budget?',
       'remove_budget': 'Remove budget for %s?',
       'budget_custom_label': 'Custom',
@@ -221,7 +240,8 @@ class AppLocalizations {
       'category_added': 'Category added',
       'category_deleted': 'Category deleted',
       'delete_category': 'Delete category?',
-      'delete_category_desc': 'This will not delete existing expenses, but the category will be removed from active categories.',
+      'delete_category_desc':
+          'This will not delete existing expenses, but the category will be removed from active categories.',
       // Category enums
       'cat_housing': 'Housing',
       'cat_transport': 'Transport',
@@ -270,7 +290,8 @@ class AppLocalizations {
       'notifications_no_category_over': 'No category exceeds 75% of the budget',
       'notifications_tips': 'Tips',
       'notifications_tip_title': 'Tip of the month',
-      'notifications_tip_body': 'Reviewing your budgets by category helps you identify patterns and make better financial decisions.',
+      'notifications_tip_body':
+          'Reviewing your budgets by category helps you identify patterns and make better financial decisions.',
       'notifications_level_exceeded': 'Limit exceeded',
       'notifications_level_critical': 'Critical alert',
       'notifications_level_warning': 'Warning',
@@ -348,8 +369,10 @@ class AppLocalizations {
       'recurring_created_snack': 'Recurring created',
       // Suggestions screen
       'recurring_suggestions_title': 'Recurring suggestions',
-      'recurring_suggestions_subtitle': 'I found patterns in your spending history.\nConfirm the ones that are recurring.',
-      'recurring_suggestions_empty': 'No recurring pattern found\nin your history.',
+      'recurring_suggestions_subtitle':
+          'I found patterns in your spending history.\nConfirm the ones that are recurring.',
+      'recurring_suggestions_empty':
+          'No recurring pattern found\nin your history.',
       'recurring_confidence_pct': '%s%% confidence',
       'recurring_btn_ignore': 'Ignore',
       'recurring_btn_confirm': 'Confirm',
@@ -358,7 +381,8 @@ class AppLocalizations {
       // investments_vs_last_month
       'investments_vs_last_month': 'vs. last month',
       'investments_strategic_distribution': 'Strategic portfolio distribution',
-      'investments_low_exposure': 'Your portfolio has low exposure to real estate assets. Consider brick FIIs.',
+      'investments_low_exposure':
+          'Your portfolio has low exposure to real estate assets. Consider brick FIIs.',
       'investments_explore_fiis': 'Explore FIIs',
       'investments_header': 'Investments',
       'investments_detail_by_asset': 'Detail by asset',
@@ -380,33 +404,42 @@ class AppLocalizations {
       'insights_empty': 'No insights right now.\nKeep recording your expenses!',
       // Insight rule strings
       'insight_overdraft_title': '⚠️ You may close in the red',
-      'insight_overdraft_body': 'At the current pace, the period closes at %s. You still have %s in bills to pay.',
+      'insight_overdraft_body':
+          'At the current pace, the period closes at %s. You still have %s in bills to pay.',
       'insight_overdraft_action': 'See projection →',
       'insight_liquidity_critical_title': '🚨 Critical: payments due this week',
       'insight_liquidity_warning_title': '📅 Payments due this week',
-      'insight_liquidity_body': 'Your current balance is %s. Check that it covers all due payments before spending.',
+      'insight_liquidity_body':
+          'Your current balance is %s. Check that it covers all due payments before spending.',
       'insight_liquidity_action': 'See commitments →',
       'insight_spike_title': '📈 %s above usual pace',
-      'insight_spike_body': 'You spent %s this month — %s%% more than your average of %s. There\'s still time to adjust.',
+      'insight_spike_body':
+          'You spent %s this month — %s%% more than your average of %s. There\'s still time to adjust.',
       'insight_spike_action': 'See %s →',
       'insight_duplicate_title': 'Possible duplicate charge',
       'insight_duplicate_body': '%sx "%s" for R\$ %s in %s day(s).',
       'insight_duplicate_action': 'Check',
       'insight_subscription_title': 'Subscriptions growing',
-      'insight_subscription_body': 'Your subscription spending increased R\$ %s over the last 3 months.',
+      'insight_subscription_body':
+          'Your subscription spending increased R\$ %s over the last 3 months.',
       'insight_subscription_action': 'See subscriptions',
       'insight_savings_title': 'Savings possible in %s',
-      'insight_savings_body': '%s is %s over budget. Adjusting could free up that amount per period.',
+      'insight_savings_body':
+          '%s is %s over budget. Adjusting could free up that amount per period.',
       'insight_savings_action': 'Adjust budget',
       'insight_invest_title': 'You will have %s left over',
-      'insight_invest_body': 'At the current pace, you will have %s free at the end of the period. How about setting some aside?',
+      'insight_invest_body':
+          'At the current pace, you will have %s free at the end of the period. How about setting some aside?',
       'insight_invest_action': 'See options',
       'insight_streak_title': '%s periods within budget! 🎉',
-      'insight_streak_body': 'You have been keeping your finances in check for %s consecutive periods. Keep it up!',
+      'insight_streak_body':
+          'You have been keeping your finances in check for %s consecutive periods. Keep it up!',
       'insight_debt_title': 'Installments decreasing!',
-      'insight_debt_body': 'Your active installments dropped R\$ %s compared to the previous period.',
+      'insight_debt_body':
+          'Your active installments dropped R\$ %s compared to the previous period.',
       'insight_unusual_title': 'New high-value purchase',
-      'insight_unusual_body': '"%s" for R\$ %s — first time it appears in your history.',
+      'insight_unusual_body':
+          '"%s" for R\$ %s — first time it appears in your history.',
       'insight_unusual_action': 'See expense',
       // Recurring frequency labels
       'freq_weekly': 'Weekly',
@@ -425,7 +458,8 @@ class AppLocalizations {
       'accounts_transfer_need_two': 'Add at least 2 accounts to transfer',
       'accounts_section_bank': 'Bank Accounts',
       'accounts_empty_title': 'No accounts registered',
-      'accounts_empty_hint': 'Add your accounts to track\nyour net worth in real time.',
+      'accounts_empty_hint':
+          'Add your accounts to track\nyour net worth in real time.',
       'accounts_delete_title': 'Delete account?',
       'accounts_delete_body': 'The account "%s" will be removed.',
       'accounts_action_update_balance': 'Update balance',
@@ -454,7 +488,8 @@ class AppLocalizations {
       'analytics_monthly_comparison': 'Monthly Comparison',
       // Cashflow chart
       'cashflow_title': 'Cash Flow (90 days)',
-      'cashflow_negative_warning': 'Projected balance goes negative at some point',
+      'cashflow_negative_warning':
+          'Projected balance goes negative at some point',
       'cashflow_legend_real': 'Actual',
       'cashflow_legend_projection': 'Projection',
       'cashflow_legend_commitment': 'Commitment',
@@ -477,7 +512,8 @@ class AppLocalizations {
       'installments_btn_skip_nth': 'Skip %s installment',
       'installments_btn_delete_plan': 'Delete plan',
       'installments_plan_title': 'Installment plan',
-      'installments_delete_confirm': 'Remove "%s"? All installments will be deleted.',
+      'installments_delete_confirm':
+          'Remove "%s"? All installments will be deleted.',
       'installments_completed_snack': '🎉 "%s" completed!',
       'installments_registered_snack': '✅ %s installment registered',
       'installments_skipped_snack': '⏭ %s installment skipped',
@@ -498,12 +534,14 @@ class AppLocalizations {
       'installments_field_first_due': '1st due date',
       'installments_btn_create': 'CREATE INSTALLMENT PLAN',
       'installments_validation_desc': 'Please enter a description',
-      'installments_validation_amount': 'Please enter the total purchase amount',
+      'installments_validation_amount':
+          'Please enter the total purchase amount',
       'installments_created_snack': '✅ Installment plan created',
       'installments_preview': 'Preview',
       'installments_preview_last': 'Last',
       'installments_preview_ends': 'Ends on',
-      'installments_preview_rounding_note': '* Last installment adjusted for rounding',
+      'installments_preview_rounding_note':
+          '* Last installment adjusted for rounding',
       // Authentication
       'sign_in': 'Sign In',
       'sign_up': 'Sign Up',
@@ -531,16 +569,19 @@ class AppLocalizations {
       'new_password_title_1': 'New\n',
       'new_password_title_2': 'password.',
       'confirm_new_password': 'Confirm new password',
-      'choose_strong_password': 'Choose a strong password to protect your account.',
+      'choose_strong_password':
+          'Choose a strong password to protect your account.',
       'passwords_dont_match': 'Passwords do not match',
-      'we_sent_verification': 'We sent a verification link to your email. Please check it to continue.',
+      'we_sent_verification':
+          'We sent a verification link to your email. Please check it to continue.',
       'very_weak': 'Very weak',
       'weak': 'Weak',
       'good': 'Good',
       'strong': 'Strong',
       // Onboarding
       'onboarding_title': 'Clarity for every dollar.',
-      'onboarding_subtitle': 'Your money on the right track. Financial planning that guides every decision with clarity.',
+      'onboarding_subtitle':
+          'Your money on the right track. Financial planning that guides every decision with clarity.',
       'onboarding_f1': 'Bank-grade security and integrated Pix',
       'onboarding_f2': 'AI that understands your salary and benefits',
       'onboarding_f3': 'Support in your language, 24/7',
@@ -560,7 +601,8 @@ class AppLocalizations {
       'make_member': 'Make Member',
       'make_viewer': 'Make Viewer',
       'remove_member_title': 'Remove member?',
-      'remove_member_confirm': "This will remove the member from '{name}'. Their data will remain but they will lose access.",
+      'remove_member_confirm':
+          "This will remove the member from '{name}'. Their data will remain but they will lose access.",
       'error_updating_role': 'Error updating role: %s',
       'error_removing_member': 'Error removing member: %s',
       'email_address': 'Email address',
@@ -584,7 +626,8 @@ class AppLocalizations {
       'error_sending_invite': 'Error sending invite: %s',
       // Workspace create
       'new_workspace': 'New workspace',
-      'workspace_description': 'Workspaces let you organize and share finances with others.',
+      'workspace_description':
+          'Workspaces let you organize and share finances with others.',
       'workspace_personal': 'Personal',
       'workspace_personal_subtitle': 'Just for you',
       'workspace_shared': 'Shared',
@@ -625,11 +668,13 @@ class AppLocalizations {
       'onboarding_s3_f2': 'Financial health score (0–10) with context',
       'onboarding_s3_f3': 'Built for CLT workers — salary, FGTS, Swile',
       // Signup
-      'account_created_check_email': 'Account created! Check your email to continue.',
+      'account_created_check_email':
+          'Account created! Check your email to continue.',
       'create_your': 'Create your\n',
       'farol_account': 'Farol account.',
       'start_illuminating': 'Start illuminating your financial path today.',
-      'set_planned_income': 'Set your planned monthly income. The dashboard will track remaining amounts as you add transactions.',
+      'set_planned_income':
+          'Set your planned monthly income. The dashboard will track remaining amounts as you add transactions.',
       'create_account_arrow': 'Create account →',
       'cpf_optional': 'CPF (optional)',
       'cpf_invalid': 'Invalid CPF',
@@ -653,7 +698,8 @@ class AppLocalizations {
       'manage_2fa': 'Manage 2FA',
       'delete_account': 'Delete Account',
       'delete_account_confirm_title': 'Delete account?',
-      'delete_account_confirm_body': 'This action is irreversible. All your data will be permanently removed.',
+      'delete_account_confirm_body':
+          'This action is irreversible. All your data will be permanently removed.',
       'delete_account_confirm': 'Yes, delete',
       'change_photo': 'Change Photo',
       'take_photo': 'Take a Selfie',
@@ -663,7 +709,8 @@ class AppLocalizations {
       'photo': 'Photo',
       'initials': 'Initials',
       'appearance': 'Appearance',
-      'customize_interface': 'Customize your interface for maximum visual comfort.',
+      'customize_interface':
+          'Customize your interface for maximum visual comfort.',
       'concierge_support': 'Concierge Support',
       'corporate_benefits': 'Corporate Benefits',
       'language': 'Language',
@@ -680,7 +727,8 @@ class AppLocalizations {
       'financial_period': 'Financial Period',
       'period_start': 'Start of period',
       'day_of_each_month': 'Day of each month',
-      'select_period_start': 'Select the day your financial period begins (1-28):',
+      'select_period_start':
+          'Select the day your financial period begins (1-28):',
       'chat_24_7': 'Chat 24/7',
       'vip_call': 'VIP Call',
       'hide_values': 'Hide values',
@@ -692,7 +740,8 @@ class AppLocalizations {
       'simulator_fgts': 'FGTS Anniversary Withdrawal',
       'simulator_fgts_desc': 'Simulate annual withdrawal and 3-year projection',
       'simulator_rescission': 'CLT Rescission',
-      'simulator_rescission_desc': 'Calculate your termination rights (Notice, 13th, Vacations)',
+      'simulator_rescission_desc':
+          'Calculate your termination rights (Notice, 13th, Vacations)',
       'rescission_title': 'Rescission Simulator',
       'rescission_input_title': 'CONTRACT DATA',
       'rescission_gross_salary': 'Monthly Gross Salary',
@@ -704,7 +753,8 @@ class AppLocalizations {
       'rescission_unused_vacation': 'Unused vacation days',
       'rescission_calculate': 'Calculate Rescission',
       'rescission_total_receive_gross': 'TOTAL GROSS TO RECEIVE',
-      'rescission_disclaimer': '*Gross values. INSS and IRRF deductions may apply to salary balance and 13th.',
+      'rescission_disclaimer':
+          '*Gross values. INSS and IRRF deductions may apply to salary balance and 13th.',
       'rescission_breakdown_title': 'BREAKDOWN',
       'rescission_salary_balance': 'Salary Balance',
       'rescission_proportional_13th': 'Proportional 13th',
@@ -766,7 +816,8 @@ class AppLocalizations {
       'nav_cards': 'Cards',
       'nav_settings': 'Settings',
       // Budget overflow
-      'budget_overflow_warning': 'Your budget allocations exceed 100%. Tap a category to adjust.',
+      'budget_overflow_warning':
+          'Your budget allocations exceed 100%. Tap a category to adjust.',
       'rebalance': 'Rebalance',
       'allocated_over_limit': '%s%% allocated — over limit',
       // Accounts & Patrimony
@@ -785,7 +836,8 @@ class AppLocalizations {
       'net_salary_label': 'NET SALARY',
       'effective_rate_suffix': '%% effective rate',
       'monthly_reduction_applied': 'Monthly reduction applied: −%s',
-      'fgts_employer_note': '* FGTS is an employer charge, not deducted from salary.',
+      'fgts_employer_note':
+          '* FGTS is an employer charge, not deducted from salary.',
     },
     'es': {
       // Core
@@ -829,7 +881,20 @@ class AppLocalizations {
       'optional': 'opcional',
       'required': 'Requerido',
       'error': 'Error',
-      'months': ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+      'months': [
+        'Ene',
+        'Feb',
+        'Mar',
+        'Abr',
+        'May',
+        'Jun',
+        'Jul',
+        'Ago',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dic'
+      ],
       // Expenses & Transactions
       'add_expense': 'Añadir Gasto',
       'edit_expense': 'Editar Gasto',
@@ -849,7 +914,8 @@ class AppLocalizations {
       'see_all': 'Ver Todo',
       'expense_by_cat': 'Gastos por Categoría',
       'no_expenses': 'Sin gastos registrados',
-      'no_expenses_hint': 'Agrega un gasto para ver el desglose de tus movimientos.',
+      'no_expenses_hint':
+          'Agrega un gasto para ver el desglose de tus movimientos.',
       // Income
       'edit_income': 'Editar Ingreso',
       'income_updated': '¡Ingreso actualizado!',
@@ -861,7 +927,8 @@ class AppLocalizations {
       // Net Worth Screen
       'evolution': 'Evolución',
       'period_flow': 'Flujo del período',
-      'no_history_data': 'Sin datos históricos aún.\nLos snapshots se guardan automáticamente.',
+      'no_history_data':
+          'Sin datos históricos aún.\nLos snapshots se guardan automáticamente.',
       'no_net_worth': 'Sin datos de patrimonio',
       'no_accounts_registered': 'Sin cuentas registradas',
       'filter_all_time': 'Todo',
@@ -901,7 +968,8 @@ class AppLocalizations {
       'budget_goals': 'Metas de Presupuesto',
       'category_budgets': 'Presupuestos por Categoría',
       'set_spending_limits': 'Establece límites de gasto',
-      'set_monthly_spending_limits': 'Establece límites de gasto mensual por categoría',
+      'set_monthly_spending_limits':
+          'Establece límites de gasto mensual por categoría',
       'current_spending': 'Actual',
       'budget_amount': 'Monto del presupuesto',
       'cash_budget': 'Presupuesto Cash',
@@ -914,13 +982,18 @@ class AppLocalizations {
       'budget_pct_used': '%s% utilizado',
       'budget_pct_over_limit': '%s% sobre el límite',
       'budget_pct_remaining': '%s% restante',
-      'budget_free_up': 'Esto excedería tu límite del 100%. Libera %s% primero.',
+      'budget_free_up':
+          'Esto excedería tu límite del 100%. Libera %s% primero.',
       'budget_rec_title': 'Ver sugerencias de presupuesto (50/30/20)',
-      'budget_rec_history_subtitle': 'Sugerencias basadas en tus gastos de este período.',
-      'budget_rec_rule_subtitle': 'Sin historial de gastos — sugerencias basadas en la regla 50/30/20.',
+      'budget_rec_history_subtitle':
+          'Sugerencias basadas en tus gastos de este período.',
+      'budget_rec_rule_subtitle':
+          'Sin historial de gastos — sugerencias basadas en la regla 50/30/20.',
       'reset_to_goal': '¿Restablecer al monto de la meta?',
-      'reset_to_goal_desc': 'Esto eliminará el monto personalizado y volverá a tu meta.',
-      'reset_to_goal_with_amount': 'Esto eliminará el monto personalizado y volverá a tu meta (%s).',
+      'reset_to_goal_desc':
+          'Esto eliminará el monto personalizado y volverá a tu meta.',
+      'reset_to_goal_with_amount':
+          'Esto eliminará el monto personalizado y volverá a tu meta (%s).',
       'delete_budget': '¿Eliminar presupuesto?',
       'remove_budget': '¿Eliminar presupuesto de %s?',
       'budget_custom_label': 'Personalizado',
@@ -997,7 +1070,8 @@ class AppLocalizations {
       'category_added': 'Categoría agregada',
       'category_deleted': 'Categoría eliminada',
       'delete_category': '¿Eliminar categoría?',
-      'delete_category_desc': 'No eliminará gastos existentes, pero la categoría dejará de aparecer en tus categorías activas.',
+      'delete_category_desc':
+          'No eliminará gastos existentes, pero la categoría dejará de aparecer en tus categorías activas.',
       // Category enums
       'cat_housing': 'Vivienda',
       'cat_transport': 'Transporte',
@@ -1043,10 +1117,12 @@ class AppLocalizations {
       'notifications_title': 'Notificaciones',
       'notifications_subtitle': 'Alertas de presupuesto en tiempo real',
       'notifications_all_good': 'Todo bajo control',
-      'notifications_no_category_over': 'Ninguna categoría supera el 75% del presupuesto',
+      'notifications_no_category_over':
+          'Ninguna categoría supera el 75% del presupuesto',
       'notifications_tips': 'Tips',
       'notifications_tip_title': 'Consejo del mes',
-      'notifications_tip_body': 'Revisar tus presupuestos por categoría te ayuda a identificar patrones y tomar mejores decisiones financieras.',
+      'notifications_tip_body':
+          'Revisar tus presupuestos por categoría te ayuda a identificar patrones y tomar mejores decisiones financieras.',
       'notifications_level_exceeded': 'Límite superado',
       'notifications_level_critical': 'Alerta crítica',
       'notifications_level_warning': 'Aviso',
@@ -1094,7 +1170,8 @@ class AppLocalizations {
       'recurring_upcoming_occurrences': 'Próximas ocurrencias',
       'recurring_no_pending': 'Sin ocurrencias pendientes',
       'recurring_error': 'Error: %s',
-      'recurring_empty_active': 'Ningún recurrente activo.\nToca + para agregar uno.',
+      'recurring_empty_active':
+          'Ningún recurrente activo.\nToca + para agregar uno.',
       'recurring_empty_paused': 'Ningún recurrente pausado.',
       'recurring_empty_cancelled': 'Ningún recurrente cancelado.',
       'recurring_action_edit': 'Editar',
@@ -1102,7 +1179,8 @@ class AppLocalizations {
       'recurring_action_resume': 'Reanudar',
       'recurring_action_cancel': 'Cancelar',
       'recurring_cancel_dialog_title': '¿Cancelar recurrente?',
-      'recurring_cancel_dialog_body': 'Las ocurrencias futuras serán eliminadas.',
+      'recurring_cancel_dialog_body':
+          'Las ocurrencias futuras serán eliminadas.',
       'recurring_cancel_dialog_no': 'No',
       'recurring_paused_snack': 'Recurrente pausado',
       'recurring_resumed_snack': 'Recurrente reanudado',
@@ -1124,8 +1202,10 @@ class AppLocalizations {
       'recurring_created_snack': 'Recurrente creado',
       // Suggestions screen
       'recurring_suggestions_title': 'Sugerencias de recurrentes',
-      'recurring_suggestions_subtitle': 'Encontré patrones en tu historial de gastos.\nConfirma los que son recurrentes.',
-      'recurring_suggestions_empty': 'Ningún patrón recurrente encontrado\nen tu historial.',
+      'recurring_suggestions_subtitle':
+          'Encontré patrones en tu historial de gastos.\nConfirma los que son recurrentes.',
+      'recurring_suggestions_empty':
+          'Ningún patrón recurrente encontrado\nen tu historial.',
       'recurring_confidence_pct': '%s%% confianza',
       'recurring_btn_ignore': 'Ignorar',
       'recurring_btn_confirm': 'Confirmar',
@@ -1133,8 +1213,10 @@ class AppLocalizations {
       'recurring_occurrences_count': '%s ocurrencias',
       // investments_vs_last_month
       'investments_vs_last_month': 'vs. último mes',
-      'investments_strategic_distribution': 'Distribución estratégica de la cartera',
-      'investments_low_exposure': 'Su cartera tiene baja exposición en activos inmobiliarios. Considere FIIs de tijolo.',
+      'investments_strategic_distribution':
+          'Distribución estratégica de la cartera',
+      'investments_low_exposure':
+          'Su cartera tiene baja exposición en activos inmobiliarios. Considere FIIs de tijolo.',
       'investments_explore_fiis': 'Explorar FIIs',
       'investments_header': 'Inversiones',
       'investments_detail_by_asset': 'Detalle por activo',
@@ -1153,36 +1235,47 @@ class AppLocalizations {
       'insights_group_info': 'Oportunidades',
       'insights_group_achievement': 'Logros',
       'insights_most_ignored': 'Tipos más ignorados',
-      'insights_empty': 'Ningún insight por ahora.\n¡Sigue registrando tus gastos!',
+      'insights_empty':
+          'Ningún insight por ahora.\n¡Sigue registrando tus gastos!',
       // Insight rule strings
       'insight_overdraft_title': '⚠️ Puedes cerrar el período en rojo',
-      'insight_overdraft_body': 'Al ritmo actual, el período cierra en %s. Aún tienes %s en cuentas por pagar.',
+      'insight_overdraft_body':
+          'Al ritmo actual, el período cierra en %s. Aún tienes %s en cuentas por pagar.',
       'insight_overdraft_action': 'Ver proyección →',
-      'insight_liquidity_critical_title': '🚨 Crítico: pagos vencen esta semana',
+      'insight_liquidity_critical_title':
+          '🚨 Crítico: pagos vencen esta semana',
       'insight_liquidity_warning_title': '📅 Pagos vencen esta semana',
-      'insight_liquidity_body': 'Tu saldo actual es %s. Verifica que cubra todos los vencimientos antes de gastar.',
+      'insight_liquidity_body':
+          'Tu saldo actual es %s. Verifica que cubra todos los vencimientos antes de gastar.',
       'insight_liquidity_action': 'Ver compromisos →',
       'insight_spike_title': '📈 %s por encima del ritmo habitual',
-      'insight_spike_body': 'Gastaste %s este mes — %s%% más que tu promedio de %s. Aún hay tiempo para ajustar.',
+      'insight_spike_body':
+          'Gastaste %s este mes — %s%% más que tu promedio de %s. Aún hay tiempo para ajustar.',
       'insight_spike_action': 'Ver %s →',
       'insight_duplicate_title': 'Posible cobro duplicado',
       'insight_duplicate_body': '%sx "%s" por R\$ %s en %s día(s).',
       'insight_duplicate_action': 'Verificar',
       'insight_subscription_title': 'Suscripciones creciendo',
-      'insight_subscription_body': 'Tu gasto en suscripciones aumentó R\$ %s en los últimos 3 meses.',
+      'insight_subscription_body':
+          'Tu gasto en suscripciones aumentó R\$ %s en los últimos 3 meses.',
       'insight_subscription_action': 'Ver suscripciones',
       'insight_savings_title': 'Ahorro posible en %s',
-      'insight_savings_body': '%s está %s por encima del presupuesto. Ajustar podría liberar esa cantidad por período.',
+      'insight_savings_body':
+          '%s está %s por encima del presupuesto. Ajustar podría liberar esa cantidad por período.',
       'insight_savings_action': 'Ajustar presupuesto',
       'insight_invest_title': 'Te sobrarán %s',
-      'insight_invest_body': 'Al ritmo actual, tendrás %s libres al final del período. ¿Qué tal destinar una parte?',
+      'insight_invest_body':
+          'Al ritmo actual, tendrás %s libres al final del período. ¿Qué tal destinar una parte?',
       'insight_invest_action': 'Ver opciones',
       'insight_streak_title': '¡%s períodos dentro del presupuesto! 🎉',
-      'insight_streak_body': 'Llevas %s períodos consecutivos manteniendo tus finanzas bajo control. ¡Sigue así!',
+      'insight_streak_body':
+          'Llevas %s períodos consecutivos manteniendo tus finanzas bajo control. ¡Sigue así!',
       'insight_debt_title': '¡Cuotas reduciendo!',
-      'insight_debt_body': 'Tus cuotas activas bajaron R\$ %s respecto al período anterior.',
+      'insight_debt_body':
+          'Tus cuotas activas bajaron R\$ %s respecto al período anterior.',
       'insight_unusual_title': 'Nueva compra de alto valor',
-      'insight_unusual_body': '"%s" por R\$ %s — primera vez que aparece en tu historial.',
+      'insight_unusual_body':
+          '"%s" por R\$ %s — primera vez que aparece en tu historial.',
       'insight_unusual_action': 'Ver gasto',
       // Recurring frequency labels
       'freq_weekly': 'Semanal',
@@ -1201,7 +1294,8 @@ class AppLocalizations {
       'accounts_transfer_need_two': 'Agrega al menos 2 cuentas para transferir',
       'accounts_section_bank': 'Cuentas Bancarias',
       'accounts_empty_title': 'Ninguna cuenta registrada',
-      'accounts_empty_hint': 'Agrega tus cuentas para seguir\ntu patrimonio en tiempo real.',
+      'accounts_empty_hint':
+          'Agrega tus cuentas para seguir\ntu patrimonio en tiempo real.',
       'accounts_delete_title': '¿Eliminar cuenta?',
       'accounts_delete_body': 'La cuenta "%s" será eliminada.',
       'accounts_action_update_balance': 'Actualizar saldo',
@@ -1230,7 +1324,8 @@ class AppLocalizations {
       'analytics_monthly_comparison': 'Comparativo Mensual',
       // Cashflow chart
       'cashflow_title': 'Flujo de Caja (90 días)',
-      'cashflow_negative_warning': 'El saldo proyectado se vuelve negativo en algún punto',
+      'cashflow_negative_warning':
+          'El saldo proyectado se vuelve negativo en algún punto',
       'cashflow_legend_real': 'Real',
       'cashflow_legend_projection': 'Proyección',
       'cashflow_legend_commitment': 'Compromiso',
@@ -1253,7 +1348,8 @@ class AppLocalizations {
       'installments_btn_skip_nth': 'Saltar %s cuota',
       'installments_btn_delete_plan': 'Eliminar plan',
       'installments_plan_title': 'Plan de cuotas',
-      'installments_delete_confirm': '¿Eliminar "%s"? Todas las cuotas serán borradas.',
+      'installments_delete_confirm':
+          '¿Eliminar "%s"? Todas las cuotas serán borradas.',
       'installments_completed_snack': '🎉 "%s" ¡completado!',
       'installments_registered_snack': '✅ %s cuota registrada',
       'installments_skipped_snack': '⏭ %s cuota saltada',
@@ -1279,7 +1375,8 @@ class AppLocalizations {
       'installments_preview': 'Vista previa',
       'installments_preview_last': 'Última',
       'installments_preview_ends': 'Termina en',
-      'installments_preview_rounding_note': '* Última cuota ajustada por redondeo',
+      'installments_preview_rounding_note':
+          '* Última cuota ajustada por redondeo',
       // Authentication
       'sign_in': 'Iniciar Sesión',
       'sign_up': 'Registrarse',
@@ -1294,7 +1391,8 @@ class AppLocalizations {
       'something_went_wrong': 'Algo salió mal. Reinicia la app.',
       'welcome': 'Bienvenido\n',
       'back': 'de vuelta.',
-      'login_subtitle': 'Inicia sesión y continúa iluminando tu camino financiero.',
+      'login_subtitle':
+          'Inicia sesión y continúa iluminando tu camino financiero.',
       'email': 'Correo',
       'password': 'Contraseña',
       'confirm_password': 'Confirmar contraseña',
@@ -1307,16 +1405,19 @@ class AppLocalizations {
       'new_password_title_1': 'Nueva\n',
       'new_password_title_2': 'contraseña.',
       'confirm_new_password': 'Confirmar nueva contraseña',
-      'choose_strong_password': 'Elige una contraseña fuerte para proteger tu cuenta.',
+      'choose_strong_password':
+          'Elige una contraseña fuerte para proteger tu cuenta.',
       'passwords_dont_match': 'Las contraseñas no coinciden',
-      'we_sent_verification': 'Enviamos un enlace de verificación a tu correo. Revísalo para continuar.',
+      'we_sent_verification':
+          'Enviamos un enlace de verificación a tu correo. Revísalo para continuar.',
       'very_weak': 'Muy débil',
       'weak': 'Débil',
       'good': 'Buena',
       'strong': 'Fuerte',
       // Onboarding
       'onboarding_title': 'Claridad para cada centavo.',
-      'onboarding_subtitle': 'Tu dinero en el rumbo correcto. Planificación financiera que guía cada decisión con claridad.',
+      'onboarding_subtitle':
+          'Tu dinero en el rumbo correcto. Planificación financiera que guía cada decisión con claridad.',
       'onboarding_f1': 'Seguridad bancaria y Pix integrado',
       'onboarding_f2': 'IA que entiende tu salario y beneficios',
       'onboarding_f3': 'Soporte en tu idioma, 24/7',
@@ -1336,7 +1437,8 @@ class AppLocalizations {
       'make_member': 'Hacer Miembro',
       'make_viewer': 'Hacer Visualizador',
       'remove_member_title': '¿Eliminar miembro?',
-      'remove_member_confirm': "Esto eliminará al miembro de '{name}'. Sus datos se conservarán pero perderá el acceso.",
+      'remove_member_confirm':
+          "Esto eliminará al miembro de '{name}'. Sus datos se conservarán pero perderá el acceso.",
       'error_updating_role': 'Error al actualizar rol: %s',
       'error_removing_member': 'Error al eliminar miembro: %s',
       'email_address': 'Correo electrónico',
@@ -1360,7 +1462,8 @@ class AppLocalizations {
       'error_sending_invite': 'Error al enviar invitación: %s',
       // Workspace create
       'new_workspace': 'Nuevo workspace',
-      'workspace_description': 'Los workspaces te permiten organizar y compartir finanzas con otros.',
+      'workspace_description':
+          'Los workspaces te permiten organizar y compartir finanzas con otros.',
       'workspace_personal': 'Personal',
       'workspace_personal_subtitle': 'Solo para ti',
       'workspace_shared': 'Compartido',
@@ -1387,7 +1490,8 @@ class AppLocalizations {
       // Onboarding carousel slides
       'onboarding_s1_eyebrow': 'CLARIDAD FINANCIERA',
       'onboarding_s1_title': 'Sabe exactamente adónde va tu dinero',
-      'onboarding_s1_f1': 'Sobres inteligentes por categoría con períodos reales',
+      'onboarding_s1_f1':
+          'Sobres inteligentes por categoría con períodos reales',
       'onboarding_s1_f2': 'Cashflow visual — saldo de un vistazo',
       'onboarding_s1_f3': 'Cuotas y recurrentes seguidos automáticamente',
       'onboarding_s2_eyebrow': 'MOTOR PREDICTIVO',
@@ -1401,11 +1505,13 @@ class AppLocalizations {
       'onboarding_s3_f2': 'Salud financiera (0–10) con contexto real',
       'onboarding_s3_f3': 'Hecho para CLT — salario, FGTS, beneficios',
       // Signup
-      'account_created_check_email': '¡Cuenta creada! Revisa tu correo para continuar.',
+      'account_created_check_email':
+          '¡Cuenta creada! Revisa tu correo para continuar.',
       'create_your': 'Crea tu\n',
       'farol_account': 'cuenta Farol.',
       'start_illuminating': 'Empieza a iluminar tu camino financiero hoy.',
-      'set_planned_income': 'Establece tu ingreso mensual planeado. El dashboard rastreará los montos restantes a medida que agregues movimientos.',
+      'set_planned_income':
+          'Establece tu ingreso mensual planeado. El dashboard rastreará los montos restantes a medida que agregues movimientos.',
       'create_account_arrow': 'Crear cuenta →',
       'cpf_optional': 'CPF (opcional)',
       'cpf_invalid': 'CPF inválido',
@@ -1429,7 +1535,8 @@ class AppLocalizations {
       'manage_2fa': 'Gestionar 2FA',
       'delete_account': 'Eliminar cuenta',
       'delete_account_confirm_title': '¿Eliminar cuenta?',
-      'delete_account_confirm_body': 'Esta acción es irreversible. Todos tus datos serán eliminados permanentemente.',
+      'delete_account_confirm_body':
+          'Esta acción es irreversible. Todos tus datos serán eliminados permanentemente.',
       'delete_account_confirm': 'Sí, eliminar',
       'change_photo': 'Cambiar Foto',
       'take_photo': 'Tomar Selfie',
@@ -1439,7 +1546,8 @@ class AppLocalizations {
       'photo': 'Foto',
       'initials': 'Iniciales',
       'appearance': 'Apariencia',
-      'customize_interface': 'Personaliza tu interfaz para máximo confort visual.',
+      'customize_interface':
+          'Personaliza tu interfaz para máximo confort visual.',
       'concierge_support': 'Soporte Concierge',
       'corporate_benefits': 'Beneficios Corporativos',
       'language': 'Idioma',
@@ -1456,7 +1564,8 @@ class AppLocalizations {
       'financial_period': 'Período financiero',
       'period_start': 'Inicio del período',
       'day_of_each_month': 'Día de cada mes',
-      'select_period_start': 'Selecciona el día en que comienza tu período (1–28):',
+      'select_period_start':
+          'Selecciona el día en que comienza tu período (1–28):',
       'chat_24_7': 'Chat 24/7',
       'vip_call': 'Llamada VIP',
       'hide_values': 'Ocultar valores',
@@ -1468,7 +1577,8 @@ class AppLocalizations {
       'simulator_fgts': 'Retiro Aniversario FGTS',
       'simulator_fgts_desc': 'Simula el retiro anual y proyección 3 años',
       'simulator_rescission': 'Rescisión CLT',
-      'simulator_rescission_desc': 'Calcula tus derechos al salir del empleo (Aviso, 13º, Vacaciones)',
+      'simulator_rescission_desc':
+          'Calcula tus derechos al salir del empleo (Aviso, 13º, Vacaciones)',
       'rescission_title': 'Simulador de Rescisión',
       'rescission_input_title': 'DATOS DEL CONTRATO',
       'rescission_gross_salary': 'Salario Bruto Mensual',
@@ -1480,7 +1590,8 @@ class AppLocalizations {
       'rescission_unused_vacation': 'Días de vacaciones vencidos',
       'rescission_calculate': 'Calcular Rescisión',
       'rescission_total_receive_gross': 'TOTAL BRUTO A RECIBIR',
-      'rescission_disclaimer': '*Valores brutos. Pueden aplicarse deducciones de INSS e IRRF sobre el saldo de salario y 13º.',
+      'rescission_disclaimer':
+          '*Valores brutos. Pueden aplicarse deducciones de INSS e IRRF sobre el saldo de salario y 13º.',
       'rescission_breakdown_title': 'DETALLES',
       'rescission_salary_balance': 'Saldo de Salario',
       'rescission_proportional_13th': '13º Proporcional',
@@ -1532,7 +1643,8 @@ class AppLocalizations {
       'empty_workspaces_title': 'Solo tu espacio personal',
       'empty_workspaces_sub': 'Crea o acepta una invitación para colaborar.',
       'empty_space_transactions_title': 'Sin transacciones en este espacio',
-      'empty_space_transactions_sub': 'Agrega la primera transacción compartida.',
+      'empty_space_transactions_sub':
+          'Agrega la primera transacción compartida.',
       'empty_generic_title': 'Nada aquí todavía',
       'empty_generic_sub': 'Tus datos aparecerán aquí.',
       // Bottom nav labels
@@ -1542,7 +1654,8 @@ class AppLocalizations {
       'nav_cards': 'Tarjetas',
       'nav_settings': 'Ajustes',
       // Budget overflow
-      'budget_overflow_warning': 'Tus asignaciones de presupuesto superan el 100%. Toca una categoría para ajustar.',
+      'budget_overflow_warning':
+          'Tus asignaciones de presupuesto superan el 100%. Toca una categoría para ajustar.',
       'rebalance': 'Rebalancear',
       'allocated_over_limit': '%s%% asignado — límite excedido',
       // Accounts & Patrimony
@@ -1561,7 +1674,8 @@ class AppLocalizations {
       'net_salary_label': 'SALARIO NETO',
       'effective_rate_suffix': '%% alícuota efectiva',
       'monthly_reduction_applied': 'Reducción mensual aplicada: −%s',
-      'fgts_employer_note': '* FGTS es un cargo del empleador, no descontado del salario.',
+      'fgts_employer_note':
+          '* FGTS es un cargo del empleador, no descontado del salario.',
     },
     'pt': {
       // Core
@@ -1605,7 +1719,20 @@ class AppLocalizations {
       'optional': 'opcional',
       'required': 'Obrigatório',
       'error': 'Erro',
-      'months': ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+      'months': [
+        'Jan',
+        'Fev',
+        'Mar',
+        'Abr',
+        'Mai',
+        'Jun',
+        'Jul',
+        'Ago',
+        'Set',
+        'Out',
+        'Nov',
+        'Dez'
+      ],
       // Expenses & Transactions
       'add_expense': 'Adicionar Despesa',
       'edit_expense': 'Editar Despesa',
@@ -1625,7 +1752,8 @@ class AppLocalizations {
       'see_all': 'Ver Tudo',
       'expense_by_cat': 'Gastos por Categoria',
       'no_expenses': 'Sem gastos registrados',
-      'no_expenses_hint': 'Adicione um gasto para ver o detalhamento dos seus movimentos.',
+      'no_expenses_hint':
+          'Adicione um gasto para ver o detalhamento dos seus movimentos.',
       // Income
       'edit_income': 'Editar Receita',
       'income_updated': 'Receita atualizada!',
@@ -1637,7 +1765,8 @@ class AppLocalizations {
       // Net Worth Screen
       'evolution': 'Evolução',
       'period_flow': 'Fluxo do Período',
-      'no_history_data': 'Sem dados históricos ainda.\nOs snapshots são salvos automaticamente.',
+      'no_history_data':
+          'Sem dados históricos ainda.\nOs snapshots são salvos automaticamente.',
       'no_net_worth': 'Sem dados de patrimônio',
       'no_accounts_registered': 'Nenhuma conta cadastrada',
       'filter_all_time': 'Tudo',
@@ -1663,7 +1792,8 @@ class AppLocalizations {
       'current_balance_differs': 'Saldo atual diferente do investido',
       'investment_added': 'Investimento adicionado!',
       'delete_investment': 'Excluir investimento?',
-      'no_investments_yet': 'Nenhum investimento ainda.\nToque + para adicionar um.',
+      'no_investments_yet':
+          'Nenhum investimento ainda.\nToque + para adicionar um.',
       'product_name': 'Nome do produto',
       'institution': 'Instituição / Corretora',
       'notes_optional': 'Notas (opcional)',
@@ -1677,7 +1807,8 @@ class AppLocalizations {
       'budget_goals': 'Metas de Orçamento',
       'category_budgets': 'Orçamentos por Categoria',
       'set_spending_limits': 'Defina limites de gastos',
-      'set_monthly_spending_limits': 'Defina limites de gastos mensais por categoria',
+      'set_monthly_spending_limits':
+          'Defina limites de gastos mensais por categoria',
       'current_spending': 'Atual',
       'budget_amount': 'Valor do orçamento',
       'cash_budget': 'Orçamento Caixa',
@@ -1686,17 +1817,23 @@ class AppLocalizations {
       'budget_pct_used': '%s% utilizado',
       'budget_pct_over_limit': '%s% acima do limite',
       'budget_pct_remaining': '%s% restante',
-      'budget_free_up': 'Isso ultrapassaria o limite de 100% do orçamento. Libere %s% primeiro.',
+      'budget_free_up':
+          'Isso ultrapassaria o limite de 100% do orçamento. Libere %s% primeiro.',
       'budget_rec_title': 'Ver sugestões de orçamento (50/30/20)',
-      'budget_rec_history_subtitle': 'Sugestões com base nos seus gastos deste período.',
-      'budget_rec_rule_subtitle': 'Sem histórico de gastos — sugestões pela regra 50/30/20.',
+      'budget_rec_history_subtitle':
+          'Sugestões com base nos seus gastos deste período.',
+      'budget_rec_rule_subtitle':
+          'Sem histórico de gastos — sugestões pela regra 50/30/20.',
       'period_budget': 'Orçamento do Período',
       'copy_from_previous': 'Copiar do período anterior',
       'no_budgets_period': 'Sem orçamentos para este período',
-      'budgets_hint': 'Adicione metas em Configurações para ver os valores aqui',
+      'budgets_hint':
+          'Adicione metas em Configurações para ver os valores aqui',
       'reset_to_goal': 'Redefinir para o valor da meta?',
-      'reset_to_goal_desc': 'Isso removerá o valor personalizado e voltará à sua meta.',
-      'reset_to_goal_with_amount': 'Isso removerá o valor personalizado e voltará à sua meta (%s).',
+      'reset_to_goal_desc':
+          'Isso removerá o valor personalizado e voltará à sua meta.',
+      'reset_to_goal_with_amount':
+          'Isso removerá o valor personalizado e voltará à sua meta (%s).',
       'delete_budget': 'Excluir orçamento?',
       'remove_budget': 'Remover orçamento de %s?',
       'budget_custom_label': 'Personalizado',
@@ -1773,7 +1910,8 @@ class AppLocalizations {
       'category_added': 'Categoria adicionada',
       'category_deleted': 'Categoria excluída',
       'delete_category': 'Excluir categoria?',
-      'delete_category_desc': 'Os gastos existentes não serão excluídos, mas a categoria deixará de aparecer nas categorias ativas.',
+      'delete_category_desc':
+          'Os gastos existentes não serão excluídos, mas a categoria deixará de aparecer nas categorias ativas.',
       // Category enums
       'cat_housing': 'Moradia',
       'cat_transport': 'Transporte',
@@ -1819,14 +1957,17 @@ class AppLocalizations {
       'notifications_title': 'Notificações',
       'notifications_subtitle': 'Alertas de orçamento em tempo real',
       'notifications_all_good': 'Tudo sob controle',
-      'notifications_no_category_over': 'Nenhuma categoria supera 75% do orçamento',
+      'notifications_no_category_over':
+          'Nenhuma categoria supera 75% do orçamento',
       'notifications_tips': 'Dicas',
       'notifications_tip_title': 'Dica do mês',
-      'notifications_tip_body': 'Revisar seus orçamentos por categoria ajuda a identificar padrões e tomar melhores decisões financeiras.',
+      'notifications_tip_body':
+          'Revisar seus orçamentos por categoria ajuda a identificar padrões e tomar melhores decisões financeiras.',
       'notifications_level_exceeded': 'Limite ultrapassado',
       'notifications_level_critical': 'Alerta crítico',
       'notifications_level_warning': 'Aviso',
-      'alert_exceeded_body': 'Você ultrapassou o limite de %s em %s. Gasto: %s.',
+      'alert_exceeded_body':
+          'Você ultrapassou o limite de %s em %s. Gasto: %s.',
       'alert_critical_body': 'Você usou %s do orçamento de %s (%s de %s).',
       'alert_warning_body': 'Você usou %s do orçamento de %s. Restam %s.',
       // Investments Screen
@@ -1870,7 +2011,8 @@ class AppLocalizations {
       'recurring_upcoming_occurrences': 'Próximas ocorrências',
       'recurring_no_pending': 'Sem ocorrências pendentes',
       'recurring_error': 'Erro: %s',
-      'recurring_empty_active': 'Nenhum recorrente ativo.\nToque em + para adicionar.',
+      'recurring_empty_active':
+          'Nenhum recorrente ativo.\nToque em + para adicionar.',
       'recurring_empty_paused': 'Nenhum recorrente pausado.',
       'recurring_empty_cancelled': 'Nenhum recorrente cancelado.',
       'recurring_action_edit': 'Editar',
@@ -1900,8 +2042,10 @@ class AppLocalizations {
       'recurring_created_snack': 'Recorrente criado',
       // Suggestions screen
       'recurring_suggestions_title': 'Sugestões de recorrentes',
-      'recurring_suggestions_subtitle': 'Identifiquei padrões no seu histórico de gastos.\nConfirme os que forem recorrentes.',
-      'recurring_suggestions_empty': 'Nenhum padrão recorrente encontrado\nno seu histórico.',
+      'recurring_suggestions_subtitle':
+          'Identifiquei padrões no seu histórico de gastos.\nConfirme os que forem recorrentes.',
+      'recurring_suggestions_empty':
+          'Nenhum padrão recorrente encontrado\nno seu histórico.',
       'recurring_confidence_pct': '%s%% confiança',
       'recurring_btn_ignore': 'Ignorar',
       'recurring_btn_confirm': 'Confirmar',
@@ -1909,8 +2053,10 @@ class AppLocalizations {
       'recurring_occurrences_count': '%s ocorrências',
       // investments_vs_last_month
       'investments_vs_last_month': 'vs. mês passado',
-      'investments_strategic_distribution': 'Distribuição estratégica da carteira',
-      'investments_low_exposure': 'Sua carteira tem baixa exposição em ativos imobiliários. Considere FIIs de tijolo.',
+      'investments_strategic_distribution':
+          'Distribuição estratégica da carteira',
+      'investments_low_exposure':
+          'Sua carteira tem baixa exposição em ativos imobiliários. Considere FIIs de tijolo.',
       'investments_explore_fiis': 'Explorar FIIs',
       'investments_header': 'Investimentos',
       'investments_detail_by_asset': 'Detalhe por ativo',
@@ -1929,36 +2075,47 @@ class AppLocalizations {
       'insights_group_info': 'Oportunidades',
       'insights_group_achievement': 'Conquistas',
       'insights_most_ignored': 'Tipos mais ignorados',
-      'insights_empty': 'Nenhum insight no momento.\nContinue registrando seus gastos!',
+      'insights_empty':
+          'Nenhum insight no momento.\nContinue registrando seus gastos!',
       // Insight rule strings
       'insight_overdraft_title': '⚠️ Você pode fechar no vermelho',
-      'insight_overdraft_body': 'No ritmo atual, o período fecha em %s. Ainda tem %s em contas a pagar.',
+      'insight_overdraft_body':
+          'No ritmo atual, o período fecha em %s. Ainda tem %s em contas a pagar.',
       'insight_overdraft_action': 'Ver projeção →',
-      'insight_liquidity_critical_title': '🚨 Crítico: pagamentos vencem esta semana',
+      'insight_liquidity_critical_title':
+          '🚨 Crítico: pagamentos vencem esta semana',
       'insight_liquidity_warning_title': '📅 Pagamentos vencem esta semana',
-      'insight_liquidity_body': 'Seu saldo atual é %s. Verifique se cobre todos os vencimentos antes de gastar.',
+      'insight_liquidity_body':
+          'Seu saldo atual é %s. Verifique se cobre todos os vencimentos antes de gastar.',
       'insight_liquidity_action': 'Ver compromissos →',
       'insight_spike_title': '📈 %s acima do ritmo habitual',
-      'insight_spike_body': 'Você gastou %s este mês — %s%% a mais que sua média de %s. Ainda dá tempo de ajustar.',
+      'insight_spike_body':
+          'Você gastou %s este mês — %s%% a mais que sua média de %s. Ainda dá tempo de ajustar.',
       'insight_spike_action': 'Ver %s →',
       'insight_duplicate_title': 'Possível cobrança duplicada',
       'insight_duplicate_body': '%sx "%s" por R\$ %s em %s dia(s).',
       'insight_duplicate_action': 'Verificar',
       'insight_subscription_title': 'Assinaturas crescendo',
-      'insight_subscription_body': 'Seus gastos com assinaturas aumentaram R\$ %s nos últimos 3 meses.',
+      'insight_subscription_body':
+          'Seus gastos com assinaturas aumentaram R\$ %s nos últimos 3 meses.',
       'insight_subscription_action': 'Ver assinaturas',
       'insight_savings_title': 'Economia possível em %s',
-      'insight_savings_body': '%s está %s acima do orçamento. Ajustar pode liberar essa quantia por período.',
+      'insight_savings_body':
+          '%s está %s acima do orçamento. Ajustar pode liberar essa quantia por período.',
       'insight_savings_action': 'Ajustar orçamento',
       'insight_invest_title': 'Você vai sobrar %s',
-      'insight_invest_body': 'Com base no ritmo atual, você terá %s livres no final do período. Que tal destinar uma parte?',
+      'insight_invest_body':
+          'Com base no ritmo atual, você terá %s livres no final do período. Que tal destinar uma parte?',
       'insight_invest_action': 'Ver opções',
       'insight_streak_title': '%s períodos dentro do orçamento! 🎉',
-      'insight_streak_body': 'Você está mantendo suas finanças sob controle por %s períodos consecutivos. Continue assim!',
+      'insight_streak_body':
+          'Você está mantendo suas finanças sob controle por %s períodos consecutivos. Continue assim!',
       'insight_debt_title': 'Parcelas reduzindo!',
-      'insight_debt_body': 'Suas parcelas ativas caíram R\$ %s em relação ao período anterior.',
+      'insight_debt_body':
+          'Suas parcelas ativas caíram R\$ %s em relação ao período anterior.',
       'insight_unusual_title': 'Nova compra de alto valor',
-      'insight_unusual_body': '"%s" por R\$ %s — primeira vez que aparece no seu histórico.',
+      'insight_unusual_body':
+          '"%s" por R\$ %s — primeira vez que aparece no seu histórico.',
       'insight_unusual_action': 'Ver gasto',
       // Recurring frequency labels
       'freq_weekly': 'Semanal',
@@ -1974,10 +2131,12 @@ class AppLocalizations {
       'account_type_fgts': 'FGTS',
       // Accounts screen
       'accounts_transfer_tooltip': 'Transferência entre contas',
-      'accounts_transfer_need_two': 'Adicione ao menos 2 contas para transferir',
+      'accounts_transfer_need_two':
+          'Adicione ao menos 2 contas para transferir',
       'accounts_section_bank': 'Contas Bancárias',
       'accounts_empty_title': 'Nenhuma conta cadastrada',
-      'accounts_empty_hint': 'Adicione suas contas para acompanhar\nseu patrimônio em tempo real.',
+      'accounts_empty_hint':
+          'Adicione suas contas para acompanhar\nseu patrimônio em tempo real.',
       'accounts_delete_title': 'Excluir conta?',
       'accounts_delete_body': 'A conta "%s" será removida.',
       'accounts_action_update_balance': 'Atualizar saldo',
@@ -2029,13 +2188,15 @@ class AppLocalizations {
       'installments_btn_skip_nth': 'Pular %sª parcela',
       'installments_btn_delete_plan': 'Excluir plano',
       'installments_plan_title': 'Plano de parcelas',
-      'installments_delete_confirm': 'Remover "%s"? Todas as parcelas serão excluídas.',
+      'installments_delete_confirm':
+          'Remover "%s"? Todas as parcelas serão excluídas.',
       'installments_completed_snack': '🎉 "%s" concluída!',
       'installments_registered_snack': '✅ %sª parcela registrada',
       'installments_skipped_snack': '⏭ %sª parcela pulada',
       'installments_empty_completed': 'Nenhum plano concluído ainda',
       'installments_empty_active': 'Sem planos de parcelas ativos',
-      'installments_empty_hint': 'Toque em + para adicionar uma compra parcelada',
+      'installments_empty_hint':
+          'Toque em + para adicionar uma compra parcelada',
       'installments_skipped_label': 'pulada',
       // Add installment sheet
       'installments_add_title': 'Nova compra parcelada',
@@ -2055,7 +2216,8 @@ class AppLocalizations {
       'installments_preview': 'Prévia',
       'installments_preview_last': 'Última',
       'installments_preview_ends': 'Termina em',
-      'installments_preview_rounding_note': '* Última parcela ajustada por arredondamento',
+      'installments_preview_rounding_note':
+          '* Última parcela ajustada por arredondamento',
       // Authentication
       'sign_in': 'Fazer Login',
       'sign_up': 'Criar Conta',
@@ -2083,16 +2245,19 @@ class AppLocalizations {
       'new_password_title_1': 'Nova\n',
       'new_password_title_2': 'senha.',
       'confirm_new_password': 'Confirmar nova senha',
-      'choose_strong_password': 'Escolha uma senha forte para proteger sua conta.',
+      'choose_strong_password':
+          'Escolha uma senha forte para proteger sua conta.',
       'passwords_dont_match': 'As senhas não coincidem',
-      'we_sent_verification': 'Enviamos um link de verificação para o seu e-mail. Verifique-o para continuar.',
+      'we_sent_verification':
+          'Enviamos um link de verificação para o seu e-mail. Verifique-o para continuar.',
       'very_weak': 'Muito fraca',
       'weak': 'Fraca',
       'good': 'Boa',
       'strong': 'Forte',
       // Onboarding
       'onboarding_title': 'Clareza para cada real.',
-      'onboarding_subtitle': 'Seu dinheiro no rumo certo. Planejamento financeiro que guia cada decisão com clareza.',
+      'onboarding_subtitle':
+          'Seu dinheiro no rumo certo. Planejamento financeiro que guia cada decisão com clareza.',
       'onboarding_f1': 'Segurança bancária e Pix integrado',
       'onboarding_f2': 'IA que entende seu salário CLT e FGTS',
       'onboarding_f3': 'Suporte em português, 24/7',
@@ -2112,7 +2277,8 @@ class AppLocalizations {
       'make_member': 'Tornar Membro',
       'make_viewer': 'Tornar Visualizador',
       'remove_member_title': 'Remover membro?',
-      'remove_member_confirm': "Isso removerá o membro de '{name}'. Os dados permanecerão, mas o acesso será revogado.",
+      'remove_member_confirm':
+          "Isso removerá o membro de '{name}'. Os dados permanecerão, mas o acesso será revogado.",
       'error_updating_role': 'Erro ao atualizar função: %s',
       'error_removing_member': 'Erro ao remover membro: %s',
       'email_address': 'E-mail',
@@ -2136,7 +2302,8 @@ class AppLocalizations {
       'error_sending_invite': 'Erro ao enviar convite: %s',
       // Workspace create
       'new_workspace': 'Novo workspace',
-      'workspace_description': 'Workspaces permitem organizar e compartilhar finanças com outras pessoas.',
+      'workspace_description':
+          'Workspaces permitem organizar e compartilhar finanças com outras pessoas.',
       'workspace_personal': 'Pessoal',
       'workspace_personal_subtitle': 'Só para você',
       'workspace_shared': 'Compartilhado',
@@ -2163,7 +2330,8 @@ class AppLocalizations {
       // Onboarding carousel slides
       'onboarding_s1_eyebrow': 'CLAREZA FINANCEIRA',
       'onboarding_s1_title': 'Saiba exatamente para onde vai seu dinheiro',
-      'onboarding_s1_f1': 'Envelopes inteligentes por categoria com períodos reais',
+      'onboarding_s1_f1':
+          'Envelopes inteligentes por categoria com períodos reais',
       'onboarding_s1_f2': 'Cashflow visual — saldo de um olhar',
       'onboarding_s1_f3': 'Parcelas e recorrentes rastreados automaticamente',
       'onboarding_s2_eyebrow': 'MOTOR PREDITIVO',
@@ -2177,11 +2345,13 @@ class AppLocalizations {
       'onboarding_s3_f2': 'Saúde financeira (0–10) com contexto real',
       'onboarding_s3_f3': 'Feito para CLT — salário, FGTS, Swile',
       // Signup
-      'account_created_check_email': 'Conta criada! Verifique seu e-mail para continuar.',
+      'account_created_check_email':
+          'Conta criada! Verifique seu e-mail para continuar.',
       'create_your': 'Criar sua\n',
       'farol_account': 'conta Farol.',
       'start_illuminating': 'Comece a iluminar seu caminho financeiro hoje.',
-      'set_planned_income': 'Defina sua renda mensal planejada. O dashboard rastreará os valores restantes à medida que você adiciona transações.',
+      'set_planned_income':
+          'Defina sua renda mensal planejada. O dashboard rastreará os valores restantes à medida que você adiciona transações.',
       'create_account_arrow': 'Criar conta →',
       'cpf_optional': 'CPF (opcional)',
       'cpf_invalid': 'CPF inválido',
@@ -2205,7 +2375,8 @@ class AppLocalizations {
       'manage_2fa': 'Gerenciar 2FA',
       'delete_account': 'Excluir conta',
       'delete_account_confirm_title': 'Excluir conta?',
-      'delete_account_confirm_body': 'Esta ação é irreversível. Todos os seus dados serão permanentemente removidos.',
+      'delete_account_confirm_body':
+          'Esta ação é irreversível. Todos os seus dados serão permanentemente removidos.',
       'delete_account_confirm': 'Sim, excluir',
       'change_photo': 'Alterar Foto',
       'take_photo': 'Tirar Selfie',
@@ -2215,7 +2386,8 @@ class AppLocalizations {
       'photo': 'Foto',
       'initials': 'Iniciais',
       'appearance': 'Aparência',
-      'customize_interface': 'Personalize sua interface para o máximo conforto visual.',
+      'customize_interface':
+          'Personalize sua interface para o máximo conforto visual.',
       'concierge_support': 'Suporte Concierge',
       'corporate_benefits': 'Benefícios Corporativos',
       'language': 'Idioma',
@@ -2244,7 +2416,8 @@ class AppLocalizations {
       'simulator_fgts': 'Saque Aniversário FGTS',
       'simulator_fgts_desc': 'Simule o saque anual e projeção 3 anos',
       'simulator_rescission': 'Rescisão CLT',
-      'simulator_rescission_desc': 'Calcule seus direitos ao sair do emprego (Aviso, 13º, Férias)',
+      'simulator_rescission_desc':
+          'Calcule seus direitos ao sair do emprego (Aviso, 13º, Férias)',
       'rescission_title': 'Simulador de Rescisão',
       'rescission_input_title': 'DADOS DO CONTRATO',
       'rescission_gross_salary': 'Salário Bruto Mensal',
@@ -2256,7 +2429,8 @@ class AppLocalizations {
       'rescission_unused_vacation': 'Férias Vencidas',
       'rescission_calculate': 'Calcular Rescisão',
       'rescission_total_receive_gross': 'TOTAL BRUTO A RECEBER',
-      'rescission_disclaimer': '*Valores brutos. Podem incidir descontos de INSS e IRRF sobre o saldo de salário e 13º.',
+      'rescission_disclaimer':
+          '*Valores brutos. Podem incidir descontos de INSS e IRRF sobre o saldo de salário e 13º.',
       'rescission_breakdown_title': 'DETALHAMENTO',
       'rescission_salary_balance': 'Saldo de Salário',
       'rescission_proportional_13th': '13º Proporcional',
@@ -2280,7 +2454,8 @@ class AppLocalizations {
       'enter_gross_salary': 'Informe o salário bruto',
       'could_not_load_budget': 'Não foi possível carregar o orçamento',
       'could_not_load_net_worth': 'Não foi possível carregar o patrimônio',
-      'could_not_load_salary': 'Não foi possível carregar as configurações de salário',
+      'could_not_load_salary':
+          'Não foi possível carregar as configurações de salário',
       'welcome_back': 'Bem-vindo de volta!',
       'error_loading': 'Erro ao carregar',
       'save_changes': 'Salvar alterações',
@@ -2308,7 +2483,8 @@ class AppLocalizations {
       'empty_workspaces_title': 'Apenas seu espaço pessoal',
       'empty_workspaces_sub': 'Crie ou aceite um convite para colaborar.',
       'empty_space_transactions_title': 'Nenhuma transação no espaço',
-      'empty_space_transactions_sub': 'Adicione a primeira transação compartilhada.',
+      'empty_space_transactions_sub':
+          'Adicione a primeira transação compartilhada.',
       'empty_generic_title': 'Nada por aqui ainda',
       'empty_generic_sub': 'Seus dados aparecerão aqui.',
       // Bottom nav labels
@@ -2318,7 +2494,8 @@ class AppLocalizations {
       'nav_cards': 'Cartões',
       'nav_settings': 'Configurações',
       // Budget overflow
-      'budget_overflow_warning': 'Suas alocações de orçamento excedem 100%. Toque em uma categoria para ajustar.',
+      'budget_overflow_warning':
+          'Suas alocações de orçamento excedem 100%. Toque em uma categoria para ajustar.',
       'rebalance': 'Rebalancear',
       'allocated_over_limit': '%s%% alocado — limite excedido',
       // Accounts & Patrimony
@@ -2337,7 +2514,8 @@ class AppLocalizations {
       'net_salary_label': 'SALÁRIO LÍQUIDO',
       'effective_rate_suffix': '%% alíquota efetiva',
       'monthly_reduction_applied': 'Redução mensal aplicada: −%s',
-      'fgts_employer_note': '* FGTS é encargo do empregador, não descontado do salário.',
+      'fgts_employer_note':
+          '* FGTS é encargo do empregador, não descontado do salário.',
     },
   };
 
@@ -2473,33 +2651,42 @@ class AppLocalizations {
   String get budgetGoals => translate('budget_goals');
   String get categoryBudgets => translate('category_budgets');
   String get setSpendingLimits => translate('set_spending_limits');
-  String get setMonthlySpendingLimits => translate('set_monthly_spending_limits');
+  String get setMonthlySpendingLimits =>
+      translate('set_monthly_spending_limits');
   String get currentSpending => translate('current_spending');
   String get budgetAmount => translate('budget_amount');
   String get cashBudget => translate('cash_budget');
   String get swileBudget => translate('swile_budget');
   String get swileLabel => translate('swile_label');
-  String budgetPctUsed(String pct) => translate('budget_pct_used').replaceFirst('%s', pct);
-  String budgetPctOverLimit(String pct) => translate('budget_pct_over_limit').replaceFirst('%s', pct);
-  String budgetPctRemaining(String pct) => translate('budget_pct_remaining').replaceFirst('%s', pct);
-  String budgetFreeUp(String pct) => translate('budget_free_up').replaceFirst('%s', pct);
+  String budgetPctUsed(String pct) =>
+      translate('budget_pct_used').replaceFirst('%s', pct);
+  String budgetPctOverLimit(String pct) =>
+      translate('budget_pct_over_limit').replaceFirst('%s', pct);
+  String budgetPctRemaining(String pct) =>
+      translate('budget_pct_remaining').replaceFirst('%s', pct);
+  String budgetFreeUp(String pct) =>
+      translate('budget_free_up').replaceFirst('%s', pct);
   String get periodBudget => translate('period_budget');
   String get copyFromPrevious => translate('copy_from_previous');
   String get noBudgetsPeriod => translate('no_budgets_period');
   String get budgetsHint => translate('budgets_hint');
   String get resetToGoal => translate('reset_to_goal');
   String get resetToGoalDesc => translate('reset_to_goal_desc');
-  String resetToGoalWithAmount(String amount) => translate('reset_to_goal_with_amount').replaceFirst('%s', amount);
+  String resetToGoalWithAmount(String amount) =>
+      translate('reset_to_goal_with_amount').replaceFirst('%s', amount);
   String get deleteBudget => translate('delete_budget');
-  String removeBudget(String category) => translate('remove_budget').replaceFirst('%s', category);
+  String removeBudget(String category) =>
+      translate('remove_budget').replaceFirst('%s', category);
   String get budgetCustomLabel => translate('budget_custom_label');
   String get budgetCategoryLabel => translate('budget_category_label');
-  String budgetGoalLabel(String amount) => translate('budget_goal_label').replaceFirst('%s', amount);
+  String budgetGoalLabel(String amount) =>
+      translate('budget_goal_label').replaceFirst('%s', amount);
   String get createBudget => translate('create_budget');
   String get editBudget => translate('edit_budget');
   String get newBudget => translate('new_budget');
   String get noBudgetsToCopy => translate('no_budgets_to_copy');
-  String copiedBudgets(int count) => translate('copied_budgets').replaceFirst('%d', '$count');
+  String copiedBudgets(int count) =>
+      translate('copied_budgets').replaceFirst('%d', '$count');
   String get rebalanceBudget => translate('rebalance_budget');
   String get rebalanceSubtitle => translate('rebalance_subtitle');
   String get normalize => translate('normalize');
@@ -2541,7 +2728,8 @@ class AppLocalizations {
   String get newInstallment => translate('new_installment');
   String get descriptionRequired => translate('description_required');
   String get descExample => translate('desc_example');
-  String get monthlyInstallmentAmount => translate('monthly_installment_amount');
+  String get monthlyInstallmentAmount =>
+      translate('monthly_installment_amount');
   String get numInstallments => translate('num_installments');
   String get currentInstallment => translate('current_installment');
   String get purchasedOn => translate('purchased_on');
@@ -2581,38 +2769,61 @@ class AppLocalizations {
   String get healthSavingsRateLabel => translate('health_savings_rate_label');
   String get healthHousingVsSalary => translate('health_housing_vs_salary');
   String get healthMonthlyBalance => translate('health_monthly_balance');
-  String get healthEmergencyFundLabel => translate('health_emergency_fund_label');
-  String get healthInstallmentsVsSalary => translate('health_installments_vs_salary');
+  String get healthEmergencyFundLabel =>
+      translate('health_emergency_fund_label');
+  String get healthInstallmentsVsSalary =>
+      translate('health_installments_vs_salary');
   String get healthHistory => translate('health_history');
   String get healthNoHistoryYet => translate('health_no_history_yet');
-  String healthError(String e) => translate('health_error').replaceFirst('%s', e);
-  String healthEmergencyMonths(String months) => translate('health_emergency_months').replaceFirst('%s', months);
+  String healthError(String e) =>
+      translate('health_error').replaceFirst('%s', e);
+  String healthEmergencyMonths(String months) =>
+      translate('health_emergency_months').replaceFirst('%s', months);
   String healthHistorySubtitle(String savings, String balance) =>
-      translate('health_history_subtitle').replaceFirst('%s', savings).replaceFirst('%s', balance);
+      translate('health_history_subtitle')
+          .replaceFirst('%s', savings)
+          .replaceFirst('%s', balance);
   // Notifications Screen
   String get notificationsTitle => translate('notifications_title');
   String get notificationsSubtitle => translate('notifications_subtitle');
   String get notificationsAllGood => translate('notifications_all_good');
-  String get notificationsNoCategoryOver => translate('notifications_no_category_over');
+  String get notificationsNoCategoryOver =>
+      translate('notifications_no_category_over');
   String get notificationsTips => translate('notifications_tips');
   String get notificationsTipTitle => translate('notifications_tip_title');
   String get notificationsTipBody => translate('notifications_tip_body');
-  String get notificationsLevelExceeded => translate('notifications_level_exceeded');
-  String get notificationsLevelCritical => translate('notifications_level_critical');
-  String get notificationsLevelWarning => translate('notifications_level_warning');
+  String get notificationsLevelExceeded =>
+      translate('notifications_level_exceeded');
+  String get notificationsLevelCritical =>
+      translate('notifications_level_critical');
+  String get notificationsLevelWarning =>
+      translate('notifications_level_warning');
   String alertExceededBody(String limit, String category, String spent) =>
-      translate('alert_exceeded_body').replaceFirst('%s', limit).replaceFirst('%s', category).replaceFirst('%s', spent);
-  String alertCriticalBody(String pct, String category, String spent, String limit) =>
-      translate('alert_critical_body').replaceFirst('%s', pct).replaceFirst('%s', category).replaceFirst('%s', spent).replaceFirst('%s', limit);
+      translate('alert_exceeded_body')
+          .replaceFirst('%s', limit)
+          .replaceFirst('%s', category)
+          .replaceFirst('%s', spent);
+  String alertCriticalBody(
+          String pct, String category, String spent, String limit) =>
+      translate('alert_critical_body')
+          .replaceFirst('%s', pct)
+          .replaceFirst('%s', category)
+          .replaceFirst('%s', spent)
+          .replaceFirst('%s', limit);
   String alertWarningBody(String pct, String category, String remaining) =>
-      translate('alert_warning_body').replaceFirst('%s', pct).replaceFirst('%s', category).replaceFirst('%s', remaining);
+      translate('alert_warning_body')
+          .replaceFirst('%s', pct)
+          .replaceFirst('%s', category)
+          .replaceFirst('%s', remaining);
   // Investments Screen
   String get investmentsVsLastMonth => translate('investments_vs_last_month');
-  String get investmentsStrategicDistribution => translate('investments_strategic_distribution');
+  String get investmentsStrategicDistribution =>
+      translate('investments_strategic_distribution');
   String get investmentsLowExposure => translate('investments_low_exposure');
   String get investmentsExploreFiis => translate('investments_explore_fiis');
   String get investmentsHeader => translate('investments_header');
-  String get investmentsDetailByAsset => translate('investments_detail_by_asset');
+  String get investmentsDetailByAsset =>
+      translate('investments_detail_by_asset');
   String get investmentsViewHistory => translate('investments_view_history');
   String get investmentsDiversified => translate('investments_diversified');
   // Dashboard widgets
@@ -2627,7 +2838,8 @@ class AppLocalizations {
   String get liquidityCriticalTitle => translate('liquidity_critical_title');
   String get liquidityHighTitle => translate('liquidity_high_title');
   String get liquidityMediumTitle => translate('liquidity_medium_title');
-  String liquidityDaysToZero(String days) => translate('liquidity_days_to_zero').replaceFirst('%s', days);
+  String liquidityDaysToZero(String days) =>
+      translate('liquidity_days_to_zero').replaceFirst('%s', days);
   String liquidityObligationsThisWeek(String amount, int count) {
     final plural = count == 1 ? '' : 's';
     return translate('liquidity_obligations_this_week')
@@ -2635,12 +2847,14 @@ class AppLocalizations {
         .replaceFirst('%s', '$count')
         .replaceFirst('%s', plural);
   }
+
   String get liquidityCheckUpcoming => translate('liquidity_check_upcoming');
   String get liquiditySheetTitle => translate('liquidity_sheet_title');
   String get liquidityNoCommitments => translate('liquidity_no_commitments');
   String get liquidityTotal => translate('liquidity_total');
   String get periodBalanceTitle => translate('period_balance_title');
-  String periodProjectionClosing(String amount) => translate('period_projection_closing').replaceFirst('%s', amount);
+  String periodProjectionClosing(String amount) =>
+      translate('period_projection_closing').replaceFirst('%s', amount);
   String get periodIncomes => translate('period_incomes');
   String get periodExpenses => translate('period_expenses');
   String get recurringCardTitle => translate('recurring_card_title');
@@ -2655,13 +2869,17 @@ class AppLocalizations {
       : translate('recurring_active_count_other').replaceFirst('%s', '$n');
   String get recurringFilterActive => translate('recurring_filter_active');
   String get recurringFilterPaused => translate('recurring_filter_paused');
-  String get recurringFilterCancelled => translate('recurring_filter_cancelled');
+  String get recurringFilterCancelled =>
+      translate('recurring_filter_cancelled');
   String get recurringStatusActive => translate('recurring_status_active');
   String get recurringStatusPaused => translate('recurring_status_paused');
-  String get recurringStatusCancelled => translate('recurring_status_cancelled');
-  String get recurringUpcomingOccurrences => translate('recurring_upcoming_occurrences');
+  String get recurringStatusCancelled =>
+      translate('recurring_status_cancelled');
+  String get recurringUpcomingOccurrences =>
+      translate('recurring_upcoming_occurrences');
   String get recurringNoPending => translate('recurring_no_pending');
-  String recurringError(String e) => translate('recurring_error').replaceFirst('%s', e);
+  String recurringError(String e) =>
+      translate('recurring_error').replaceFirst('%s', e);
   String get recurringEmptyActive => translate('recurring_empty_active');
   String get recurringEmptyPaused => translate('recurring_empty_paused');
   String get recurringEmptyCancelled => translate('recurring_empty_cancelled');
@@ -2669,8 +2887,10 @@ class AppLocalizations {
   String get recurringActionPause => translate('recurring_action_pause');
   String get recurringActionResume => translate('recurring_action_resume');
   String get recurringActionCancel => translate('recurring_action_cancel');
-  String get recurringCancelDialogTitle => translate('recurring_cancel_dialog_title');
-  String get recurringCancelDialogBody => translate('recurring_cancel_dialog_body');
+  String get recurringCancelDialogTitle =>
+      translate('recurring_cancel_dialog_title');
+  String get recurringCancelDialogBody =>
+      translate('recurring_cancel_dialog_body');
   String get recurringCancelDialogNo => translate('recurring_cancel_dialog_no');
   String get recurringPausedSnack => translate('recurring_paused_snack');
   String get recurringResumedSnack => translate('recurring_resumed_snack');
@@ -2682,70 +2902,109 @@ class AppLocalizations {
   String get recurringFieldNameHint => translate('recurring_field_name_hint');
   String get recurringFieldAmount => translate('recurring_field_amount');
   String get recurringFieldFrequency => translate('recurring_field_frequency');
-  String get recurringFieldDayOfMonth => translate('recurring_field_day_of_month');
+  String get recurringFieldDayOfMonth =>
+      translate('recurring_field_day_of_month');
   String get recurringFieldCategory => translate('recurring_field_category');
-  String get recurringFieldCategoryHint => translate('recurring_field_category_hint');
+  String get recurringFieldCategoryHint =>
+      translate('recurring_field_category_hint');
   String get recurringFieldStart => translate('recurring_field_start');
   String get recurringBtnSave => translate('recurring_btn_save');
   String get recurringBtnCreate => translate('recurring_btn_create');
   String get recurringUpdatedSnack => translate('recurring_updated_snack');
   String get recurringCreatedSnack => translate('recurring_created_snack');
   // Suggestions screen
-  String get recurringSuggestionsTitle => translate('recurring_suggestions_title');
-  String get recurringSuggestionsSubtitle => translate('recurring_suggestions_subtitle');
-  String get recurringSuggestionsEmpty => translate('recurring_suggestions_empty');
-  String recurringConfidencePct(int pct) => translate('recurring_confidence_pct').replaceFirst('%s', '$pct');
+  String get recurringSuggestionsTitle =>
+      translate('recurring_suggestions_title');
+  String get recurringSuggestionsSubtitle =>
+      translate('recurring_suggestions_subtitle');
+  String get recurringSuggestionsEmpty =>
+      translate('recurring_suggestions_empty');
+  String recurringConfidencePct(int pct) =>
+      translate('recurring_confidence_pct').replaceFirst('%s', '$pct');
   String get recurringBtnIgnore => translate('recurring_btn_ignore');
   String get recurringBtnConfirm => translate('recurring_btn_confirm');
-  String recurringConfirmedSnack(String name) => translate('recurring_confirmed_snack').replaceFirst('%s', name);
-  String recurringOccurrencesCount(int n) => translate('recurring_occurrences_count').replaceFirst('%s', '$n');
+  String recurringConfirmedSnack(String name) =>
+      translate('recurring_confirmed_snack').replaceFirst('%s', name);
+  String recurringOccurrencesCount(int n) =>
+      translate('recurring_occurrences_count').replaceFirst('%s', '$n');
   // Insights
   String get insightsLabel => translate('insights_label');
-  String insightsSeeAll(int n) => translate('insights_see_all').replaceFirst('%s', '$n');
+  String insightsSeeAll(int n) =>
+      translate('insights_see_all').replaceFirst('%s', '$n');
   String get insightsSubtitle => translate('insights_subtitle');
   String get insightsGroupCritical => translate('insights_group_critical');
   String get insightsGroupWarning => translate('insights_group_warning');
   String get insightsGroupInfo => translate('insights_group_info');
-  String get insightsGroupAchievement => translate('insights_group_achievement');
+  String get insightsGroupAchievement =>
+      translate('insights_group_achievement');
   String get insightsMostIgnored => translate('insights_most_ignored');
   String get insightsEmpty => translate('insights_empty');
   // Insight rule strings
   String get insightOverdraftTitle => translate('insight_overdraft_title');
   String insightOverdraftBody(String closing, String obligations) =>
-      translate('insight_overdraft_body').replaceFirst('%s', closing).replaceFirst('%s', obligations);
+      translate('insight_overdraft_body')
+          .replaceFirst('%s', closing)
+          .replaceFirst('%s', obligations);
   String get insightOverdraftAction => translate('insight_overdraft_action');
-  String get insightLiquidityCriticalTitle => translate('insight_liquidity_critical_title');
-  String get insightLiquidityWarningTitle => translate('insight_liquidity_warning_title');
+  String get insightLiquidityCriticalTitle =>
+      translate('insight_liquidity_critical_title');
+  String get insightLiquidityWarningTitle =>
+      translate('insight_liquidity_warning_title');
   String insightLiquidityBody(String balance, String obligations) =>
-      translate('insight_liquidity_body').replaceFirst('%s', balance).replaceFirst('%s', obligations);
+      translate('insight_liquidity_body')
+          .replaceFirst('%s', balance)
+          .replaceFirst('%s', obligations);
   String get insightLiquidityAction => translate('insight_liquidity_action');
-  String insightSpikeTitle(String category) => translate('insight_spike_title').replaceFirst('%s', category);
+  String insightSpikeTitle(String category) =>
+      translate('insight_spike_title').replaceFirst('%s', category);
   // Template: "You spent %s this month — %s%% more than your average of %s."
   // Order: current, pct, average
   String insightSpikeBody(String current, String average, String pct) =>
-      translate('insight_spike_body').replaceFirst('%s', current).replaceFirst('%s', pct).replaceFirst('%s', average);
-  String insightSpikeAction(String category) => translate('insight_spike_action').replaceFirst('%s', category);
+      translate('insight_spike_body')
+          .replaceFirst('%s', current)
+          .replaceFirst('%s', pct)
+          .replaceFirst('%s', average);
+  String insightSpikeAction(String category) =>
+      translate('insight_spike_action').replaceFirst('%s', category);
   String get insightDuplicateTitle => translate('insight_duplicate_title');
-  String insightDuplicateBody(String count, String desc, String amount, String days) =>
-      translate('insight_duplicate_body').replaceFirst('%s', count).replaceFirst('%s', desc).replaceFirst('%s', amount).replaceFirst('%s', days);
+  String insightDuplicateBody(
+          String count, String desc, String amount, String days) =>
+      translate('insight_duplicate_body')
+          .replaceFirst('%s', count)
+          .replaceFirst('%s', desc)
+          .replaceFirst('%s', amount)
+          .replaceFirst('%s', days);
   String get insightDuplicateAction => translate('insight_duplicate_action');
-  String get insightSubscriptionTitle => translate('insight_subscription_title');
-  String insightSubscriptionBody(String growth) => translate('insight_subscription_body').replaceFirst('%s', growth);
-  String get insightSubscriptionAction => translate('insight_subscription_action');
-  String insightSavingsTitle(String category) => translate('insight_savings_title').replaceFirst('%s', category);
+  String get insightSubscriptionTitle =>
+      translate('insight_subscription_title');
+  String insightSubscriptionBody(String growth) =>
+      translate('insight_subscription_body').replaceFirst('%s', growth);
+  String get insightSubscriptionAction =>
+      translate('insight_subscription_action');
+  String insightSavingsTitle(String category) =>
+      translate('insight_savings_title').replaceFirst('%s', category);
   String insightSavingsBody(String category, String overspent) =>
-      translate('insight_savings_body').replaceFirst('%s', category).replaceFirst('%s', overspent);
+      translate('insight_savings_body')
+          .replaceFirst('%s', category)
+          .replaceFirst('%s', overspent);
   String get insightSavingsAction => translate('insight_savings_action');
-  String insightInvestTitle(String amount) => translate('insight_invest_title').replaceFirst('%s', amount);
-  String insightInvestBody(String amount) => translate('insight_invest_body').replaceFirst('%s', amount);
+  String insightInvestTitle(String amount) =>
+      translate('insight_invest_title').replaceFirst('%s', amount);
+  String insightInvestBody(String amount) =>
+      translate('insight_invest_body').replaceFirst('%s', amount);
   String get insightInvestAction => translate('insight_invest_action');
-  String insightStreakTitle(int n) => translate('insight_streak_title').replaceFirst('%s', '$n');
-  String insightStreakBody(int n) => translate('insight_streak_body').replaceFirst('%s', '$n');
+  String insightStreakTitle(int n) =>
+      translate('insight_streak_title').replaceFirst('%s', '$n');
+  String insightStreakBody(int n) =>
+      translate('insight_streak_body').replaceFirst('%s', '$n');
   String get insightDebtTitle => translate('insight_debt_title');
-  String insightDebtBody(String reduction) => translate('insight_debt_body').replaceFirst('%s', reduction);
+  String insightDebtBody(String reduction) =>
+      translate('insight_debt_body').replaceFirst('%s', reduction);
   String get insightUnusualTitle => translate('insight_unusual_title');
   String insightUnusualBody(String desc, String amount) =>
-      translate('insight_unusual_body').replaceFirst('%s', desc).replaceFirst('%s', amount);
+      translate('insight_unusual_body')
+          .replaceFirst('%s', desc)
+          .replaceFirst('%s', amount);
   String get insightUnusualAction => translate('insight_unusual_action');
   // Recurring frequency labels
   String get freqWeekly => translate('freq_weekly');
@@ -2766,21 +3025,29 @@ class AppLocalizations {
   String get accountsEmptyTitle => translate('accounts_empty_title');
   String get accountsEmptyHint => translate('accounts_empty_hint');
   String get accountsDeleteTitle => translate('accounts_delete_title');
-  String accountsDeleteBody(String name) => translate('accounts_delete_body').replaceFirst('%s', name);
-  String get accountsActionUpdateBalance => translate('accounts_action_update_balance');
+  String accountsDeleteBody(String name) =>
+      translate('accounts_delete_body').replaceFirst('%s', name);
+  String get accountsActionUpdateBalance =>
+      translate('accounts_action_update_balance');
   String get accountsAddTitle => translate('accounts_add_title');
   String get accountsFieldName => translate('accounts_field_name');
   String get accountsFieldNameHint => translate('accounts_field_name_hint');
-  String get accountsFieldInstitution => translate('accounts_field_institution');
+  String get accountsFieldInstitution =>
+      translate('accounts_field_institution');
   String get accountsFieldType => translate('accounts_field_type');
-  String get accountsFieldInitialBalance => translate('accounts_field_initial_balance');
-  String get accountsUpdateBalanceTitle => translate('accounts_update_balance_title');
-  String get accountsFieldCurrentBalance => translate('accounts_field_current_balance');
+  String get accountsFieldInitialBalance =>
+      translate('accounts_field_initial_balance');
+  String get accountsUpdateBalanceTitle =>
+      translate('accounts_update_balance_title');
+  String get accountsFieldCurrentBalance =>
+      translate('accounts_field_current_balance');
   String get accountsTransferTitle => translate('accounts_transfer_title');
-  String get accountsTransferSubtitle => translate('accounts_transfer_subtitle');
+  String get accountsTransferSubtitle =>
+      translate('accounts_transfer_subtitle');
   String get accountsTransferFrom => translate('accounts_transfer_from');
   String get accountsTransferTo => translate('accounts_transfer_to');
-  String get accountsFieldDescriptionOptional => translate('accounts_field_description_optional');
+  String get accountsFieldDescriptionOptional =>
+      translate('accounts_field_description_optional');
   String get accountsBtnTransfer => translate('accounts_btn_transfer');
   String get accountsTransferSuccess => translate('accounts_transfer_success');
   // Analytics screen
@@ -2789,38 +3056,54 @@ class AppLocalizations {
   String get analyticsTopCategory => translate('analytics_top_category');
   String get analyticsMonthlyTrend => translate('analytics_monthly_trend');
   String get analyticsSpendingLegend => translate('analytics_spending_legend');
-  String get analyticsCategoryDistribution => translate('analytics_category_distribution');
-  String get analyticsMonthlyComparison => translate('analytics_monthly_comparison');
+  String get analyticsCategoryDistribution =>
+      translate('analytics_category_distribution');
+  String get analyticsMonthlyComparison =>
+      translate('analytics_monthly_comparison');
   // Cashflow chart
   String get cashflowTitle => translate('cashflow_title');
   String get cashflowNegativeWarning => translate('cashflow_negative_warning');
   String get cashflowLegendReal => translate('cashflow_legend_real');
-  String get cashflowLegendProjection => translate('cashflow_legend_projection');
-  String get cashflowLegendCommitment => translate('cashflow_legend_commitment');
+  String get cashflowLegendProjection =>
+      translate('cashflow_legend_projection');
+  String get cashflowLegendCommitment =>
+      translate('cashflow_legend_commitment');
   String get cashflowMinBalanceLabel => translate('cashflow_min_balance_label');
   // Installments screen
-  String get installmentsMonthlyCommitment => translate('installments_monthly_commitment');
+  String get installmentsMonthlyCommitment =>
+      translate('installments_monthly_commitment');
   String get installmentsActivePlans => translate('installments_active_plans');
-  String get installmentsFilterActive => translate('installments_filter_active');
-  String get installmentsFilterCompleted => translate('installments_filter_completed');
+  String get installmentsFilterActive =>
+      translate('installments_filter_active');
+  String get installmentsFilterCompleted =>
+      translate('installments_filter_completed');
   String get installmentsFilterAll => translate('installments_filter_all');
-  String get installmentsPerInstallment => translate('installments_per_installment');
-  String get installmentsPerInstallmentLabel => translate('installments_per_installment_label');
+  String get installmentsPerInstallment =>
+      translate('installments_per_installment');
+  String get installmentsPerInstallmentLabel =>
+      translate('installments_per_installment_label');
   String installmentsPaidOf(int paid, int total) =>
-      translate('installments_paid_of').replaceFirst('%s', '$paid').replaceFirst('%s', '$total');
+      translate('installments_paid_of')
+          .replaceFirst('%s', '$paid')
+          .replaceFirst('%s', '$total');
   String installmentsRemainingAmount(String amount) =>
       translate('installments_remaining_amount').replaceFirst('%s', amount);
   String installmentsPctComplete(int pct) =>
       translate('installments_pct_complete').replaceFirst('%s', '$pct');
   String installmentsRemainingPayments(int n) => n == 1
-      ? translate('installments_remaining_payments_one').replaceFirst('%s', '$n')
-      : translate('installments_remaining_payments_other').replaceFirst('%s', '$n');
+      ? translate('installments_remaining_payments_one')
+          .replaceFirst('%s', '$n')
+      : translate('installments_remaining_payments_other')
+          .replaceFirst('%s', '$n');
   String get installmentsBtnComplete => translate('installments_btn_complete');
   String installmentsBtnRegisterNth(String nth, String amount) =>
-      translate('installments_btn_register_nth').replaceFirst('%s', nth).replaceFirst('%s', amount);
+      translate('installments_btn_register_nth')
+          .replaceFirst('%s', nth)
+          .replaceFirst('%s', amount);
   String installmentsBtnSkipNth(String nth) =>
       translate('installments_btn_skip_nth').replaceFirst('%s', nth);
-  String get installmentsBtnDeletePlan => translate('installments_btn_delete_plan');
+  String get installmentsBtnDeletePlan =>
+      translate('installments_btn_delete_plan');
   String get installmentsPlanTitle => translate('installments_plan_title');
   String installmentsDeleteConfirm(String name) =>
       translate('installments_delete_confirm').replaceFirst('%s', name);
@@ -2830,30 +3113,41 @@ class AppLocalizations {
       translate('installments_registered_snack').replaceFirst('%s', nth);
   String installmentsSkippedSnack(String nth) =>
       translate('installments_skipped_snack').replaceFirst('%s', nth);
-  String get installmentsEmptyCompleted => translate('installments_empty_completed');
+  String get installmentsEmptyCompleted =>
+      translate('installments_empty_completed');
   String get installmentsEmptyActive => translate('installments_empty_active');
   String get installmentsEmptyHint => translate('installments_empty_hint');
-  String get installmentsSkippedLabel => translate('installments_skipped_label');
+  String get installmentsSkippedLabel =>
+      translate('installments_skipped_label');
   // Add installment sheet
   String get installmentsAddTitle => translate('installments_add_title');
-  String get installmentsFieldDescription => translate('installments_field_description');
-  String get installmentsFieldDescriptionHint => translate('installments_field_description_hint');
+  String get installmentsFieldDescription =>
+      translate('installments_field_description');
+  String get installmentsFieldDescriptionHint =>
+      translate('installments_field_description_hint');
   String get installmentsFieldStore => translate('installments_field_store');
   String get installmentsFieldTotal => translate('installments_field_total');
   String installmentsFieldNum(int n) =>
       translate('installments_field_num').replaceFirst('%s', '$n');
-  String get installmentsFieldCategory => translate('installments_field_category');
+  String get installmentsFieldCategory =>
+      translate('installments_field_category');
   String get installmentsNoCategory => translate('installments_no_category');
-  String get installmentsFieldPurchaseDate => translate('installments_field_purchase_date');
-  String get installmentsFieldFirstDue => translate('installments_field_first_due');
+  String get installmentsFieldPurchaseDate =>
+      translate('installments_field_purchase_date');
+  String get installmentsFieldFirstDue =>
+      translate('installments_field_first_due');
   String get installmentsBtnCreate => translate('installments_btn_create');
-  String get installmentsValidationDesc => translate('installments_validation_desc');
-  String get installmentsValidationAmount => translate('installments_validation_amount');
-  String get installmentsCreatedSnack => translate('installments_created_snack');
+  String get installmentsValidationDesc =>
+      translate('installments_validation_desc');
+  String get installmentsValidationAmount =>
+      translate('installments_validation_amount');
+  String get installmentsCreatedSnack =>
+      translate('installments_created_snack');
   String get installmentsPreview => translate('installments_preview');
   String get installmentsPreviewLast => translate('installments_preview_last');
   String get installmentsPreviewEnds => translate('installments_preview_ends');
-  String get installmentsPreviewRoundingNote => translate('installments_preview_rounding_note');
+  String get installmentsPreviewRoundingNote =>
+      translate('installments_preview_rounding_note');
   // Transactions Screen
   String get noIncomeThisMonth => translate('no_income_this_month');
   String get noIncomeHint => translate('no_income_hint');
@@ -2901,7 +3195,9 @@ class AppLocalizations {
   String get onboardingLogin => translate('onboarding_login');
   // Workspace invite
   String inviteShareText(String name, String link) =>
-      translate('invite_share_text').replaceAll('{name}', name).replaceAll('{link}', link);
+      translate('invite_share_text')
+          .replaceAll('{name}', name)
+          .replaceAll('{link}', link);
   String inviteShareEmailSubject(String name) =>
       translate('invite_share_email_subject').replaceAll('{name}', name);
   // Workspace members
@@ -2918,9 +3214,12 @@ class AppLocalizations {
   String get makeMember => translate('make_member');
   String get makeViewer => translate('make_viewer');
   String get removeMemberTitle => translate('remove_member_title');
-  String removeMemberConfirm(String name) => translate('remove_member_confirm').replaceFirst('{name}', name);
-  String errorUpdatingRole(String e) => translate('error_updating_role').replaceFirst('%s', e);
-  String errorRemovingMember(String e) => translate('error_removing_member').replaceFirst('%s', e);
+  String removeMemberConfirm(String name) =>
+      translate('remove_member_confirm').replaceFirst('{name}', name);
+  String errorUpdatingRole(String e) =>
+      translate('error_updating_role').replaceFirst('%s', e);
+  String errorRemovingMember(String e) =>
+      translate('error_removing_member').replaceFirst('%s', e);
   String get emailAddress => translate('email_address');
   String get emailInvalid => translate('email_invalid');
   String get role => translate('role');
@@ -2931,19 +3230,22 @@ class AppLocalizations {
   String get whatsappUnavailable => translate('whatsapp_unavailable');
   String get linkCopied => translate('link_copied');
   String get inviteCreated => translate('invite_created');
-  String inviteShareWith(String email) => translate('invite_share_with').replaceFirst('%s', email);
+  String inviteShareWith(String email) =>
+      translate('invite_share_with').replaceFirst('%s', email);
   String get copyLink => translate('copy_link');
   String get inviteExpires7Days => translate('invite_expires_7_days');
   String get shareEmail => translate('share_email');
   String get shareWhatsapp => translate('share_whatsapp');
   String get share => translate('share');
   String get done => translate('done');
-  String errorSendingInvite(String e) => translate('error_sending_invite').replaceFirst('%s', e);
+  String errorSendingInvite(String e) =>
+      translate('error_sending_invite').replaceFirst('%s', e);
   // Workspace create
   String get newWorkspace => translate('new_workspace');
   String get workspaceDescription => translate('workspace_description');
   String get workspacePersonal => translate('workspace_personal');
-  String get workspacePersonalSubtitle => translate('workspace_personal_subtitle');
+  String get workspacePersonalSubtitle =>
+      translate('workspace_personal_subtitle');
   String get workspaceShared => translate('workspace_shared');
   String get workspaceSharedSubtitle => translate('workspace_shared_subtitle');
   String get workspaceHintShared => translate('workspace_hint_shared');
@@ -2953,7 +3255,8 @@ class AppLocalizations {
   String get icon => translate('icon');
   String get color => translate('color');
   String get createWorkspace => translate('create_workspace');
-  String errorCreatingWorkspace(String e) => translate('error_creating_workspace').replaceFirst('%s', e);
+  String errorCreatingWorkspace(String e) =>
+      translate('error_creating_workspace').replaceFirst('%s', e);
   String get inviteAccepting => translate('invite_accepting');
   String inviteSuccessJoined(String name) =>
       translate('invite_success_joined').replaceAll('{name}', name);
@@ -2980,7 +3283,8 @@ class AppLocalizations {
   String get onboardingS3F2 => translate('onboarding_s3_f2');
   String get onboardingS3F3 => translate('onboarding_s3_f3');
   // Signup
-  String get accountCreatedCheckEmail => translate('account_created_check_email');
+  String get accountCreatedCheckEmail =>
+      translate('account_created_check_email');
   String get createYour => translate('create_your');
   String get farolAccount => translate('farol_account');
   String get startIlluminating => translate('start_illuminating');
@@ -3007,8 +3311,10 @@ class AppLocalizations {
   String get changePassword => translate('change_password');
   String get manage2fa => translate('manage_2fa');
   String get deleteAccount => translate('delete_account');
-  String get deleteAccountConfirmTitle => translate('delete_account_confirm_title');
-  String get deleteAccountConfirmBody => translate('delete_account_confirm_body');
+  String get deleteAccountConfirmTitle =>
+      translate('delete_account_confirm_title');
+  String get deleteAccountConfirmBody =>
+      translate('delete_account_confirm_body');
   String get deleteAccountConfirm => translate('delete_account_confirm');
   String get changePhoto => translate('change_photo');
   String get takePhoto => translate('take_photo');
@@ -3056,17 +3362,24 @@ class AppLocalizations {
   String get rescissionEndDate => translate('rescission_end_date');
   String get rescissionUnjustified => translate('rescission_unjustified');
   String get rescissionNoticePeriod => translate('rescission_notice_period');
-  String get rescissionUnusedVacation => translate('rescission_unused_vacation');
+  String get rescissionUnusedVacation =>
+      translate('rescission_unused_vacation');
   String get rescissionCalculate => translate('rescission_calculate');
-  String get rescissionTotalReceiveGross => translate('rescission_total_receive_gross');
+  String get rescissionTotalReceiveGross =>
+      translate('rescission_total_receive_gross');
   String get rescissionDisclaimer => translate('rescission_disclaimer');
-  String get rescissionBreakdownTitle => translate('rescission_breakdown_title');
+  String get rescissionBreakdownTitle =>
+      translate('rescission_breakdown_title');
   String get rescissionSalaryBalance => translate('rescission_salary_balance');
-  String get rescissionProportional13th => translate('rescission_proportional_13th');
-  String get rescissionProportionalVacation => translate('rescission_proportional_vacation');
-  String get rescissionUnusedVacationPay => translate('rescission_unused_vacation_pay');
+  String get rescissionProportional13th =>
+      translate('rescission_proportional_13th');
+  String get rescissionProportionalVacation =>
+      translate('rescission_proportional_vacation');
+  String get rescissionUnusedVacationPay =>
+      translate('rescission_unused_vacation_pay');
   String get rescissionVacationThird => translate('rescission_vacation_third');
-  String get rescissionNoticePeriodIndemnified => translate('rescission_notice_period_indemnified');
+  String get rescissionNoticePeriodIndemnified =>
+      translate('rescission_notice_period_indemnified');
   String get rescissionFgtsFine => translate('rescission_fgts_fine');
   // Toast / feedback
   String get netWorthSaved => translate('net_worth_saved');
@@ -3111,8 +3424,10 @@ class AppLocalizations {
   String get emptyInsightsSub => translate('empty_insights_sub');
   String get emptyWorkspacesTitle => translate('empty_workspaces_title');
   String get emptyWorkspacesSub => translate('empty_workspaces_sub');
-  String get emptySpaceTransactionsTitle => translate('empty_space_transactions_title');
-  String get emptySpaceTransactionsSub => translate('empty_space_transactions_sub');
+  String get emptySpaceTransactionsTitle =>
+      translate('empty_space_transactions_title');
+  String get emptySpaceTransactionsSub =>
+      translate('empty_space_transactions_sub');
   // Bottom nav labels
   String get navHome => translate('nav_home');
   String get navInvestments => translate('nav_investments');
@@ -3122,7 +3437,9 @@ class AppLocalizations {
   // Budget overflow
   String get budgetOverflowWarning => translate('budget_overflow_warning');
   String get rebalance => translate('rebalance');
-  String allocatedOverLimit(String pct) => translate('allocated_over_limit').replaceFirst('%s', pct).replaceFirst('%%', '%');
+  String allocatedOverLimit(String pct) => translate('allocated_over_limit')
+      .replaceFirst('%s', pct)
+      .replaceFirst('%%', '%');
   // Accounts & Patrimony
   String get bankAccounts => translate('bank_accounts');
   String get manageAccountsDesc => translate('manage_accounts_desc');
@@ -3132,13 +3449,16 @@ class AppLocalizations {
   String get salaryCltTitle => translate('salary_clt_title');
   String get grossMonthlySalary => translate('gross_monthly_salary');
   String get dependents => translate('dependents');
-  String dependentsDeduction(String amount) => translate('dependents_deduction').replaceFirst('%s', amount);
+  String dependentsDeduction(String amount) =>
+      translate('dependents_deduction').replaceFirst('%s', amount);
   String get simplifiedDeduction => translate('simplified_deduction');
   String get simplifiedDeductionDesc => translate('simplified_deduction_desc');
   String get otherDeductions => translate('other_deductions');
   String get netSalaryLabel => translate('net_salary_label');
-  String effectiveRateSuffix(String rate) => '$rate${translate('effective_rate_suffix').replaceFirst('%%', '%')}';
-  String monthlyReductionApplied(String amount) => translate('monthly_reduction_applied').replaceFirst('%s', amount);
+  String effectiveRateSuffix(String rate) =>
+      '$rate${translate('effective_rate_suffix').replaceFirst('%%', '%')}';
+  String monthlyReductionApplied(String amount) =>
+      translate('monthly_reduction_applied').replaceFirst('%s', amount);
   String get fgtsEmployerNote => translate('fgts_employer_note');
 }
 
@@ -3150,10 +3470,12 @@ class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const AppLocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) => _AppLocalizationsDelegate._supported.contains(locale.languageCode);
+  bool isSupported(Locale locale) =>
+      _AppLocalizationsDelegate._supported.contains(locale.languageCode);
 
   @override
-  Future<AppLocalizations> load(Locale locale) async => AppLocalizations(locale);
+  Future<AppLocalizations> load(Locale locale) async =>
+      AppLocalizations(locale);
 
   @override
   bool shouldReload(AppLocalizationsDelegate old) => false;

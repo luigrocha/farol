@@ -93,15 +93,17 @@ class SpaceRepository {
     final spaceRow = await _client
         .from('spaces')
         .insert({
-          'name':        name,
-          'type':        type.name,
-          'emoji':       emoji ?? type.defaultEmoji,
-          if (color != null)       'color':       color,
+          'name': name,
+          'type': type.name,
+          'emoji': emoji ?? type.defaultEmoji,
+          if (color != null) 'color': color,
           if (description != null) 'description': description,
-          'currency':    currency,
-          'owner_id':    _userId,
-          if (startsAt != null) 'starts_at': startsAt.toIso8601String().split('T').first,
-          if (endsAt != null)   'ends_at':   endsAt.toIso8601String().split('T').first,
+          'currency': currency,
+          'owner_id': _userId,
+          if (startsAt != null)
+            'starts_at': startsAt.toIso8601String().split('T').first,
+          if (endsAt != null)
+            'ends_at': endsAt.toIso8601String().split('T').first,
         })
         .select()
         .single();
@@ -111,8 +113,8 @@ class SpaceRepository {
     // Add creator as owner member
     await _client.from('space_members').insert({
       'space_id': spaceId,
-      'user_id':  _userId,
-      'role':     'owner',
+      'user_id': _userId,
+      'role': 'owner',
     });
 
     return getSpace(spaceId);
@@ -127,21 +129,19 @@ class SpaceRepository {
     SpaceType? type,
   }) async {
     final updates = <String, dynamic>{};
-    if (name != null)        updates['name']        = name;
-    if (emoji != null)       updates['emoji']       = emoji;
-    if (color != null)       updates['color']       = color;
+    if (name != null) updates['name'] = name;
+    if (emoji != null) updates['emoji'] = emoji;
+    if (color != null) updates['color'] = color;
     if (description != null) updates['description'] = description;
-    if (type != null)        updates['type']        = type.name;
+    if (type != null) updates['type'] = type.name;
 
     await _client.from('spaces').update(updates).eq('id', spaceId);
     return getSpace(spaceId);
   }
 
   Future<void> archiveSpace(String spaceId) async {
-    await _client
-        .from('spaces')
-        .update({'archived_at': DateTime.now().toIso8601String()})
-        .eq('id', spaceId);
+    await _client.from('spaces').update(
+        {'archived_at': DateTime.now().toIso8601String()}).eq('id', spaceId);
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -173,11 +173,13 @@ class SpaceRepository {
     bool? canSeeSettlements,
   }) async {
     final updates = <String, dynamic>{};
-    if (canAddExpenses != null)        updates['can_add_expenses']         = canAddExpenses;
-    if (canSeeBalances != null)        updates['can_see_balances']         = canSeeBalances;
-    if (canSeeMemberBalances != null)  updates['can_see_member_balances']  = canSeeMemberBalances;
-    if (canExport != null)             updates['can_export']               = canExport;
-    if (canSeeSettlements != null)     updates['can_see_settlements']      = canSeeSettlements;
+    if (canAddExpenses != null) updates['can_add_expenses'] = canAddExpenses;
+    if (canSeeBalances != null) updates['can_see_balances'] = canSeeBalances;
+    if (canSeeMemberBalances != null)
+      updates['can_see_member_balances'] = canSeeMemberBalances;
+    if (canExport != null) updates['can_export'] = canExport;
+    if (canSeeSettlements != null)
+      updates['can_see_settlements'] = canSeeSettlements;
 
     final updated = await _client
         .from('space_members')
@@ -210,10 +212,10 @@ class SpaceRepository {
     final row = await _client
         .from('space_invites')
         .insert({
-          'space_id':      spaceId,
+          'space_id': spaceId,
           'invited_email': invitedEmail,
-          'role':          role.name,
-          'invited_by':    _userId,
+          'role': role.name,
+          'invited_by': _userId,
           if (preset != null) 'preset': preset,
         })
         .select()
@@ -238,9 +240,11 @@ class SpaceRepository {
       );
 
       final data = response.data;
-      debugPrint('[SpaceInviteAccept] response: status=${response.status} data=$data');
+      debugPrint(
+          '[SpaceInviteAccept] response: status=${response.status} data=$data');
 
-      final dataMap  = data is Map ? Map<String, dynamic>.from(data) : <String, dynamic>{};
+      final dataMap =
+          data is Map ? Map<String, dynamic>.from(data) : <String, dynamic>{};
       final spaceRaw = dataMap['space'];
       if (spaceRaw == null) throw const SpaceInviteException('internal_error');
 
@@ -249,12 +253,12 @@ class SpaceRepository {
           : <String, dynamic>{};
 
       return Space.fromJson(spaceJson);
-
     } on FunctionException catch (e) {
-      debugPrint('[SpaceInviteAccept] FunctionException: status=${e.status} details=${e.details}');
+      debugPrint(
+          '[SpaceInviteAccept] FunctionException: status=${e.status} details=${e.details}');
       final details = e.details;
-      final code    = (details is Map ? details['error'] : null) as String?
-          ?? 'internal_error';
+      final code = (details is Map ? details['error'] : null) as String? ??
+          'internal_error';
       throw SpaceInviteException(code);
     } catch (e) {
       debugPrint('[SpaceInviteAccept] Unexpected error: $e');
@@ -287,12 +291,12 @@ class SpaceRepository {
     final row = await _client
         .from('space_categories')
         .insert({
-          'space_id':      spaceId,
-          'name':          name,
-          if (icon != null)  'icon':  icon,
+          'space_id': spaceId,
+          'name': name,
+          if (icon != null) 'icon': icon,
           if (color != null) 'color': color,
           'financial_type': financialType,
-          'created_by':    _userId,
+          'created_by': _userId,
         })
         .select()
         .single();
@@ -304,50 +308,55 @@ class SpaceRepository {
     if (defaults.isEmpty) return;
 
     await _client.from('space_categories').insert(
-      defaults.asMap().entries.map((e) => {
-        'space_id':       spaceId,
-        'name':           e.value['name'],
-        'icon':           e.value['icon'],
-        'financial_type': 'expense',
-        'sort_order':     e.key,
-        'created_by':     _userId,
-      }).toList(),
-    );
+          defaults
+              .asMap()
+              .entries
+              .map((e) => {
+                    'space_id': spaceId,
+                    'name': e.value['name'],
+                    'icon': e.value['icon'],
+                    'financial_type': 'expense',
+                    'sort_order': e.key,
+                    'created_by': _userId,
+                  })
+              .toList(),
+        );
   }
 
-  List<Map<String, String>> _defaultCategoriesFor(SpaceType type) => switch (type) {
+  List<Map<String, String>> _defaultCategoriesFor(SpaceType type) =>
+      switch (type) {
         SpaceType.household => [
-            {'name': 'Aluguel',       'icon': '🏠'},
-            {'name': 'Energia',       'icon': '⚡'},
-            {'name': 'Água',          'icon': '💧'},
-            {'name': 'Internet',      'icon': '📶'},
-            {'name': 'Alimentação',   'icon': '🛒'},
-            {'name': 'Limpeza',       'icon': '🧹'},
+            {'name': 'Aluguel', 'icon': '🏠'},
+            {'name': 'Energia', 'icon': '⚡'},
+            {'name': 'Água', 'icon': '💧'},
+            {'name': 'Internet', 'icon': '📶'},
+            {'name': 'Alimentação', 'icon': '🛒'},
+            {'name': 'Limpeza', 'icon': '🧹'},
           ],
         SpaceType.trip => [
-            {'name': 'Hospedagem',    'icon': '🏨'},
-            {'name': 'Transporte',    'icon': '🚗'},
-            {'name': 'Alimentação',   'icon': '🍽️'},
-            {'name': 'Atividades',    'icon': '🎭'},
-            {'name': 'Compras',       'icon': '🛍️'},
+            {'name': 'Hospedagem', 'icon': '🏨'},
+            {'name': 'Transporte', 'icon': '🚗'},
+            {'name': 'Alimentação', 'icon': '🍽️'},
+            {'name': 'Atividades', 'icon': '🎭'},
+            {'name': 'Compras', 'icon': '🛍️'},
           ],
         SpaceType.project => [
-            {'name': 'Software',      'icon': '💻'},
-            {'name': 'Serviços',      'icon': '🔧'},
-            {'name': 'Marketing',     'icon': '📢'},
-            {'name': 'Equipamentos',  'icon': '🖥️'},
+            {'name': 'Software', 'icon': '💻'},
+            {'name': 'Serviços', 'icon': '🔧'},
+            {'name': 'Marketing', 'icon': '📢'},
+            {'name': 'Equipamentos', 'icon': '🖥️'},
           ],
         SpaceType.family => [
-            {'name': 'Moradia',       'icon': '🏠'},
-            {'name': 'Alimentação',   'icon': '🛒'},
-            {'name': 'Saúde',         'icon': '🏥'},
-            {'name': 'Educação',      'icon': '📚'},
+            {'name': 'Moradia', 'icon': '🏠'},
+            {'name': 'Alimentação', 'icon': '🛒'},
+            {'name': 'Saúde', 'icon': '🏥'},
+            {'name': 'Educação', 'icon': '📚'},
           ],
         SpaceType.business => [
-            {'name': 'Operacional',   'icon': '⚙️'},
-            {'name': 'Pessoal',       'icon': '👥'},
-            {'name': 'Marketing',     'icon': '📢'},
-            {'name': 'Tecnologia',    'icon': '💻'},
+            {'name': 'Operacional', 'icon': '⚙️'},
+            {'name': 'Pessoal', 'icon': '👥'},
+            {'name': 'Marketing', 'icon': '📢'},
+            {'name': 'Tecnologia', 'icon': '💻'},
           ],
       };
 
@@ -362,14 +371,11 @@ class SpaceRepository {
     String? beforeId,
     DateTime? beforeDate,
   }) async {
-    final query = _client
-        .from('space_transactions')
-        .select('''
+    final query = _client.from('space_transactions').select('''
           *,
           space_transaction_shares(*),
           space_categories(id, name, icon)
-        ''')
-        .eq('space_id', spaceId);
+        ''').eq('space_id', spaceId);
 
     final filteredQuery = beforeDate != null
         ? query.lt('date', beforeDate.toIso8601String().split('T').first)
@@ -414,14 +420,14 @@ class SpaceRepository {
     final txRow = await _client
         .from('space_transactions')
         .insert({
-          'space_id':    spaceId,
+          'space_id': spaceId,
           if (categoryId != null) 'category_id': categoryId,
-          'paid_by':     payer,
-          'amount':      amount,
+          'paid_by': payer,
+          'amount': amount,
           'description': description,
-          'date':        date.toIso8601String().split('T').first,
-          'split_rule':  splitRule.name,
-          if (notes != null)      'notes':       notes,
+          'date': date.toIso8601String().split('T').first,
+          'split_rule': splitRule.name,
+          if (notes != null) 'notes': notes,
           if (receiptUrl != null) 'receipt_url': receiptUrl,
         })
         .select()
@@ -432,28 +438,28 @@ class SpaceRepository {
     // Insert shares
     if (sharesPerUser.isNotEmpty) {
       await _client.from('space_transaction_shares').insert(
-        sharesPerUser.entries.map((e) => {
-          'transaction_id': txId,
-          'user_id':        e.key,
-          'amount':         e.value,
-        }).toList(),
-      );
+            sharesPerUser.entries
+                .map((e) => {
+                      'transaction_id': txId,
+                      'user_id': e.key,
+                      'amount': e.value,
+                    })
+                .toList(),
+          );
     }
 
     // Return full transaction with shares
     final full = await _client
         .from('space_transactions')
-        .select('*, space_transaction_shares(*), space_categories(id, name, icon)')
+        .select(
+            '*, space_transaction_shares(*), space_categories(id, name, icon)')
         .eq('id', txId)
         .single();
     return SpaceTransaction.fromJson(full);
   }
 
   Future<void> deleteTransaction(String transactionId) async {
-    await _client
-        .from('space_transactions')
-        .delete()
-        .eq('id', transactionId);
+    await _client.from('space_transactions').delete().eq('id', transactionId);
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -473,12 +479,13 @@ class SpaceRepository {
         .from('ledger_contributions')
         .upsert(
           {
-            'user_id':  _userId,
+            'user_id': _userId,
             'space_id': spaceId,
             'share_id': shareId,
-            'amount':   amount,
-            'date':     date.toIso8601String().split('T').first,
-            if (ledgerCategoryId != null) 'ledger_category_id': ledgerCategoryId,
+            'amount': amount,
+            'date': date.toIso8601String().split('T').first,
+            if (ledgerCategoryId != null)
+              'ledger_category_id': ledgerCategoryId,
           },
           onConflict: 'share_id',
         )
@@ -488,8 +495,7 @@ class SpaceRepository {
     // Mark the share as ledger-linked
     await _client
         .from('space_transaction_shares')
-        .update({'ledger_linked': true})
-        .eq('id', shareId);
+        .update({'ledger_linked': true}).eq('id', shareId);
 
     return LedgerContribution.fromJson(row);
   }
@@ -503,8 +509,7 @@ class SpaceRepository {
 
     await _client
         .from('space_transaction_shares')
-        .update({'ledger_linked': false})
-        .eq('id', shareId);
+        .update({'ledger_linked': false}).eq('id', shareId);
   }
 
   /// All ledger contributions for the current user in a date range.
@@ -520,9 +525,8 @@ class SpaceRepository {
         .gte('date', from.toIso8601String().split('T').first)
         .lte('date', to.toIso8601String().split('T').first);
 
-    final filteredQuery = spaceId != null
-        ? query.eq('space_id', spaceId)
-        : query;
+    final filteredQuery =
+        spaceId != null ? query.eq('space_id', spaceId) : query;
 
     final rows = await filteredQuery.order('date', ascending: false);
     return (rows as List)
@@ -561,7 +565,8 @@ class SpaceRepository {
   }
 
   /// Marks a settlement as paid by the current user.
-  Future<SpaceSettlement> markSettled(String settlementId, {String? notes}) async {
+  Future<SpaceSettlement> markSettled(String settlementId,
+      {String? notes}) async {
     final row = await _client
         .from('space_settlements')
         .update({
@@ -595,10 +600,10 @@ class SpaceRepository {
     final Map<String, double> net = {};
 
     for (final tx in txRows as List) {
-      final txMap    = tx as Map<String, dynamic>;
-      final paidBy   = txMap['paid_by'] as String;
+      final txMap = tx as Map<String, dynamic>;
+      final paidBy = txMap['paid_by'] as String;
       final txAmount = (txMap['amount'] as num).toDouble();
-      final shares   = txMap['space_transaction_shares'] as List;
+      final shares = txMap['space_transaction_shares'] as List;
 
       // Payer gets credit for the full amount
       net[paidBy] = (net[paidBy] ?? 0) + txAmount;
@@ -606,8 +611,8 @@ class SpaceRepository {
       // Each participant gets debited their share
       for (final share in shares) {
         final shareMap = share as Map<String, dynamic>;
-        final userId   = shareMap['user_id'] as String;
-        final amount   = (shareMap['amount'] as num).toDouble();
+        final userId = shareMap['user_id'] as String;
+        final amount = (shareMap['amount'] as num).toDouble();
         net[userId] = (net[userId] ?? 0) - amount;
       }
     }
@@ -630,24 +635,23 @@ class SpaceRepository {
     int ci = 0, di = 0;
     while (ci < creditors.length && di < debtors.length) {
       final creditor = creditors[ci];
-      final debtor   = debtors[di];
-      final payment  = creditor.amount < debtor.amount
-          ? creditor.amount
-          : debtor.amount;
+      final debtor = debtors[di];
+      final payment =
+          creditor.amount < debtor.amount ? creditor.amount : debtor.amount;
 
       if (payment > 0.005) {
         suggestions.add(SettlementSuggestion(
           fromUserId: debtor.userId,
-          toUserId:   creditor.userId,
-          amount:     double.parse(payment.toStringAsFixed(2)),
+          toUserId: creditor.userId,
+          amount: double.parse(payment.toStringAsFixed(2)),
         ));
       }
 
       creditor.amount -= payment;
-      debtor.amount   -= payment;
+      debtor.amount -= payment;
 
       if (creditor.amount < 0.005) ci++;
-      if (debtor.amount   < 0.005) di++;
+      if (debtor.amount < 0.005) di++;
     }
 
     return suggestions;
@@ -665,14 +669,20 @@ class SpaceRepository {
     final rows = await _client
         .from('space_settlements')
         .insert(
-          suggestions.map((s) => {
-            'space_id':      spaceId,
-            'from_user_id':  s.fromUserId,
-            'to_user_id':    s.toUserId,
-            'amount':        s.amount,
-            if (periodStart != null) 'period_start': periodStart.toIso8601String().split('T').first,
-            if (periodEnd   != null) 'period_end':   periodEnd.toIso8601String().split('T').first,
-          }).toList(),
+          suggestions
+              .map((s) => {
+                    'space_id': spaceId,
+                    'from_user_id': s.fromUserId,
+                    'to_user_id': s.toUserId,
+                    'amount': s.amount,
+                    if (periodStart != null)
+                      'period_start':
+                          periodStart.toIso8601String().split('T').first,
+                    if (periodEnd != null)
+                      'period_end':
+                          periodEnd.toIso8601String().split('T').first,
+                  })
+              .toList(),
         )
         .select();
 

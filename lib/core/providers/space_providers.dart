@@ -38,7 +38,8 @@ final pushTokenRepositoryProvider = Provider<PushTokenRepository>(
 // ─────────────────────────────────────────────────────────────────
 
 /// The current user's personal ledger (always private).
-final personalLedgerProvider = FutureProvider.autoDispose<PersonalLedger>((ref) {
+final personalLedgerProvider =
+    FutureProvider.autoDispose<PersonalLedger>((ref) {
   return ref.watch(spaceRepositoryProvider).getOrCreatePersonalLedger();
 });
 
@@ -62,8 +63,8 @@ class ActiveSpaceNotifier extends AsyncNotifier<Space?> {
 
   @override
   Future<Space?> build() async {
-    final repo   = ref.watch(spaceRepositoryProvider);
-    final db     = ref.watch(databaseProvider);
+    final repo = ref.watch(spaceRepositoryProvider);
+    final db = ref.watch(databaseProvider);
     final spaces = await repo.getUserSpaces();
 
     if (spaces.isEmpty) return null;
@@ -90,8 +91,7 @@ class ActiveSpaceNotifier extends AsyncNotifier<Space?> {
   }
 }
 
-final activeSpaceProvider =
-    AsyncNotifierProvider<ActiveSpaceNotifier, Space?>(
+final activeSpaceProvider = AsyncNotifierProvider<ActiveSpaceNotifier, Space?>(
   ActiveSpaceNotifier.new,
 );
 
@@ -110,14 +110,14 @@ final isInSpaceContextProvider = Provider<bool>((ref) {
 // ─────────────────────────────────────────────────────────────────
 
 final currentUserSpaceRoleProvider = Provider<SpaceRole>((ref) {
-  final space  = ref.watch(activeSpaceProvider).valueOrNull;
+  final space = ref.watch(activeSpaceProvider).valueOrNull;
   final userId = Supabase.instance.client.auth.currentUser?.id;
   if (space == null || userId == null) return SpaceRole.viewer;
   return space.roleFor(userId);
 });
 
 final currentUserSpaceMemberProvider = Provider<SpaceMember?>((ref) {
-  final space  = ref.watch(activeSpaceProvider).valueOrNull;
+  final space = ref.watch(activeSpaceProvider).valueOrNull;
   final userId = Supabase.instance.client.auth.currentUser?.id;
   if (space == null || userId == null) return null;
   return space.members.where((m) => m.userId == userId).firstOrNull;
@@ -156,7 +156,8 @@ final canSeeSettlementsProvider = Provider<bool>((ref) {
 // ─────────────────────────────────────────────────────────────────
 
 /// Categories for the active space.
-final spaceCategoriesProvider = FutureProvider.autoDispose<List<SpaceCategory>>((ref) async {
+final spaceCategoriesProvider =
+    FutureProvider.autoDispose<List<SpaceCategory>>((ref) async {
   final spaceId = ref.watch(activeSpaceIdProvider);
   if (spaceId == null) return [];
   return ref.read(spaceRepositoryProvider).getCategories(spaceId);
@@ -201,10 +202,13 @@ final settlementSuggestionsProvider =
 /// Ledger contributions from all spaces for the given month.
 /// Family: ({year, month}) → List<LedgerContribution>
 final ledgerContributionsProvider = FutureProvider.autoDispose
-    .family<List<LedgerContribution>, ({int year, int month})>((ref, period) async {
+    .family<List<LedgerContribution>, ({int year, int month})>(
+        (ref, period) async {
   final from = DateTime(period.year, period.month, 1);
-  final to   = DateTime(period.year, period.month + 1, 0); // last day of month
-  return ref.read(spaceRepositoryProvider).getLedgerContributions(from: from, to: to);
+  final to = DateTime(period.year, period.month + 1, 0); // last day of month
+  return ref
+      .read(spaceRepositoryProvider)
+      .getLedgerContributions(from: from, to: to);
 });
 
 /// Total amount contributed to spaces in a given month (for personal ledger analysis).
@@ -229,8 +233,7 @@ final spaceMemberDisplayMapProvider =
   final space = ref.watch(activeSpaceProvider).valueOrNull;
   if (space == null || space.members.isEmpty) return {};
 
-  final currentUserId =
-      Supabase.instance.client.auth.currentUser?.id ?? '';
+  final currentUserId = Supabase.instance.client.auth.currentUser?.id ?? '';
   final userIds = space.members.map((m) => m.userId).toList();
 
   final rows = await Supabase.instance.client
@@ -248,12 +251,12 @@ final spaceMemberDisplayMapProvider =
       m.userId: MemberDisplay.fromProfile(
         profileMap[m.userId] ??
             {
-              'id':           m.userId,
+              'id': m.userId,
               'display_name': null,
-              'email':        null,
-              'photo_url':    null,
+              'email': null,
+              'photo_url': null,
             },
-        avatarColor:   avatarColorForUserId(m.userId),
+        avatarColor: avatarColorForUserId(m.userId),
         currentUserId: currentUserId,
       ),
   };
@@ -268,7 +271,8 @@ final spaceMemberDisplayMapProvider =
 /// and transaction list auto-refresh.
 ///
 /// Keep this alive by watching it in SpaceDashboardScreen.
-final spaceTransactionsRealtimeProvider = StreamProvider.autoDispose<void>((ref) {
+final spaceTransactionsRealtimeProvider =
+    StreamProvider.autoDispose<void>((ref) {
   final spaceId = ref.watch(activeSpaceIdProvider);
   if (spaceId == null) return const Stream.empty();
 
@@ -278,13 +282,13 @@ final spaceTransactionsRealtimeProvider = StreamProvider.autoDispose<void>((ref)
   final channel = client.channel('space_tx:$spaceId');
 
   channel.onPostgresChanges(
-    event:  PostgresChangeEvent.insert,
+    event: PostgresChangeEvent.insert,
     schema: 'public',
-    table:  'space_transactions',
+    table: 'space_transactions',
     filter: PostgresChangeFilter(
-      type:   PostgresChangeFilterType.eq,
+      type: PostgresChangeFilterType.eq,
       column: 'space_id',
-      value:  spaceId,
+      value: spaceId,
     ),
     callback: (_) {
       // Invalidate caches so consumers auto-rebuild
@@ -340,19 +344,19 @@ final spaceActivityRealtimeProvider = StreamProvider.autoDispose<void>((ref) {
   final spaceId = ref.watch(activeSpaceIdProvider);
   if (spaceId == null) return const Stream.empty();
 
-  final client     = Supabase.instance.client;
+  final client = Supabase.instance.client;
   final controller = StreamController<void>.broadcast();
 
   final channel = client.channel('space_act:$spaceId');
 
   channel.onPostgresChanges(
-    event:  PostgresChangeEvent.insert,
+    event: PostgresChangeEvent.insert,
     schema: 'public',
-    table:  'space_activity',
+    table: 'space_activity',
     filter: PostgresChangeFilter(
-      type:   PostgresChangeFilterType.eq,
+      type: PostgresChangeFilterType.eq,
       column: 'space_id',
-      value:  spaceId,
+      value: spaceId,
     ),
     callback: (_) {
       ref.invalidate(spaceActivityProvider);

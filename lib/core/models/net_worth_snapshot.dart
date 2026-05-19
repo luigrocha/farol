@@ -25,7 +25,8 @@ class NetWorthSnapshot {
     required this.createdAt,
   });
 
-  factory NetWorthSnapshot.fromJson(Map<String, dynamic> json) => NetWorthSnapshot(
+  factory NetWorthSnapshot.fromJson(Map<String, dynamic> json) =>
+      NetWorthSnapshot(
         id: (json['id'] as num).toInt(),
         userId: json['user_id'] as String,
         month: (json['month'] as num).toInt(),
@@ -34,7 +35,8 @@ class NetWorthSnapshot {
         fgtsBalance: (json['fgts_balance'] as num?)?.toDouble() ?? 0,
         investmentsTotal: (json['investments_total'] as num?)?.toDouble() ?? 0,
         emergencyFund: (json['emergency_fund'] as num?)?.toDouble() ?? 0,
-        pendingInstallments: (json['pending_installments'] as num?)?.toDouble() ?? 0,
+        pendingInstallments:
+            (json['pending_installments'] as num?)?.toDouble() ?? 0,
         notes: json['notes'] as String?,
         createdAt: DateTime.parse(json['created_at'] as String),
       );

@@ -11,11 +11,12 @@ void downloadOnWeb(List<int> bytes, String filename, String mimeType) {
     ..href = url
     ..setAttribute('download', filename)
     ..click();
-  
-  // Optional: delay revocation to ensure browser started the download
-  web.window.setTimeout(() {
-    web.URL.revokeObjectURL(url);
-    anchor.remove();
-  }.toJS, 0.toJS);
-}
 
+  // Optional: delay revocation to ensure browser started the download
+  web.window.setTimeout(
+      () {
+        web.URL.revokeObjectURL(url);
+        anchor.remove();
+      }.toJS,
+      0.toJS);
+}

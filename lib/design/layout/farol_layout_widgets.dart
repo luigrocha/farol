@@ -141,7 +141,8 @@ class FarolScrollPage extends StatelessWidget {
     if (constrainContent) {
       scrollView = Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: FarolBreakpoints.contentMaxWidth),
+          constraints:
+              const BoxConstraints(maxWidth: FarolBreakpoints.contentMaxWidth),
           child: scrollView,
         ),
       );
@@ -208,10 +209,10 @@ class FarolResponsiveLayout extends StatelessWidget {
     final size = FarolBreakpoints.of(context);
 
     return switch (size) {
-      FarolScreenSize.wide    => (wide ?? desktop ?? tablet ?? mobile)(context),
+      FarolScreenSize.wide => (wide ?? desktop ?? tablet ?? mobile)(context),
       FarolScreenSize.desktop => (desktop ?? tablet ?? mobile)(context),
-      FarolScreenSize.tablet  => (tablet ?? mobile)(context),
-      FarolScreenSize.mobile  => mobile(context),
+      FarolScreenSize.tablet => (tablet ?? mobile)(context),
+      FarolScreenSize.mobile => mobile(context),
     };
   }
 }
@@ -642,8 +643,8 @@ class FarolSliverPadded extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectivePadding = padding ??
-        EdgeInsets.fromLTRB(horizontal, top, horizontal, bottom);
+    final effectivePadding =
+        padding ?? EdgeInsets.fromLTRB(horizontal, top, horizontal, bottom);
     return SliverPadding(
       padding: effectivePadding,
       sliver: sliver,

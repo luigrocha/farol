@@ -10,8 +10,8 @@ import '../../core/providers/workspace_providers.dart';
 // ─────────────────────────────────────────────────────────────
 
 const _kPersonalEmojis = ['🏠', '💼', '🎯', '🌱', '⭐', '🦋'];
-const _kSharedEmojis   = ['👥', '💑', '👨‍👩‍👧', '🏡', '🤝', '🚀'];
-const _kAccentColors   = [
+const _kSharedEmojis = ['👥', '💑', '👨‍👩‍👧', '🏡', '🤝', '🚀'];
+const _kAccentColors = [
   Color(0xFF00695C), // teal
   Color(0xFF1565C0), // blue
   Color(0xFF6A1B9A), // purple
@@ -84,8 +84,8 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
     try {
       final repo = ref.read(workspaceRepositoryProvider);
       final ws = await repo.create(
-        name:  _nameController.text.trim(),
-        type:  _type,
+        name: _nameController.text.trim(),
+        type: _type,
         emoji: _selectedEmoji,
         color: _selectedColor != null
             ? '#${_selectedColor!.toARGB32().toRadixString(16).substring(2).toUpperCase()}'
@@ -97,7 +97,9 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).errorCreatingWorkspace(e.toString()))),
+          SnackBar(
+              content: Text(AppLocalizations.of(context)
+                  .errorCreatingWorkspace(e.toString()))),
         );
       }
     } finally {
@@ -158,7 +160,8 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
                   child: _TypeCard(
                     icon: '🏠',
                     title: AppLocalizations.of(context).workspacePersonal,
-                    subtitle: AppLocalizations.of(context).workspacePersonalSubtitle,
+                    subtitle:
+                        AppLocalizations.of(context).workspacePersonalSubtitle,
                     selected: _type == WorkspaceType.personal,
                     onTap: () => _onTypeChanged(WorkspaceType.personal),
                   ),
@@ -168,7 +171,8 @@ class _CreateWorkspaceSheetState extends ConsumerState<CreateWorkspaceSheet> {
                   child: _TypeCard(
                     icon: '👥',
                     title: AppLocalizations.of(context).workspaceShared,
-                    subtitle: AppLocalizations.of(context).workspaceSharedSubtitle,
+                    subtitle:
+                        AppLocalizations.of(context).workspaceSharedSubtitle,
                     selected: _type == WorkspaceType.shared,
                     onTap: () => _onTypeChanged(WorkspaceType.shared),
                   ),

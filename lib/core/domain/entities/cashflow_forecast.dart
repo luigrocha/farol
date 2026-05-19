@@ -35,7 +35,8 @@ class CashflowDataPoint {
         date: DateTime.parse(json['date'] as String),
         balance: Money.fromDouble((json['balance'] as num).toDouble()),
         hasObligation: json['hasObligation'] as bool,
-        dailyExpense: Money.fromDouble((json['dailyExpense'] as num).toDouble()),
+        dailyExpense:
+            Money.fromDouble((json['dailyExpense'] as num).toDouble()),
         dailyIncome: Money.fromDouble((json['dailyIncome'] as num).toDouble()),
         isReal: json['isReal'] as bool,
       );
@@ -50,9 +51,11 @@ class CashflowForecast {
   bool get isEmpty => points.isEmpty;
 
   /// Minimum projected balance in the forecast window
-  Money get minBalance =>
-      points.isEmpty ? Money.zero : points.map((p) => p.balance).reduce(
-          (a, b) => a.amount < b.amount ? a : b);
+  Money get minBalance => points.isEmpty
+      ? Money.zero
+      : points
+          .map((p) => p.balance)
+          .reduce((a, b) => a.amount < b.amount ? a : b);
 
   /// Whether the balance dips negative at any point
   bool get goesNegative => points.any((p) => p.balance.isNegative);

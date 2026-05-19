@@ -34,8 +34,7 @@ class RecurringOccurrencesRepository {
 
   /// Bulk-insert occurrences — idempotent via ON CONFLICT DO NOTHING
   /// (unique constraint on rule_id + scheduled_date).
-  Future<void> upsertOccurrences(
-      List<RecurringOccurrence> occurrences) async {
+  Future<void> upsertOccurrences(List<RecurringOccurrence> occurrences) async {
     if (occurrences.isEmpty) return;
     final userId = _userId;
     if (userId == null) throw Exception('Not authenticated');
@@ -73,8 +72,7 @@ class RecurringOccurrencesRepository {
     return RecurringOccurrence.fromJson(row);
   }
 
-  Future<RecurringOccurrence> markSkipped(String id,
-      {String? notes}) async {
+  Future<RecurringOccurrence> markSkipped(String id, {String? notes}) async {
     final row = await _supabase
         .from('recurring_occurrences')
         .update({

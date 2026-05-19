@@ -148,7 +148,8 @@ class MiniStat extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            BrlBig(value: value, size: 16, color: color, weight: FontWeight.w700),
+            BrlBig(
+                value: value, size: 16, color: color, weight: FontWeight.w700),
           ],
         ),
       ),

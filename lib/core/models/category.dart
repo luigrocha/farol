@@ -1,4 +1,3 @@
-
 class Category {
   final String id;
   final String? userId;
@@ -8,7 +7,8 @@ class Category {
   final String name;
   final String emoji;
   final String? colorHex;
-  final String financialType; // 'need' | 'want' | 'investment' | 'income' | 'transfer'
+  final String
+      financialType; // 'need' | 'want' | 'investment' | 'income' | 'transfer'
   final bool isSystem;
   final bool isSwile;
   final bool isFixed;

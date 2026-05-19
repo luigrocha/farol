@@ -49,25 +49,26 @@ enum FarolEmptyStateType {
 
 extension _EmptyStateKeys on FarolEmptyStateType {
   String get titleKey => switch (this) {
-        FarolEmptyStateType.transactions     => 'empty_transactions_title',
-        FarolEmptyStateType.installments     => 'empty_installments_title',
-        FarolEmptyStateType.recurring        => 'empty_recurring_title',
-        FarolEmptyStateType.investments      => 'empty_investments_title',
-        FarolEmptyStateType.insights         => 'empty_insights_title',
-        FarolEmptyStateType.workspaces       => 'empty_workspaces_title',
-        FarolEmptyStateType.spaceTransactions => 'empty_space_transactions_title',
-        FarolEmptyStateType.generic          => 'empty_generic_title',
+        FarolEmptyStateType.transactions => 'empty_transactions_title',
+        FarolEmptyStateType.installments => 'empty_installments_title',
+        FarolEmptyStateType.recurring => 'empty_recurring_title',
+        FarolEmptyStateType.investments => 'empty_investments_title',
+        FarolEmptyStateType.insights => 'empty_insights_title',
+        FarolEmptyStateType.workspaces => 'empty_workspaces_title',
+        FarolEmptyStateType.spaceTransactions =>
+          'empty_space_transactions_title',
+        FarolEmptyStateType.generic => 'empty_generic_title',
       };
 
   String get subtitleKey => switch (this) {
-        FarolEmptyStateType.transactions     => 'empty_transactions_sub',
-        FarolEmptyStateType.installments     => 'empty_installments_sub',
-        FarolEmptyStateType.recurring        => 'empty_recurring_sub',
-        FarolEmptyStateType.investments      => 'empty_investments_sub',
-        FarolEmptyStateType.insights         => 'empty_insights_sub',
-        FarolEmptyStateType.workspaces       => 'empty_workspaces_sub',
+        FarolEmptyStateType.transactions => 'empty_transactions_sub',
+        FarolEmptyStateType.installments => 'empty_installments_sub',
+        FarolEmptyStateType.recurring => 'empty_recurring_sub',
+        FarolEmptyStateType.investments => 'empty_investments_sub',
+        FarolEmptyStateType.insights => 'empty_insights_sub',
+        FarolEmptyStateType.workspaces => 'empty_workspaces_sub',
         FarolEmptyStateType.spaceTransactions => 'empty_space_transactions_sub',
-        FarolEmptyStateType.generic          => 'empty_generic_sub',
+        FarolEmptyStateType.generic => 'empty_generic_sub',
       };
 }
 

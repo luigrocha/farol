@@ -54,10 +54,8 @@ class InstallmentPaymentRepository {
           ..remove('id')
           ..['user_id'] = userId)
         .toList();
-    final data = await _supabase
-        .from('installment_payments')
-        .insert(rows)
-        .select();
+    final data =
+        await _supabase.from('installment_payments').insert(rows).select();
     return data.map(InstallmentPayment.fromJson).toList();
   }
 

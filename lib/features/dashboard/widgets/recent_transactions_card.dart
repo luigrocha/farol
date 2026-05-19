@@ -101,9 +101,7 @@ class RecentTransactionsCard extends ConsumerWidget {
                 );
               }
               return Column(
-                children: recent
-                    .map((e) => _TxRow(expense: e))
-                    .toList(),
+                children: recent.map((e) => _TxRow(expense: e)).toList(),
               );
             },
           ),
@@ -153,7 +151,7 @@ class _TxRowState extends State<_TxRow> {
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
-      onExit:  (_) => setState(() => _hovered = false),
+      onExit: (_) => setState(() => _hovered = false),
       child: AnimatedContainer(
         duration: DSDuration.fast,
         padding: const EdgeInsets.symmetric(

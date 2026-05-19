@@ -115,7 +115,8 @@ void main() async {
   }
 
   const supabaseUrl = String.fromEnvironment('SUPABASE_URL', defaultValue: '');
-  const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY', defaultValue: '');
+  const supabaseAnonKey =
+      String.fromEnvironment('SUPABASE_ANON_KEY', defaultValue: '');
 
   final hasValidCredentials = supabaseUrl.isNotEmpty &&
       !supabaseUrl.contains('your-project') &&
@@ -189,9 +190,9 @@ class FarolApp extends ConsumerWidget {
               builder: (context) => InvestmentDetailScreen(investment: inv));
         }
         final name = settings.name ?? '';
-        final uri  = Uri.tryParse(name);
+        final uri = Uri.tryParse(name);
         if (uri != null && uri.pathSegments.length == 2) {
-          final seg0  = uri.pathSegments[0];
+          final seg0 = uri.pathSegments[0];
           final token = uri.pathSegments[1];
 
           // Workspace invite: /invite/:token
@@ -462,7 +463,8 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isDesktop = FarolBreakpoints.isTablet(context); // NavigationRail at ≥600 (tablet+)
+    final isDesktop =
+        FarolBreakpoints.isTablet(context); // NavigationRail at ≥600 (tablet+)
 
     // Re-sync realtime service whenever the active workspace changes.
     // Invite notifications are now handled by InviteNotificationManager overlay
@@ -601,33 +603,51 @@ class _DesktopNavRail extends ConsumerStatefulWidget {
 
 class _DesktopNavRailState extends ConsumerState<_DesktopNavRail> {
   // Premium sidebar palette — sourced from FarolBrand tokens
-  static const _navyBg    = FarolBrand.navySidebar;
-  static const _navyBg2   = FarolBrand.navySidebarHover;
-  static const _amber      = FarolBrand.beam;
+  static const _navyBg = FarolBrand.navySidebar;
+  static const _navyBg2 = FarolBrand.navySidebarHover;
+  static const _amber = FarolBrand.beam;
   static Color get _selectedBg => FarolBrand.beamSubtle;
 
   @override
   Widget build(BuildContext context) {
-    final activeWs  = ref.watch(activeWorkspaceProvider).valueOrNull;
-    final alerts    = ref.watch(budgetAlertsProvider);
-    final insights  = ref.watch(insightsProvider).valueOrNull ?? [];
+    final activeWs = ref.watch(activeWorkspaceProvider).valueOrNull;
+    final alerts = ref.watch(budgetAlertsProvider);
+    final insights = ref.watch(insightsProvider).valueOrNull ?? [];
     final themeMode = ref.watch(themeModeProvider);
 
     final isShared = activeWs?.type == WorkspaceType.shared;
     final hasEmoji = activeWs?.emoji != null && activeWs!.emoji!.isNotEmpty;
 
-    final dashboardBadge =
-        alerts.where((a) => a.level != AlertLevel.warning).length +
+    final dashboardBadge = alerts
+            .where((a) => a.level != AlertLevel.warning)
+            .length +
         insights.where((i) => i.priority == InsightPriority.critical).length;
     final budgetBadge =
         alerts.where((a) => a.level == AlertLevel.exceeded).length;
 
     final items = [
-      _NavItem(icon: Icons.home_outlined,         selectedIcon: Icons.home_rounded,           label: widget.l10n.dashboard,    badge: dashboardBadge),
-      _NavItem(icon: Icons.receipt_long_outlined,  selectedIcon: Icons.receipt_long_rounded,   label: widget.l10n.transactions),
-      _NavItem(icon: Icons.bar_chart_outlined,     selectedIcon: Icons.bar_chart_rounded,      label: widget.l10n.analytics),
-      _NavItem(icon: Icons.pie_chart_outline_rounded, selectedIcon: Icons.pie_chart_rounded,   label: widget.l10n.budgetNav,    badge: budgetBadge),
-      _NavItem(icon: Icons.trending_up_outlined,   selectedIcon: Icons.trending_up_rounded,    label: widget.l10n.investments),
+      _NavItem(
+          icon: Icons.home_outlined,
+          selectedIcon: Icons.home_rounded,
+          label: widget.l10n.dashboard,
+          badge: dashboardBadge),
+      _NavItem(
+          icon: Icons.receipt_long_outlined,
+          selectedIcon: Icons.receipt_long_rounded,
+          label: widget.l10n.transactions),
+      _NavItem(
+          icon: Icons.bar_chart_outlined,
+          selectedIcon: Icons.bar_chart_rounded,
+          label: widget.l10n.analytics),
+      _NavItem(
+          icon: Icons.pie_chart_outline_rounded,
+          selectedIcon: Icons.pie_chart_rounded,
+          label: widget.l10n.budgetNav,
+          badge: budgetBadge),
+      _NavItem(
+          icon: Icons.trending_up_outlined,
+          selectedIcon: Icons.trending_up_rounded,
+          label: widget.l10n.investments),
     ];
 
     return SizedBox(
@@ -660,7 +680,8 @@ class _DesktopNavRailState extends ConsumerState<_DesktopNavRail> {
             // ── Workspace chip ────────────────────────────────────────────
             if (activeWs != null)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 child: _WorkspaceChip(
                   workspace: activeWs,
                   hasEmoji: hasEmoji,
@@ -723,7 +744,9 @@ class _DesktopNavRailState extends ConsumerState<_DesktopNavRail> {
               icon: themeMode == ThemeMode.dark
                   ? Icons.light_mode_outlined
                   : Icons.dark_mode_outlined,
-              label: themeMode == ThemeMode.dark ? widget.l10n.lightMode : widget.l10n.darkMode,
+              label: themeMode == ThemeMode.dark
+                  ? widget.l10n.lightMode
+                  : widget.l10n.darkMode,
               hoverBg: Colors.white.withValues(alpha: 0.06),
               onTap: () {
                 final next = themeMode == ThemeMode.dark
@@ -782,7 +805,7 @@ class _WorkspaceChipState extends State<_WorkspaceChip> {
   Widget build(BuildContext context) {
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
-      onExit:  (_) => setState(() => _hovered = false),
+      onExit: (_) => setState(() => _hovered = false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () => WorkspaceSwitcherSheet.show(context),
@@ -808,9 +831,7 @@ class _WorkspaceChipState extends State<_WorkspaceChip> {
                 )
               else
                 Icon(
-                  widget.isShared
-                      ? Icons.group_outlined
-                      : Icons.person_outline,
+                  widget.isShared ? Icons.group_outlined : Icons.person_outline,
                   size: 14,
                   color: Colors.white.withValues(alpha: 0.6),
                 ),
@@ -866,7 +887,7 @@ class _SidebarFooterBtnState extends State<_SidebarFooterBtn> {
   Widget build(BuildContext context) {
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
-      onExit:  (_) => setState(() => _hovered = false),
+      onExit: (_) => setState(() => _hovered = false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: widget.onTap,
@@ -952,8 +973,9 @@ class _NavRailItemState extends State<_NavRailItem>
   @override
   void initState() {
     super.initState();
-    _ctrl  = AnimationController(
-      vsync: this, duration: const Duration(milliseconds: 150),
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 150),
     );
     _slide = Tween(
       begin: Offset.zero,
@@ -962,7 +984,10 @@ class _NavRailItemState extends State<_NavRailItem>
   }
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1059,9 +1084,8 @@ class _NavRailItemState extends State<_NavRailItem>
                       widget.item.label,
                       style: GoogleFonts.manrope(
                         fontSize: 13,
-                        fontWeight: widget.selected
-                            ? FontWeight.w700
-                            : FontWeight.w500,
+                        fontWeight:
+                            widget.selected ? FontWeight.w700 : FontWeight.w500,
                         color: color,
                       ),
                       overflow: TextOverflow.ellipsis,

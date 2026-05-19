@@ -12,9 +12,7 @@ class ConflictResolver {
     final localTs = _parseTs(local['updated_at']);
     final remoteTs = _parseTs(remote['updated_at']);
     // Remote wins on tie — Supabase is the source of truth
-    return (localTs != null &&
-            remoteTs != null &&
-            localTs.isAfter(remoteTs))
+    return (localTs != null && remoteTs != null && localTs.isAfter(remoteTs))
         ? local
         : remote;
   }

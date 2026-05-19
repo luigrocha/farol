@@ -116,8 +116,6 @@ class InstallmentPlanRepository {
       final pid = row['plan_id'] as String;
       counts[pid] = (counts[pid] ?? 0) + 1;
     }
-    return plans
-        .map((p) => p.copyWith(paidCount: counts[p.id] ?? 0))
-        .toList();
+    return plans.map((p) => p.copyWith(paidCount: counts[p.id] ?? 0)).toList();
   }
 }

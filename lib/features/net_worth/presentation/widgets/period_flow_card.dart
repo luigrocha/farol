@@ -13,8 +13,19 @@ class PeriodFlowCard extends ConsumerWidget {
   const PeriodFlowCard({super.key});
 
   static const _monthNames = [
-    '', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
-    'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez',
+    '',
+    'Jan',
+    'Fev',
+    'Mar',
+    'Abr',
+    'Mai',
+    'Jun',
+    'Jul',
+    'Ago',
+    'Set',
+    'Out',
+    'Nov',
+    'Dez',
   ];
 
   @override
@@ -37,21 +48,35 @@ class PeriodFlowCard extends ConsumerWidget {
             Expanded(
               child: Text(context.l10n.periodFlow,
                   style: GoogleFonts.manrope(
-                      fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurfaceSoft, letterSpacing: 0.5)),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: colors.onSurfaceSoft,
+                      letterSpacing: 0.5)),
             ),
             Text('${_monthNames[month]} $year',
-                style: GoogleFonts.manrope(fontSize: 12, color: colors.onSurfaceFaint)),
+                style: GoogleFonts.manrope(
+                    fontSize: 12, color: colors.onSurfaceFaint)),
           ]),
           const SizedBox(height: 16),
           Row(children: [
-            _FlowBlock(label: context.l10n.income, value: income, color: tokens.FarolColors.tide, isPrivate: isPrivate),
+            _FlowBlock(
+                label: context.l10n.income,
+                value: income,
+                color: tokens.FarolColors.tide,
+                isPrivate: isPrivate),
             const SizedBox(width: 8),
-            _FlowBlock(label: context.l10n.expenses, value: expenses, color: tokens.FarolColors.coral, isPrivate: isPrivate),
+            _FlowBlock(
+                label: context.l10n.expenses,
+                value: expenses,
+                color: tokens.FarolColors.coral,
+                isPrivate: isPrivate),
             const SizedBox(width: 8),
             _FlowBlock(
               label: context.l10n.monthlyBalance,
               value: balance,
-              color: balance >= 0 ? tokens.FarolColors.tide : tokens.FarolColors.coral,
+              color: balance >= 0
+                  ? tokens.FarolColors.tide
+                  : tokens.FarolColors.coral,
               isPrivate: isPrivate,
             ),
           ]),
@@ -60,9 +85,12 @@ class PeriodFlowCard extends ConsumerWidget {
             Divider(color: colors.onSurfaceFaint.withValues(alpha: 0.3)),
             const SizedBox(height: 8),
             Row(children: [
-              Icon(Icons.swap_horiz_rounded, size: 14, color: colors.onSurfaceSoft),
+              Icon(Icons.swap_horiz_rounded,
+                  size: 14, color: colors.onSurfaceSoft),
               const SizedBox(width: 6),
-              Text(context.l10n.internalTransfers, style: GoogleFonts.manrope(fontSize: 12, color: colors.onSurfaceSoft)),
+              Text(context.l10n.internalTransfers,
+                  style: GoogleFonts.manrope(
+                      fontSize: 12, color: colors.onSurfaceSoft)),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -70,7 +98,11 @@ class PeriodFlowCard extends ConsumerWidget {
                   color: colors.surfaceLow,
                   borderRadius: DSRadius.mdBR,
                 ),
-                child: Text('$transferCount', style: GoogleFonts.manrope(fontSize: 12, fontWeight: FontWeight.w700, color: colors.onSurface)),
+                child: Text('$transferCount',
+                    style: GoogleFonts.manrope(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: colors.onSurface)),
               ),
             ]),
           ],
@@ -86,7 +118,11 @@ class _FlowBlock extends StatelessWidget {
   final Color color;
   final bool isPrivate;
 
-  const _FlowBlock({required this.label, required this.value, required this.color, required this.isPrivate});
+  const _FlowBlock(
+      {required this.label,
+      required this.value,
+      required this.color,
+      required this.isPrivate});
 
   @override
   Widget build(BuildContext context) {
@@ -99,11 +135,20 @@ class _FlowBlock extends StatelessWidget {
           borderRadius: DSRadius.mdBR,
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(label, style: GoogleFonts.manrope(fontSize: 11, fontWeight: FontWeight.w600, color: colors.onSurfaceSoft)),
+          Text(label,
+              style: GoogleFonts.manrope(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: colors.onSurfaceSoft)),
           const SizedBox(height: 4),
           isPrivate
-              ? Text('•••', style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w800, color: colors.onSurface))
-              : BrlText(value: value.abs(), fontSize: 14, color: colors.onSurface),
+              ? Text('•••',
+                  style: GoogleFonts.manrope(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: colors.onSurface))
+              : BrlText(
+                  value: value.abs(), fontSize: 14, color: colors.onSurface),
         ]),
       ),
     );

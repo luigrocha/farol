@@ -28,7 +28,9 @@ class InsightsScreen extends ConsumerWidget {
               style: GoogleFonts.manrope(
                   fontSize: 17, fontWeight: FontWeight.w800)),
           actions: const [
-            FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+            FarolMark(
+                size: FarolBrand.markSizeCompact,
+                variant: FarolLogoVariant.dark),
             SizedBox(width: 16),
           ],
         ),
@@ -106,7 +108,8 @@ class _GroupedInsights extends StatelessWidget {
       }
     }
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: sections);
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.start, children: sections);
   }
 }
 
@@ -162,7 +165,8 @@ class _StatRow extends StatelessWidget {
         Expanded(
           child: Text(
             InsightStats.labelFor(stat.type),
-            style: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w500),
+            style:
+                GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w500),
           ),
         ),
         Container(

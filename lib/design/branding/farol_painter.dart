@@ -23,28 +23,28 @@ class FarolPainter extends CustomPainter {
   final FarolMarkScheme scheme;
 
   static const Color _amber = Color(0xFFF5A623);
-  static const Color _navy  = Color(0xFF1B3A5C);
+  static const Color _navy = Color(0xFF1B3A5C);
   static const Color _white = Colors.white;
 
   // ── Color resolution ──────────────────────────────────────────
   Color get _mastColor => switch (scheme) {
-    FarolMarkScheme.full  => _white,
-    FarolMarkScheme.white => _white,
-    FarolMarkScheme.navy  => _navy,
-  };
+        FarolMarkScheme.full => _white,
+        FarolMarkScheme.white => _white,
+        FarolMarkScheme.navy => _navy,
+      };
 
   Color get _beamBright => switch (scheme) {
-    FarolMarkScheme.full  => _amber,
-    FarolMarkScheme.white => _white,
-    FarolMarkScheme.navy  => _navy,
-  };
+        FarolMarkScheme.full => _amber,
+        FarolMarkScheme.white => _white,
+        FarolMarkScheme.navy => _navy,
+      };
 
   Color get _beamDim => _beamBright.withValues(alpha: 0.55);
 
   @override
   void paint(Canvas canvas, Size size) {
     // Scale from the 64×64 viewBox to the actual widget size.
-    final double sx = size.width  / 64.0;
+    final double sx = size.width / 64.0;
     final double sy = size.height / 64.0;
 
     // ── Mast ─────────────────────────────────────────────────────
@@ -88,11 +88,11 @@ class FarolPainter extends CustomPainter {
     // Beam 1 bright: horizontal → (38, 18)
     canvas.drawLine(pivot, Offset(38 * sx, 18 * sy), beamBrightPaint);
     // Beam 2 bright: diagonal up → (33, 8)
-    canvas.drawLine(pivot, Offset(33 * sx, 8 * sy),  beamBrightPaint);
+    canvas.drawLine(pivot, Offset(33 * sx, 8 * sy), beamBrightPaint);
     // Beam 3 dim: horizontal far → (52, 18)
     canvas.drawLine(pivot, Offset(52 * sx, 18 * sy), beamDimPaint);
     // Beam 4 dim: diagonal up far → (46, 2)
-    canvas.drawLine(pivot, Offset(46 * sx, 2 * sy),  beamDimPaint);
+    canvas.drawLine(pivot, Offset(46 * sx, 2 * sy), beamDimPaint);
   }
 
   @override

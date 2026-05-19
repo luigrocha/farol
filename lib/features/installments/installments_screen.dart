@@ -75,9 +75,12 @@ class _InstallmentsScreenState extends ConsumerState<InstallmentsScreen> {
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(context.l10n.installments,
-              style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w800)),
+              style: GoogleFonts.manrope(
+                  fontSize: 17, fontWeight: FontWeight.w800)),
           actions: const [
-            FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+            FarolMark(
+                size: FarolBrand.markSizeCompact,
+                variant: FarolLogoVariant.dark),
             SizedBox(width: 16),
           ],
         ),
@@ -140,10 +143,8 @@ class _HeroCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final plans = plansAsync.value?.where((p) => p.isActive).toList() ?? [];
-    final monthly =
-        plans.fold(0.0, (s, p) => s + p.installmentAmount);
-    final remaining =
-        plans.fold(0.0, (s, p) => s + p.remainingAmount);
+    final monthly = plans.fold(0.0, (s, p) => s + p.installmentAmount);
+    final remaining = plans.fold(0.0, (s, p) => s + p.remainingAmount);
 
     return DSCard(
       radius: DSRadius.lg,
@@ -165,7 +166,9 @@ class _HeroCard extends StatelessWidget {
         _BRLBig(value: monthly, size: 32, color: Colors.white),
         const SizedBox(height: DSSpacing.xl - 2),
         Row(children: [
-          _HeroPill(label: context.l10n.installmentsActivePlans, value: '${plans.length}'),
+          _HeroPill(
+              label: context.l10n.installmentsActivePlans,
+              value: '${plans.length}'),
           const SizedBox(width: DSSpacing.sm),
           _HeroPill(
               label: context.l10n.remainingBalance,
@@ -183,7 +186,8 @@ class _HeroPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: DSSpacing.md),
+        padding:
+            const EdgeInsets.symmetric(vertical: 10, horizontal: DSSpacing.md),
         decoration: BoxDecoration(
           color: Colors.black.withValues(alpha: 0.22),
           borderRadius: DSRadius.mdBR,
@@ -219,11 +223,23 @@ class _FilterChips extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return Row(children: [
-      _Chip(label: l10n.installmentsFilterActive, value: _Filter.active, selected: selected, onTap: onChanged),
+      _Chip(
+          label: l10n.installmentsFilterActive,
+          value: _Filter.active,
+          selected: selected,
+          onTap: onChanged),
       const SizedBox(width: 8),
-      _Chip(label: l10n.installmentsFilterCompleted, value: _Filter.completed, selected: selected, onTap: onChanged),
+      _Chip(
+          label: l10n.installmentsFilterCompleted,
+          value: _Filter.completed,
+          selected: selected,
+          onTap: onChanged),
       const SizedBox(width: 8),
-      _Chip(label: l10n.installmentsFilterAll, value: _Filter.all, selected: selected, onTap: onChanged),
+      _Chip(
+          label: l10n.installmentsFilterAll,
+          value: _Filter.all,
+          selected: selected,
+          onTap: onChanged),
     ]);
   }
 }
@@ -249,8 +265,8 @@ class _Chip extends StatelessWidget {
         decoration: BoxDecoration(
           color: active ? _purple : context.colors.surfaceLowest,
           borderRadius: DSRadius.fullBR,
-          border: Border.all(
-              color: active ? _purple : context.colors.surfaceLow),
+          border:
+              Border.all(color: active ? _purple : context.colors.surfaceLow),
         ),
         child: Text(label,
             style: TextStyle(
@@ -311,8 +327,7 @@ class _PlanTile extends ConsumerWidget {
                     const SizedBox(height: 3),
                     Row(children: [
                       _ProgressBadge(
-                          paid: plan.paidCount,
-                          total: plan.numInstallments),
+                          paid: plan.paidCount, total: plan.numInstallments),
                       if (nextDue != null) ...[
                         const SizedBox(width: DSSpacing.sm - 2),
                         Icon(Icons.schedule,
@@ -330,19 +345,20 @@ class _PlanTile extends ConsumerWidget {
               _BRLSmall(value: plan.installmentAmount, size: 14),
               const SizedBox(height: 2),
               Text(context.l10n.installmentsPerInstallment,
-                  style: TextStyle(
-                      fontSize: 10, color: colors.onSurfaceFaint)),
+                  style: TextStyle(fontSize: 10, color: colors.onSurfaceFaint)),
             ]),
           ]),
           const SizedBox(height: DSSpacing.md),
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Text(
-                  context.l10n.installmentsPaidOf(plan.paidCount, plan.numInstallments),
-                  style:
-                      TextStyle(fontSize: 10, color: colors.onSurfaceSoft)),
+                  context.l10n
+                      .installmentsPaidOf(plan.paidCount, plan.numInstallments),
+                  style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft)),
               Text(
-                  context.l10n.installmentsRemainingAmount(FinancialCalculatorService.formatBRL(plan.remainingAmount)),
+                  context.l10n.installmentsRemainingAmount(
+                      FinancialCalculatorService.formatBRL(
+                          plan.remainingAmount)),
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
@@ -416,24 +432,24 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
     final bottom = MediaQuery.of(context).viewInsets.bottom;
 
     // Find next pending payment
-    final nextPending = _payments?.firstWhere(
-        (p) => p.isPending,
+    final nextPending = _payments?.firstWhere((p) => p.isPending,
         orElse: () => _payments!.first);
 
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(DSRadius.xl)),
+        borderRadius:
+            const BorderRadius.vertical(top: Radius.circular(DSRadius.xl)),
       ),
-      padding: EdgeInsets.fromLTRB(DSSpacing.xl, DSSpacing.md, DSSpacing.xl, bottom + DSSpacing.xxl),
+      padding: EdgeInsets.fromLTRB(
+          DSSpacing.xl, DSSpacing.md, DSSpacing.xl, bottom + DSSpacing.xxl),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         Center(
             child: Container(
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                    color: colors.surfaceLow,
-                    borderRadius: DSRadius.xsBR))),
+                    color: colors.surfaceLow, borderRadius: DSRadius.xsBR))),
         const SizedBox(height: 20),
 
         // Header
@@ -444,20 +460,21 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
             decoration: BoxDecoration(
                 color: _purple.withValues(alpha: 0.12),
                 borderRadius: DSRadius.mdBR),
-            child: const Center(
-                child: Text('💳', style: TextStyle(fontSize: 20))),
+            child:
+                const Center(child: Text('💳', style: TextStyle(fontSize: 20))),
           ),
           const SizedBox(width: 14),
           Expanded(
-              child:
-                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(plan.description,
-                style: GoogleFonts.manrope(
-                    fontSize: 17, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 2),
-            _ProgressBadge(
-                paid: plan.paidCount, total: plan.numInstallments),
-          ])),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                Text(plan.description,
+                    style: GoogleFonts.manrope(
+                        fontSize: 17, fontWeight: FontWeight.w800)),
+                const SizedBox(height: 2),
+                _ProgressBadge(
+                    paid: plan.paidCount, total: plan.numInstallments),
+              ])),
         ]),
         const SizedBox(height: 16),
 
@@ -470,13 +487,14 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
         ),
         const SizedBox(height: 6),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(context.l10n.installmentsPctComplete((plan.progressPercent * 100).toInt()),
-              style:
-                  TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
           Text(
-              context.l10n.installmentsRemainingPayments(plan.remainingPayments),
-              style:
-                  TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+              context.l10n.installmentsPctComplete(
+                  (plan.progressPercent * 100).toInt()),
+              style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+          Text(
+              context.l10n
+                  .installmentsRemainingPayments(plan.remainingPayments),
+              style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
         ]),
         const SizedBox(height: 16),
 
@@ -484,8 +502,7 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
         Container(
           padding: const EdgeInsets.all(DSSpacing.lg),
           decoration: BoxDecoration(
-              color: colors.surfaceLowest,
-              borderRadius: DSRadius.lgBR),
+              color: colors.surfaceLowest, borderRadius: DSRadius.lgBR),
           child: Row(children: [
             _StatBox(
                 label: context.l10n.installmentsPerInstallmentLabel,
@@ -495,8 +512,8 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
             _StatDivider(),
             _StatBox(
                 label: context.l10n.remaining.toUpperCase(),
-                value: FinancialCalculatorService.formatBRL(
-                    plan.remainingAmount),
+                value:
+                    FinancialCalculatorService.formatBRL(plan.remainingAmount),
                 color: colors.onSurface),
             _StatDivider(),
             _StatBox(
@@ -522,8 +539,7 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
               shrinkWrap: true,
               itemCount: _payments!.length,
               separatorBuilder: (_, __) => const SizedBox(height: 4),
-              itemBuilder: (_, i) =>
-                  _PaymentRow(payment: _payments![i]),
+              itemBuilder: (_, i) => _PaymentRow(payment: _payments![i]),
             ),
           ),
           const SizedBox(height: 16),
@@ -533,7 +549,8 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
         ],
 
         // Actions
-        if (!plan.isComplete && nextPending != null &&
+        if (!plan.isComplete &&
+            nextPending != null &&
             nextPending.isPending) ...[
           SizedBox(
             width: double.infinity,
@@ -552,15 +569,15 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
                     ? context.l10n.installmentsBtnComplete
                     : context.l10n.installmentsBtnRegisterNth(
                         '${nextPending.installmentNum}',
-                        FinancialCalculatorService.formatBRL(nextPending.amount)),
-                style: const TextStyle(
-                    fontSize: 13, fontWeight: FontWeight.w700),
+                        FinancialCalculatorService.formatBRL(
+                            nextPending.amount)),
+                style:
+                    const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: _purple,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: DSRadius.mdBR),
+                shape: RoundedRectangleBorder(borderRadius: DSRadius.mdBR),
                 elevation: 0,
               ),
             ),
@@ -573,14 +590,14 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
               onPressed: _loading ? null : () => _skip(nextPending),
               icon: const Icon(Icons.skip_next_outlined, size: 18),
               label: Text(
-                  context.l10n.installmentsBtnSkipNth('${nextPending.installmentNum}'),
+                  context.l10n
+                      .installmentsBtnSkipNth('${nextPending.installmentNum}'),
                   style: const TextStyle(
                       fontSize: 13, fontWeight: FontWeight.w600)),
               style: OutlinedButton.styleFrom(
                 foregroundColor: colors.onSurfaceSoft,
                 side: BorderSide(color: colors.surfaceLow),
-                shape: RoundedRectangleBorder(
-                    borderRadius: DSRadius.mdBR),
+                shape: RoundedRectangleBorder(borderRadius: DSRadius.mdBR),
               ),
             ),
           ),
@@ -621,10 +638,11 @@ class _PlanDetailSheetState extends ConsumerState<_PlanDetailSheet> {
       ref.invalidate(activeInstallmentPlansProvider);
       if (mounted) {
         Navigator.pop(context);
-        context.showSuccessSnackBar(
-            payment.installmentNum >= widget.plan.numInstallments
-                ? context.l10n.installmentsCompletedSnack(widget.plan.description)
-                : context.l10n.installmentsRegisteredSnack('${payment.installmentNum}'));
+        context.showSuccessSnackBar(payment.installmentNum >=
+                widget.plan.numInstallments
+            ? context.l10n.installmentsCompletedSnack(widget.plan.description)
+            : context.l10n
+                .installmentsRegisteredSnack('${payment.installmentNum}'));
       }
     } catch (e) {
       if (mounted) context.showErrorSnackBar(e);
@@ -708,8 +726,7 @@ class _PaymentRow extends StatelessWidget {
               color: isPaid ? Colors.green : colors.onSurface)),
       const SizedBox(width: 8),
       Text(_fmtDate(payment.dueDate),
-          style:
-              TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+          style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
       const Spacer(),
       Text(FinancialCalculatorService.formatBRL(payment.amount),
           style: TextStyle(
@@ -751,7 +768,8 @@ class _ProgressBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: DSSpacing.sm, vertical: 3),
+      padding:
+          const EdgeInsets.symmetric(horizontal: DSSpacing.sm, vertical: 3),
       decoration: BoxDecoration(
         color: _purple.withValues(alpha: 0.1),
         borderRadius: DSRadius.xsBR,

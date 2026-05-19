@@ -44,7 +44,8 @@ FinancialPeriod _prevPeriod() =>
     FinancialPeriod.current(1, now: DateTime(2026, 4, 15));
 
 Map<String, CategoryRef> _catMap(List<String> slugs) => {
-      for (final s in slugs) s: CategoryRef(id: s, slug: s, name: s, emoji: '📋'),
+      for (final s in slugs)
+        s: CategoryRef(id: s, slug: s, name: s, emoji: '📋'),
     };
 
 void main() {
@@ -100,7 +101,8 @@ void main() {
   group('EnvelopeEngine — rollover', () {
     test('rollover = previous surplus (allocated - spent)', () {
       final prev = _prevPeriod();
-      final expense = _cashExpense('food', 300, prev.start.add(const Duration(days: 5)));
+      final expense =
+          _cashExpense('food', 300, prev.start.add(const Duration(days: 5)));
       final envelopes = engine.buildEnvelopes(
         entries: [_entry('food', 500)],
         categoriesBySlug: _catMap(['food']),
@@ -113,7 +115,8 @@ void main() {
 
     test('no rollover when previous period was overspent', () {
       final prev = _prevPeriod();
-      final expense = _cashExpense('food', 700, prev.start.add(const Duration(days: 5)));
+      final expense =
+          _cashExpense('food', 700, prev.start.add(const Duration(days: 5)));
       final envelopes = engine.buildEnvelopes(
         entries: [_entry('food', 500)],
         categoriesBySlug: _catMap(['food']),
@@ -136,7 +139,8 @@ void main() {
 
     test('effectiveAllocated = allocated + rollover', () {
       final prev = _prevPeriod();
-      final expense = _cashExpense('food', 200, prev.start.add(const Duration(days: 5)));
+      final expense =
+          _cashExpense('food', 200, prev.start.add(const Duration(days: 5)));
       final envelopes = engine.buildEnvelopes(
         entries: [_entry('food', 500)],
         categoriesBySlug: _catMap(['food']),
@@ -201,10 +205,12 @@ void main() {
   // Zero out rollover by spending the full allocation in the previous period.
 
   group('EnvelopeEngine — envelope status', () {
-    List<Envelope> envelopesNoRollover(String slug, double allocated, double spent) {
+    List<Envelope> envelopesNoRollover(
+        String slug, double allocated, double spent) {
       final prev = _prevPeriod();
       // Spend 100% of goal in previous period → surplus=0 → rollover=0
-      final prevExpense = _cashExpense(slug, allocated, prev.start.add(const Duration(days: 5)));
+      final prevExpense = _cashExpense(
+          slug, allocated, prev.start.add(const Duration(days: 5)));
       return engine.buildEnvelopes(
         entries: [_entry(slug, allocated, spent: spent)],
         categoriesBySlug: _catMap([slug]),

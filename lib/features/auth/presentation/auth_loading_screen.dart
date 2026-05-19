@@ -92,12 +92,14 @@ class _AuthLoadingScreenState extends ConsumerState<AuthLoadingScreen>
             Positioned(
               top: -80,
               left: -80,
-              child: _Aurora(color: tokens.FarolColors.beam.withValues(alpha: 0.18)),
+              child: _Aurora(
+                  color: tokens.FarolColors.beam.withValues(alpha: 0.18)),
             ),
             Positioned(
               bottom: -100,
               right: -60,
-              child: _Aurora(color: tokens.FarolColors.tide.withValues(alpha: 0.12)),
+              child: _Aurora(
+                  color: tokens.FarolColors.tide.withValues(alpha: 0.12)),
             ),
 
             // Content

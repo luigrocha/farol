@@ -21,15 +21,28 @@ class NetWorthEvolutionChart extends ConsumerWidget {
 
     return Container(
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.lgBR, border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFF1B3A5C).withValues(alpha: 0.06))),
+      decoration: BoxDecoration(
+          color: colors.surfaceLowest,
+          borderRadius: DSRadius.lgBR,
+          border: Border.all(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : const Color(0xFF1B3A5C).withValues(alpha: 0.06))),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(context.l10n.evolution, style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700)),
-          _FilterChips(selected: filter, onChanged: (f) => ref.read(netWorthFilterProvider.notifier).state = f),
+          Text(context.l10n.evolution,
+              style: GoogleFonts.manrope(
+                  fontSize: 15, fontWeight: FontWeight.w700)),
+          _FilterChips(
+              selected: filter,
+              onChanged: (f) =>
+                  ref.read(netWorthFilterProvider.notifier).state = f),
         ]),
         const SizedBox(height: 16),
         historyAsync.when(
-          loading: () => const SizedBox(height: 160, child: Center(child: CircularProgressIndicator(strokeWidth: 2))),
+          loading: () => const SizedBox(
+              height: 160,
+              child: Center(child: CircularProgressIndicator(strokeWidth: 2))),
           error: (_, __) => const SizedBox(
             height: 80,
             child: Center(
@@ -47,11 +60,16 @@ class NetWorthEvolutionChart extends ConsumerWidget {
                     child: Text(
                       context.l10n.noHistoryData,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.manrope(fontSize: 12, color: colors.onSurfaceSoft, height: 1.5),
+                      style: GoogleFonts.manrope(
+                          fontSize: 12,
+                          color: colors.onSurfaceSoft,
+                          height: 1.5),
                     ),
                   ),
                 )
-              : SizedBox(height: 160, child: _LineChart(snapshots: snapshots, colors: colors)),
+              : SizedBox(
+                  height: 160,
+                  child: _LineChart(snapshots: snapshots, colors: colors)),
         ),
       ]),
     );
@@ -70,7 +88,8 @@ class _FilterChips extends StatelessWidget {
       (NetWorthFilter.oneYear, '1A'),
       (NetWorthFilter.allTime, context.l10n.filterAllTime),
     ];
-    return Row(children: options.map((opt) {
+    return Row(
+        children: options.map((opt) {
       final isSelected = selected == opt.$1;
       return GestureDetector(
         onTap: () => onChanged(opt.$1),
@@ -78,7 +97,9 @@ class _FilterChips extends StatelessWidget {
           margin: const EdgeInsets.only(left: 4),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: isSelected ? tokens.FarolColors.beam : context.colors.surfaceLow,
+            color: isSelected
+                ? tokens.FarolColors.beam
+                : context.colors.surfaceLow,
             borderRadius: DSRadius.fullBR,
           ),
           child: Text(
@@ -86,7 +107,9 @@ class _FilterChips extends StatelessWidget {
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w700,
-              color: isSelected ? tokens.FarolColors.navy : context.colors.onSurfaceSoft,
+              color: isSelected
+                  ? tokens.FarolColors.navy
+                  : context.colors.onSurfaceSoft,
             ),
           ),
         ),
@@ -100,7 +123,21 @@ class _LineChart extends StatelessWidget {
   final FarolColors colors;
   const _LineChart({required this.snapshots, required this.colors});
 
-  static const _monthNames = ['', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  static const _monthNames = [
+    '',
+    'Jan',
+    'Fev',
+    'Mar',
+    'Abr',
+    'Mai',
+    'Jun',
+    'Jul',
+    'Ago',
+    'Set',
+    'Out',
+    'Nov',
+    'Dez'
+  ];
 
   String _abbr(double value) {
     if (value >= 1000000) return 'R\$${(value / 1000000).toStringAsFixed(1)}M';
@@ -111,7 +148,9 @@ class _LineChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final spots = snapshots.asMap().entries.map((e) {
-      final total = e.value.patrimonyTotal + e.value.investmentsTotal + e.value.fgtsBalance;
+      final total = e.value.patrimonyTotal +
+          e.value.investmentsTotal +
+          e.value.fgtsBalance;
       return FlSpot(e.key.toDouble(), total);
     }).toList();
 
@@ -121,26 +160,31 @@ class _LineChart extends StatelessWidget {
       gridData: FlGridData(
         show: true,
         drawVerticalLine: false,
-        getDrawingHorizontalLine: (_) => FlLine(color: colors.surfaceLow, strokeWidth: 1),
+        getDrawingHorizontalLine: (_) =>
+            FlLine(color: colors.surfaceLow, strokeWidth: 1),
       ),
       borderData: FlBorderData(show: false),
       minY: 0,
       maxY: maxY * 1.15,
       titlesData: FlTitlesData(
         leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        rightTitles: AxisTitles(sideTitles: SideTitles(
+        rightTitles: AxisTitles(
+            sideTitles: SideTitles(
           showTitles: true,
           reservedSize: 48,
-          getTitlesWidget: (v, _) => Text(_abbr(v), style: TextStyle(fontSize: 9, color: colors.onSurfaceFaint)),
+          getTitlesWidget: (v, _) => Text(_abbr(v),
+              style: TextStyle(fontSize: 9, color: colors.onSurfaceFaint)),
         )),
         topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        bottomTitles: AxisTitles(sideTitles: SideTitles(
+        bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
           showTitles: true,
           reservedSize: 20,
           getTitlesWidget: (v, _) {
             final i = v.toInt();
             if (i < 0 || i >= snapshots.length) return const SizedBox.shrink();
-            return Text(_monthNames[snapshots[i].month], style: TextStyle(fontSize: 9, color: colors.onSurfaceSoft));
+            return Text(_monthNames[snapshots[i].month],
+                style: TextStyle(fontSize: 9, color: colors.onSurfaceSoft));
           },
         )),
       ),
@@ -157,7 +201,10 @@ class _LineChart extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [tokens.FarolColors.beam.withValues(alpha: 0.2), tokens.FarolColors.beam.withValues(alpha: 0)],
+              colors: [
+                tokens.FarolColors.beam.withValues(alpha: 0.2),
+                tokens.FarolColors.beam.withValues(alpha: 0)
+              ],
             ),
           ),
         ),

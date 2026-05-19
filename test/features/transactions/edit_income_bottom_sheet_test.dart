@@ -107,8 +107,10 @@ void main() {
       final iid = incomeRepo.seedIncome(
         id: 1,
         userId: 'user-1',
-        month: 5, year: 2026,
-        incomeType: 'NET_SALARY', amount: 5000.0,
+        month: 5,
+        year: 2026,
+        incomeType: 'NET_SALARY',
+        amount: 5000.0,
       );
 
       await pumpSheet(tester, _makeIncome(id: iid, amount: 5000.0));
@@ -130,8 +132,10 @@ void main() {
       final iid = incomeRepo.seedIncome(
         id: 1,
         userId: 'user-1',
-        month: 5, year: 2026,
-        incomeType: 'NET_SALARY', amount: 5000.0,
+        month: 5,
+        year: 2026,
+        incomeType: 'NET_SALARY',
+        amount: 5000.0,
       );
 
       await pumpSheet(tester, _makeIncome(id: iid, amount: 5000.0));
@@ -155,18 +159,22 @@ void main() {
       expect(find.text('Calculate net'), findsOneWidget);
     });
 
-    testWidgets('does not show salary calculation for other types', (tester) async {
+    testWidgets('does not show salary calculation for other types',
+        (tester) async {
       await pumpSheet(tester, _makeIncome(incomeType: 'BONUS'));
       expect(find.text('Calculate net'), findsNothing);
     });
 
-    testWidgets('shows breakdown when income has inss/irrf values', (tester) async {
-      await pumpSheet(tester, _makeIncome(
-        incomeType: 'NET_SALARY',
-        amount: 3500.0,
-        inssDeducted: 500.0,
-        irrfDeducted: 300.0,
-      ));
+    testWidgets('shows breakdown when income has inss/irrf values',
+        (tester) async {
+      await pumpSheet(
+          tester,
+          _makeIncome(
+            incomeType: 'NET_SALARY',
+            amount: 3500.0,
+            inssDeducted: 500.0,
+            irrfDeducted: 300.0,
+          ));
 
       expect(find.text('Salary Breakdown'), findsOneWidget);
       expect(find.text('INSS'), findsOneWidget);
@@ -194,8 +202,10 @@ void main() {
       final iid = incomeRepo.seedIncome(
         id: 1,
         userId: 'user-1',
-        month: 5, year: 2026,
-        incomeType: 'NET_SALARY', amount: 5000.0,
+        month: 5,
+        year: 2026,
+        incomeType: 'NET_SALARY',
+        amount: 5000.0,
       );
       incomeRepo.behavior = FakeIncomeBehavior(shouldThrowNetworkError: true);
 

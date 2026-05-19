@@ -27,10 +27,14 @@ class AccountsScreen extends ConsumerWidget {
         backgroundColor: colors.surface,
         elevation: 0,
         title: Row(children: [
-          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const FarolMark(
+              size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
           const SizedBox(width: 10),
           Text(context.l10n.accountsLabel,
-              style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700, color: colors.onSurface)),
+              style: GoogleFonts.manrope(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface)),
         ]),
         iconTheme: IconThemeData(color: colors.onSurface),
         actions: [
@@ -60,7 +64,8 @@ class AccountsScreen extends ConsumerWidget {
         data: (accounts) {
           if (accounts.isEmpty) return const _EmptyState();
           final liquid = accounts.where((a) => a.accountType.isLiquid).toList();
-          final fgtsList = accounts.where((a) => !a.accountType.isLiquid).toList();
+          final fgtsList =
+              accounts.where((a) => !a.accountType.isLiquid).toList();
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
@@ -121,10 +126,14 @@ class _EmptyState extends StatelessWidget {
     final colors = context.colors;
     return Center(
       child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Icon(Icons.account_balance_outlined, size: 64, color: colors.onSurfaceFaint),
+        Icon(Icons.account_balance_outlined,
+            size: 64, color: colors.onSurfaceFaint),
         const SizedBox(height: 16),
         Text(context.l10n.accountsEmptyTitle,
-            style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w600, color: colors.onSurfaceMuted)),
+            style: GoogleFonts.manrope(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: colors.onSurfaceMuted)),
         const SizedBox(height: 8),
         Text(context.l10n.accountsEmptyHint,
             textAlign: TextAlign.center,
@@ -154,22 +163,34 @@ class _AccountTile extends ConsumerWidget {
               borderRadius: BorderRadius.circular(10),
             ),
             alignment: Alignment.center,
-            child: Text(account.accountType.emoji, style: const TextStyle(fontSize: 20)),
+            child: Text(account.accountType.emoji,
+                style: const TextStyle(fontSize: 20)),
           ),
           const SizedBox(width: 12),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(account.name,
-                style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-            Text(account.institution,
-                style: GoogleFonts.manrope(fontSize: 12, color: colors.onSurfaceSoft)),
-          ])),
+          Expanded(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                Text(account.name,
+                    style: GoogleFonts.manrope(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: colors.onSurface)),
+                Text(account.institution,
+                    style: GoogleFonts.manrope(
+                        fontSize: 12, color: colors.onSurfaceSoft)),
+              ])),
           Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
             Text(
               'R\$ ${account.currentBalance.toStringAsFixed(2).replaceAll('.', ',')}',
-              style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w700, color: colors.onSurface),
+              style: GoogleFonts.manrope(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface),
             ),
             Text(account.accountType.localizedLabel(context),
-                style: GoogleFonts.manrope(fontSize: 11, color: colors.onSurfaceSoft)),
+                style: GoogleFonts.manrope(
+                    fontSize: 11, color: colors.onSurfaceSoft)),
           ]),
           const SizedBox(width: 4),
           PopupMenuButton<String>(
@@ -186,15 +207,22 @@ class _AccountTile extends ConsumerWidget {
                   context: context,
                   builder: (_) => AlertDialog(
                     title: Text(context.l10n.accountsDeleteTitle),
-                    content: Text(context.l10n.accountsDeleteBody(account.name)),
+                    content:
+                        Text(context.l10n.accountsDeleteBody(account.name)),
                     actions: [
-                      TextButton(onPressed: () => Navigator.pop(context), child: Text(context.l10n.cancel)),
+                      TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(context.l10n.cancel)),
                       TextButton(
                         onPressed: () {
-                          ref.read(accountNotifierProvider.notifier).delete(account.id);
+                          ref
+                              .read(accountNotifierProvider.notifier)
+                              .delete(account.id);
                           Navigator.pop(context);
                         },
-                        child: Text(context.l10n.delete, style: const TextStyle(color: tokens.FarolColors.coral)),
+                        child: Text(context.l10n.delete,
+                            style: const TextStyle(
+                                color: tokens.FarolColors.coral)),
                       ),
                     ],
                   ),
@@ -202,7 +230,9 @@ class _AccountTile extends ConsumerWidget {
               }
             },
             itemBuilder: (_) => [
-              PopupMenuItem(value: 'edit', child: Text(context.l10n.accountsActionUpdateBalance)),
+              PopupMenuItem(
+                  value: 'edit',
+                  child: Text(context.l10n.accountsActionUpdateBalance)),
               PopupMenuItem(value: 'delete', child: Text(context.l10n.delete)),
             ],
           ),
@@ -231,8 +261,17 @@ class _AddAccountSheetState extends ConsumerState<_AddAccountSheet> {
   bool _saving = false;
 
   static const _institutions = [
-    'Nubank', 'Itaú', 'Santander', 'Bradesco', 'Inter', 'Mercado Pago',
-    'Caixa', 'Banco do Brasil', 'C6 Bank', 'XP', 'Outro',
+    'Nubank',
+    'Itaú',
+    'Santander',
+    'Bradesco',
+    'Inter',
+    'Mercado Pago',
+    'Caixa',
+    'Banco do Brasil',
+    'C6 Bank',
+    'XP',
+    'Outro',
   ];
 
   @override
@@ -247,7 +286,8 @@ class _AddAccountSheetState extends ConsumerState<_AddAccountSheet> {
     if (name.isEmpty) return;
     setState(() => _saving = true);
     try {
-      final balance = double.tryParse(_balanceController.text.replaceAll(',', '.')) ?? 0.0;
+      final balance =
+          double.tryParse(_balanceController.text.replaceAll(',', '.')) ?? 0.0;
       await ref.read(accountNotifierProvider.notifier).insert(
             name: name,
             institution: _institution,
@@ -264,52 +304,76 @@ class _AddAccountSheetState extends ConsumerState<_AddAccountSheet> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(context.l10n.accountsAddTitle,
-                style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700, color: colors.onSurface)),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: context.l10n.accountsFieldName, hintText: context.l10n.accountsFieldNameHint),
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              initialValue: _institution,
-              decoration: InputDecoration(labelText: context.l10n.accountsFieldInstitution),
-              items: _institutions.map((i) => DropdownMenuItem(value: i, child: Text(i))).toList(),
-              onChanged: (v) => setState(() => _institution = v!),
-            ),
-            const SizedBox(height: 12),
-            Text(context.l10n.accountsFieldType, style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
-            const SizedBox(height: 6),
-            SegmentedButton<AccountType>(
-              segments: AccountType.values.map((t) => ButtonSegment(
-                value: t,
-                label: Text(t.localizedLabel(context), style: const TextStyle(fontSize: 11)),
-              )).toList(),
-              selected: {_type},
-              onSelectionChanged: (s) => setState(() => _type = s.first),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _balanceController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))],
-              decoration: InputDecoration(labelText: context.l10n.accountsFieldInitialBalance, prefixText: 'R\$ '),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: _saving ? null : _save,
-                child: _saving ? const CircularProgressIndicator(strokeWidth: 2) : Text(context.l10n.save),
-              ),
-            ),
-          ]),
+          child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(context.l10n.accountsAddTitle,
+                    style: GoogleFonts.manrope(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: colors.onSurface)),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                      labelText: context.l10n.accountsFieldName,
+                      hintText: context.l10n.accountsFieldNameHint),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  initialValue: _institution,
+                  decoration: InputDecoration(
+                      labelText: context.l10n.accountsFieldInstitution),
+                  items: _institutions
+                      .map((i) => DropdownMenuItem(value: i, child: Text(i)))
+                      .toList(),
+                  onChanged: (v) => setState(() => _institution = v!),
+                ),
+                const SizedBox(height: 12),
+                Text(context.l10n.accountsFieldType,
+                    style:
+                        TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
+                const SizedBox(height: 6),
+                SegmentedButton<AccountType>(
+                  segments: AccountType.values
+                      .map((t) => ButtonSegment(
+                            value: t,
+                            label: Text(t.localizedLabel(context),
+                                style: const TextStyle(fontSize: 11)),
+                          ))
+                      .toList(),
+                  selected: {_type},
+                  onSelectionChanged: (s) => setState(() => _type = s.first),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _balanceController,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))
+                  ],
+                  decoration: InputDecoration(
+                      labelText: context.l10n.accountsFieldInitialBalance,
+                      prefixText: 'R\$ '),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: _saving ? null : _save,
+                    child: _saving
+                        ? const CircularProgressIndicator(strokeWidth: 2)
+                        : Text(context.l10n.save),
+                  ),
+                ),
+              ]),
         ),
       ),
     );
@@ -336,7 +400,9 @@ class _EditBalanceSheetState extends ConsumerState<_EditBalanceSheet> {
   void initState() {
     super.initState();
     _balanceController = TextEditingController(
-        text: widget.account.currentBalance.toStringAsFixed(2).replaceAll('.', ','));
+        text: widget.account.currentBalance
+            .toStringAsFixed(2)
+            .replaceAll('.', ','));
   }
 
   @override
@@ -346,11 +412,14 @@ class _EditBalanceSheetState extends ConsumerState<_EditBalanceSheet> {
   }
 
   Future<void> _save() async {
-    final balance = double.tryParse(_balanceController.text.replaceAll(',', '.'));
+    final balance =
+        double.tryParse(_balanceController.text.replaceAll(',', '.'));
     if (balance == null) return;
     setState(() => _saving = true);
     try {
-      await ref.read(accountNotifierProvider.notifier).updateBalance(widget.account.id, balance);
+      await ref
+          .read(accountNotifierProvider.notifier)
+          .updateBalance(widget.account.id, balance);
       if (mounted) Navigator.pop(context);
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -361,30 +430,47 @@ class _EditBalanceSheetState extends ConsumerState<_EditBalanceSheet> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(context.l10n.accountsUpdateBalanceTitle, style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700, color: colors.onSurface)),
-            Text(widget.account.name, style: TextStyle(fontSize: 13, color: colors.onSurfaceSoft)),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _balanceController,
-              autofocus: true,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))],
-              decoration: InputDecoration(labelText: context.l10n.accountsFieldCurrentBalance, prefixText: 'R\$ '),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: _saving ? null : _save,
-                child: _saving ? const CircularProgressIndicator(strokeWidth: 2) : Text(context.l10n.save),
-              ),
-            ),
-          ]),
+          child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(context.l10n.accountsUpdateBalanceTitle,
+                    style: GoogleFonts.manrope(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: colors.onSurface)),
+                Text(widget.account.name,
+                    style:
+                        TextStyle(fontSize: 13, color: colors.onSurfaceSoft)),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _balanceController,
+                  autofocus: true,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))
+                  ],
+                  decoration: InputDecoration(
+                      labelText: context.l10n.accountsFieldCurrentBalance,
+                      prefixText: 'R\$ '),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: _saving ? null : _save,
+                    child: _saving
+                        ? const CircularProgressIndicator(strokeWidth: 2)
+                        : Text(context.l10n.save),
+                  ),
+                ),
+              ]),
         ),
       ),
     );
@@ -415,7 +501,9 @@ class _TransferSheetState extends ConsumerState<_TransferSheet> {
   void initState() {
     super.initState();
     _fromId = widget.accounts.first.id;
-    _toId = widget.accounts.length > 1 ? widget.accounts[1].id : widget.accounts.first.id;
+    _toId = widget.accounts.length > 1
+        ? widget.accounts[1].id
+        : widget.accounts.first.id;
   }
 
   @override
@@ -435,15 +523,19 @@ class _TransferSheetState extends ConsumerState<_TransferSheet> {
             toAccountId: _toId,
             amount: amount,
             date: _date,
-            description: _descController.text.trim().isEmpty ? null : _descController.text.trim(),
+            description: _descController.text.trim().isEmpty
+                ? null
+                : _descController.text.trim(),
           );
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.accountsTransferSuccess)));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.accountsTransferSuccess)));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -453,53 +545,74 @@ class _TransferSheetState extends ConsumerState<_TransferSheet> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final items = widget.accounts.map((a) => DropdownMenuItem(value: a.id, child: Text('${a.accountType.emoji} ${a.name}'))).toList();
+    final items = widget.accounts
+        .map((a) => DropdownMenuItem(
+            value: a.id, child: Text('${a.accountType.emoji} ${a.name}')))
+        .toList();
 
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(context.l10n.accountsTransferTitle,
-                style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700, color: colors.onSurface)),
-            const SizedBox(height: 4),
-            Text(context.l10n.accountsTransferSubtitle, style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
-            const SizedBox(height: 20),
-            DropdownButtonFormField<int>(
-              initialValue: _fromId,
-              decoration: InputDecoration(labelText: context.l10n.accountsTransferFrom),
-              items: items,
-              onChanged: (v) => setState(() => _fromId = v!),
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<int>(
-              initialValue: _toId,
-              decoration: InputDecoration(labelText: context.l10n.accountsTransferTo),
-              items: items,
-              onChanged: (v) => setState(() => _toId = v!),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))],
-              decoration: InputDecoration(labelText: context.l10n.amount, prefixText: 'R\$ '),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _descController,
-              decoration: InputDecoration(labelText: context.l10n.accountsFieldDescriptionOptional),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: _saving ? null : _save,
-                child: _saving ? const CircularProgressIndicator(strokeWidth: 2) : Text(context.l10n.accountsBtnTransfer),
-              ),
-            ),
-          ]),
+          child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(context.l10n.accountsTransferTitle,
+                    style: GoogleFonts.manrope(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: colors.onSurface)),
+                const SizedBox(height: 4),
+                Text(context.l10n.accountsTransferSubtitle,
+                    style:
+                        TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
+                const SizedBox(height: 20),
+                DropdownButtonFormField<int>(
+                  initialValue: _fromId,
+                  decoration: InputDecoration(
+                      labelText: context.l10n.accountsTransferFrom),
+                  items: items,
+                  onChanged: (v) => setState(() => _fromId = v!),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<int>(
+                  initialValue: _toId,
+                  decoration: InputDecoration(
+                      labelText: context.l10n.accountsTransferTo),
+                  items: items,
+                  onChanged: (v) => setState(() => _toId = v!),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _amountController,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))
+                  ],
+                  decoration: InputDecoration(
+                      labelText: context.l10n.amount, prefixText: 'R\$ '),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _descController,
+                  decoration: InputDecoration(
+                      labelText: context.l10n.accountsFieldDescriptionOptional),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: _saving ? null : _save,
+                    child: _saving
+                        ? const CircularProgressIndicator(strokeWidth: 2)
+                        : Text(context.l10n.accountsBtnTransfer),
+                  ),
+                ),
+              ]),
         ),
       ),
     );

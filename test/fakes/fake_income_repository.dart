@@ -76,11 +76,15 @@ class FakeIncomeRepository implements IncomeRepository {
 
   @override
   Future<List<Income>> getByRange(
-    int startMonth, int startYear, int endMonth, int endYear,
+    int startMonth,
+    int startYear,
+    int endMonth,
+    int endYear,
   ) async {
     await _applyDelay();
     return _incomes
-        .where((i) => _inRange(i.month, i.year, startMonth, startYear, endMonth, endYear))
+        .where((i) =>
+            _inRange(i.month, i.year, startMonth, startYear, endMonth, endYear))
         .toList();
   }
 
@@ -193,7 +197,12 @@ class FakeIncomeRepository implements IncomeRepository {
   Future<List<Income>> fetchAll() async => getAll();
 
   static bool _inRange(
-    int m, int y, int sm, int sy, int em, int ey,
+    int m,
+    int y,
+    int sm,
+    int sy,
+    int em,
+    int ey,
   ) {
     final v = y * 12 + m;
     return v >= sy * 12 + sm && v <= ey * 12 + em;

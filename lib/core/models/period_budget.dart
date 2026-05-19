@@ -38,7 +38,6 @@ class PeriodBudget {
         createdAt: DateTime.parse(json['created_at'] as String),
         updatedAt: DateTime.parse(json['updated_at'] as String),
       );
-
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

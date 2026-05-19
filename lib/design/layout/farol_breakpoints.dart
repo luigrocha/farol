@@ -71,10 +71,11 @@ abstract final class FarolBreakpoints {
 enum FarolScreenSize { mobile, tablet, desktop, wide }
 
 extension FarolScreenSizeX on FarolScreenSize {
-  bool get isMobile  => this == FarolScreenSize.mobile;
-  bool get isTablet  => this == FarolScreenSize.tablet;
-  bool get isDesktop => this == FarolScreenSize.desktop || this == FarolScreenSize.wide;
-  bool get isWide    => this == FarolScreenSize.wide;
+  bool get isMobile => this == FarolScreenSize.mobile;
+  bool get isTablet => this == FarolScreenSize.tablet;
+  bool get isDesktop =>
+      this == FarolScreenSize.desktop || this == FarolScreenSize.wide;
+  bool get isWide => this == FarolScreenSize.wide;
 
   /// True for tablet and above.
   bool get isTabletOrLarger => index >= FarolScreenSize.tablet.index;

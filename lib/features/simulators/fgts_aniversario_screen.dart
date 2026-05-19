@@ -11,16 +11,25 @@ import '../../design/branding/branding.dart';
 const _kTeal = Color(0xFF006D5B);
 const _kTealLight = Color(0xFF007A67);
 const _kMonths = [
-  'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
-  'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez',
+  'Jan',
+  'Fev',
+  'Mar',
+  'Abr',
+  'Mai',
+  'Jun',
+  'Jul',
+  'Ago',
+  'Set',
+  'Out',
+  'Nov',
+  'Dez',
 ];
 
 class FgtsAniversarioScreen extends ConsumerStatefulWidget {
   const FgtsAniversarioScreen({super.key});
 
   @override
-  ConsumerState<FgtsAniversarioScreen> createState() =>
-      _FgtsAniversarioState();
+  ConsumerState<FgtsAniversarioScreen> createState() => _FgtsAniversarioState();
 }
 
 class _FgtsAniversarioState extends ConsumerState<FgtsAniversarioScreen> {
@@ -78,7 +87,8 @@ class _FgtsAniversarioState extends ConsumerState<FgtsAniversarioScreen> {
         backgroundColor: colors.surfaceLow,
         elevation: 0,
         actions: const [
-          FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          FarolMark(
+              size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
           SizedBox(width: 16),
         ],
       ),
@@ -91,8 +101,10 @@ class _FgtsAniversarioState extends ConsumerState<FgtsAniversarioScreen> {
               balanceCtrl: _balanceCtrl,
               salaryCtrl: _salaryCtrl,
               birthMonth: _birthMonth,
-              onBirthMonthChanged: (v) =>
-                  setState(() { _birthMonth = v; _result = null; }),
+              onBirthMonthChanged: (v) => setState(() {
+                _birthMonth = v;
+                _result = null;
+              }),
               onChanged: () => setState(() => _result = null),
               onCalculate: _calculate,
             ),
@@ -161,8 +173,7 @@ class _InputCard extends StatelessWidget {
               color: colors.onSurface),
           decoration: InputDecoration(
             labelText: 'Saldo FGTS atual (R\$)',
-            labelStyle:
-                TextStyle(fontSize: 13, color: colors.onSurfaceSoft),
+            labelStyle: TextStyle(fontSize: 13, color: colors.onSurfaceSoft),
             prefixText: 'R\$ ',
             prefixStyle: GoogleFonts.inter(
                 fontSize: 16,
@@ -191,8 +202,7 @@ class _InputCard extends StatelessWidget {
               color: colors.onSurface),
           decoration: InputDecoration(
             labelText: 'Salário bruto mensal (R\$)',
-            labelStyle:
-                TextStyle(fontSize: 13, color: colors.onSurfaceSoft),
+            labelStyle: TextStyle(fontSize: 13, color: colors.onSurfaceSoft),
             prefixText: 'R\$ ',
             prefixStyle: GoogleFonts.inter(
                 fontSize: 16,
@@ -300,12 +310,10 @@ class _ResultCard extends StatelessWidget {
               offset: const Offset(0, 10)),
         ],
       ),
-      child:
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(20),
@@ -321,8 +329,7 @@ class _ResultCard extends StatelessWidget {
           ),
           const Spacer(),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20)),
@@ -348,8 +355,7 @@ class _ResultCard extends StatelessWidget {
         Row(children: [
           Expanded(
               child: _MiniStat(
-                  label: 'SALDO PROJETADO',
-                  value: calc.projectedBalance)),
+                  label: 'SALDO PROJETADO', value: calc.projectedBalance)),
           Expanded(
               child: _MiniStat(
                   label: 'SALDO APÓS SAQUE',
@@ -360,14 +366,11 @@ class _ResultCard extends StatelessWidget {
           Expanded(
               child: _MiniStat(
                   label: 'ALÍQUOTA',
-                  text:
-                      '${(calc.withdrawalRate * 100).toStringAsFixed(0)}%')),
+                  text: '${(calc.withdrawalRate * 100).toStringAsFixed(0)}%')),
           Expanded(
               child: _MiniStat(
                   label: 'PARCELA ADICIONAL',
-                  value: calc.withdrawalBonus > 0
-                      ? calc.withdrawalBonus
-                      : null,
+                  value: calc.withdrawalBonus > 0 ? calc.withdrawalBonus : null,
                   text: calc.withdrawalBonus > 0 ? null : '—')),
         ]),
       ]),
@@ -397,8 +400,7 @@ class _BracketCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-          color: colors.surfaceLowest,
-          borderRadius: BorderRadius.circular(20)),
+          color: colors.surfaceLowest, borderRadius: BorderRadius.circular(20)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text('TABELA DE ALÍQUOTAS',
             style: TextStyle(
@@ -439,10 +441,10 @@ class _BracketCard extends StatelessWidget {
           final isActive = i == calc.bracketIndex;
           return Container(
             margin: const EdgeInsets.only(bottom: 4),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
-              color: isActive ? _kTeal.withValues(alpha: 0.1) : Colors.transparent,
+              color:
+                  isActive ? _kTeal.withValues(alpha: 0.1) : Colors.transparent,
               borderRadius: BorderRadius.circular(10),
               border: isActive
                   ? Border.all(color: _kTeal.withValues(alpha: 0.3))
@@ -453,8 +455,7 @@ class _BracketCard extends StatelessWidget {
                   flex: 5,
                   child: Row(children: [
                     if (isActive) ...[
-                      const Icon(Icons.arrow_right,
-                          size: 14, color: _kTeal),
+                      const Icon(Icons.arrow_right, size: 14, color: _kTeal),
                       const SizedBox(width: 2),
                     ] else
                       const SizedBox(width: 16),
@@ -463,9 +464,8 @@ class _BracketCard extends StatelessWidget {
                         row.label,
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight: isActive
-                              ? FontWeight.w700
-                              : FontWeight.w500,
+                          fontWeight:
+                              isActive ? FontWeight.w700 : FontWeight.w500,
                           color: isActive ? _kTeal : colors.onSurface,
                         ),
                       ),
@@ -487,9 +487,7 @@ class _BracketCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
-                            color: isActive
-                                ? _kTeal
-                                : colors.onSurfaceSoft,
+                            color: isActive ? _kTeal : colors.onSurfaceSoft,
                           )))),
             ]),
           );
@@ -511,8 +509,7 @@ class _ProjectionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-          color: colors.surfaceLowest,
-          borderRadius: BorderRadius.circular(20)),
+          color: colors.surfaceLowest, borderRadius: BorderRadius.circular(20)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text('PROJEÇÃO 3 ANOS',
             style: TextStyle(
@@ -562,12 +559,10 @@ class _ProjectionCard extends StatelessWidget {
           final isFirst = i == 0;
           return Container(
             margin: const EdgeInsets.only(bottom: 4),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             decoration: BoxDecoration(
-              color: isFirst
-                  ? _kTeal.withValues(alpha: 0.07)
-                  : colors.surfaceLow,
+              color:
+                  isFirst ? _kTeal.withValues(alpha: 0.07) : colors.surfaceLow,
               borderRadius: BorderRadius.circular(12),
               border: isFirst
                   ? Border.all(color: _kTeal.withValues(alpha: 0.2))
@@ -591,38 +586,30 @@ class _ProjectionCard extends StatelessWidget {
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: colors.onSurfaceSoft,
-                            fontFeatures: const [
-                              FontFeature.tabularFigures()
-                            ],
+                            fontFeatures: const [FontFeature.tabularFigures()],
                           )))),
               Expanded(
                   flex: 3,
                   child: Center(
                       child: Text(
-                          FinancialCalculatorService.formatBRL(
-                              p.withdrawal),
+                          FinancialCalculatorService.formatBRL(p.withdrawal),
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
                             color: isFirst ? _kTeal : colors.onSurface,
-                            fontFeatures: const [
-                              FontFeature.tabularFigures()
-                            ],
+                            fontFeatures: const [FontFeature.tabularFigures()],
                           )))),
               Expanded(
                   flex: 3,
                   child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                          FinancialCalculatorService.formatBRL(
-                              p.afterBalance),
+                          FinancialCalculatorService.formatBRL(p.afterBalance),
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: colors.onSurfaceSoft,
-                            fontFeatures: const [
-                              FontFeature.tabularFigures()
-                            ],
+                            fontFeatures: const [FontFeature.tabularFigures()],
                           )))),
             ]),
           );
@@ -641,9 +628,7 @@ class _ProjectionCard extends StatelessWidget {
               child: Text(
                 'Total sacado em 3 anos: ${FinancialCalculatorService.formatBRL(calc.projections.fold(0.0, (s, p) => s + p.withdrawal))}',
                 style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: _kTeal),
+                    fontSize: 12, fontWeight: FontWeight.w600, color: _kTeal),
               ),
             ),
           ]),
@@ -667,7 +652,8 @@ class _TradeoffCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.surfaceLowest,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.orange.shade300.withValues(alpha: 0.6)),
+        border:
+            Border.all(color: Colors.orange.shade300.withValues(alpha: 0.6)),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
@@ -703,8 +689,7 @@ class _TradeoffCard extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: Colors.orange.shade50.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(10),
@@ -717,9 +702,7 @@ class _TradeoffCard extends StatelessWidget {
                 'A modalidade Saque Aniversário vale mais se você tem estabilidade no emprego. '
                 'Opte pelo padrão se há risco de demissão.',
                 style: TextStyle(
-                    fontSize: 12,
-                    color: colors.onSurfaceSoft,
-                    height: 1.5),
+                    fontSize: 12, color: colors.onSurfaceSoft, height: 1.5),
               ),
             ),
           ]),
@@ -908,7 +891,10 @@ class _FgtsCalc {
       bracketIndex: br1.idx,
       projections: [
         _YearProjection(
-            year: now.year, balance: bal1, withdrawal: w1, afterBalance: after1),
+            year: now.year,
+            balance: bal1,
+            withdrawal: w1,
+            afterBalance: after1),
         _YearProjection(
             year: now.year + 1,
             balance: bal2,

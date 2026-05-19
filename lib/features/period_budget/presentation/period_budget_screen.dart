@@ -23,7 +23,8 @@ import '../../../design/layout/layout.dart';
 class PeriodBudgetScreen extends ConsumerWidget {
   const PeriodBudgetScreen({super.key});
 
-  static const double _contentMaxWidth = 860; // intentionally narrower than contentMedium
+  static const double _contentMaxWidth =
+      860; // intentionally narrower than contentMedium
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,7 +39,9 @@ class PeriodBudgetScreen extends ConsumerWidget {
           SliverAppBar(
             floating: true,
             title: Row(children: [
-              const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+              const FarolMark(
+                  size: FarolBrand.markSizeCompact,
+                  variant: FarolLogoVariant.dark),
               const SizedBox(width: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,7 +79,8 @@ class PeriodBudgetScreen extends ConsumerWidget {
               child: Center(child: CircularProgressIndicator()),
             ),
             error: (e, _) => SliverFillRemaining(
-              child: Center(child: Text('${AppLocalizations.of(context).error}: $e')),
+              child: Center(
+                  child: Text('${AppLocalizations.of(context).error}: $e')),
             ),
           ),
           const SliverToBoxAdapter(child: FarolBottomPadding()),
@@ -106,12 +110,10 @@ class PeriodBudgetScreen extends ConsumerWidget {
                   size: 48, color: colors.onSurfaceFaint),
               const SizedBox(height: 12),
               Text(AppLocalizations.of(context).noBudgetsPeriod,
-                  style:
-                      TextStyle(color: colors.onSurfaceSoft, fontSize: 14)),
+                  style: TextStyle(color: colors.onSurfaceSoft, fontSize: 14)),
               const SizedBox(height: 8),
               Text(AppLocalizations.of(context).budgetsHint,
-                  style: TextStyle(
-                      color: colors.onSurfaceFaint, fontSize: 12)),
+                  style: TextStyle(color: colors.onSurfaceFaint, fontSize: 12)),
             ],
           ),
         ),
@@ -123,8 +125,7 @@ class PeriodBudgetScreen extends ConsumerWidget {
     List<PeriodBudgetEntry> entries,
     FarolColors colors,
   ) {
-    final isDesktop =
-        FarolBreakpoints.isDesktop(context);
+    final isDesktop = FarolBreakpoints.isDesktop(context);
     final list = SliverList(
       delegate: SliverChildBuilderDelegate(
         (_, i) => _EntryCard(
@@ -161,15 +162,15 @@ class PeriodBudgetScreen extends ConsumerWidget {
   }
 
   void _openEdit(BuildContext context, PeriodBudgetEntry? entry) {
-    final isDesktop =
-        FarolBreakpoints.isDesktop(context);
+    final isDesktop = FarolBreakpoints.isDesktop(context);
 
     if (isDesktop) {
       // On desktop open as a centered Dialog instead of a bottom sheet.
       showDialog(
         context: context,
         builder: (_) => Dialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 60),
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 40, vertical: 60),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 480),
             child: BudgetEditSheet(entry: entry),
@@ -199,7 +200,8 @@ class PeriodBudgetScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final label = hasGoal ? l10n.resetToGoal : l10n.deleteBudget;
     final body = hasGoal
-        ? l10n.resetToGoalWithAmount(FinancialCalculatorService.formatBRL(entry.goal!.targetAmount))
+        ? l10n.resetToGoalWithAmount(
+            FinancialCalculatorService.formatBRL(entry.goal!.targetAmount))
         : l10n.removeBudget(_catLabel(entry.category, ref));
     final confirm = hasGoal ? l10n.reset : l10n.delete;
 
@@ -214,8 +216,7 @@ class PeriodBudgetScreen extends ConsumerWidget {
               child: Text(AppLocalizations.of(ctx).cancel)),
           TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: Text(confirm,
-                  style: const TextStyle(color: Colors.red))),
+              child: Text(confirm, style: const TextStyle(color: Colors.red))),
         ],
       ),
     );
@@ -226,17 +227,15 @@ class PeriodBudgetScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _copyFromPrevious(
-      BuildContext context, WidgetRef ref) async {
+  Future<void> _copyFromPrevious(BuildContext context, WidgetRef ref) async {
     final count = await ref
         .read(periodBudgetNotifierProvider.notifier)
         .copyFromPreviousPeriod();
     if (context.mounted) {
       final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(count > 0
-            ? l10n.copiedBudgets(count)
-            : l10n.noBudgetsToCopy),
+        content:
+            Text(count > 0 ? l10n.copiedBudgets(count) : l10n.noBudgetsToCopy),
         backgroundColor: count > 0 ? Colors.green : Colors.grey,
       ));
     }
@@ -282,7 +281,8 @@ class _EntryCardState extends ConsumerState<_EntryCard> {
 
     final slug = widget.entry.category.toLowerCase();
     final envelopes = ref.watch(envelopesProvider);
-    final envelope = envelopes.where((e) => e.category.slug == slug).firstOrNull;
+    final envelope =
+        envelopes.where((e) => e.category.slug == slug).firstOrNull;
     final rollover = envelope?.rolloverAmount ?? Money.zero;
 
     final pct = widget.entry.percentage.clamp(0.0, 1.0);
@@ -329,9 +329,12 @@ class _EntryCardState extends ConsumerState<_EntryCard> {
                           style: GoogleFonts.manrope(
                               fontSize: 14, fontWeight: FontWeight.w600),
                         ),
-                        if (widget.entry.isCustom && widget.entry.goalAmount != null)
+                        if (widget.entry.isCustom &&
+                            widget.entry.goalAmount != null)
                           Text(
-                            AppLocalizations.of(context).budgetGoalLabel(FinancialCalculatorService.formatBRL(widget.entry.goalAmount!)),
+                            AppLocalizations.of(context).budgetGoalLabel(
+                                FinancialCalculatorService.formatBRL(
+                                    widget.entry.goalAmount!)),
                             style: TextStyle(
                                 fontSize: 10, color: colors.onSurfaceFaint),
                           ),
@@ -381,8 +384,7 @@ class _EntryCardState extends ConsumerState<_EntryCard> {
                 children: [
                   Text(
                     'Gasto: ${FinancialCalculatorService.formatBRL(widget.entry.spent)}',
-                    style:
-                        TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
+                    style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
                   ),
                   Text(
                     widget.entry.remaining >= 0
@@ -405,7 +407,8 @@ class _EntryCardState extends ConsumerState<_EntryCard> {
                   ),
                 ],
               ),
-              _BudgetLastEditLine(categorySlug: widget.entry.category.toLowerCase()),
+              _BudgetLastEditLine(
+                  categorySlug: widget.entry.category.toLowerCase()),
             ],
           ),
         ),
@@ -422,8 +425,8 @@ class _BudgetBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         margin: const EdgeInsets.only(right: DSSpacing.xs + 2),
-        padding:
-            const EdgeInsets.symmetric(horizontal: DSSpacing.xs + 2, vertical: 2),
+        padding: const EdgeInsets.symmetric(
+            horizontal: DSSpacing.xs + 2, vertical: 2),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.12),
           borderRadius: DSRadius.xsBR,
@@ -463,17 +466,18 @@ class _BudgetLastEditLine extends ConsumerWidget {
 
     final memberMap = ref.watch(memberDisplayMapProvider).valueOrNull ?? {};
     final editor = memberMap[change.changedBy];
-    final currentUserId =
-        Supabase.instance.client.auth.currentUser?.id ?? '';
+    final currentUserId = Supabase.instance.client.auth.currentUser?.id ?? '';
     final isSelf = change.changedBy == currentUserId;
-    final name = isSelf ? 'Você' : (editor?.displayName ?? '${change.changedBy.substring(0, 8)}…');
+    final name = isSelf
+        ? 'Você'
+        : (editor?.displayName ?? '${change.changedBy.substring(0, 8)}…');
 
     return Padding(
       padding: const EdgeInsets.only(top: 6),
       child: Row(
         children: [
-          Icon(Icons.edit_outlined, size: 11,
-              color: Theme.of(context).colorScheme.onSurfaceVariant),
+          Icon(Icons.edit_outlined,
+              size: 11, color: Theme.of(context).colorScheme.onSurfaceVariant),
           const SizedBox(width: 4),
           Text(
             'Último ajuste: $name · ${_timeLabel(change.changedAt)}',

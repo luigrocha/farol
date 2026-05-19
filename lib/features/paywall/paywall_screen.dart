@@ -19,7 +19,9 @@ class PaywallScreen extends StatelessWidget {
               onPressed: () => Navigator.pop(context),
             ),
             actions: const [
-              FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+              FarolMark(
+                  size: FarolBrand.markSizeCompact,
+                  variant: FarolLogoVariant.dark),
               SizedBox(width: 16),
             ],
           ),
@@ -222,7 +224,8 @@ class _FeatureTable extends StatelessWidget {
         const SizedBox(height: 16),
         Column(
           children: [
-            ..._freeFeatures.map((feature) => _FreeFeatureRow(feature: feature)),
+            ..._freeFeatures
+                .map((feature) => _FreeFeatureRow(feature: feature)),
             const SizedBox(height: 24),
             const Divider(height: 1),
             const SizedBox(height: 24),
@@ -305,7 +308,8 @@ class _PremiumFeatureItem extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: tokens.FarolColors.navy.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(6),

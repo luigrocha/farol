@@ -49,23 +49,23 @@ class AddSpaceTransactionSheet extends ConsumerStatefulWidget {
 
 class _AddSpaceTransactionSheetState
     extends ConsumerState<AddSpaceTransactionSheet> {
-  final _formKey   = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   final _amountCtrl = TextEditingController();
-  final _descCtrl   = TextEditingController();
+  final _descCtrl = TextEditingController();
 
-  SpaceCategory?   _category;
-  SplitRule        _splitRule   = SplitRule.equal;
-  DateTime         _date        = DateTime.now();
-  String?          _paidBy;     // null → current user
-  bool             _linkLedger  = true;
-  bool             _loading     = false;
+  SpaceCategory? _category;
+  SplitRule _splitRule = SplitRule.equal;
+  DateTime _date = DateTime.now();
+  String? _paidBy; // null → current user
+  bool _linkLedger = true;
+  bool _loading = false;
 
   // Per-member share amounts for custom/percentage rules
   // key = userId, value = controller
   final Map<String, TextEditingController> _shareCtrl = {};
 
   String get _currentUserId => Supabase.instance.client.auth.currentUser!.id;
-  Space  get _space         => widget.space;
+  Space get _space => widget.space;
 
   @override
   void initState() {
@@ -94,7 +94,7 @@ class _AddSpaceTransactionSheetState
 
   Map<String, double> _computeShares() {
     final members = _space.members;
-    final total   = _totalAmount;
+    final total = _totalAmount;
 
     switch (_splitRule) {
       case SplitRule.equal:
@@ -105,7 +105,7 @@ class _AddSpaceTransactionSheetState
           for (final m in members) m.userId: each,
         };
         final sumBase = base.values.fold(0.0, (a, b) => a + b);
-        final diff    = _round(total - sumBase);
+        final diff = _round(total - sumBase);
         final payerId = _paidBy ?? _currentUserId;
         base[payerId] = _round((base[payerId] ?? 0) + diff);
         return base;
@@ -137,7 +137,7 @@ class _AddSpaceTransactionSheetState
     if (!_formKey.currentState!.validate()) return;
 
     final shares = _computeShares();
-    final total  = _totalAmount;
+    final total = _totalAmount;
     final sharesSum = shares.values.fold(0.0, (a, b) => a + b);
 
     if ((sharesSum - total).abs() > 0.02) {
@@ -157,27 +157,26 @@ class _AddSpaceTransactionSheetState
       final repo = ref.read(spaceRepositoryProvider);
 
       final tx = await repo.createTransaction(
-        spaceId:     _space.id,
-        categoryId:  _category?.id,
-        amount:      total,
+        spaceId: _space.id,
+        categoryId: _category?.id,
+        amount: total,
         description: _descCtrl.text.trim(),
-        date:        _date,
-        splitRule:   _splitRule,
+        date: _date,
+        splitRule: _splitRule,
         sharesPerUser: shares,
-        paidBy:      _paidBy,
+        paidBy: _paidBy,
       );
 
       // If user wants to track their share in the personal ledger
       if (_linkLedger) {
-        final myShare = tx.shares
-            .where((s) => s.userId == _currentUserId)
-            .firstOrNull;
+        final myShare =
+            tx.shares.where((s) => s.userId == _currentUserId).firstOrNull;
         if (myShare != null) {
           await repo.linkToLedger(
             spaceId: _space.id,
             shareId: myShare.id,
-            amount:  myShare.amount,
-            date:    _date,
+            amount: myShare.amount,
+            date: _date,
           );
         }
       }
@@ -203,15 +202,15 @@ class _AddSpaceTransactionSheetState
 
   @override
   Widget build(BuildContext context) {
-    final theme  = Theme.of(context);
+    final theme = Theme.of(context);
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
     final categoriesAsync = ref.watch(spaceCategoriesProvider);
 
     return DraggableScrollableSheet(
       expand: false,
       initialChildSize: 0.85,
-      minChildSize:     0.5,
-      maxChildSize:     0.95,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
       builder: (_, controller) => ClipRRect(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         child: Scaffold(
@@ -222,7 +221,8 @@ class _AddSpaceTransactionSheetState
               const SizedBox(height: 8),
               Center(
                 child: Container(
-                  width: 40, height: 4,
+                  width: 40,
+                  height: 4,
                   decoration: BoxDecoration(
                     color: theme.colorScheme.outlineVariant,
                     borderRadius: BorderRadius.circular(2),
@@ -270,22 +270,25 @@ class _AddSpaceTransactionSheetState
                         _sectionLabel('Valor', theme),
                         const SizedBox(height: 8),
                         TextFormField(
-                          controller:  _amountCtrl,
+                          controller: _amountCtrl,
                           decoration: const InputDecoration(
-                            border:     OutlineInputBorder(),
+                            border: OutlineInputBorder(),
                             prefixText: 'R\$ ',
-                            hintText:   '0,00',
+                            hintText: '0,00',
                           ),
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
                           inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(r'[0-9,.]')),
+                            FilteringTextInputFormatter.allow(
+                                RegExp(r'[0-9,.]')),
                           ],
                           style: GoogleFonts.manrope(
                             fontSize: 22,
                             fontWeight: FontWeight.w700,
                           ),
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty) return 'Digite o valor';
+                            if (v == null || v.trim().isEmpty)
+                              return 'Digite o valor';
                             final n = double.tryParse(v.replaceAll(',', '.'));
                             if (n == null || n <= 0) return 'Valor inválido';
                             return null;
@@ -298,14 +301,15 @@ class _AddSpaceTransactionSheetState
                         _sectionLabel('Descrição', theme),
                         const SizedBox(height: 8),
                         TextFormField(
-                          controller:  _descCtrl,
+                          controller: _descCtrl,
                           decoration: const InputDecoration(
-                            border:   OutlineInputBorder(),
+                            border: OutlineInputBorder(),
                             hintText: 'Ex: Aluguel de maio',
                           ),
                           textCapitalization: TextCapitalization.sentences,
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty) return 'Digite uma descrição';
+                            if (v == null || v.trim().isEmpty)
+                              return 'Digite uma descrição';
                             return null;
                           },
                         ),
@@ -315,13 +319,13 @@ class _AddSpaceTransactionSheetState
                         _sectionLabel('Categoria', theme),
                         const SizedBox(height: 8),
                         categoriesAsync.when(
-                          data:    (cats) => _CategoryPicker(
+                          data: (cats) => _CategoryPicker(
                             categories: cats,
-                            selected:   _category,
+                            selected: _category,
                             onPick: (c) => setState(() => _category = c),
                           ),
                           loading: () => const LinearProgressIndicator(),
-                          error:   (_, __) => const SizedBox.shrink(),
+                          error: (_, __) => const SizedBox.shrink(),
                         ),
                         const SizedBox(height: 16),
 
@@ -333,7 +337,7 @@ class _AddSpaceTransactionSheetState
                           borderRadius: BorderRadius.circular(8),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 14),
+                                horizontal: 16, vertical: 14),
                             decoration: BoxDecoration(
                               border: Border.all(
                                 color: theme.colorScheme.outline,
@@ -356,9 +360,9 @@ class _AddSpaceTransactionSheetState
                           _sectionLabel('Quem pagou', theme),
                           const SizedBox(height: 8),
                           _PaidByPicker(
-                            members:  _space.members,
+                            members: _space.members,
                             selected: _paidBy ?? _currentUserId,
-                            onPick:   (uid) => setState(() => _paidBy = uid),
+                            onPick: (uid) => setState(() => _paidBy = uid),
                           ),
                           const SizedBox(height: 16),
                         ],
@@ -367,7 +371,7 @@ class _AddSpaceTransactionSheetState
                         _sectionLabel('Divisão', theme),
                         const SizedBox(height: 8),
                         _SplitRulePicker(
-                          selected:  _splitRule,
+                          selected: _splitRule,
                           onChanged: (r) => setState(() => _splitRule = r),
                         ),
                         const SizedBox(height: 16),
@@ -383,19 +387,19 @@ class _AddSpaceTransactionSheetState
                           ),
                           const SizedBox(height: 8),
                           _ShareInputList(
-                            members:      _space.members,
-                            controllers:  _shareCtrl,
+                            members: _space.members,
+                            controllers: _shareCtrl,
                             isPercentage: _splitRule == SplitRule.percentage,
-                            total:        _totalAmount,
+                            total: _totalAmount,
                           ),
                           const SizedBox(height: 16),
                         ],
 
                         // Ledger link toggle
                         _LedgerLinkTile(
-                          enabled:    _linkLedger,
-                          myAmount:   _computeShares()[_currentUserId] ?? 0,
-                          onChanged:  (v) => setState(() => _linkLedger = v),
+                          enabled: _linkLedger,
+                          myAmount: _computeShares()[_currentUserId] ?? 0,
+                          onChanged: (v) => setState(() => _linkLedger = v),
                         ),
                       ],
                     ),
@@ -413,7 +417,8 @@ class _AddSpaceTransactionSheetState
                     onPressed: _loading ? null : _submit,
                     child: _loading
                         ? const SizedBox(
-                            width: 20, height: 20,
+                            width: 20,
+                            height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Text('Salvar gasto'),
@@ -431,10 +436,10 @@ class _AddSpaceTransactionSheetState
 
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
-      context:     context,
+      context: context,
       initialDate: _date,
-      firstDate:   DateTime(2020),
-      lastDate:    DateTime.now().add(const Duration(days: 1)),
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now().add(const Duration(days: 1)),
     );
     if (picked != null) setState(() => _date = picked);
   }
@@ -477,7 +482,7 @@ class _CategoryPicker extends StatelessWidget {
         itemCount: categories.length,
         separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (_, i) {
-          final cat    = categories[i];
+          final cat = categories[i];
           final active = cat.id == selected?.id;
           return FilterChip(
             label: Row(
@@ -486,15 +491,16 @@ class _CategoryPicker extends StatelessWidget {
                 if (cat.icon != null)
                   Padding(
                     padding: const EdgeInsets.only(right: 4),
-                    child: Text(cat.icon!, style: const TextStyle(fontSize: 14)),
+                    child:
+                        Text(cat.icon!, style: const TextStyle(fontSize: 14)),
                   ),
                 Text(cat.name),
               ],
             ),
-            selected:         active,
-            onSelected:       (_) => onPick(active ? null : cat),
-            selectedColor:    theme.colorScheme.primaryContainer,
-            backgroundColor:  theme.colorScheme.surfaceContainerHighest,
+            selected: active,
+            onSelected: (_) => onPick(active ? null : cat),
+            selectedColor: theme.colorScheme.primaryContainer,
+            backgroundColor: theme.colorScheme.surfaceContainerHighest,
           );
         },
       ),
@@ -524,7 +530,7 @@ class _PaidByPicker extends StatelessWidget {
       spacing: 8,
       runSpacing: 8,
       children: members.map((m) {
-        final active  = m.userId == selected;
+        final active = m.userId == selected;
         final initials = m.userId.substring(0, 2).toUpperCase();
         return ChoiceChip(
           avatar: CircleAvatar(
@@ -534,10 +540,10 @@ class _PaidByPicker extends StatelessWidget {
               style: const TextStyle(color: Colors.white, fontSize: 10),
             ),
           ),
-          label:          Text(m.userId == selected ? 'Você' : 'Outro'),
-          selected:       active,
-          onSelected:     (_) => onPick(m.userId),
-          selectedColor:  theme.colorScheme.primaryContainer,
+          label: Text(m.userId == selected ? 'Você' : 'Outro'),
+          selected: active,
+          onSelected: (_) => onPick(m.userId),
+          selectedColor: theme.colorScheme.primaryContainer,
         );
       }).toList(),
     );
@@ -545,8 +551,12 @@ class _PaidByPicker extends StatelessWidget {
 
   Color _avatarColor(String userId) {
     final colors = [
-      Colors.teal, Colors.indigo, Colors.orange,
-      Colors.purple, Colors.red, Colors.green,
+      Colors.teal,
+      Colors.indigo,
+      Colors.orange,
+      Colors.purple,
+      Colors.red,
+      Colors.green,
     ];
     return colors[userId.codeUnitAt(0) % colors.length];
   }
@@ -631,12 +641,13 @@ class _ShareInputList extends StatelessWidget {
                 child: TextFormField(
                   controller: ctrl,
                   decoration: InputDecoration(
-                    isDense:    true,
-                    border:     const OutlineInputBorder(),
+                    isDense: true,
+                    border: const OutlineInputBorder(),
                     suffixText: isPercentage ? '%' : 'R\$',
-                    hintText:   isPercentage ? '50' : '0,00',
+                    hintText: isPercentage ? '50' : '0,00',
                   ),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp(r'[0-9,.]')),
                   ],
@@ -670,12 +681,12 @@ class _LedgerLinkTile extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
-        color:        theme.colorScheme.surfaceContainerHighest,
+        color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
       ),
       child: SwitchListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        value:   enabled,
+        value: enabled,
         onChanged: onChanged,
         secondary: Icon(
           Icons.account_balance_wallet_outlined,

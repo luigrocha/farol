@@ -35,24 +35,24 @@ class SpaceMembersScreen extends ConsumerWidget {
         ),
       );
 
-  String get _currentUserId =>
-      Supabase.instance.client.auth.currentUser!.id;
+  String get _currentUserId => Supabase.instance.client.auth.currentUser!.id;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final myRole            = ref.watch(currentUserSpaceRoleProvider);
-    final canAdmin          = myRole.isAdmin;
-    final canSeeBalances    = ref.watch(canSeeMemberBalancesProvider);
-    final suggestionsAsync  = ref.watch(settlementSuggestionsProvider);
-    final displayMap        = ref.watch(spaceMemberDisplayMapProvider).valueOrNull ?? {};
-    final theme             = Theme.of(context);
+    final myRole = ref.watch(currentUserSpaceRoleProvider);
+    final canAdmin = myRole.isAdmin;
+    final canSeeBalances = ref.watch(canSeeMemberBalancesProvider);
+    final suggestionsAsync = ref.watch(settlementSuggestionsProvider);
+    final displayMap =
+        ref.watch(spaceMemberDisplayMapProvider).valueOrNull ?? {};
+    final theme = Theme.of(context);
 
     // Build a net-balance map from settlement suggestions
     final netMap = <String, double>{};
     suggestionsAsync.whenData((suggestions) {
       for (final s in suggestions) {
         netMap[s.fromUserId] = (netMap[s.fromUserId] ?? 0) - s.amount;
-        netMap[s.toUserId]   = (netMap[s.toUserId]   ?? 0) + s.amount;
+        netMap[s.toUserId] = (netMap[s.toUserId] ?? 0) + s.amount;
       }
     });
 
@@ -61,21 +61,21 @@ class SpaceMembersScreen extends ConsumerWidget {
     final memberList = ListView.separated(
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: space.members.length,
-      separatorBuilder: (_, __) =>
-          Divider(height: 1, indent: 72, color: theme.colorScheme.outlineVariant),
+      separatorBuilder: (_, __) => Divider(
+          height: 1, indent: 72, color: theme.colorScheme.outlineVariant),
       itemBuilder: (_, i) {
         final member = space.members[i];
         final isSelf = member.userId == _currentUserId;
-        final net    = canSeeBalances ? (netMap[member.userId] ?? 0.0) : null;
+        final net = canSeeBalances ? (netMap[member.userId] ?? 0.0) : null;
 
         return _MemberTile(
-          member:      member,
-          display:     displayMap[member.userId],
-          isSelf:      isSelf,
-          net:         net,
-          canAdmin:    canAdmin && !isSelf,
+          member: member,
+          display: displayMap[member.userId],
+          isSelf: isSelf,
+          net: net,
+          canAdmin: canAdmin && !isSelf,
           onRoleChange: (role) => _changeRole(context, ref, member, role),
-          onRemove:     () => _removeMember(context, ref, member),
+          onRemove: () => _removeMember(context, ref, member),
         );
       },
     );
@@ -83,9 +83,11 @@ class SpaceMembersScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Row(children: [
-          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const FarolMark(
+              size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
           const SizedBox(width: 10),
-          Text('Membros', style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
+          Text('Membros',
+              style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
         ]),
         actions: [
           if (canAdmin)
@@ -105,15 +107,16 @@ class SpaceMembersScreen extends ConsumerWidget {
                   flex: 3,
                   child: memberList,
                 ),
-                VerticalDivider(width: 1, color: theme.colorScheme.outlineVariant),
+                VerticalDivider(
+                    width: 1, color: theme.colorScheme.outlineVariant),
                 // Right: summary panel
                 SizedBox(
                   width: 280,
                   child: _MembersSummaryPanel(
-                    space:         space,
-                    netMap:        netMap,
+                    space: space,
+                    netMap: netMap,
                     canSeeBalances: canSeeBalances,
-                    displayMap:    displayMap,
+                    displayMap: displayMap,
                     currentUserId: _currentUserId,
                   ),
                 ),
@@ -142,7 +145,7 @@ class SpaceMembersScreen extends ConsumerWidget {
                 controller: emailCtrl,
                 decoration: const InputDecoration(
                   labelText: 'E-mail',
-                  border:    OutlineInputBorder(),
+                  border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
@@ -158,7 +161,8 @@ class SpaceMembersScreen extends ConsumerWidget {
               SegmentedButton<SpaceRole>(
                 segments: const [
                   ButtonSegment(value: SpaceRole.member, label: Text('Membro')),
-                  ButtonSegment(value: SpaceRole.viewer, label: Text('Visualizador')),
+                  ButtonSegment(
+                      value: SpaceRole.viewer, label: Text('Visualizador')),
                 ],
                 selected: {selectedRole},
                 onSelectionChanged: (s) =>
@@ -186,10 +190,10 @@ class SpaceMembersScreen extends ConsumerWidget {
 
     try {
       await ref.read(spaceRepositoryProvider).createInvite(
-        spaceId:      space.id,
-        invitedEmail: email,
-        role:         selectedRole,
-      );
+            spaceId: space.id,
+            invitedEmail: email,
+            role: selectedRole,
+          );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Convite enviado para $email')),
@@ -281,13 +285,13 @@ class SpaceMembersScreen extends ConsumerWidget {
 // ─────────────────────────────────────────────────────────────────
 
 class _MemberTile extends StatelessWidget {
-  final SpaceMember   member;
+  final SpaceMember member;
   final MemberDisplay? display;
-  final bool          isSelf;
-  final double?       net; // null = hidden
-  final bool          canAdmin;
+  final bool isSelf;
+  final double? net; // null = hidden
+  final bool canAdmin;
   final ValueChanged<SpaceRole> onRoleChange;
-  final VoidCallback  onRemove;
+  final VoidCallback onRemove;
 
   const _MemberTile({
     required this.member,
@@ -301,12 +305,12 @@ class _MemberTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme    = Theme.of(context);
-    final initials = display?.initials ?? member.userId.substring(0, 2).toUpperCase();
+    final theme = Theme.of(context);
+    final initials =
+        display?.initials ?? member.userId.substring(0, 2).toUpperCase();
     final avatarBg = display?.avatarColor ?? _avatarColor(member.userId);
-    final name     = isSelf
-        ? 'Você'
-        : display?.displayName ?? member.userId.substring(0, 8);
+    final name =
+        isSelf ? 'Você' : display?.displayName ?? member.userId.substring(0, 8);
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -321,9 +325,9 @@ class _MemberTile extends StatelessWidget {
               child: Text(
                 initials,
                 style: GoogleFonts.manrope(
-                  color:      Colors.white,
+                  color: Colors.white,
                   fontWeight: FontWeight.w600,
-                  fontSize:   13,
+                  fontSize: 13,
                 ),
               ),
             ),
@@ -402,8 +406,12 @@ class _MemberTile extends StatelessWidget {
 
   static Color _avatarColor(String userId) {
     const palette = [
-      Color(0xFF6366F1), Color(0xFF0EA5E9), Color(0xFF10B981),
-      Color(0xFFF59E0B), Color(0xFFEF4444), Color(0xFF8B5CF6),
+      Color(0xFF6366F1),
+      Color(0xFF0EA5E9),
+      Color(0xFF10B981),
+      Color(0xFFF59E0B),
+      Color(0xFFEF4444),
+      Color(0xFF8B5CF6),
     ];
     return palette[userId.codeUnitAt(0) % palette.length];
   }
@@ -525,7 +533,8 @@ class _SummaryCard extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          color:
+              theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(children: [
@@ -555,25 +564,45 @@ class _RoleBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final (label, bg, fg) = switch (role) {
-      SpaceRole.owner  => ('Dono',          theme.colorScheme.primaryContainer,   theme.colorScheme.onPrimaryContainer),
-      SpaceRole.admin  => ('Admin',         theme.colorScheme.secondaryContainer, theme.colorScheme.onSecondaryContainer),
-      SpaceRole.member => ('Membro',        theme.colorScheme.surfaceContainerHighest, theme.colorScheme.onSurface),
-      SpaceRole.viewer => ('Visualizador',  theme.colorScheme.surfaceContainerHighest, theme.colorScheme.onSurfaceVariant),
-      SpaceRole.guest  => ('Convidado',     theme.colorScheme.surfaceContainerHighest, theme.colorScheme.onSurfaceVariant),
+      SpaceRole.owner => (
+          'Dono',
+          theme.colorScheme.primaryContainer,
+          theme.colorScheme.onPrimaryContainer
+        ),
+      SpaceRole.admin => (
+          'Admin',
+          theme.colorScheme.secondaryContainer,
+          theme.colorScheme.onSecondaryContainer
+        ),
+      SpaceRole.member => (
+          'Membro',
+          theme.colorScheme.surfaceContainerHighest,
+          theme.colorScheme.onSurface
+        ),
+      SpaceRole.viewer => (
+          'Visualizador',
+          theme.colorScheme.surfaceContainerHighest,
+          theme.colorScheme.onSurfaceVariant
+        ),
+      SpaceRole.guest => (
+          'Convidado',
+          theme.colorScheme.surfaceContainerHighest,
+          theme.colorScheme.onSurfaceVariant
+        ),
     };
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color:        bg,
+        color: bg,
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
         label,
         style: GoogleFonts.manrope(
-          fontSize:   10,
+          fontSize: 10,
           fontWeight: FontWeight.w600,
-          color:      fg,
+          color: fg,
         ),
       ),
     );

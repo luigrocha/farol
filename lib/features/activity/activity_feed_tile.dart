@@ -30,29 +30,33 @@ class ActivityFeedTile extends StatelessWidget {
 
   String get _actionLine {
     return switch (activity.action) {
-      'added_expense'       => _isSelf ? 'Você adicionou despesa' : 'adicionou despesa',
-      'deleted_expense'     => _isSelf ? 'Você removeu despesa'   : 'removeu despesa',
-      'added_recurring'     => _isSelf ? 'Você adicionou recorrência' : 'adicionou recorrência',
-      'deleted_recurring'   => _isSelf ? 'Você removeu recorrência'   : 'removeu recorrência',
-      'added_installment'   => _isSelf ? 'Você adicionou parcelamento' : 'adicionou parcelamento',
-      'deleted_installment' => _isSelf ? 'Você removeu parcelamento'   : 'removeu parcelamento',
-      _                     => activity.action,
+      'added_expense' =>
+        _isSelf ? 'Você adicionou despesa' : 'adicionou despesa',
+      'deleted_expense' => _isSelf ? 'Você removeu despesa' : 'removeu despesa',
+      'added_recurring' =>
+        _isSelf ? 'Você adicionou recorrência' : 'adicionou recorrência',
+      'deleted_recurring' =>
+        _isSelf ? 'Você removeu recorrência' : 'removeu recorrência',
+      'added_installment' =>
+        _isSelf ? 'Você adicionou parcelamento' : 'adicionou parcelamento',
+      'deleted_installment' =>
+        _isSelf ? 'Você removeu parcelamento' : 'removeu parcelamento',
+      _ => activity.action,
     };
   }
 
   IconData get _actionIcon => switch (activity.action) {
-        'added_expense'       => Icons.add_circle_outline,
-        'deleted_expense'     => Icons.remove_circle_outline,
-        'added_recurring'     => Icons.repeat,
-        'deleted_recurring'   => Icons.repeat_one_outlined,
-        'added_installment'   => Icons.credit_card_outlined,
+        'added_expense' => Icons.add_circle_outline,
+        'deleted_expense' => Icons.remove_circle_outline,
+        'added_recurring' => Icons.repeat,
+        'deleted_recurring' => Icons.repeat_one_outlined,
+        'added_installment' => Icons.credit_card_outlined,
         'deleted_installment' => Icons.credit_card_off_outlined,
-        _                     => Icons.history,
+        _ => Icons.history,
       };
 
-  Color _actionColor(ColorScheme cs) => activity.isDeletion
-      ? cs.error
-      : cs.primary;
+  Color _actionColor(ColorScheme cs) =>
+      activity.isDeletion ? cs.error : cs.primary;
 
   String _timeAgo() {
     final diff = DateTime.now().difference(activity.createdAt);
@@ -68,8 +72,8 @@ class ActivityFeedTile extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final avatarColor =
         display?.avatarColor ?? avatarColorForUserId(activity.userId);
-    final initials = display?.initials ??
-        activity.userId.substring(0, 2).toUpperCase();
+    final initials =
+        display?.initials ?? activity.userId.substring(0, 2).toUpperCase();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -147,9 +151,7 @@ class ActivityFeedTile extends StatelessWidget {
                         style: GoogleFonts.manrope(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
-                          color: activity.isDeletion
-                              ? cs.error
-                              : cs.onSurface,
+                          color: activity.isDeletion ? cs.error : cs.onSurface,
                         ),
                       ),
                     ],

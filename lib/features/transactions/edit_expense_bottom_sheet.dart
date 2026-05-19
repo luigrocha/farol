@@ -30,12 +30,12 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
   String? _subcategory;
   bool _saving = false;
 
-
   @override
   void initState() {
     super.initState();
     final e = widget.expense;
-    _amountCtrl = TextEditingController(text: e.amount.toStringAsFixed(2).replaceAll('.', ','));
+    _amountCtrl = TextEditingController(
+        text: e.amount.toStringAsFixed(2).replaceAll('.', ','));
     _descCtrl = TextEditingController(text: e.storeDescription ?? '');
     _installmentsCtrl = TextEditingController(text: e.installments.toString());
     _date = e.transactionDate;
@@ -43,7 +43,8 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
     _subcategory = e.subcategory;
     _categoryDbValue = e.category;
     try {
-      _method = PaymentMethod.values.firstWhere((m) => m.dbValue == e.paymentMethod);
+      _method =
+          PaymentMethod.values.firstWhere((m) => m.dbValue == e.paymentMethod);
     } catch (_) {
       _method = PaymentMethod.pix;
     }
@@ -71,9 +72,12 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
 
     final selectedCategory = categories.firstWhere(
       (c) => c.slug == _categoryDbValue,
-      orElse: () => categories.isNotEmpty ? categories.first : CategoryRef.uncategorized(_categoryDbValue),
+      orElse: () => categories.isNotEmpty
+          ? categories.first
+          : CategoryRef.uncategorized(_categoryDbValue),
     );
-    final subcategories = ref.watch(subcategoriesForProvider(selectedCategory.id));
+    final subcategories =
+        ref.watch(subcategoriesForProvider(selectedCategory.id));
 
     return Container(
       decoration: BoxDecoration(
@@ -81,23 +85,40 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.fromLTRB(20, 12, 20, bottom + 20),
-      child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Container(width: 40, height: 4, decoration: BoxDecoration(color: Theme.of(context).colorScheme.outline, borderRadius: BorderRadius.circular(2))),
+      child: SingleChildScrollView(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.outline,
+                borderRadius: BorderRadius.circular(2))),
         const SizedBox(height: 16),
         Text(l10n.editExpense, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 20),
 
         // Amount
-        TextField(controller: _amountCtrl, autofocus: true,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700),
-          decoration: const InputDecoration(prefixText: 'R\$ ', hintText: '0,00'),
-          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.,]'))],
-          onChanged: (_) => setState(() {})),
+        TextField(
+            controller: _amountCtrl,
+            autofocus: true,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            style: Theme.of(context)
+                .textTheme
+                .headlineMedium
+                ?.copyWith(fontWeight: FontWeight.w700),
+            decoration:
+                const InputDecoration(prefixText: 'R\$ ', hintText: '0,00'),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[\d.,]'))
+            ],
+            onChanged: (_) => setState(() {})),
         const SizedBox(height: 16),
 
         // Category grid
-        Align(alignment: Alignment.centerLeft, child: Text(l10n.category, style: Theme.of(context).textTheme.labelLarge)),
+        Align(
+            alignment: Alignment.centerLeft,
+            child: Text(l10n.category,
+                style: Theme.of(context).textTheme.labelLarge)),
         const SizedBox(height: 8),
         if (isLoadingCategories)
           const SizedBox(
@@ -118,68 +139,121 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
 
         // Subcategory chips (dynamic from DB)
         if (subcategories.isNotEmpty) ...[
-          Align(alignment: Alignment.centerLeft, child: Text(l10n.translate('subcategory'), style: Theme.of(context).textTheme.labelLarge)),
+          Align(
+              alignment: Alignment.centerLeft,
+              child: Text(l10n.translate('subcategory'),
+                  style: Theme.of(context).textTheme.labelLarge)),
           const SizedBox(height: 8),
-          Wrap(spacing: 8, runSpacing: 4, children: subcategories.map((s) =>
-            ChoiceChip(
-              label: Text('${s.emoji} ${s.name}', style: const TextStyle(fontSize: 12)),
-              selected: _subcategory == s.slug,
-              onSelected: (v) => setState(() => _subcategory = v ? s.slug : null),
-            )).toList()),
+          Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: subcategories
+                  .map((s) => ChoiceChip(
+                        label: Text('${s.emoji} ${s.name}',
+                            style: const TextStyle(fontSize: 12)),
+                        selected: _subcategory == s.slug,
+                        onSelected: (v) =>
+                            setState(() => _subcategory = v ? s.slug : null),
+                      ))
+                  .toList()),
           const SizedBox(height: 16),
         ],
 
         // Payment method pills
-        Align(alignment: Alignment.centerLeft, child: Text(l10n.paymentMethod, style: Theme.of(context).textTheme.labelLarge)),
+        Align(
+            alignment: Alignment.centerLeft,
+            child: Text(l10n.paymentMethod,
+                style: Theme.of(context).textTheme.labelLarge)),
         const SizedBox(height: 8),
-        Wrap(spacing: 8, runSpacing: 4, children: [
-          PaymentMethod.debit, PaymentMethod.pix, PaymentMethod.creditFull,
-          PaymentMethod.creditInstallment, PaymentMethod.swileMeal, PaymentMethod.swileFood,
-        ].map((m) => ChoiceChip(label: Text(m.localizedLabel(context), style: const TextStyle(fontSize: 12)),
-          selected: _method == m, onSelected: (v) => setState(() { if (v) _method = m; }))).toList()),
+        Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              PaymentMethod.debit,
+              PaymentMethod.pix,
+              PaymentMethod.creditFull,
+              PaymentMethod.creditInstallment,
+              PaymentMethod.swileMeal,
+              PaymentMethod.swileFood,
+            ]
+                .map((m) => ChoiceChip(
+                    label: Text(m.localizedLabel(context),
+                        style: const TextStyle(fontSize: 12)),
+                    selected: _method == m,
+                    onSelected: (v) => setState(() {
+                          if (v) _method = m;
+                        })))
+                .toList()),
         const SizedBox(height: 12),
 
         // Installments field + total preview (conditional)
         if (_method == PaymentMethod.creditInstallment) ...[
           TextField(
-            controller: _installmentsCtrl,
-            keyboardType: TextInputType.number,
-            onChanged: (_) => setState(() {}),
-            decoration: InputDecoration(labelText: l10n.translate('num_installments'), prefixIcon: const Icon(Icons.format_list_numbered))),
+              controller: _installmentsCtrl,
+              keyboardType: TextInputType.number,
+              onChanged: (_) => setState(() {}),
+              decoration: InputDecoration(
+                  labelText: l10n.translate('num_installments'),
+                  prefixIcon: const Icon(Icons.format_list_numbered))),
           const SizedBox(height: 8),
-          _InstallmentTotalPreview(amountCtrl: _amountCtrl, installmentsCtrl: _installmentsCtrl),
+          _InstallmentTotalPreview(
+              amountCtrl: _amountCtrl, installmentsCtrl: _installmentsCtrl),
           const SizedBox(height: 12),
         ],
 
         // Fixed/Variable toggle
-        SwitchListTile(title: Text(l10n.fixedCost), value: _isFixed,
-          onChanged: (v) => setState(() => _isFixed = v),
-          contentPadding: EdgeInsets.zero),
+        SwitchListTile(
+            title: Text(l10n.fixedCost),
+            value: _isFixed,
+            onChanged: (v) => setState(() => _isFixed = v),
+            contentPadding: EdgeInsets.zero),
 
         // Description
-        TextField(controller: _descCtrl,
-          decoration: InputDecoration(labelText: '${l10n.description} (${l10n.optional})', prefixIcon: const Icon(Icons.description))),
+        TextField(
+            controller: _descCtrl,
+            decoration: InputDecoration(
+                labelText: '${l10n.description} (${l10n.optional})',
+                prefixIcon: const Icon(Icons.description))),
         const SizedBox(height: 12),
 
         // Date
-        ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.calendar_today),
-          title: Text('${_date.day.toString().padLeft(2, '0')}/${_date.month.toString().padLeft(2, '0')}/${_date.year}'),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () async {
-            final d = await showDatePicker(context: context, initialDate: _date,
-              firstDate: DateTime(2020), lastDate: DateTime(2030));
-            if (d != null) setState(() => _date = d);
-          }),
+        ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.calendar_today),
+            title: Text(
+                '${_date.day.toString().padLeft(2, '0')}/${_date.month.toString().padLeft(2, '0')}/${_date.year}'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () async {
+              final d = await showDatePicker(
+                  context: context,
+                  initialDate: _date,
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2030));
+              if (d != null) setState(() => _date = d);
+            }),
         const SizedBox(height: 20),
 
         // Save button
-        SizedBox(width: double.infinity, height: 52,
-          child: ElevatedButton(
-            onPressed: _saving ? null : _save,
-            style: ElevatedButton.styleFrom(backgroundColor: tokens.FarolColors.beam, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), elevation: 0),
-            child: _saving
-                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : Text(l10n.save.toUpperCase(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)))),
+        SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+                onPressed: _saving ? null : _save,
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: tokens.FarolColors.beam,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
+                    elevation: 0),
+                child: _saving
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white))
+                    : Text(l10n.save.toUpperCase(),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w700)))),
       ])),
     );
   }
@@ -188,15 +262,33 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
     final sel = _categoryDbValue == c.slug;
     final color = tokens.FarolColors.getCategoryColor(c.slug);
     return GestureDetector(
-      onTap: () => setState(() { _categoryDbValue = c.slug; _subcategory = null; }),
-      child: AnimatedContainer(duration: const Duration(milliseconds: 200),
-        decoration: BoxDecoration(
-          color: sel ? color.withValues(alpha: 0.15) : Theme.of(context).cardTheme.color,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: sel ? color : Theme.of(context).colorScheme.outline.withValues(alpha: 0.3), width: sel ? 2 : 1)),
-        child: Center(child: Text('${c.emoji} ${c.name}',
-          style: TextStyle(fontSize: 11, fontWeight: sel ? FontWeight.w600 : FontWeight.w400, color: sel ? color : context.colors.onSurface),
-          textAlign: TextAlign.center, overflow: TextOverflow.ellipsis))),
+      onTap: () => setState(() {
+        _categoryDbValue = c.slug;
+        _subcategory = null;
+      }),
+      child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          decoration: BoxDecoration(
+              color: sel
+                  ? color.withValues(alpha: 0.15)
+                  : Theme.of(context).cardTheme.color,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                  color: sel
+                      ? color
+                      : Theme.of(context)
+                          .colorScheme
+                          .outline
+                          .withValues(alpha: 0.3),
+                  width: sel ? 2 : 1)),
+          child: Center(
+              child: Text('${c.emoji} ${c.name}',
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: sel ? FontWeight.w600 : FontWeight.w400,
+                      color: sel ? color : context.colors.onSurface),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis))),
     );
   }
 
@@ -246,43 +338,47 @@ class _EditExpenseState extends ConsumerState<EditExpenseBottomSheet> {
 
     final categories = ref.read(categoriesRefProvider);
     final currentCat = categories.firstWhere((c) => c.slug == _categoryDbValue,
-        orElse: () => categories.isNotEmpty ? categories.first : CategoryRef.uncategorized(_categoryDbValue));
+        orElse: () => categories.isNotEmpty
+            ? categories.first
+            : CategoryRef.uncategorized(_categoryDbValue));
 
-    final desc = _descCtrl.text.isEmpty ? _subcategory ?? currentCat.name : _descCtrl.text;
+    final desc = _descCtrl.text.isEmpty
+        ? _subcategory ?? currentCat.name
+        : _descCtrl.text;
 
     try {
       await ref.read(expenseRepositoryProvider).update(
-        id: widget.expense.id,
-        transactionDate: _date,
-        month: _date.month,
-        year: _date.year,
-        payType: payType,
-        category: _categoryDbValue,
-        subcategory: _subcategory ?? currentCat.name,
-        amount: amount,
-        paymentMethod: _method.dbValue,
-        installments: numInst,
-        isFixed: _isFixed,
-        storeDescription: desc,
-      );
+            id: widget.expense.id,
+            transactionDate: _date,
+            month: _date.month,
+            year: _date.year,
+            payType: payType,
+            category: _categoryDbValue,
+            subcategory: _subcategory ?? currentCat.name,
+            amount: amount,
+            paymentMethod: _method.dbValue,
+            installments: numInst,
+            isFixed: _isFixed,
+            storeDescription: desc,
+          );
 
       if (propagate && isFixed) {
         await ref.read(expenseRepositoryProvider).updateFixedSeriesFrom(
-          widget.expense,
-          amount: amount,
-          category: _categoryDbValue,
-          subcategory: _subcategory,
-          paymentMethod: _method.dbValue,
-          storeDescription: _descCtrl.text.isNotEmpty ? desc : null,
-        );
+              widget.expense,
+              amount: amount,
+              category: _categoryDbValue,
+              subcategory: _subcategory,
+              paymentMethod: _method.dbValue,
+              storeDescription: _descCtrl.text.isNotEmpty ? desc : null,
+            );
       } else if (propagate && planId != null) {
         await ref.read(expenseRepositoryProvider).updateProjectedByPlan(
-          planId,
-          amount: amount,
-          category: _categoryDbValue,
-          subcategory: _subcategory,
-          paymentMethod: _method.dbValue,
-        );
+              planId,
+              amount: amount,
+              category: _categoryDbValue,
+              subcategory: _subcategory,
+              paymentMethod: _method.dbValue,
+            );
       }
 
       ref.invalidate(allExpensesStreamProvider);

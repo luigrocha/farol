@@ -23,7 +23,6 @@ import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-
 // ── Conditional firebase imports ──────────────────────────────────────────────
 // Uncomment these once firebase_* packages are added to pubspec.yaml:
 //
@@ -109,7 +108,8 @@ class SpaceNotificationService {
     //   alert: false, badge: true, sound: true,
     // );
 
-    debugPrint('[SpaceNotificationService] stub — Firebase packages not yet added');
+    debugPrint(
+        '[SpaceNotificationService] stub — Firebase packages not yet added');
   }
 
   // ── Local notifications setup (foreground) ────────────────────────
@@ -185,11 +185,11 @@ Future<void> sendSpaceNotification({
     await Supabase.instance.client.functions.invoke(
       'send-space-notification',
       body: {
-        'spaceId':     spaceId,
-        'event':       event,
+        'spaceId': spaceId,
+        'event': event,
         'actorUserId': actorUserId,
-        'actorName':   actorName,
-        'payload':     payload,
+        'actorName': actorName,
+        'payload': payload,
       },
     );
   } catch (e) {

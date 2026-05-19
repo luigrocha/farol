@@ -28,9 +28,12 @@ class RecurringSuggestionsScreen extends ConsumerWidget {
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(context.l10n.recurringSuggestionsTitle,
-              style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w800)),
+              style: GoogleFonts.manrope(
+                  fontSize: 17, fontWeight: FontWeight.w800)),
           actions: const [
-            FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+            FarolMark(
+                size: FarolBrand.markSizeCompact,
+                variant: FarolLogoVariant.dark),
             SizedBox(width: 16),
           ],
         ),
@@ -40,7 +43,8 @@ class RecurringSuggestionsScreen extends ConsumerWidget {
             delegate: SliverChildListDelegate([
               Text(
                 context.l10n.recurringSuggestionsSubtitle,
-                style: GoogleFonts.manrope(fontSize: 13, color: Colors.grey, height: 1.5),
+                style: GoogleFonts.manrope(
+                    fontSize: 13, color: Colors.grey, height: 1.5),
               ),
               const SizedBox(height: 16),
               candidatesAsync.when(
@@ -48,7 +52,8 @@ class RecurringSuggestionsScreen extends ConsumerWidget {
                     child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 48),
                         child: CircularProgressIndicator())),
-                error: (e, _) => Text(context.l10n.recurringError(e.toString())),
+                error: (e, _) =>
+                    Text(context.l10n.recurringError(e.toString())),
                 data: (List<RecurringRuleCandidate> candidates) {
                   if (candidates.isEmpty) {
                     return const _EmptyState();
@@ -98,16 +103,19 @@ class _CandidateTileState extends ConsumerState<_CandidateTile> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
             Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(c.name,
-                    style: GoogleFonts.manrope(
-                        fontSize: 15, fontWeight: FontWeight.w700)),
-                const SizedBox(height: 2),
-                Text(
-                  '${c.frequency.localizedLabel(context.l10n.locale.languageCode)}  ·  dia ${c.dayOfMonth}  ·  ${context.l10n.recurringOccurrencesCount(c.sourceExpenses.length)}',
-                  style: GoogleFonts.manrope(fontSize: 12, color: Colors.grey),
-                ),
-              ]),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(c.name,
+                        style: GoogleFonts.manrope(
+                            fontSize: 15, fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${c.frequency.localizedLabel(context.l10n.locale.languageCode)}  ·  dia ${c.dayOfMonth}  ·  ${context.l10n.recurringOccurrencesCount(c.sourceExpenses.length)}',
+                      style:
+                          GoogleFonts.manrope(fontSize: 12, color: Colors.grey),
+                    ),
+                  ]),
             ),
             Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
               Text(
@@ -122,13 +130,16 @@ class _CandidateTileState extends ConsumerState<_CandidateTile> {
           Row(children: [
             Expanded(
               child: OutlinedButton(
-                onPressed: _saving ? null : () => setState(() => _ignored = true),
+                onPressed:
+                    _saving ? null : () => setState(() => _ignored = true),
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: Colors.grey.shade300),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
                 ),
                 child: Text(context.l10n.recurringBtnIgnore,
-                    style: GoogleFonts.manrope(fontSize: 13, color: Colors.grey)),
+                    style:
+                        GoogleFonts.manrope(fontSize: 13, color: Colors.grey)),
               ),
             ),
             const SizedBox(width: 10),
@@ -138,14 +149,18 @@ class _CandidateTileState extends ConsumerState<_CandidateTile> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _teal,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
                 ),
                 child: _saving
                     ? const SizedBox(
-                        height: 18, width: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white))
                     : Text(context.l10n.recurringBtnConfirm,
-                        style: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w700)),
+                        style: GoogleFonts.manrope(
+                            fontSize: 13, fontWeight: FontWeight.w700)),
               ),
             ),
           ]),
@@ -170,7 +185,8 @@ class _CandidateTileState extends ConsumerState<_CandidateTile> {
         baseAmount: c.baseAmount,
         frequency: c.frequency,
         dayOfMonth: c.dayOfMonth,
-        startsOn: DateTime(firstDate.year, firstDate.month, c.dayOfMonth.clamp(1, 28)),
+        startsOn: DateTime(
+            firstDate.year, firstDate.month, c.dayOfMonth.clamp(1, 28)),
         paymentMethod: c.paymentMethod,
         isAutoDetected: true,
         detectionConfidence: c.confidence,
@@ -181,7 +197,8 @@ class _CandidateTileState extends ConsumerState<_CandidateTile> {
       await service.createRule(rule);
       if (mounted) {
         setState(() => _ignored = true); // hide after confirm
-        context.showSuccessSnackBar(context.l10n.recurringConfirmedSnack(c.name));
+        context
+            .showSuccessSnackBar(context.l10n.recurringConfirmedSnack(c.name));
       }
     } catch (e) {
       if (mounted) {

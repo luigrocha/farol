@@ -15,7 +15,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/models/space.dart';
 import '../../core/providers/space_providers.dart';
-import '../../core/repositories/space_repository.dart' show SpaceInviteException;
+import '../../core/repositories/space_repository.dart'
+    show SpaceInviteException;
 import '../../design/farol_colors.dart' as tokens;
 import '../../design/branding/branding.dart';
 import '../auth/domain/auth_state.dart';
@@ -35,8 +36,8 @@ class AcceptSpaceInviteScreen extends ConsumerStatefulWidget {
 class _AcceptSpaceInviteScreenState
     extends ConsumerState<AcceptSpaceInviteScreen> {
   _ScreenState _state = _ScreenState.idle;
-  String?      _errorMessage;
-  Space?       _joinedSpace;
+  String? _errorMessage;
+  Space? _joinedSpace;
 
   @override
   void initState() {
@@ -56,12 +57,12 @@ class _AcceptSpaceInviteScreenState
   Future<void> _doAccept() async {
     if (!mounted) return;
     setState(() {
-      _state        = _ScreenState.loading;
+      _state = _ScreenState.loading;
       _errorMessage = null;
     });
 
     try {
-      final repo  = ref.read(spaceRepositoryProvider);
+      final repo = ref.read(spaceRepositoryProvider);
       final space = await repo.acceptSpaceInviteViaEdgeFunction(widget.token);
 
       if (!mounted) return;
@@ -76,25 +77,27 @@ class _AcceptSpaceInviteScreenState
     } on SpaceInviteException catch (e) {
       if (!mounted) return;
       setState(() {
-        _state        = _ScreenState.error;
+        _state = _ScreenState.error;
         _errorMessage = _mapCode(e.code);
       });
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _state        = _ScreenState.error;
+        _state = _ScreenState.error;
         _errorMessage = 'Convite não encontrado ou inválido.';
       });
     }
   }
 
   String _mapCode(String code) => switch (code) {
-    'invite_expired'     => 'Este convite expirou. Peça um novo link ao administrador do espaço.',
-    'invite_already_used'=> 'Este link já foi usado. Solicite um novo convite se necessário.',
-    'already_member'     => 'Você já é membro deste espaço.',
-    'invite_not_found'   => 'Convite não encontrado ou inválido.',
-    _                    => 'Não foi possível aceitar o convite. Tente novamente.',
-  };
+        'invite_expired' =>
+          'Este convite expirou. Peça um novo link ao administrador do espaço.',
+        'invite_already_used' =>
+          'Este link já foi usado. Solicite um novo convite se necessário.',
+        'already_member' => 'Você já é membro deste espaço.',
+        'invite_not_found' => 'Convite não encontrado ou inválido.',
+        _ => 'Não foi possível aceitar o convite. Tente novamente.',
+      };
 
   // ── Navigate to the joined space ────────────────────────────────
 
@@ -126,12 +129,12 @@ class _AcceptSpaceInviteScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        width:  double.infinity,
+        width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
-            end:   Alignment.bottomCenter,
+            end: Alignment.bottomCenter,
             colors: [
               Color(0xFF0A1628),
               tokens.FarolColors.navy,
@@ -163,10 +166,10 @@ class _AcceptSpaceInviteScreenState
                       duration: const Duration(milliseconds: 300),
                       child: switch (_state) {
                         _ScreenState.notAuthed => _buildNotAuthed(context),
-                        _ScreenState.idle      => _buildLoading(),
-                        _ScreenState.loading   => _buildLoading(),
-                        _ScreenState.success   => _buildSuccess(context),
-                        _ScreenState.error     => _buildError(context),
+                        _ScreenState.idle => _buildLoading(),
+                        _ScreenState.loading => _buildLoading(),
+                        _ScreenState.success => _buildSuccess(context),
+                        _ScreenState.error => _buildError(context),
                       },
                     ),
                   ],
@@ -190,11 +193,11 @@ class _AcceptSpaceInviteScreenState
         Text(
           'Você foi convidado para um espaço',
           style: GoogleFonts.manrope(
-            fontSize:      22,
-            fontWeight:    FontWeight.w800,
-            color:         Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
             letterSpacing: -0.5,
-            height:        1.1,
+            height: 1.1,
           ),
           textAlign: TextAlign.center,
         ),
@@ -203,14 +206,14 @@ class _AcceptSpaceInviteScreenState
           'Entre na sua conta ou crie uma para aceitar o convite.',
           style: TextStyle(
             fontSize: 14,
-            color:    Colors.white.withValues(alpha: 0.72),
-            height:   1.5,
+            color: Colors.white.withValues(alpha: 0.72),
+            height: 1.5,
           ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),
         SizedBox(
-          width:  double.infinity,
+          width: double.infinity,
           height: 54,
           child: ElevatedButton(
             onPressed: () => Navigator.pushNamed(
@@ -227,7 +230,7 @@ class _AcceptSpaceInviteScreenState
               ),
               textStyle: GoogleFonts.manrope(
                 fontWeight: FontWeight.w700,
-                fontSize:   15,
+                fontSize: 15,
               ),
             ),
             child: const Text('Entrar para aceitar'),
@@ -243,7 +246,7 @@ class _AcceptSpaceInviteScreenState
           child: Text(
             'Criar conta',
             style: TextStyle(
-              color:    Colors.white.withValues(alpha: 0.75),
+              color: Colors.white.withValues(alpha: 0.75),
               fontSize: 14,
             ),
           ),
@@ -259,19 +262,19 @@ class _AcceptSpaceInviteScreenState
       key: ValueKey('loading_${label ?? ''}'),
       children: [
         const SizedBox(
-          width:  48,
+          width: 48,
           height: 48,
-          child:  CircularProgressIndicator(
+          child: CircularProgressIndicator(
             strokeWidth: 3,
-            color:       tokens.FarolColors.beam,
+            color: tokens.FarolColors.beam,
           ),
         ),
         const SizedBox(height: 20),
         Text(
           label ?? 'Aceitando convite...',
           style: TextStyle(
-            fontSize:   16,
-            color:      Colors.white.withValues(alpha: 0.88),
+            fontSize: 16,
+            color: Colors.white.withValues(alpha: 0.88),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -292,16 +295,16 @@ class _AcceptSpaceInviteScreenState
           const SizedBox(height: 12),
         ] else ...[
           Container(
-            width:  72,
+            width: 72,
             height: 72,
             decoration: BoxDecoration(
-              color:  Colors.green.withValues(alpha: 0.18),
-              shape:  BoxShape.circle,
+              color: Colors.green.withValues(alpha: 0.18),
+              shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.check_rounded,
               color: Colors.green,
-              size:  40,
+              size: 40,
             ),
           ),
           const SizedBox(height: 20),
@@ -310,9 +313,9 @@ class _AcceptSpaceInviteScreenState
         Text(
           'Bem-vindo ao espaço!',
           style: GoogleFonts.manrope(
-            fontSize:      22,
-            fontWeight:    FontWeight.w800,
-            color:         Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
             letterSpacing: -0.5,
           ),
           textAlign: TextAlign.center,
@@ -323,8 +326,8 @@ class _AcceptSpaceInviteScreenState
           Text(
             space.name,
             style: TextStyle(
-              fontSize:   16,
-              color:      Colors.white.withValues(alpha: 0.75),
+              fontSize: 16,
+              color: Colors.white.withValues(alpha: 0.75),
               fontWeight: FontWeight.w600,
             ),
             textAlign: TextAlign.center,
@@ -334,7 +337,7 @@ class _AcceptSpaceInviteScreenState
             space.type.label,
             style: TextStyle(
               fontSize: 13,
-              color:    Colors.white.withValues(alpha: 0.50),
+              color: Colors.white.withValues(alpha: 0.50),
             ),
             textAlign: TextAlign.center,
           ),
@@ -343,7 +346,7 @@ class _AcceptSpaceInviteScreenState
         const SizedBox(height: 32),
 
         SizedBox(
-          width:  double.infinity,
+          width: double.infinity,
           height: 54,
           child: ElevatedButton(
             onPressed: _goToSpace,
@@ -356,7 +359,7 @@ class _AcceptSpaceInviteScreenState
               ),
               textStyle: GoogleFonts.manrope(
                 fontWeight: FontWeight.w700,
-                fontSize:   15,
+                fontSize: 15,
               ),
             ),
             child: const Text('Ir para o espaço'),
@@ -373,16 +376,16 @@ class _AcceptSpaceInviteScreenState
       key: const ValueKey('error'),
       children: [
         Container(
-          width:  64,
+          width: 64,
           height: 64,
           decoration: BoxDecoration(
-            color:  Colors.red.withValues(alpha: 0.14),
-            shape:  BoxShape.circle,
+            color: Colors.red.withValues(alpha: 0.14),
+            shape: BoxShape.circle,
           ),
           child: const Icon(
             Icons.error_outline_rounded,
             color: Colors.redAccent,
-            size:  36,
+            size: 36,
           ),
         ),
         const SizedBox(height: 20),
@@ -390,14 +393,14 @@ class _AcceptSpaceInviteScreenState
           _errorMessage ?? 'Convite não encontrado ou inválido.',
           style: TextStyle(
             fontSize: 16,
-            color:    Colors.white.withValues(alpha: 0.88),
-            height:   1.4,
+            color: Colors.white.withValues(alpha: 0.88),
+            height: 1.4,
           ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),
         SizedBox(
-          width:  double.infinity,
+          width: double.infinity,
           height: 54,
           child: OutlinedButton(
             onPressed: () =>

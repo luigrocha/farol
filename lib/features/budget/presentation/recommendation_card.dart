@@ -26,21 +26,22 @@ import '../domain/budget_recommendation_service.dart';
 final _recExpandedProvider = StateProvider.autoDispose<bool>((ref) => false);
 
 /// Computed recommendation from the service.
-final budgetRecommendationProvider = Provider.autoDispose<BudgetRecommendation?>((ref) {
+final budgetRecommendationProvider =
+    Provider.autoDispose<BudgetRecommendation?>((ref) {
   final categoriesAsync = ref.watch(categoriesStreamProvider);
-  final goals           = ref.watch(budgetGoalsProvider).value ?? [];
-  final spending        = ref.watch(expensesByCategoryProvider);
-  final netSalary       = ref.watch(effectiveNetSalaryProvider);
+  final goals = ref.watch(budgetGoalsProvider).value ?? [];
+  final spending = ref.watch(expensesByCategoryProvider);
+  final netSalary = ref.watch(effectiveNetSalaryProvider);
 
   final categories = categoriesAsync.value;
   if (categories == null || netSalary <= 0) return null;
 
   const service = BudgetRecommendationService();
   return service.compute(
-    categories:          categories,
-    expensesByCategory:  spending,
-    goals:               goals,
-    netSalary:           netSalary,
+    categories: categories,
+    expensesByCategory: spending,
+    goals: goals,
+    netSalary: netSalary,
   );
 });
 
@@ -48,9 +49,12 @@ final budgetRecommendationProvider = Provider.autoDispose<BudgetRecommendation?>
 
 Color _bucketColor(RecommendationBucket b) {
   switch (b) {
-    case RecommendationBucket.needs:   return const Color(0xFF2563EB); // blue
-    case RecommendationBucket.wants:   return const Color(0xFFF59E0B); // amber
-    case RecommendationBucket.savings: return const Color(0xFF10B981); // green
+    case RecommendationBucket.needs:
+      return const Color(0xFF2563EB); // blue
+    case RecommendationBucket.wants:
+      return const Color(0xFFF59E0B); // amber
+    case RecommendationBucket.savings:
+      return const Color(0xFF10B981); // green
   }
 }
 
@@ -67,36 +71,37 @@ class AiRecommendationSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final expanded = ref.watch(_recExpandedProvider);
-    final rec      = ref.watch(budgetRecommendationProvider);
-    final l10n     = AppLocalizations.of(context);
-    final cs       = Theme.of(context).colorScheme;
-    final lang     = l10n.locale.languageCode;
+    final rec = ref.watch(budgetRecommendationProvider);
+    final l10n = AppLocalizations.of(context);
+    final cs = Theme.of(context).colorScheme;
+    final lang = l10n.locale.languageCode;
 
     // Don't render if no salary configured
     if (rec == null) return const SizedBox.shrink();
 
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
-      curve:    Curves.easeInOut,
+      curve: Curves.easeInOut,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // ── Toggle button ──────────────────────────────────────────────────
           GestureDetector(
-            onTap: () => ref.read(_recExpandedProvider.notifier).state = !expanded,
+            onTap: () =>
+                ref.read(_recExpandedProvider.notifier).state = !expanded,
             child: Container(
-              margin:     const EdgeInsets.only(bottom: 8),
-              padding:    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color:        cs.surfaceContainerHighest.withValues(alpha: 0.5),
+                color: cs.surfaceContainerHighest.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(12),
-                border:       Border.all(color: cs.outlineVariant),
+                border: Border.all(color: cs.outlineVariant),
               ),
               child: Row(
                 children: [
                   Icon(
                     Icons.auto_awesome_outlined,
-                    size:  18,
+                    size: 18,
                     color: cs.primary,
                   ),
                   const SizedBox(width: 10),
@@ -104,9 +109,9 @@ class AiRecommendationSection extends ConsumerWidget {
                     child: Text(
                       l10n.translate('budget_rec_title'),
                       style: GoogleFonts.manrope(
-                        fontSize:   13,
+                        fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color:      cs.onSurface,
+                        color: cs.onSurface,
                       ),
                     ),
                   ),
@@ -114,7 +119,7 @@ class AiRecommendationSection extends ConsumerWidget {
                     expanded
                         ? Icons.keyboard_arrow_up_rounded
                         : Icons.keyboard_arrow_down_rounded,
-                    size:  20,
+                    size: 20,
                     color: cs.onSurfaceVariant,
                   ),
                 ],
@@ -125,12 +130,12 @@ class AiRecommendationSection extends ConsumerWidget {
           // ── Recommendation content ─────────────────────────────────────────
           if (expanded) ...[
             Container(
-              margin:     const EdgeInsets.only(bottom: 12),
-              padding:    const EdgeInsets.all(16),
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color:        cs.surface,
+                color: cs.surface,
                 borderRadius: BorderRadius.circular(16),
-                border:       Border.all(color: cs.outlineVariant),
+                border: Border.all(color: cs.outlineVariant),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,7 +147,7 @@ class AiRecommendationSection extends ConsumerWidget {
                         : l10n.translate('budget_rec_rule_subtitle'),
                     style: TextStyle(
                       fontSize: 11,
-                      color:    cs.onSurfaceVariant,
+                      color: cs.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -153,7 +158,8 @@ class AiRecommendationSection extends ConsumerWidget {
 
                   // Per-category rows, grouped by bucket
                   ...RecommendationBucket.values.expand((bucket) {
-                    final items = rec.items.where((i) => i.bucket == bucket).toList();
+                    final items =
+                        rec.items.where((i) => i.bucket == bucket).toList();
                     if (items.isEmpty) return const <Widget>[];
                     return [
                       _BucketHeader(bucket: bucket, lang: lang),
@@ -205,21 +211,21 @@ class _BucketPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = _bucketColor(bucket);
     return Container(
-      margin:     const EdgeInsets.symmetric(horizontal: 3),
-      padding:    const EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 3),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color:        color.withValues(alpha: 0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
-        border:       Border.all(color: color.withValues(alpha: 0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
           Text(
             '${bucket.targetPct().toInt()}%',
             style: GoogleFonts.manrope(
-              fontSize:   16,
+              fontSize: 16,
               fontWeight: FontWeight.w800,
-              color:      color,
+              color: color,
             ),
           ),
           const SizedBox(height: 2),
@@ -249,16 +255,17 @@ class _BucketHeader extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 8, height: 8,
+            width: 8,
+            height: 8,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           const SizedBox(width: 6),
           Text(
             '${bucket.label(lang)} · ${bucket.targetPct().toInt()}%',
             style: GoogleFonts.manrope(
-              fontSize:   12,
+              fontSize: 12,
               fontWeight: FontWeight.w700,
-              color:      color,
+              color: color,
             ),
           ),
         ],
@@ -275,9 +282,9 @@ class _CategoryRecRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs       = Theme.of(context).colorScheme;
-    final color    = _bucketColor(item.bucket);
-    final isOver   = item.isOverspending;
+    final cs = Theme.of(context).colorScheme;
+    final color = _bucketColor(item.bucket);
+    final isOver = item.isOverspending;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -289,9 +296,9 @@ class _CategoryRecRow extends StatelessWidget {
             child: Text(
               item.name,
               style: GoogleFonts.manrope(
-                fontSize:   13,
+                fontSize: 13,
                 fontWeight: FontWeight.w500,
-                color:      cs.onSurface,
+                color: cs.onSurface,
               ),
               overflow: TextOverflow.ellipsis,
             ),
@@ -306,24 +313,24 @@ class _CategoryRecRow extends StatelessWidget {
                 LayoutBuilder(builder: (ctx, constraints) {
                   final maxW = constraints.maxWidth;
                   final sugFrac = (item.suggestedPct / 100).clamp(0.0, 1.0);
-                  final actFrac = (item.actualPct   / 100).clamp(0.0, 1.0);
+                  final actFrac = (item.actualPct / 100).clamp(0.0, 1.0);
                   return Stack(
                     children: [
                       // suggested background
                       Container(
                         height: 6,
-                        width:  maxW * sugFrac,
+                        width: maxW * sugFrac,
                         decoration: BoxDecoration(
-                          color:        color.withValues(alpha: 0.2),
+                          color: color.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(3),
                         ),
                       ),
                       // actual spending
                       Container(
                         height: 6,
-                        width:  maxW * actFrac,
+                        width: maxW * actFrac,
                         decoration: BoxDecoration(
-                          color:        isOver ? Colors.red : color,
+                          color: isOver ? Colors.red : color,
                           borderRadius: BorderRadius.circular(3),
                         ),
                       ),
@@ -339,7 +346,7 @@ class _CategoryRecRow extends StatelessWidget {
                       'atual ${item.actualPct.toStringAsFixed(1)}%',
                       style: TextStyle(
                         fontSize: 10,
-                        color:    isOver ? Colors.red : cs.onSurfaceVariant,
+                        color: isOver ? Colors.red : cs.onSurfaceVariant,
                       ),
                     ),
                     Text(
@@ -376,9 +383,9 @@ class _OverspendingAlert extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color:        Colors.orange.withValues(alpha: 0.08),
+        color: Colors.orange.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(10),
-        border:       Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+        border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -413,7 +420,7 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
 
   @override
   Widget build(BuildContext context) {
-    final cs   = Theme.of(context).colorScheme;
+    final cs = Theme.of(context).colorScheme;
     final lang = widget.l10n.locale.languageCode;
     final label = lang == 'pt'
         ? 'Aplicar sugestões'
@@ -427,17 +434,18 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
         onPressed: _applying ? null : _apply,
         icon: _applying
             ? const SizedBox(
-                width:  14,
+                width: 14,
                 height: 14,
-                child:  CircularProgressIndicator(strokeWidth: 2),
+                child: CircularProgressIndicator(strokeWidth: 2),
               )
             : const Icon(Icons.check_circle_outline, size: 18),
         label: Text(label, style: const TextStyle(fontSize: 13)),
         style: FilledButton.styleFrom(
           backgroundColor: cs.primary,
           foregroundColor: cs.onPrimary,
-          padding:         const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
     );
@@ -446,7 +454,7 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
   Future<void> _apply() async {
     setState(() => _applying = true);
     try {
-      final notifier  = ref.read(budgetGoalsNotifierProvider.notifier);
+      final notifier = ref.read(budgetGoalsNotifierProvider.notifier);
       final netSalary = ref.read(effectiveNetSalaryProvider);
 
       // Build a category → pct map for all recommendations
@@ -462,10 +470,13 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
       for (final item in widget.rec.items) {
         if (item.currentGoalPct == 0) {
           await repo.insert(
-            category:        item.category,
+            category: item.category,
             targetPercentage: item.suggestedPct,
-            targetAmount:     netSalary > 0 ? (item.suggestedPct / 100) * netSalary : 0,
-            type:             item.bucket == RecommendationBucket.savings ? 'savings' : 'spending',
+            targetAmount:
+                netSalary > 0 ? (item.suggestedPct / 100) * netSalary : 0,
+            type: item.bucket == RecommendationBucket.savings
+                ? 'savings'
+                : 'spending',
           );
         }
       }

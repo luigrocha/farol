@@ -81,8 +81,8 @@ class RecurringService {
     );
   }
 
-  Future<RecurringOccurrence> skipOccurrence(
-      RecurringOccurrence occurrence, {String? notes}) =>
+  Future<RecurringOccurrence> skipOccurrence(RecurringOccurrence occurrence,
+          {String? notes}) =>
       _occurrencesRepo.markSkipped(occurrence.id, notes: notes);
 
   // ── Occurrence generation job ─────────────────────────────────────────────

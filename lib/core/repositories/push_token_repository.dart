@@ -14,7 +14,6 @@ class PushTokenRepository {
 
   const PushTokenRepository(this._supabase);
 
-
   /// Upserts [token] for [platform] ('android' | 'ios' | 'web').
   /// No-ops if the user is not authenticated.
   Future<void> upsertToken({
@@ -27,9 +26,9 @@ class PushTokenRepository {
     try {
       await _supabase.from('push_tokens').upsert(
         {
-          'user_id':    userId,
-          'token':      token,
-          'platform':   platform,
+          'user_id': userId,
+          'token': token,
+          'platform': platform,
           'updated_at': DateTime.now().toUtc().toIso8601String(),
         },
         onConflict: 'user_id,platform',

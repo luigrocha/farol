@@ -46,12 +46,12 @@ class RecurringOccurrence {
   bool get isPending => status == OccurrenceStatus.pending;
   bool get isPaid => status == OccurrenceStatus.paid;
 
-  bool get isOverdue =>
-      isPending && scheduledDate.isBefore(DateTime.now());
+  bool get isOverdue => isPending && scheduledDate.isBefore(DateTime.now());
 
   int get daysUntilDue {
     final today = DateTime.now();
-    final due = DateTime(scheduledDate.year, scheduledDate.month, scheduledDate.day);
+    final due =
+        DateTime(scheduledDate.year, scheduledDate.month, scheduledDate.day);
     final now = DateTime(today.year, today.month, today.day);
     return due.difference(now).inDays;
   }

@@ -49,7 +49,8 @@ class _RecurringScreenState extends ConsumerState<RecurringScreen> {
             padding: EdgeInsets.symmetric(vertical: 48),
             child: Center(child: CircularProgressIndicator()),
           ),
-          error: (e, _) => Center(child: Text(context.l10n.recurringError(e.toString()))),
+          error: (e, _) =>
+              Center(child: Text(context.l10n.recurringError(e.toString()))),
           data: (all) {
             final rules = _filtered(all, _filter);
             if (rules.isEmpty) return _EmptyState(filter: _filter);
@@ -71,9 +72,12 @@ class _RecurringScreenState extends ConsumerState<RecurringScreen> {
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(context.l10n.recurringScreenTitle,
-              style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w800)),
+              style: GoogleFonts.manrope(
+                  fontSize: 17, fontWeight: FontWeight.w800)),
           actions: const [
-            FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+            FarolMark(
+                size: FarolBrand.markSizeCompact,
+                variant: FarolLogoVariant.dark),
             SizedBox(width: 16),
           ],
         ),
@@ -113,10 +117,14 @@ class _RecurringScreenState extends ConsumerState<RecurringScreen> {
     );
   }
 
-  List<RecurringRule> _filtered(List<RecurringRule> all, _Filter f) => switch (f) {
-        _Filter.active => all.where((r) => r.status == RecurringStatus.active).toList(),
-        _Filter.paused => all.where((r) => r.status == RecurringStatus.paused).toList(),
-        _Filter.cancelled => all.where((r) => r.status == RecurringStatus.cancelled).toList(),
+  List<RecurringRule> _filtered(List<RecurringRule> all, _Filter f) =>
+      switch (f) {
+        _Filter.active =>
+          all.where((r) => r.status == RecurringStatus.active).toList(),
+        _Filter.paused =>
+          all.where((r) => r.status == RecurringStatus.paused).toList(),
+        _Filter.cancelled =>
+          all.where((r) => r.status == RecurringStatus.cancelled).toList(),
       };
 }
 
@@ -130,8 +138,12 @@ class _HeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final active = rulesAsync.value?.where((r) => r.status == RecurringStatus.active).toList() ?? [];
-    final monthlyTotal = active.fold<double>(0, (sum, r) => sum + _monthlyEquivalent(r));
+    final active = rulesAsync.value
+            ?.where((r) => r.status == RecurringStatus.active)
+            .toList() ??
+        [];
+    final monthlyTotal =
+        active.fold<double>(0, (sum, r) => sum + _monthlyEquivalent(r));
 
     return DSCard(
       color: _teal,
@@ -143,7 +155,9 @@ class _HeroCard extends StatelessWidget {
         return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(l10n.recurringTotalMonthly,
               style: GoogleFonts.manrope(
-                  fontSize: 12, color: Colors.white70, fontWeight: FontWeight.w500)),
+                  fontSize: 12,
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w500)),
           const SizedBox(height: DSSpacing.xs),
           Text(
             FinancialCalculatorService.formatBRL(monthlyTotal),
@@ -231,7 +245,8 @@ class _RuleTile extends ConsumerWidget {
           _CategoryIcon(slug: rule.categorySlug),
           const SizedBox(width: DSSpacing.md),
           Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(rule.name,
                   style: GoogleFonts.manrope(
                       fontSize: 14, fontWeight: FontWeight.w700)),
@@ -290,8 +305,8 @@ class _RuleDetailSheet extends ConsumerWidget {
       builder: (ctx, ctrl) => Container(
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(DSRadius.xl)),
+          borderRadius:
+              const BorderRadius.vertical(top: Radius.circular(DSRadius.xl)),
         ),
         padding: EdgeInsets.fromLTRB(
             DSSpacing.xl, DSSpacing.md, DSSpacing.xl, bottom + DSSpacing.xxl),
@@ -312,15 +327,18 @@ class _RuleDetailSheet extends ConsumerWidget {
             _CategoryIcon(slug: rule.categorySlug),
             const SizedBox(width: 12),
             Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(rule.name,
-                    style: GoogleFonts.manrope(
-                        fontSize: 18, fontWeight: FontWeight.w800)),
-                Text(
-                  '${rule.frequency.localizedLabel(context.l10n.locale.languageCode)}  ·  ${FinancialCalculatorService.formatBRL(rule.baseAmount)}',
-                  style: GoogleFonts.manrope(fontSize: 13, color: Colors.grey),
-                ),
-              ]),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(rule.name,
+                        style: GoogleFonts.manrope(
+                            fontSize: 18, fontWeight: FontWeight.w800)),
+                    Text(
+                      '${rule.frequency.localizedLabel(context.l10n.locale.languageCode)}  ·  ${FinancialCalculatorService.formatBRL(rule.baseAmount)}',
+                      style:
+                          GoogleFonts.manrope(fontSize: 13, color: Colors.grey),
+                    ),
+                  ]),
             ),
             _StatusBadge(status: rule.status),
           ]),
@@ -328,7 +346,10 @@ class _RuleDetailSheet extends ConsumerWidget {
           _ActionRow(rule: rule),
           const SizedBox(height: 20),
           Text(context.l10n.recurringUpcomingOccurrences,
-              style: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.grey)),
+              style: GoogleFonts.manrope(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.grey)),
           const SizedBox(height: 8),
           Expanded(
             child: occurrencesAsync.when(
@@ -348,7 +369,8 @@ class _RuleDetailSheet extends ConsumerWidget {
                 return ListView.builder(
                   controller: ctrl,
                   itemCount: pending.length,
-                  itemBuilder: (_, i) => _OccurrenceTile(occurrence: pending[i]),
+                  itemBuilder: (_, i) =>
+                      _OccurrenceTile(occurrence: pending[i]),
                 );
               },
             ),
@@ -389,7 +411,8 @@ class _ActionRow extends ConsumerWidget {
           onTap: () async {
             Navigator.pop(context);
             await ref.read(recurringServiceProvider).pauseRule(rule.id);
-            if (context.mounted) context.showSuccessSnackBar(context.l10n.recurringPausedSnack);
+            if (context.mounted)
+              context.showSuccessSnackBar(context.l10n.recurringPausedSnack);
           },
         ),
       if (rule.status == RecurringStatus.paused) ...[
@@ -399,7 +422,8 @@ class _ActionRow extends ConsumerWidget {
           onTap: () async {
             Navigator.pop(context);
             await ref.read(recurringServiceProvider).resumeRule(rule.id);
-            if (context.mounted) context.showSuccessSnackBar(context.l10n.recurringResumedSnack);
+            if (context.mounted)
+              context.showSuccessSnackBar(context.l10n.recurringResumedSnack);
           },
         ),
       ],
@@ -415,7 +439,9 @@ class _ActionRow extends ConsumerWidget {
               title: Text(ctx.l10n.recurringCancelDialogTitle),
               content: Text(ctx.l10n.recurringCancelDialogBody),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(ctx.l10n.recurringCancelDialogNo)),
+                TextButton(
+                    onPressed: () => Navigator.pop(ctx, false),
+                    child: Text(ctx.l10n.recurringCancelDialogNo)),
                 TextButton(
                   onPressed: () => Navigator.pop(ctx, true),
                   style: TextButton.styleFrom(foregroundColor: Colors.red),
@@ -428,7 +454,8 @@ class _ActionRow extends ConsumerWidget {
           if (!context.mounted) return;
           Navigator.pop(context);
           await ref.read(recurringServiceProvider).cancelRule(rule.id);
-          if (context.mounted) context.showSuccessSnackBar(context.l10n.recurringCancelledSnack);
+          if (context.mounted)
+            context.showSuccessSnackBar(context.l10n.recurringCancelledSnack);
         },
       ),
     ]);
@@ -473,7 +500,8 @@ class _OccurrenceTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final d = occurrence.scheduledDate;
-    final label = '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
+    final label =
+        '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
     final overdue = occurrence.isOverdue;
 
     return Padding(
@@ -489,7 +517,8 @@ class _OccurrenceTile extends StatelessWidget {
                 fontWeight: overdue ? FontWeight.w600 : FontWeight.w500)),
         const Spacer(),
         Text(FinancialCalculatorService.formatBRL(occurrence.expectedAmount),
-            style: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w600)),
+            style:
+                GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w600)),
       ]),
     );
   }
@@ -541,8 +570,8 @@ class _StatusBadge extends StatelessWidget {
       RecurringStatus.cancelled => (l10n.recurringStatusCancelled, Colors.red),
     };
     return Container(
-      padding: const EdgeInsets.symmetric(
-          horizontal: DSSpacing.sm, vertical: 3),
+      padding:
+          const EdgeInsets.symmetric(horizontal: DSSpacing.sm, vertical: 3),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
         borderRadius: DSRadius.fullBR,
@@ -568,8 +597,7 @@ class _EmptyState extends StatelessWidget {
 
 // ─── Provider: occurrences by rule ────────────────────────────────────────────
 
-final _ruleOccurrencesProvider =
-    FutureProvider.autoDispose.family<List<RecurringOccurrence>, String>(
-        (ref, ruleId) async {
+final _ruleOccurrencesProvider = FutureProvider.autoDispose
+    .family<List<RecurringOccurrence>, String>((ref, ruleId) async {
   return ref.watch(recurringOccurrencesRepositoryProvider).getByRule(ruleId);
 });

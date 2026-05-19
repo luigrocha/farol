@@ -13,26 +13,26 @@ enum SpaceType { household, trip, project, family, business }
 extension SpaceTypeX on SpaceType {
   String get label => switch (this) {
         SpaceType.household => 'Casa',
-        SpaceType.trip      => 'Viagem',
-        SpaceType.project   => 'Projeto',
-        SpaceType.family    => 'Família',
-        SpaceType.business  => 'Negócio',
+        SpaceType.trip => 'Viagem',
+        SpaceType.project => 'Projeto',
+        SpaceType.family => 'Família',
+        SpaceType.business => 'Negócio',
       };
 
   String get defaultEmoji => switch (this) {
         SpaceType.household => '🏠',
-        SpaceType.trip      => '✈️',
-        SpaceType.project   => '💼',
-        SpaceType.family    => '👨‍👩‍👧',
-        SpaceType.business  => '🏢',
+        SpaceType.trip => '✈️',
+        SpaceType.project => '💼',
+        SpaceType.family => '👨‍👩‍👧',
+        SpaceType.business => '🏢',
       };
 
   static SpaceType parse(String? value) => switch (value) {
-        'trip'      => SpaceType.trip,
-        'project'   => SpaceType.project,
-        'family'    => SpaceType.family,
-        'business'  => SpaceType.business,
-        _           => SpaceType.household,
+        'trip' => SpaceType.trip,
+        'project' => SpaceType.project,
+        'family' => SpaceType.family,
+        'business' => SpaceType.business,
+        _ => SpaceType.household,
       };
 }
 
@@ -41,7 +41,8 @@ extension SpaceTypeX on SpaceType {
 enum SpaceRole { owner, admin, member, viewer, guest }
 
 extension SpaceRoleX on SpaceRole {
-  bool get canWrite => this == SpaceRole.owner ||
+  bool get canWrite =>
+      this == SpaceRole.owner ||
       this == SpaceRole.admin ||
       this == SpaceRole.member;
 
@@ -49,11 +50,11 @@ extension SpaceRoleX on SpaceRole {
   bool get isOwner => this == SpaceRole.owner;
 
   static SpaceRole parse(String? value) => switch (value) {
-        'owner'  => SpaceRole.owner,
-        'admin'  => SpaceRole.admin,
+        'owner' => SpaceRole.owner,
+        'admin' => SpaceRole.admin,
         'member' => SpaceRole.member,
-        'guest'  => SpaceRole.guest,
-        _        => SpaceRole.viewer,
+        'guest' => SpaceRole.guest,
+        _ => SpaceRole.viewer,
       };
 }
 
@@ -63,17 +64,17 @@ enum SplitRule { equal, custom, percentage, solo }
 
 extension SplitRuleX on SplitRule {
   String get label => switch (this) {
-        SplitRule.equal      => 'Igualmente',
-        SplitRule.custom     => 'Personalizado',
+        SplitRule.equal => 'Igualmente',
+        SplitRule.custom => 'Personalizado',
         SplitRule.percentage => 'Percentual',
-        SplitRule.solo       => 'Apenas eu',
+        SplitRule.solo => 'Apenas eu',
       };
 
   static SplitRule parse(String? value) => switch (value) {
-        'custom'     => SplitRule.custom,
+        'custom' => SplitRule.custom,
         'percentage' => SplitRule.percentage,
-        'solo'       => SplitRule.solo,
-        _            => SplitRule.equal,
+        'solo' => SplitRule.solo,
+        _ => SplitRule.equal,
       };
 }
 
@@ -113,43 +114,44 @@ class SpaceMember {
   });
 
   // Resolved capability — override takes precedence over role default
-  bool get effectiveCanAddExpenses =>
-      canAddExpenses ?? role.canWrite;
+  bool get effectiveCanAddExpenses => canAddExpenses ?? role.canWrite;
 
   bool get effectiveCanSeeBalances =>
       canSeeBalances ?? true; // visible to all roles by default
 
   bool get effectiveCanSeeMemberBalances =>
-      canSeeMemberBalances ?? (role != SpaceRole.viewer && role != SpaceRole.guest);
+      canSeeMemberBalances ??
+      (role != SpaceRole.viewer && role != SpaceRole.guest);
 
-  bool get effectiveCanExport =>
-      canExport ?? role.isAdmin;
+  bool get effectiveCanExport => canExport ?? role.isAdmin;
 
   bool get effectiveCanSeeSettlements =>
-      canSeeSettlements ?? (role != SpaceRole.viewer && role != SpaceRole.guest);
+      canSeeSettlements ??
+      (role != SpaceRole.viewer && role != SpaceRole.guest);
 
   factory SpaceMember.fromJson(Map<String, dynamic> json) => SpaceMember(
-        id:                    json['id'] as String,
-        spaceId:               json['space_id'] as String,
-        userId:                json['user_id'] as String,
-        role:                  SpaceRoleX.parse(json['role'] as String?),
-        canAddExpenses:        json['can_add_expenses'] as bool?,
-        canSeeBalances:        json['can_see_balances'] as bool?,
-        canSeeMemberBalances:  json['can_see_member_balances'] as bool?,
-        canExport:             json['can_export'] as bool?,
-        canSeeSettlements:     json['can_see_settlements'] as bool?,
-        invitedBy:             json['invited_by'] as String?,
-        joinedAt:              DateTime.parse(json['joined_at'] as String),
+        id: json['id'] as String,
+        spaceId: json['space_id'] as String,
+        userId: json['user_id'] as String,
+        role: SpaceRoleX.parse(json['role'] as String?),
+        canAddExpenses: json['can_add_expenses'] as bool?,
+        canSeeBalances: json['can_see_balances'] as bool?,
+        canSeeMemberBalances: json['can_see_member_balances'] as bool?,
+        canExport: json['can_export'] as bool?,
+        canSeeSettlements: json['can_see_settlements'] as bool?,
+        invitedBy: json['invited_by'] as String?,
+        joinedAt: DateTime.parse(json['joined_at'] as String),
       );
 
   Map<String, dynamic> toJson() => {
-        'id':                     id,
-        'space_id':               spaceId,
-        'user_id':                userId,
-        'role':                   role.name,
+        'id': id,
+        'space_id': spaceId,
+        'user_id': userId,
+        'role': role.name,
         if (canAddExpenses != null) 'can_add_expenses': canAddExpenses,
         if (canSeeBalances != null) 'can_see_balances': canSeeBalances,
-        if (canSeeMemberBalances != null) 'can_see_member_balances': canSeeMemberBalances,
+        if (canSeeMemberBalances != null)
+          'can_see_member_balances': canSeeMemberBalances,
         if (canExport != null) 'can_export': canExport,
         if (canSeeSettlements != null) 'can_see_settlements': canSeeSettlements,
         if (invitedBy != null) 'invited_by': invitedBy,
@@ -157,17 +159,17 @@ class SpaceMember {
       };
 
   SpaceMember copyWith({SpaceRole? role, bool? canAddExpenses}) => SpaceMember(
-        id:                   id,
-        spaceId:              spaceId,
-        userId:               userId,
-        role:                 role ?? this.role,
-        canAddExpenses:       canAddExpenses ?? this.canAddExpenses,
-        canSeeBalances:       canSeeBalances,
+        id: id,
+        spaceId: spaceId,
+        userId: userId,
+        role: role ?? this.role,
+        canAddExpenses: canAddExpenses ?? this.canAddExpenses,
+        canSeeBalances: canSeeBalances,
         canSeeMemberBalances: canSeeMemberBalances,
-        canExport:            canExport,
-        canSeeSettlements:    canSeeSettlements,
-        invitedBy:            invitedBy,
-        joinedAt:             joinedAt,
+        canExport: canExport,
+        canSeeSettlements: canSeeSettlements,
+        invitedBy: invitedBy,
+        joinedAt: joinedAt,
       );
 }
 
@@ -219,15 +221,12 @@ class Space {
   });
 
   bool get isArchived => archivedAt != null;
-  bool get isActive   => archivedAt == null;
+  bool get isActive => archivedAt == null;
   bool get isTimeBounded => startsAt != null || endsAt != null;
 
   /// Role of [userId] in this space. Defaults to viewer if not a member.
   SpaceRole roleFor(String userId) =>
-      members
-          .where((m) => m.userId == userId)
-          .map((m) => m.role)
-          .firstOrNull ??
+      members.where((m) => m.userId == userId).map((m) => m.role).firstOrNull ??
       SpaceRole.viewer;
 
   /// Effective write capability for [userId], considering capability overrides.
@@ -240,45 +239,45 @@ class Space {
   factory Space.fromJson(Map<String, dynamic> json) {
     final membersRaw = json['space_members'] as List<dynamic>? ?? [];
     return Space(
-      id:                 json['id'] as String,
-      name:               json['name'] as String,
-      emoji:              json['emoji'] as String?,
-      color:              json['color'] as String?,
-      description:        json['description'] as String?,
-      type:               SpaceTypeX.parse(json['type'] as String?),
-      ownerId:            json['owner_id'] as String,
-      currency:           (json['currency'] as String?) ?? 'BRL',
-      settings:           (json['settings'] as Map<String, dynamic>?) ?? {},
-      members:            membersRaw
-                            .map((m) => SpaceMember.fromJson(m as Map<String, dynamic>))
-                            .toList(),
-      startsAt:           json['starts_at'] != null
-                            ? DateTime.parse(json['starts_at'] as String)
-                            : null,
-      endsAt:             json['ends_at'] != null
-                            ? DateTime.parse(json['ends_at'] as String)
-                            : null,
-      archivedAt:         json['archived_at'] != null
-                            ? DateTime.parse(json['archived_at'] as String)
-                            : null,
-      legacyWorkspaceId:  json['legacy_workspace_id'] as String?,
-      createdAt:          DateTime.parse(json['created_at'] as String),
-      updatedAt:          DateTime.parse(json['updated_at'] as String),
+      id: json['id'] as String,
+      name: json['name'] as String,
+      emoji: json['emoji'] as String?,
+      color: json['color'] as String?,
+      description: json['description'] as String?,
+      type: SpaceTypeX.parse(json['type'] as String?),
+      ownerId: json['owner_id'] as String,
+      currency: (json['currency'] as String?) ?? 'BRL',
+      settings: (json['settings'] as Map<String, dynamic>?) ?? {},
+      members: membersRaw
+          .map((m) => SpaceMember.fromJson(m as Map<String, dynamic>))
+          .toList(),
+      startsAt: json['starts_at'] != null
+          ? DateTime.parse(json['starts_at'] as String)
+          : null,
+      endsAt: json['ends_at'] != null
+          ? DateTime.parse(json['ends_at'] as String)
+          : null,
+      archivedAt: json['archived_at'] != null
+          ? DateTime.parse(json['archived_at'] as String)
+          : null,
+      legacyWorkspaceId: json['legacy_workspace_id'] as String?,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id':          id,
-        'name':        name,
-        if (emoji != null)       'emoji': emoji,
-        if (color != null)       'color': color,
+        'id': id,
+        'name': name,
+        if (emoji != null) 'emoji': emoji,
+        if (color != null) 'color': color,
         if (description != null) 'description': description,
-        'type':        type.name,
-        'owner_id':    ownerId,
-        'currency':    currency,
-        'settings':    settings,
+        'type': type.name,
+        'owner_id': ownerId,
+        'currency': currency,
+        'settings': settings,
         if (startsAt != null) 'starts_at': startsAt!.toIso8601String(),
-        if (endsAt != null)   'ends_at':   endsAt!.toIso8601String(),
+        if (endsAt != null) 'ends_at': endsAt!.toIso8601String(),
       };
 
   Space copyWith({
@@ -293,21 +292,21 @@ class Space {
     DateTime? archivedAt,
   }) =>
       Space(
-        id:                id,
-        name:              name ?? this.name,
-        emoji:             emoji ?? this.emoji,
-        color:             color ?? this.color,
-        description:       description ?? this.description,
-        type:              type ?? this.type,
-        ownerId:           ownerId,
-        currency:          currency,
-        settings:          settings,
-        members:           members ?? this.members,
-        startsAt:          startsAt ?? this.startsAt,
-        endsAt:            endsAt ?? this.endsAt,
-        archivedAt:        archivedAt ?? this.archivedAt,
+        id: id,
+        name: name ?? this.name,
+        emoji: emoji ?? this.emoji,
+        color: color ?? this.color,
+        description: description ?? this.description,
+        type: type ?? this.type,
+        ownerId: ownerId,
+        currency: currency,
+        settings: settings,
+        members: members ?? this.members,
+        startsAt: startsAt ?? this.startsAt,
+        endsAt: endsAt ?? this.endsAt,
+        archivedAt: archivedAt ?? this.archivedAt,
         legacyWorkspaceId: legacyWorkspaceId,
-        createdAt:         createdAt,
-        updatedAt:         updatedAt,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
       );
 }

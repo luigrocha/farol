@@ -17,14 +17,17 @@ class ExpenseBreakdown extends ConsumerWidget {
     final colors = context.colors;
     final byCategory = ref.watch(cashExpensesByCategoryProvider);
     final goals = ref.watch(budgetGoalsMapProvider);
-    final catsRef = {for (final c in ref.watch(categoriesRefProvider)) c.slug: c};
+    final catsRef = {
+      for (final c in ref.watch(categoriesRefProvider)) c.slug: c
+    };
     final net = ref.watch(effectiveNetSalaryProvider);
     final l10n = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (byCategory.isEmpty) {
       return DSCard(
-        padding: const EdgeInsets.symmetric(vertical: 36, horizontal: DSSpacing.xxl),
+        padding:
+            const EdgeInsets.symmetric(vertical: 36, horizontal: DSSpacing.xxl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -109,7 +112,8 @@ class ExpenseBreakdown extends ConsumerWidget {
             final catDbValue = e.key;
             final actual = e.value;
             final goal = goals[catDbValue];
-            final target = goal?.targetAmount ?? (net * kDefaultCategoryTargetRate);
+            final target =
+                goal?.targetAmount ?? (net * kDefaultCategoryTargetRate);
             final ratio = actual / target;
             final pct = math.min(ratio, 1.0);
 
@@ -224,7 +228,8 @@ class _CategoryBudgetRowState extends State<_CategoryBudgetRow>
                     borderRadius: DSRadius.xsBR,
                   ),
                   child: Center(
-                    child: Text(widget.emoji, style: const TextStyle(fontSize: 14)),
+                    child: Text(widget.emoji,
+                        style: const TextStyle(fontSize: 14)),
                   ),
                 ),
                 const SizedBox(width: DSSpacing.sm),
@@ -235,7 +240,8 @@ class _CategoryBudgetRowState extends State<_CategoryBudgetRow>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (widget.statusIcon != null) ...[
-                        Icon(widget.statusIcon!, size: 12, color: widget.barColor),
+                        Icon(widget.statusIcon!,
+                            size: 12, color: widget.barColor),
                         const SizedBox(width: 4),
                       ],
                       Flexible(

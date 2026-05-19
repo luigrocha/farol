@@ -75,8 +75,8 @@ class LiquidityAlertCard extends ConsumerWidget {
   }
 
   String _subtitle(AppLocalizations l10n, LiquidityRisk risk) {
-    final total = FinancialCalculatorService.formatBRL(
-        risk.obligationsNext7Days.amount);
+    final total =
+        FinancialCalculatorService.formatBRL(risk.obligationsNext7Days.amount);
     final n = risk.upcomingObligations.length;
     if (risk.daysUntilEmpty >= 0 && risk.daysUntilEmpty <= 14) {
       return l10n.liquidityDaysToZero('${risk.daysUntilEmpty}');
@@ -108,37 +108,46 @@ class _ObligationsSheet extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-        Center(
-          child: Container(
-            width: 40, height: 4,
-            decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2)),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(context.l10n.liquiditySheetTitle,
-            style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w800)),
-        const SizedBox(height: 12),
-        if (obligations.isEmpty)
-          Text(context.l10n.liquidityNoCommitments,
-              style: GoogleFonts.manrope(color: Colors.grey))
-        else
-          ...obligations.map((p) => _ObligationRow(payment: p)),
-        const SizedBox(height: 8),
-        Divider(color: Colors.grey.shade200),
-        Row(children: [
-          Text(context.l10n.liquidityTotal,
-              style: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w700)),
-          const Spacer(),
-          Text(
-            FinancialCalculatorService.formatBRL(risk.obligationsNext7Days.amount),
-            style: GoogleFonts.manrope(
-                fontSize: 14, fontWeight: FontWeight.w800, color: Colors.red),
-          ),
-        ]),
-      ]),
+      child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(context.l10n.liquiditySheetTitle,
+                style: GoogleFonts.manrope(
+                    fontSize: 16, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 12),
+            if (obligations.isEmpty)
+              Text(context.l10n.liquidityNoCommitments,
+                  style: GoogleFonts.manrope(color: Colors.grey))
+            else
+              ...obligations.map((p) => _ObligationRow(payment: p)),
+            const SizedBox(height: 8),
+            Divider(color: Colors.grey.shade200),
+            Row(children: [
+              Text(context.l10n.liquidityTotal,
+                  style: GoogleFonts.manrope(
+                      fontSize: 13, fontWeight: FontWeight.w700)),
+              const Spacer(),
+              Text(
+                FinancialCalculatorService.formatBRL(
+                    risk.obligationsNext7Days.amount),
+                style: GoogleFonts.manrope(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.red),
+              ),
+            ]),
+          ]),
     );
   }
 }
@@ -172,11 +181,11 @@ class _ObligationRow extends StatelessWidget {
         ),
         Text(dateStr,
             style: GoogleFonts.manrope(
-                fontSize: 11,
-                color: overdue ? Colors.red : Colors.grey)),
+                fontSize: 11, color: overdue ? Colors.red : Colors.grey)),
         const SizedBox(width: 12),
         Text(FinancialCalculatorService.formatBRL(payment.amount.amount),
-            style: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w700)),
+            style:
+                GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w700)),
       ]),
     );
   }

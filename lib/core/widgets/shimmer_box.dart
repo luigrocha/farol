@@ -5,20 +5,26 @@ class ShimmerBox extends StatefulWidget {
   final double width;
   final double height;
   final double borderRadius;
-  const ShimmerBox({super.key, required this.width, required this.height, this.borderRadius = 12});
+  const ShimmerBox(
+      {super.key,
+      required this.width,
+      required this.height,
+      this.borderRadius = 12});
 
   @override
   State<ShimmerBox> createState() => _ShimmerBoxState();
 }
 
-class _ShimmerBoxState extends State<ShimmerBox> with SingleTickerProviderStateMixin {
+class _ShimmerBoxState extends State<ShimmerBox>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
   late final Animation<double> _anim;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))
+    _ctrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1200))
       ..repeat(reverse: true);
     _anim = CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut);
   }
@@ -39,7 +45,8 @@ class _ShimmerBoxState extends State<ShimmerBox> with SingleTickerProviderStateM
         height: widget.height,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(widget.borderRadius),
-          color: Color.lerp(colors.surfaceLow, colors.surfaceLowest, _anim.value),
+          color:
+              Color.lerp(colors.surfaceLow, colors.surfaceLowest, _anim.value),
         ),
       ),
     );

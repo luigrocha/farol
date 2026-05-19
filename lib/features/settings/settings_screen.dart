@@ -25,6 +25,7 @@ import 'salary_settings_sheet.dart';
 import 'categories_management_screen.dart';
 import '../../design/branding/branding.dart';
 import '../../design/layout/layout.dart';
+
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -39,11 +40,20 @@ class SettingsScreen extends ConsumerWidget {
           SliverAppBar(
             floating: true,
             title: Row(children: [
-              const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+              const FarolMark(
+                  size: FarolBrand.markSizeCompact,
+                  variant: FarolLogoVariant.dark),
               const SizedBox(width: 10),
-              Text('Farol', style: GoogleFonts.manrope(fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: -0.3)),
+              Text('Farol',
+                  style: GoogleFonts.manrope(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.3)),
             ]),
-            actions: const [Icon(Icons.settings_outlined, size: 22), SizedBox(width: 24)],
+            actions: const [
+              Icon(Icons.settings_outlined, size: 22),
+              SizedBox(width: 24)
+            ],
           ),
           // FarolContentConstraint caps width at 680px on desktop — prevents
           // settings cards from stretching full-width on wide screens.
@@ -52,49 +62,73 @@ class SettingsScreen extends ConsumerWidget {
               maxWidth: FarolBreakpoints.contentNarrow,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-              const _ProfileCard(),
-              const SizedBox(height: 16),
-              const _BudgetSection(),
-              const SizedBox(height: 16),
-              const _SalarySection(),
-              const SizedBox(height: 24),
-              const _NetWorthSection(),
-              const SizedBox(height: 24),
-              const _Section(title: 'Language / Idioma', icon: Icons.public, children: [
-                _LangRow(flag: '🇪🇸', name: 'Español', sub: 'España', locale: Locale('es')),
-                _LangRow(flag: '🇧🇷', name: 'Português', sub: 'Brasil', locale: Locale('pt')),
-                _LangRow(flag: '🇺🇸', name: 'English', sub: 'United States', locale: Locale('en')),
-              ]),
-              const SizedBox(height: 24),
-              const _AppearanceCard(),
-              const SizedBox(height: 24),
-              const _SimulatorsSection(),
-              const SizedBox(height: 24),
-              const _ExportSection(),
-              const SizedBox(height: 24),
-              const _SupportSection(),
-              const SizedBox(height: 28),
-              Center(child: TextButton.icon(
-                onPressed: () => ref.read(authControllerProvider.notifier).signOut(),
-                icon: const Icon(Icons.logout, color: tokens.FarolColors.coral, size: 16),
-                label: Text(l10n.signOut, style: const TextStyle(color: tokens.FarolColors.coral, fontWeight: FontWeight.w600)),
-              )),
-              const SizedBox(height: 12),
-              FutureBuilder<PackageInfo>(
-                future: PackageInfo.fromPlatform(),
-                builder: (context, snap) => Center(
-                  child: Text(
-                    snap.hasData ? 'v${snap.data!.version}' : '',
-                    style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft, letterSpacing: 0.3),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 40),
-            ]),
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const _ProfileCard(),
+                    const SizedBox(height: 16),
+                    const _BudgetSection(),
+                    const SizedBox(height: 16),
+                    const _SalarySection(),
+                    const SizedBox(height: 24),
+                    const _NetWorthSection(),
+                    const SizedBox(height: 24),
+                    const _Section(
+                        title: 'Language / Idioma',
+                        icon: Icons.public,
+                        children: [
+                          _LangRow(
+                              flag: '🇪🇸',
+                              name: 'Español',
+                              sub: 'España',
+                              locale: Locale('es')),
+                          _LangRow(
+                              flag: '🇧🇷',
+                              name: 'Português',
+                              sub: 'Brasil',
+                              locale: Locale('pt')),
+                          _LangRow(
+                              flag: '🇺🇸',
+                              name: 'English',
+                              sub: 'United States',
+                              locale: Locale('en')),
+                        ]),
+                    const SizedBox(height: 24),
+                    const _AppearanceCard(),
+                    const SizedBox(height: 24),
+                    const _SimulatorsSection(),
+                    const SizedBox(height: 24),
+                    const _ExportSection(),
+                    const SizedBox(height: 24),
+                    const _SupportSection(),
+                    const SizedBox(height: 28),
+                    Center(
+                        child: TextButton.icon(
+                      onPressed: () =>
+                          ref.read(authControllerProvider.notifier).signOut(),
+                      icon: const Icon(Icons.logout,
+                          color: tokens.FarolColors.coral, size: 16),
+                      label: Text(l10n.signOut,
+                          style: const TextStyle(
+                              color: tokens.FarolColors.coral,
+                              fontWeight: FontWeight.w600)),
+                    )),
+                    const SizedBox(height: 12),
+                    FutureBuilder<PackageInfo>(
+                      future: PackageInfo.fromPlatform(),
+                      builder: (context, snap) => Center(
+                        child: Text(
+                          snap.hasData ? 'v${snap.data!.version}' : '',
+                          style: TextStyle(
+                              fontSize: 11,
+                              color: colors.onSurfaceSoft,
+                              letterSpacing: 0.3),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                  ]),
+            ),
           ),
-        ),
         ],
       ),
     );
@@ -108,7 +142,8 @@ class _ProfileCard extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final colors = context.colors;
     final profileAsync = ref.watch(currentProfileProvider);
-    final displayName = profileAsync.whenOrNull(data: (p) => p?.displayName) ?? '';
+    final displayName =
+        profileAsync.whenOrNull(data: (p) => p?.displayName) ?? '';
 
     return Container(
       padding: const EdgeInsets.all(DSSpacing.xl),
@@ -122,22 +157,34 @@ class _ProfileCard extends ConsumerWidget {
         ),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(l10n.translate('profile').toUpperCase(), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 1.6, color: colors.onSurfaceFaint)),
+        Text(l10n.translate('profile').toUpperCase(),
+            style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.6,
+                color: colors.onSurfaceFaint)),
         const SizedBox(height: 6),
         Text(
           displayName.isNotEmpty ? displayName : '—',
-          style: GoogleFonts.manrope(fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -0.6, color: colors.onSurface),
+          style: GoogleFonts.manrope(
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.6,
+              color: colors.onSurface),
         ),
         const SizedBox(height: 18),
         ElevatedButton(
           onPressed: () => Navigator.of(context).pushNamed('/edit_profile'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: tokens.FarolColors.navy, foregroundColor: Colors.white,
+            backgroundColor: tokens.FarolColors.navy,
+            foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             shape: RoundedRectangleBorder(borderRadius: DSRadius.mdBR),
             elevation: 0,
           ),
-          child: Text(l10n.editProfile, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+          child: Text(l10n.editProfile,
+              style:
+                  const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
         ),
         const SizedBox(height: 12),
         const _PeriodSettingsRow(),
@@ -164,16 +211,23 @@ class _PeriodSettingsRow extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            Icon(Icons.calendar_month_outlined, size: 18, color: colors.onSurfaceSoft),
+            Icon(Icons.calendar_month_outlined,
+                size: 18, color: colors.onSurfaceSoft),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(AppLocalizations.of(context).translate('financial_period'),
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurface)),
+                  Text(
+                      AppLocalizations.of(context)
+                          .translate('financial_period'),
+                      style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: colors.onSurface)),
                   Text(period.label,
-                      style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+                      style:
+                          TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
                 ],
               ),
             ),
@@ -195,8 +249,8 @@ class _PeriodSettingsRow extends ConsumerWidget {
     if (!context.mounted) return;
     if (picked != null) {
       ref.read(selectedPeriodProvider.notifier).setPeriod(
-        FinancialPeriod(start: picked.start, end: picked.end),
-      );
+            FinancialPeriod(start: picked.start, end: picked.end),
+          );
     }
   }
 }
@@ -222,11 +276,15 @@ class _CutoffDaySheetState extends ConsumerState<_CutoffDaySheet> {
   Future<void> _save() async {
     setState(() => _saving = true);
     try {
-      final current = ref.read(budgetSettingsProvider).value ?? const BudgetSettings();
-      await ref.read(budgetSettingsProvider.notifier).save(current.copyWith(cutoffDay: _selected));
+      final current =
+          ref.read(budgetSettingsProvider).value ?? const BudgetSettings();
+      await ref
+          .read(budgetSettingsProvider.notifier)
+          .save(current.copyWith(cutoffDay: _selected));
       if (mounted) {
         Navigator.of(context).pop();
-        context.showSuccessSnackBar(AppLocalizations.of(context).translate('settings_saved'));
+        context.showSuccessSnackBar(
+            AppLocalizations.of(context).translate('settings_saved'));
       }
     } catch (e) {
       if (mounted) {
@@ -245,7 +303,8 @@ class _CutoffDaySheetState extends ConsumerState<_CutoffDaySheet> {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
       decoration: BoxDecoration(
         color: colors.surfaceLowest,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(DSRadius.xl)),
+        borderRadius:
+            const BorderRadius.vertical(top: Radius.circular(DSRadius.xl)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -253,24 +312,35 @@ class _CutoffDaySheetState extends ConsumerState<_CutoffDaySheet> {
         children: [
           Center(
             child: Container(
-              width: 36, height: 4,
-              decoration: BoxDecoration(color: colors.onSurfaceFaint, borderRadius: BorderRadius.circular(2)),
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                  color: colors.onSurfaceFaint,
+                  borderRadius: BorderRadius.circular(2)),
             ),
           ),
           const SizedBox(height: 20),
           Row(
             children: [
               Container(
-                width: 38, height: 38,
-                decoration: BoxDecoration(color: colors.iconTintBlue, borderRadius: DSRadius.smBR),
-                child: const Icon(Icons.calendar_month_outlined, size: 20, color: tokens.FarolColors.navy),
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                    color: colors.iconTintBlue, borderRadius: DSRadius.smBR),
+                child: const Icon(Icons.calendar_month_outlined,
+                    size: 20, color: tokens.FarolColors.navy),
               ),
               const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(AppLocalizations.of(context).translate('period_start'), style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700)),
-                  Text('${AppLocalizations.of(context).translate('day_of_each_month').split(' ')[0]} $_selected ${AppLocalizations.of(context).translate('day_of_each_month').split(' ').skip(1).join(' ')}', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+                  Text(AppLocalizations.of(context).translate('period_start'),
+                      style: GoogleFonts.manrope(
+                          fontSize: 18, fontWeight: FontWeight.w700)),
+                  Text(
+                      '${AppLocalizations.of(context).translate('day_of_each_month').split(' ')[0]} $_selected ${AppLocalizations.of(context).translate('day_of_each_month').split(' ').skip(1).join(' ')}',
+                      style:
+                          TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
                 ],
               ),
             ],
@@ -278,14 +348,18 @@ class _CutoffDaySheetState extends ConsumerState<_CutoffDaySheet> {
           const SizedBox(height: 20),
           Text(
             AppLocalizations.of(context).translate('select_period_start'),
-            style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft, height: 1.5),
+            style: TextStyle(
+                fontSize: 12, color: colors.onSurfaceSoft, height: 1.5),
           ),
           const SizedBox(height: 16),
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 7, crossAxisSpacing: 8, mainAxisSpacing: 8, childAspectRatio: 1,
+              crossAxisCount: 7,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: 1,
             ),
             itemCount: 28,
             itemBuilder: (_, i) {
@@ -296,15 +370,19 @@ class _CutoffDaySheetState extends ConsumerState<_CutoffDaySheet> {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 150),
                   decoration: BoxDecoration(
-                    color: isSelected ? tokens.FarolColors.navy : colors.surfaceLow,
+                    color: isSelected
+                        ? tokens.FarolColors.navy
+                        : colors.surfaceLow,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Center(
-                    child: Text('$day', style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected ? Colors.white : colors.onSurface,
-                    )),
+                    child: Text('$day',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight:
+                              isSelected ? FontWeight.w700 : FontWeight.w500,
+                          color: isSelected ? Colors.white : colors.onSurface,
+                        )),
                   ),
                 ),
               );
@@ -323,8 +401,14 @@ class _CutoffDaySheetState extends ConsumerState<_CutoffDaySheet> {
                 elevation: 0,
               ),
               child: _saving
-                  ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : Text(AppLocalizations.of(context).translate('save'), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                  ? const SizedBox(
+                      height: 18,
+                      width: 18,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white))
+                  : Text(AppLocalizations.of(context).translate('save'),
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w600)),
             ),
           ),
         ],
@@ -334,13 +418,24 @@ class _CutoffDaySheetState extends ConsumerState<_CutoffDaySheet> {
 }
 
 class _Section extends StatelessWidget {
-  final String title; final IconData icon; final List<Widget> children;
-  const _Section({required this.title, required this.icon, required this.children});
+  final String title;
+  final IconData icon;
+  final List<Widget> children;
+  const _Section(
+      {required this.title, required this.icon, required this.children});
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [Icon(icon, size: 16, color: colors.onSurfaceMuted), const SizedBox(width: 8), Text(title, style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface))]),
+      Row(children: [
+        Icon(icon, size: 16, color: colors.onSurfaceMuted),
+        const SizedBox(width: 8),
+        Text(title,
+            style: GoogleFonts.manrope(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: colors.onSurface))
+      ]),
       const SizedBox(height: 12),
       ...children,
     ]);
@@ -348,8 +443,13 @@ class _Section extends StatelessWidget {
 }
 
 class _LangRow extends ConsumerWidget {
-  final String flag, name, sub; final Locale locale;
-  const _LangRow({required this.flag, required this.name, required this.sub, required this.locale});
+  final String flag, name, sub;
+  final Locale locale;
+  const _LangRow(
+      {required this.flag,
+      required this.name,
+      required this.sub,
+      required this.locale});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
@@ -358,16 +458,43 @@ class _LangRow extends ConsumerWidget {
     return GestureDetector(
       onTap: () => ref.read(localeProvider.notifier).setLocale(locale),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR, border: Border.all(color: selected ? tokens.FarolColors.beam : Colors.transparent, width: 2)),
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+            color: colors.surfaceLowest,
+            borderRadius: DSRadius.mdBR,
+            border: Border.all(
+                color: selected ? tokens.FarolColors.beam : Colors.transparent,
+                width: 2)),
         child: Row(children: [
-          Container(width: 34, height: 34, decoration: BoxDecoration(color: colors.surfaceLow, shape: BoxShape.circle), child: Center(child: Text(flag, style: const TextStyle(fontSize: 18)))),
+          Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                  color: colors.surfaceLow, shape: BoxShape.circle),
+              child: Center(
+                  child: Text(flag, style: const TextStyle(fontSize: 18)))),
           const SizedBox(width: 14),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(name, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: colors.onSurface)),
-            Text(sub, style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
-          ])),
-          if (selected) Container(width: 18, height: 18, decoration: const BoxDecoration(color: tokens.FarolColors.beam, shape: BoxShape.circle), child: const Icon(Icons.check, size: 12, color: Colors.white)),
+          Expanded(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                Text(name,
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: colors.onSurface)),
+                Text(sub,
+                    style:
+                        TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
+              ])),
+          if (selected)
+            Container(
+                width: 18,
+                height: 18,
+                decoration: const BoxDecoration(
+                    color: tokens.FarolColors.beam, shape: BoxShape.circle),
+                child: const Icon(Icons.check, size: 12, color: Colors.white)),
         ]),
       ),
     );
@@ -382,17 +509,42 @@ class _AppearanceCard extends ConsumerWidget {
     final theme = ref.watch(themeModeProvider);
     return Container(
       padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(borderRadius: DSRadius.xlBR, gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF244A72), tokens.FarolColors.navy])),
+      decoration: BoxDecoration(
+          borderRadius: DSRadius.xlBR,
+          gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF244A72), tokens.FarolColors.navy])),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(l10n.appearance, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
+        Text(l10n.appearance,
+            style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Colors.white)),
         const SizedBox(height: 4),
-        Text(l10n.customizeInterface, style: const TextStyle(fontSize: 12, color: Colors.white70, height: 1.5)),
+        Text(l10n.customizeInterface,
+            style: const TextStyle(
+                fontSize: 12, color: Colors.white70, height: 1.5)),
         const SizedBox(height: 16),
         Container(
-          padding: const EdgeInsets.all(4), decoration: BoxDecoration(color: Colors.black26, borderRadius: DSRadius.fullBR),
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+              color: Colors.black26, borderRadius: DSRadius.fullBR),
           child: Row(children: [
-            _ThemeBtn(label: l10n.translate('light_mode'), icon: Icons.light_mode, active: theme == ThemeMode.light, onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.light)),
-            _ThemeBtn(label: l10n.translate('dark_mode'), icon: Icons.dark_mode, active: theme == ThemeMode.dark, onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark)),
+            _ThemeBtn(
+                label: l10n.translate('light_mode'),
+                icon: Icons.light_mode,
+                active: theme == ThemeMode.light,
+                onTap: () => ref
+                    .read(themeModeProvider.notifier)
+                    .setThemeMode(ThemeMode.light)),
+            _ThemeBtn(
+                label: l10n.translate('dark_mode'),
+                icon: Icons.dark_mode,
+                active: theme == ThemeMode.dark,
+                onTap: () => ref
+                    .read(themeModeProvider.notifier)
+                    .setThemeMode(ThemeMode.dark)),
           ]),
         ),
       ]),
@@ -401,19 +553,34 @@ class _AppearanceCard extends ConsumerWidget {
 }
 
 class _ThemeBtn extends StatelessWidget {
-  final String label; final IconData icon; final bool active; final VoidCallback onTap;
-  const _ThemeBtn({required this.label, required this.icon, required this.active, required this.onTap});
+  final String label;
+  final IconData icon;
+  final bool active;
+  final VoidCallback onTap;
+  const _ThemeBtn(
+      {required this.label,
+      required this.icon,
+      required this.active,
+      required this.onTap});
   @override
   Widget build(BuildContext context) {
-    return Expanded(child: GestureDetector(
+    return Expanded(
+        child: GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(color: active ? Colors.white : Colors.transparent, borderRadius: DSRadius.fullBR),
+        decoration: BoxDecoration(
+            color: active ? Colors.white : Colors.transparent,
+            borderRadius: DSRadius.fullBR),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Icon(icon, size: 14, color: active ? tokens.FarolColors.navy : Colors.white),
+          Icon(icon,
+              size: 14, color: active ? tokens.FarolColors.navy : Colors.white),
           const SizedBox(width: 6),
-          Text(label, style: TextStyle(color: active ? tokens.FarolColors.navy : Colors.white, fontWeight: FontWeight.w600, fontSize: 13)),
+          Text(label,
+              style: TextStyle(
+                  color: active ? tokens.FarolColors.navy : Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13)),
         ]),
       ),
     ));
@@ -426,25 +593,52 @@ class _DataRow extends StatelessWidget {
   final Color color;
   final VoidCallback? onTap;
   final bool isLoading;
-  const _DataRow({required this.icon, required this.name, required this.sub, required this.color, this.onTap, this.isLoading = false});
+  const _DataRow(
+      {required this.icon,
+      required this.name,
+      required this.sub,
+      required this.color,
+      this.onTap,
+      this.isLoading = false});
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     return GestureDetector(
       onTap: isLoading ? null : onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+            color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
         child: Row(children: [
-          Container(width: 34, height: 34, decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: DSRadius.smBR), child: Icon(icon, size: 18, color: color)),
+          Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                  color: colors.surfaceLow, borderRadius: DSRadius.smBR),
+              child: Icon(icon, size: 18, color: color)),
           const SizedBox(width: 14),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(name, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-            Text(sub, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
-          ])),
+          Expanded(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                Text(name,
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: colors.onSurface)),
+                Text(sub,
+                    style:
+                        TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+              ])),
           isLoading
-              ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: colors.onSurfaceSoft))
-              : Icon(Icons.download_outlined, size: 18, color: colors.onSurfaceSoft),
+              ? SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: colors.onSurfaceSoft))
+              : Icon(Icons.download_outlined,
+                  size: 18, color: colors.onSurfaceSoft),
         ]),
       ),
     );
@@ -468,7 +662,8 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
     try {
       await fn();
       if (mounted) {
-        context.showSuccessSnackBar(AppLocalizations.of(context).translate('export_success'));
+        context.showSuccessSnackBar(
+            AppLocalizations.of(context).translate('export_success'));
       }
     } catch (e) {
       if (mounted) {
@@ -489,7 +684,11 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
       Row(children: [
         Icon(Icons.shield_outlined, size: 16, color: colors.onSurfaceMuted),
         const SizedBox(width: 8),
-        Text(AppLocalizations.of(context).translate('data_privacy'), style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
+        Text(AppLocalizations.of(context).translate('data_privacy'),
+            style: GoogleFonts.manrope(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: colors.onSurface)),
       ]),
       const SizedBox(height: 12),
       _DataRow(
@@ -498,7 +697,8 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
         sub: 'CSV — $month/$year',
         color: tokens.FarolColors.beam,
         isLoading: _loading == _ExportTask.transactions,
-        onTap: () => _run(_ExportTask.transactions, () => svc.exportExpensesToCsv(month, year)),
+        onTap: () => _run(_ExportTask.transactions,
+            () => svc.exportExpensesToCsv(month, year)),
       ),
       _DataRow(
         icon: Icons.description_outlined,
@@ -506,7 +706,8 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
         sub: 'CSV — $month/$year',
         color: tokens.FarolColors.navy,
         isLoading: _loading == _ExportTask.income,
-        onTap: () => _run(_ExportTask.income, () => svc.exportIncomesToCsv(month, year)),
+        onTap: () =>
+            _run(_ExportTask.income, () => svc.exportIncomesToCsv(month, year)),
       ),
       _DataRow(
         icon: Icons.cloud_download_outlined,
@@ -522,12 +723,16 @@ class _ExportSectionState extends ConsumerState<_ExportSection> {
         sub: 'PDF — $month/$year',
         color: tokens.FarolColors.coral,
         isLoading: _loading == _ExportTask.pdf,
-        onTap: () => _run(_ExportTask.pdf,
+        onTap: () => _run(
+            _ExportTask.pdf,
             () => svc.exportMonthlyReport(
                 month, year, ref.read(budgetSettingsProvider).value,
                 locale: Localizations.localeOf(context).languageCode,
                 insights: ref.read(insightsProvider).value ?? [],
-                healthScore: ref.read(financialSnapshotProvider).healthScore.toDouble())),
+                healthScore: ref
+                    .read(financialSnapshotProvider)
+                    .healthScore
+                    .toDouble())),
       ),
       const _PrivacyToggleRow(),
     ]);
@@ -539,29 +744,50 @@ class _SupportSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(AppLocalizations.of(context).translate('concierge_support'), style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700)),
+      Text(AppLocalizations.of(context).translate('concierge_support'),
+          style:
+              GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700)),
       const SizedBox(height: 12),
       Row(children: [
-        Expanded(child: _SupportCard(icon: Icons.chat_bubble_outline, label: AppLocalizations.of(context).translate('chat_24_7'))),
+        Expanded(
+            child: _SupportCard(
+                icon: Icons.chat_bubble_outline,
+                label: AppLocalizations.of(context).translate('chat_24_7'))),
         const SizedBox(width: 10),
-        Expanded(child: _SupportCard(icon: Icons.headset_mic_outlined, label: AppLocalizations.of(context).translate('vip_call'))),
+        Expanded(
+            child: _SupportCard(
+                icon: Icons.headset_mic_outlined,
+                label: AppLocalizations.of(context).translate('vip_call'))),
       ]),
     ]);
   }
 }
 
 class _SupportCard extends StatelessWidget {
-  final IconData icon; final String label;
+  final IconData icon;
+  final String label;
   const _SupportCard({required this.icon, required this.label});
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Container(
-      padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.lgBR),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+          color: colors.surfaceLowest, borderRadius: DSRadius.lgBR),
       child: Column(children: [
-        Container(width: 44, height: 44, decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: DSRadius.mdBR), child: Icon(icon, size: 22, color: tokens.FarolColors.beam)),
+        Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+                color: colors.secondaryContainer, borderRadius: DSRadius.mdBR),
+            child: Icon(icon, size: 22, color: tokens.FarolColors.beam)),
         const SizedBox(height: 10),
-        Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurface), textAlign: TextAlign.center),
+        Text(label,
+            style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: colors.onSurface),
+            textAlign: TextAlign.center),
       ]),
     );
   }
@@ -586,8 +812,7 @@ class _SalarySection extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-            color: colors.surfaceLowest,
-            borderRadius: DSRadius.mdBR),
+            color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
         child: salaryAsync.when(
           loading: () => const Center(
               child: SizedBox(
@@ -599,7 +824,8 @@ class _SalarySection extends ConsumerWidget {
             final hasData = salary != null && salary.grossSalary > 0;
             return Row(children: [
               Container(
-                width: 34, height: 34,
+                width: 34,
+                height: 34,
                 decoration: BoxDecoration(
                   color: hasData
                       ? tokens.FarolColors.beam.withValues(alpha: 0.12)
@@ -607,13 +833,9 @@ class _SalarySection extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
-                  hasData
-                      ? Icons.account_balance_outlined
-                      : Icons.add,
+                  hasData ? Icons.account_balance_outlined : Icons.add,
                   size: 18,
-                  color: hasData
-                      ? tokens.FarolColors.beam
-                      : colors.onSurface,
+                  color: hasData ? tokens.FarolColors.beam : colors.onSurface,
                 ),
               ),
               const SizedBox(width: 14),
@@ -621,20 +843,23 @@ class _SalarySection extends ConsumerWidget {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                  Text(
-                    hasData ? l10n.translate('salary_configured') : l10n.translate('configure_salary'),
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: colors.onSurface),
-                  ),
-                  Text(
-                    hasData
-                        ? '${l10n.lblGross}: ${FinancialCalculatorService.formatBRL(salary.grossSalary)} · ${l10n.lblNet}: ${FinancialCalculatorService.formatBRL(salary.netSalary)}'
-                        : l10n.translate('salary_calculated'),
-                    style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
-                  ),
-                ]),
+                      Text(
+                        hasData
+                            ? l10n.translate('salary_configured')
+                            : l10n.translate('configure_salary'),
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: colors.onSurface),
+                      ),
+                      Text(
+                        hasData
+                            ? '${l10n.lblGross}: ${FinancialCalculatorService.formatBRL(salary.grossSalary)} · ${l10n.lblNet}: ${FinancialCalculatorService.formatBRL(salary.netSalary)}'
+                            : l10n.translate('salary_calculated'),
+                        style: TextStyle(
+                            fontSize: 11, color: colors.onSurfaceSoft),
+                      ),
+                    ]),
               ),
               Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
             ]);
@@ -655,9 +880,14 @@ class _BudgetSection extends ConsumerWidget {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
-        Icon(Icons.account_balance_wallet_outlined, size: 16, color: colors.onSurfaceMuted),
+        Icon(Icons.account_balance_wallet_outlined,
+            size: 16, color: colors.onSurfaceMuted),
         const SizedBox(width: 8),
-        Text(AppLocalizations.of(context).translate('monthly_budget'), style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
+        Text(AppLocalizations.of(context).translate('monthly_budget'),
+            style: GoogleFonts.manrope(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: colors.onSurface)),
       ]),
       const SizedBox(height: 12),
       GestureDetector(
@@ -669,17 +899,26 @@ class _BudgetSection extends ConsumerWidget {
         ),
         child: Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
+          decoration: BoxDecoration(
+              color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
           child: budgetAsync.when(
-            loading: () => const Center(child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))),
-            error: (_, __) => Text(AppLocalizations.of(context).couldNotLoadBudget),
+            loading: () => const Center(
+                child: SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2))),
+            error: (_, __) =>
+                Text(AppLocalizations.of(context).couldNotLoadBudget),
             data: (budget) {
               final hasData = budget != null && budget.totalBudget > 0;
               return Row(children: [
                 Container(
-                  width: 34, height: 34,
+                  width: 34,
+                  height: 34,
                   decoration: BoxDecoration(
-                    color: hasData ? colors.secondaryContainer : colors.iconTintBlue,
+                    color: hasData
+                        ? colors.secondaryContainer
+                        : colors.iconTintBlue,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
@@ -689,27 +928,41 @@ class _BudgetSection extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 14),
-                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(
-                    AppLocalizations.of(context).translate('monthly_budget'),
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface),
-                  ),
-                  Text(
-                    hasData
-                        ? '${FinancialCalculatorService.formatBRL(budget.totalBudget)} ${AppLocalizations.of(context).perMonth}'
-                        : AppLocalizations.of(context).tapConfigureBudgets,
-                    style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
-                  ),
-                  if (hasData) ...[
-                    const SizedBox(height: 6),
-                    Row(children: [
-                      _BudgetChip(label: AppLocalizations.of(context).salary, value: budget.netSalary),
-                      const SizedBox(width: 6),
-                      _BudgetChip(label: AppLocalizations.of(context).translate('swile'), value: budget.swileTotal),
-                    ]),
-                  ],
-                ])),
-                Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
+                Expanded(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                      Text(
+                        AppLocalizations.of(context)
+                            .translate('monthly_budget'),
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: colors.onSurface),
+                      ),
+                      Text(
+                        hasData
+                            ? '${FinancialCalculatorService.formatBRL(budget.totalBudget)} ${AppLocalizations.of(context).perMonth}'
+                            : AppLocalizations.of(context).tapConfigureBudgets,
+                        style: TextStyle(
+                            fontSize: 11, color: colors.onSurfaceSoft),
+                      ),
+                      if (hasData) ...[
+                        const SizedBox(height: 6),
+                        Row(children: [
+                          _BudgetChip(
+                              label: AppLocalizations.of(context).salary,
+                              value: budget.netSalary),
+                          const SizedBox(width: 6),
+                          _BudgetChip(
+                              label: AppLocalizations.of(context)
+                                  .translate('swile'),
+                              value: budget.swileTotal),
+                        ]),
+                      ],
+                    ])),
+                Icon(Icons.chevron_right,
+                    size: 18, color: colors.onSurfaceSoft),
               ]);
             },
           ),
@@ -727,12 +980,16 @@ class _BudgetSection extends ConsumerWidget {
           ),
           child: Row(
             children: [
-              const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 18),
+              const Icon(Icons.warning_amber_rounded,
+                  color: Colors.red, size: 18),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   AppLocalizations.of(context).budgetOverflowWarning,
-                  style: const TextStyle(fontSize: 12, color: Colors.red, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.red,
+                      fontWeight: FontWeight.w500),
                 ),
               ),
               TextButton(
@@ -750,7 +1007,8 @@ class _BudgetSection extends ConsumerWidget {
                 ),
                 child: Text(
                   AppLocalizations.of(context).rebalance,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w700),
                 ),
               ),
             ],
@@ -771,7 +1029,8 @@ class _BudgetSection extends ConsumerWidget {
             color: colors.surfaceLowest,
             borderRadius: BorderRadius.circular(16),
             border: ref.watch(budgetPercentageOverflowProvider)
-                ? Border.all(color: Colors.red.withValues(alpha: 0.4), width: 1.5)
+                ? Border.all(
+                    color: Colors.red.withValues(alpha: 0.4), width: 1.5)
                 : null,
           ),
           child: Row(children: [
@@ -799,12 +1058,18 @@ class _BudgetSection extends ConsumerWidget {
                 children: [
                   Text(
                     AppLocalizations.of(context).translate('category_budgets'),
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface),
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: colors.onSurface),
                   ),
                   Text(
                     ref.watch(budgetPercentageOverflowProvider)
-                        ? AppLocalizations.of(context).allocatedOverLimit(ref.watch(budgetCashPercentageTotalProvider).toStringAsFixed(1))
-                        : AppLocalizations.of(context).translate('set_spending_limits'),
+                        ? AppLocalizations.of(context).allocatedOverLimit(ref
+                            .watch(budgetCashPercentageTotalProvider)
+                            .toStringAsFixed(1))
+                        : AppLocalizations.of(context)
+                            .translate('set_spending_limits'),
                     style: TextStyle(
                       fontSize: 11,
                       color: ref.watch(budgetPercentageOverflowProvider)
@@ -833,10 +1098,14 @@ class _BudgetChip extends StatelessWidget {
     final colors = context.colors;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: DSRadius.xsBR),
+      decoration:
+          BoxDecoration(color: colors.surfaceLow, borderRadius: DSRadius.xsBR),
       child: Text(
         '$label: ${FinancialCalculatorService.formatBRL(value)}',
-        style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, fontWeight: FontWeight.w500),
+        style: TextStyle(
+            fontSize: 10,
+            color: colors.onSurfaceSoft,
+            fontWeight: FontWeight.w500),
       ),
     );
   }
@@ -852,9 +1121,14 @@ class _NetWorthSection extends ConsumerWidget {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
-        Icon(Icons.account_balance_outlined, size: 16, color: colors.onSurfaceMuted),
+        Icon(Icons.account_balance_outlined,
+            size: 16, color: colors.onSurfaceMuted),
         const SizedBox(width: 8),
-        Text(AppLocalizations.of(context).translate('net_worth'), style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
+        Text(AppLocalizations.of(context).translate('net_worth'),
+            style: GoogleFonts.manrope(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: colors.onSurface)),
       ]),
       const SizedBox(height: 12),
       GestureDetector(
@@ -866,12 +1140,23 @@ class _NetWorthSection extends ConsumerWidget {
         ),
         child: Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
+          decoration: BoxDecoration(
+              color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
           child: snapAsync.when(
-            loading: () => const Center(child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))),
-            error: (_, __) => Text(AppLocalizations.of(context).couldNotLoadNetWorth),
+            loading: () => const Center(
+                child: SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2))),
+            error: (_, __) =>
+                Text(AppLocalizations.of(context).couldNotLoadNetWorth),
             data: (snap) {
-              final hasData = snap != null && (snap.fgtsBalance + snap.investmentsTotal + snap.emergencyFund + snap.patrimonyTotal) > 0;
+              final hasData = snap != null &&
+                  (snap.fgtsBalance +
+                          snap.investmentsTotal +
+                          snap.emergencyFund +
+                          snap.patrimonyTotal) >
+                      0;
               final total = hasData
                   ? FinancialCalculatorService.calculateNetWorth(
                       patrimonyTotal: snap.patrimonyTotal,
@@ -883,9 +1168,12 @@ class _NetWorthSection extends ConsumerWidget {
                   : 0.0;
               return Row(children: [
                 Container(
-                  width: 34, height: 34,
+                  width: 34,
+                  height: 34,
                   decoration: BoxDecoration(
-                    color: hasData ? colors.secondaryContainer : colors.iconTintBlue,
+                    color: hasData
+                        ? colors.secondaryContainer
+                        : colors.iconTintBlue,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
@@ -895,19 +1183,32 @@ class _NetWorthSection extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 14),
-                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(
-                    hasData ? AppLocalizations.of(context).translate('net_worth_configured') : AppLocalizations.of(context).translate('configure_net_worth'),
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface),
-                  ),
-                  Text(
-                    hasData
-                        ? '${AppLocalizations.of(context).translate("total")}: ${FinancialCalculatorService.formatBRL(total)}'
-                        : AppLocalizations.of(context).translate('net_worth_desc'),
-                    style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
-                  ),
-                ])),
-                Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
+                Expanded(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                      Text(
+                        hasData
+                            ? AppLocalizations.of(context)
+                                .translate('net_worth_configured')
+                            : AppLocalizations.of(context)
+                                .translate('configure_net_worth'),
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: colors.onSurface),
+                      ),
+                      Text(
+                        hasData
+                            ? '${AppLocalizations.of(context).translate("total")}: ${FinancialCalculatorService.formatBRL(total)}'
+                            : AppLocalizations.of(context)
+                                .translate('net_worth_desc'),
+                        style: TextStyle(
+                            fontSize: 11, color: colors.onSurfaceSoft),
+                      ),
+                    ])),
+                Icon(Icons.chevron_right,
+                    size: 18, color: colors.onSurfaceSoft),
               ]);
             },
           ),
@@ -920,18 +1221,31 @@ class _NetWorthSection extends ConsumerWidget {
         ),
         child: Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
+          decoration: BoxDecoration(
+              color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
           child: Row(children: [
             Container(
-              width: 34, height: 34,
-              decoration: BoxDecoration(color: colors.iconTintBlue, borderRadius: DSRadius.smBR),
-              child: Icon(Icons.account_balance_outlined, size: 18, color: colors.onSurface),
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                  color: colors.iconTintBlue, borderRadius: DSRadius.smBR),
+              child: Icon(Icons.account_balance_outlined,
+                  size: 18, color: colors.onSurface),
             ),
             const SizedBox(width: 14),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(AppLocalizations.of(context).bankAccounts, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-              Text(AppLocalizations.of(context).manageAccountsDesc, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
-            ])),
+            Expanded(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                  Text(AppLocalizations.of(context).bankAccounts,
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: colors.onSurface)),
+                  Text(AppLocalizations.of(context).manageAccountsDesc,
+                      style:
+                          TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+                ])),
             Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
           ]),
         ),
@@ -943,21 +1257,33 @@ class _NetWorthSection extends ConsumerWidget {
         ),
         child: Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
+          decoration: BoxDecoration(
+              color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
           child: Row(children: [
             Container(
-              width: 34, height: 34,
+              width: 34,
+              height: 34,
               decoration: BoxDecoration(
                 color: tokens.FarolColors.navy.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.pie_chart_outline, size: 18, color: tokens.FarolColors.navy),
+              child: const Icon(Icons.pie_chart_outline,
+                  size: 18, color: tokens.FarolColors.navy),
             ),
             const SizedBox(width: 14),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(AppLocalizations.of(context).patrimony, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-              Text(AppLocalizations.of(context).patrimonyDesc, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
-            ])),
+            Expanded(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                  Text(AppLocalizations.of(context).patrimony,
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: colors.onSurface)),
+                  Text(AppLocalizations.of(context).patrimonyDesc,
+                      style:
+                          TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+                ])),
             Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
           ]),
         ),
@@ -976,7 +1302,8 @@ class _NetWorthSection extends ConsumerWidget {
           child: Row(
             children: [
               Container(
-                width: 34, height: 34,
+                width: 34,
+                height: 34,
                 decoration: BoxDecoration(
                   color: tokens.FarolColors.beam.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(10),
@@ -1001,7 +1328,8 @@ class _NetWorthSection extends ConsumerWidget {
                     ),
                     Text(
                       AppLocalizations.of(context).manageCategories,
-                      style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
+                      style:
+                          TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
                     ),
                   ],
                 ),
@@ -1021,53 +1349,86 @@ class _SimulatorsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [
-        Icon(Icons.calculate_outlined, size: 16, color: colors.onSurfaceMuted),
-        const SizedBox(width: 8),
-        Text(AppLocalizations.of(context).simulators, style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700, color: colors.onSurface)),
-      ]),
-      const SizedBox(height: 12),
-      GestureDetector(
-        onTap: () => Navigator.of(context).pushNamed('/thirteenth_salary'),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
-          child: Row(children: [
-            Container(
-              width: 34, height: 34,
-              decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: DSRadius.smBR),
-              child: const Icon(Icons.payments_outlined, size: 18, color: tokens.FarolColors.beam),
-            ),
-            const SizedBox(width: 14),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(AppLocalizations.of(context).simulator13th, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-              Text(AppLocalizations.of(context).simulator13thDesc, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
-            ])),
-            Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
-          ]),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(children: [
+          Icon(Icons.calculate_outlined,
+              size: 16, color: colors.onSurfaceMuted),
+          const SizedBox(width: 8),
+          Text(AppLocalizations.of(context).simulators,
+              style: GoogleFonts.manrope(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface)),
+        ]),
+        const SizedBox(height: 12),
+        GestureDetector(
+          onTap: () => Navigator.of(context).pushNamed('/thirteenth_salary'),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+                color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
+            child: Row(children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                    color: colors.secondaryContainer,
+                    borderRadius: DSRadius.smBR),
+                child: const Icon(Icons.payments_outlined,
+                    size: 18, color: tokens.FarolColors.beam),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                    Text(AppLocalizations.of(context).simulator13th,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: colors.onSurface)),
+                    Text(AppLocalizations.of(context).simulator13thDesc,
+                        style: TextStyle(
+                            fontSize: 11, color: colors.onSurfaceSoft)),
+                  ])),
+              Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
+            ]),
+          ),
         ),
-      ),
-       const SizedBox(height: 10),
+        const SizedBox(height: 10),
         GestureDetector(
           onTap: () => Navigator.of(context).pushNamed('/fgts_aniversario'),
           child: Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
+            decoration: BoxDecoration(
+                color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
             child: Row(children: [
               Container(
-                width: 34, height: 34,
+                width: 34,
+                height: 34,
                 decoration: BoxDecoration(
                   color: const Color(0xFF006D5B).withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.account_balance_outlined, size: 18, color: Color(0xFF006D5B)),
+                child: const Icon(Icons.account_balance_outlined,
+                    size: 18, color: Color(0xFF006D5B)),
               ),
               const SizedBox(width: 14),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(AppLocalizations.of(context).simulatorFgts, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-                Text(AppLocalizations.of(context).simulatorFgtsDesc, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
-              ])),
+              Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                    Text(AppLocalizations.of(context).simulatorFgts,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: colors.onSurface)),
+                    Text(AppLocalizations.of(context).simulatorFgtsDesc,
+                        style: TextStyle(
+                            fontSize: 11, color: colors.onSurfaceSoft)),
+                  ])),
               Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
             ]),
           ),
@@ -1077,18 +1438,32 @@ class _SimulatorsSection extends StatelessWidget {
           onTap: () => Navigator.of(context).pushNamed('/rescission_simulator'),
           child: Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
+            decoration: BoxDecoration(
+                color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
             child: Row(children: [
               Container(
-                width: 34, height: 34,
-                decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: DSRadius.smBR),
-                child: const Icon(Icons.assignment_outlined, size: 18, color: tokens.FarolColors.beam),
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                    color: colors.secondaryContainer,
+                    borderRadius: DSRadius.smBR),
+                child: const Icon(Icons.assignment_outlined,
+                    size: 18, color: tokens.FarolColors.beam),
               ),
               const SizedBox(width: 14),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(AppLocalizations.of(context).simulatorRescission, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-                Text(AppLocalizations.of(context).simulatorRescissionDesc, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
-              ])),
+              Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                    Text(AppLocalizations.of(context).simulatorRescission,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: colors.onSurface)),
+                    Text(AppLocalizations.of(context).simulatorRescissionDesc,
+                        style: TextStyle(
+                            fontSize: 11, color: colors.onSurfaceSoft)),
+                  ])),
               Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceSoft),
             ]),
           ),
@@ -1108,17 +1483,32 @@ class _PrivacyToggleRow extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
+      decoration: BoxDecoration(
+          color: colors.surfaceLowest, borderRadius: DSRadius.mdBR),
       child: Row(children: [
         Container(
-          width: 34, height: 34,
-          decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: DSRadius.smBR),
-          child: Icon(isPrivate ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 18, color: colors.onSurface),
+          width: 34,
+          height: 34,
+          decoration: BoxDecoration(
+              color: colors.surfaceLow, borderRadius: DSRadius.smBR),
+          child: Icon(
+              isPrivate
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
+              size: 18,
+              color: colors.onSurface),
         ),
         const SizedBox(width: 14),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(AppLocalizations.of(context).hideValues, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-          Text(AppLocalizations.of(context).hideValuesDesc, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+        Expanded(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(AppLocalizations.of(context).hideValues,
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: colors.onSurface)),
+          Text(AppLocalizations.of(context).hideValuesDesc,
+              style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
         ])),
         Switch(
           value: isPrivate,

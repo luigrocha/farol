@@ -25,10 +25,8 @@ class ActivityFeedPreviewCard extends ConsumerWidget {
     ref.watch(workspaceActivityRealtimeProvider);
 
     final activityAsync = ref.watch(latestWorkspaceActivityProvider(3));
-    final memberMap =
-        ref.watch(memberDisplayMapProvider).valueOrNull ?? {};
-    final currentUserId =
-        Supabase.instance.client.auth.currentUser?.id ?? '';
+    final memberMap = ref.watch(memberDisplayMapProvider).valueOrNull ?? {};
+    final currentUserId = Supabase.instance.client.auth.currentUser?.id ?? '';
     final cs = Theme.of(context).colorScheme;
 
     return Card(
@@ -40,8 +38,7 @@ class ActivityFeedPreviewCard extends ConsumerWidget {
         children: [
           // ── Header ──
           Padding(
-            padding:
-                const EdgeInsets.fromLTRB(16, 14, 8, 0),
+            padding: const EdgeInsets.fromLTRB(16, 14, 8, 0),
             child: Row(
               children: [
                 Icon(Icons.history_outlined,
@@ -64,8 +61,8 @@ class ActivityFeedPreviewCard extends ConsumerWidget {
                     ),
                   ),
                   style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   child: Text(
@@ -89,7 +86,8 @@ class ActivityFeedPreviewCard extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: Text(
                 'Não foi possível carregar a atividade.',
-                style: GoogleFonts.manrope(fontSize: 12, color: cs.onSurfaceVariant),
+                style: GoogleFonts.manrope(
+                    fontSize: 12, color: cs.onSurfaceVariant),
               ),
             ),
             data: (items) {

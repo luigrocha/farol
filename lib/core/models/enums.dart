@@ -25,13 +25,24 @@ enum IncomeType {
 
   String labelForLocale(String languageCode) {
     switch (this) {
-      case IncomeType.netSalary: return AppLocalizations.translateStatic(languageCode, 'income_net_salary');
-      case IncomeType.swileMeal: return AppLocalizations.translateStatic(languageCode, 'income_swile_meal');
-      case IncomeType.swileFood: return AppLocalizations.translateStatic(languageCode, 'income_swile_food');
-      case IncomeType.bonus: return AppLocalizations.translateStatic(languageCode, 'income_bonus');
-      case IncomeType.thirteenthSalary: return AppLocalizations.translateStatic(languageCode, 'income_13th');
-      case IncomeType.overtime: return AppLocalizations.translateStatic(languageCode, 'income_overtime');
-      case IncomeType.other: return AppLocalizations.translateStatic(languageCode, 'income_other');
+      case IncomeType.netSalary:
+        return AppLocalizations.translateStatic(
+            languageCode, 'income_net_salary');
+      case IncomeType.swileMeal:
+        return AppLocalizations.translateStatic(
+            languageCode, 'income_swile_meal');
+      case IncomeType.swileFood:
+        return AppLocalizations.translateStatic(
+            languageCode, 'income_swile_food');
+      case IncomeType.bonus:
+        return AppLocalizations.translateStatic(languageCode, 'income_bonus');
+      case IncomeType.thirteenthSalary:
+        return AppLocalizations.translateStatic(languageCode, 'income_13th');
+      case IncomeType.overtime:
+        return AppLocalizations.translateStatic(
+            languageCode, 'income_overtime');
+      case IncomeType.other:
+        return AppLocalizations.translateStatic(languageCode, 'income_other');
     }
   }
 }
@@ -62,13 +73,20 @@ enum PaymentMethod {
   String localizedLabel(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     switch (this) {
-      case PaymentMethod.debit: return l10n.translate('pay_debit');
-      case PaymentMethod.pix: return l10n.translate('pay_pix');
-      case PaymentMethod.creditFull: return l10n.translate('pay_credit');
-      case PaymentMethod.creditInstallment: return l10n.translate('pay_credit_inst');
-      case PaymentMethod.swileMeal: return l10n.translate('pay_swile_meal');
-      case PaymentMethod.swileFood: return l10n.translate('pay_swile_food');
-      case PaymentMethod.transfer: return 'Transfer';
+      case PaymentMethod.debit:
+        return l10n.translate('pay_debit');
+      case PaymentMethod.pix:
+        return l10n.translate('pay_pix');
+      case PaymentMethod.creditFull:
+        return l10n.translate('pay_credit');
+      case PaymentMethod.creditInstallment:
+        return l10n.translate('pay_credit_inst');
+      case PaymentMethod.swileMeal:
+        return l10n.translate('pay_swile_meal');
+      case PaymentMethod.swileFood:
+        return l10n.translate('pay_swile_food');
+      case PaymentMethod.transfer:
+        return 'Transfer';
     }
   }
 
@@ -136,10 +154,14 @@ enum AccountType {
   String localizedLabel(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     switch (this) {
-      case AccountType.checking: return l10n.accountTypeChecking;
-      case AccountType.savings: return l10n.accountTypeSavings;
-      case AccountType.investment: return l10n.accountTypeInvestment;
-      case AccountType.fgts: return l10n.accountTypeFgts;
+      case AccountType.checking:
+        return l10n.accountTypeChecking;
+      case AccountType.savings:
+        return l10n.accountTypeSavings;
+      case AccountType.investment:
+        return l10n.accountTypeInvestment;
+      case AccountType.fgts:
+        return l10n.accountTypeFgts;
     }
   }
 }

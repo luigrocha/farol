@@ -128,9 +128,12 @@ void main() {
     testWidgets('save updates expense in repository', (tester) async {
       final eid = expenseRepo.seedExpense(
         userId: 'user-1',
-        month: 5, year: 2026,
+        month: 5,
+        year: 2026,
         transactionDate: DateTime(2026, 5, 15),
-        payType: 'Cash', category: 'food_grocery', amount: 100.0,
+        payType: 'Cash',
+        category: 'food_grocery',
+        amount: 100.0,
         paymentMethod: 'DEBIT',
       );
 
@@ -152,12 +155,16 @@ void main() {
       expect(all.first.amount, 175.50);
     });
 
-    testWidgets('save with different category updates category', (tester) async {
+    testWidgets('save with different category updates category',
+        (tester) async {
       final eid = expenseRepo.seedExpense(
         userId: 'user-1',
-        month: 5, year: 2026,
+        month: 5,
+        year: 2026,
         transactionDate: DateTime(2026, 5, 15),
-        payType: 'Cash', category: 'food_grocery', amount: 100.0,
+        payType: 'Cash',
+        category: 'food_grocery',
+        amount: 100.0,
         paymentMethod: 'DEBIT',
       );
 
@@ -181,10 +188,14 @@ void main() {
     testWidgets('shows scope dialog for fixed expense', (tester) async {
       final eid = expenseRepo.seedExpense(
         userId: 'user-1',
-        month: 5, year: 2026,
+        month: 5,
+        year: 2026,
         transactionDate: DateTime(2026, 5, 15),
-        payType: 'Cash', category: 'food_grocery', amount: 100.0,
-        paymentMethod: 'DEBIT', isFixed: true,
+        payType: 'Cash',
+        category: 'food_grocery',
+        amount: 100.0,
+        paymentMethod: 'DEBIT',
+        isFixed: true,
       );
       final expense = _makeExpense(id: eid, amount: 100.0, isFixed: true);
 
@@ -204,9 +215,12 @@ void main() {
     testWidgets('network error shows snackbar', (tester) async {
       final eid = expenseRepo.seedExpense(
         userId: 'user-1',
-        month: 5, year: 2026,
+        month: 5,
+        year: 2026,
         transactionDate: DateTime(2026, 5, 15),
-        payType: 'Cash', category: 'food_grocery', amount: 100.0,
+        payType: 'Cash',
+        category: 'food_grocery',
+        amount: 100.0,
         paymentMethod: 'DEBIT',
       );
       expenseRepo.behavior = FakeExpenseBehavior(shouldThrowNetworkError: true);

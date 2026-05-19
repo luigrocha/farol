@@ -89,13 +89,15 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
       appBar: AppBar(
         toolbarHeight: 64,
         title: Row(children: [
-          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const FarolMark(
+              size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
           const SizedBox(width: 10),
           _Avatar(),
           const SizedBox(width: 10),
           Text(
             '${months[month - 1]} $year',
-            style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700),
+            style:
+                GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700),
           ),
         ]),
       ),
@@ -136,7 +138,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
               padding: const EdgeInsets.fromLTRB(20, 18, 20, 4),
               child: Text(
                 headerLabel,
-                style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700),
+                style: GoogleFonts.manrope(
+                    fontSize: 15, fontWeight: FontWeight.w700),
               ),
             ),
           ),
@@ -152,9 +155,11 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           ]),
         ),
         if (filteredAsync.isLoading)
-          const SliverFillRemaining(child: Center(child: CircularProgressIndicator()))
+          const SliverFillRemaining(
+              child: Center(child: CircularProgressIndicator()))
         else if (filteredAsync.hasError)
-          SliverFillRemaining(child: Center(child: Text('Erro: ${filteredAsync.error}')))
+          SliverFillRemaining(
+              child: Center(child: Text('Erro: ${filteredAsync.error}')))
         else if (filteredExpenses.isEmpty)
           const SliverFarolEmptyState(type: FarolEmptyStateType.transactions)
         else
@@ -179,15 +184,21 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
               const SizedBox(width: 10),
               Text(
                 '${AppLocalizations.of(context).months[month - 1]} $year',
-                style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w700),
+                style: GoogleFonts.manrope(
+                    fontSize: 17, fontWeight: FontWeight.w700),
               ),
             ]),
-            actions: const [Icon(Icons.calendar_today, size: 22), SizedBox(width: 20)],
+            actions: const [
+              Icon(Icons.calendar_today, size: 22),
+              SizedBox(width: 20)
+            ],
             bottom: TabBar(
               controller: _tabController,
               tabs: const [Tab(text: 'Gastos'), Tab(text: 'Ingresos')],
-              labelStyle: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w700),
-              unselectedLabelStyle: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w500),
+              labelStyle: GoogleFonts.manrope(
+                  fontSize: 13, fontWeight: FontWeight.w700),
+              unselectedLabelStyle: GoogleFonts.manrope(
+                  fontSize: 13, fontWeight: FontWeight.w500),
               indicatorColor: tokens.FarolColors.beam,
               labelColor: tokens.FarolColors.navy,
             ),
@@ -232,7 +243,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         final date = dates[i];
         final dayExpenses = grouped[date]!;
         return Column(children: [
-          _DaySeparator(date: date, total: dayExpenses.fold(0.0, (s, e) => s + e.amount)),
+          _DaySeparator(
+              date: date, total: dayExpenses.fold(0.0, (s, e) => s + e.amount)),
           ...dayExpenses.map((e) => _TxRow(expense: e)),
         ]);
       },
@@ -244,7 +256,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
     final Map<DateTime, List<dynamic>> grouped = {};
     for (final e in expenses) {
       final date = e.transactionDate as DateTime;
-      grouped.putIfAbsent(DateTime(date.year, date.month, date.day), () => []).add(e);
+      grouped
+          .putIfAbsent(DateTime(date.year, date.month, date.day), () => [])
+          .add(e);
     }
     return Map.fromEntries(
       grouped.entries.toList()..sort((a, b) => b.key.compareTo(a.key)),
@@ -267,7 +281,8 @@ class _IncomeTab extends ConsumerWidget {
       slivers: [
         SliverToBoxAdapter(
           child: Container(
-            margin: const EdgeInsets.fromLTRB(DSSpacing.lg, DSSpacing.lg, DSSpacing.lg, DSSpacing.sm),
+            margin: const EdgeInsets.fromLTRB(
+                DSSpacing.lg, DSSpacing.lg, DSSpacing.lg, DSSpacing.sm),
             padding: const EdgeInsets.all(DSSpacing.xl),
             decoration: BoxDecoration(
               borderRadius: DSRadius.lgBR,
@@ -277,20 +292,28 @@ class _IncomeTab extends ConsumerWidget {
                 colors: [tokens.FarolColors.tide, Color(0xFF0F5C37)],
               ),
             ),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               const Text('TOTAL RECEBIDO',
-                  style: TextStyle(fontSize: 10, letterSpacing: 1.8, fontWeight: FontWeight.w700, color: Colors.white60)),
+                  style: TextStyle(
+                      fontSize: 10,
+                      letterSpacing: 1.8,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white60)),
               const SizedBox(height: 6),
               _BRLBig(value: total, size: 32, color: Colors.white),
             ]),
           ),
         ),
         incomesAsync.when(
-          loading: () => const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
-          error: (e, _) => SliverFillRemaining(child: Center(child: Text('Erro: $e'))),
+          loading: () => const SliverFillRemaining(
+              child: Center(child: CircularProgressIndicator())),
+          error: (e, _) =>
+              SliverFillRemaining(child: Center(child: Text('Erro: $e'))),
           data: (incomes) {
             if (incomes.isEmpty) {
-              return const SliverFarolEmptyState(type: FarolEmptyStateType.transactions);
+              return const SliverFarolEmptyState(
+                  type: FarolEmptyStateType.transactions);
             }
             return SliverList(
               delegate: SliverChildBuilderDelegate(
@@ -329,7 +352,8 @@ class _IncomeRowState extends ConsumerState<_IncomeRow> {
       key: ValueKey(widget.income.id),
       direction: canWrite ? DismissDirection.endToStart : DismissDirection.none,
       background: Container(
-        margin: const EdgeInsets.fromLTRB(DSSpacing.lg, 0, DSSpacing.lg, DSSpacing.sm),
+        margin: const EdgeInsets.fromLTRB(
+            DSSpacing.lg, 0, DSSpacing.lg, DSSpacing.sm),
         decoration: BoxDecoration(
           color: Colors.red.shade700,
           borderRadius: DSRadius.mdBR,
@@ -340,15 +364,21 @@ class _IncomeRowState extends ConsumerState<_IncomeRow> {
           const Icon(Icons.delete_outline, color: Colors.white, size: 22),
           const SizedBox(height: 4),
           Text(l10n.delete,
-              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600)),
         ]),
       ),
-      confirmDismiss: (_) async =>
-          showConfirmDeleteDialog(context, title: l10n.confirmDelete, body: l10n.cannotUndo),
+      confirmDismiss: (_) async => showConfirmDeleteDialog(context,
+          title: l10n.confirmDelete, body: l10n.cannotUndo),
       onDismissed: (_) async {
         try {
-          await ref.read(incomeNotifierProvider.notifier).delete(widget.income.id);
-          if (context.mounted) context.showSuccessSnackBar(l10n.transactionDeleted);
+          await ref
+              .read(incomeNotifierProvider.notifier)
+              .delete(widget.income.id);
+          if (context.mounted)
+            context.showSuccessSnackBar(l10n.transactionDeleted);
         } catch (e) {
           if (context.mounted) context.showErrorSnackBar(e);
         }
@@ -362,12 +392,14 @@ class _IncomeRowState extends ConsumerState<_IncomeRow> {
               ? () => showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
-                    builder: (_) => EditIncomeBottomSheet(income: widget.income),
+                    builder: (_) =>
+                        EditIncomeBottomSheet(income: widget.income),
                   )
               : null,
           child: AnimatedContainer(
             duration: DSDuration.fast,
-            margin: const EdgeInsets.fromLTRB(DSSpacing.lg, 0, DSSpacing.lg, DSSpacing.sm),
+            margin: const EdgeInsets.fromLTRB(
+                DSSpacing.lg, 0, DSSpacing.lg, DSSpacing.sm),
             padding: const EdgeInsets.all(DSSpacing.lg),
             decoration: BoxDecoration(
               color: _hovered
@@ -396,16 +428,22 @@ class _IncomeRowState extends ConsumerState<_IncomeRow> {
               ),
               const SizedBox(width: 14),
               Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(type.label,
-                      style: TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-                  if (widget.income.notes != null && widget.income.notes!.isNotEmpty)
-                    Text(widget.income.notes!,
-                        style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis),
-                ]),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(type.label,
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: colors.onSurface)),
+                      if (widget.income.notes != null &&
+                          widget.income.notes!.isNotEmpty)
+                        Text(widget.income.notes!,
+                            style: TextStyle(
+                                fontSize: 11, color: colors.onSurfaceSoft),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis),
+                    ]),
               ),
               Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
                 _BRLSmall(
@@ -414,7 +452,8 @@ class _IncomeRowState extends ConsumerState<_IncomeRow> {
                     weight: FontWeight.w700,
                     color: tokens.FarolColors.tide),
                 Text(widget.income.isNet ? 'Líquido' : 'Bruto',
-                    style: TextStyle(fontSize: 11, color: colors.onSurfaceFaint)),
+                    style:
+                        TextStyle(fontSize: 11, color: colors.onSurfaceFaint)),
               ]),
             ]),
           ),
@@ -453,12 +492,14 @@ class _AddIncomeSheetState extends ConsumerState<_AddIncomeSheet> {
   }
 
   void _calculateNet() {
-    final amountStr = _amountController.text.replaceAll('.', '').replaceAll(',', '.');
+    final amountStr =
+        _amountController.text.replaceAll('.', '').replaceAll(',', '.');
     final gross = double.tryParse(amountStr);
     if (gross == null || gross <= 0) return;
     final dependents = int.tryParse(_dependentsController.text) ?? 0;
     setState(() {
-      _calculatedNet = FinancialCalculatorService.calculateNetFromGross(gross, dependents: dependents);
+      _calculatedNet = FinancialCalculatorService.calculateNetFromGross(gross,
+          dependents: dependents);
       _showCalculation = true;
     });
   }
@@ -466,13 +507,15 @@ class _AddIncomeSheetState extends ConsumerState<_AddIncomeSheet> {
   void _useNetValue() {
     if (_calculatedNet == null) return;
     setState(() {
-      _amountController.text = _calculatedNet!.net.toStringAsFixed(2).replaceAll('.', ',');
+      _amountController.text =
+          _calculatedNet!.net.toStringAsFixed(2).replaceAll('.', ',');
       _isNet = true;
     });
   }
 
   Future<void> _save() async {
-    final amountStr = _amountController.text.replaceAll('.', '').replaceAll(',', '.');
+    final amountStr =
+        _amountController.text.replaceAll('.', '').replaceAll(',', '.');
     final amount = double.tryParse(amountStr);
     if (amount == null || amount <= 0) return;
     setState(() => _saving = true);
@@ -494,7 +537,9 @@ class _AddIncomeSheetState extends ConsumerState<_AddIncomeSheet> {
             isNet: _isNet,
             inssDeducted: inssDeducted,
             irrfDeducted: irrfDeducted,
-            notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+            notes: _notesController.text.trim().isEmpty
+                ? null
+                : _notesController.text.trim(),
           );
       if (mounted) Navigator.pop(context);
     } finally {
@@ -506,180 +551,219 @@ class _AddIncomeSheetState extends ConsumerState<_AddIncomeSheet> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Novo Ingresso',
-                style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700, color: colors.onSurface)),
-            const SizedBox(height: 20),
-            Text('Tipo', style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
-            const SizedBox(height: 6),
-            SizedBox(
-              height: 44,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: IncomeType.values.map((t) {
-                  final active = _type == t;
-                  return GestureDetector(
-                    onTap: () => setState(() => _type = t),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 150),
-                      margin: const EdgeInsets.only(right: 8),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: active ? tokens.FarolColors.tide : colors.surfaceLow,
-                        borderRadius: BorderRadius.circular(99),
-                      ),
-                      child: Text('${t.emoji} ${t.label}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: active ? Colors.white : colors.onSurface,
-                          )),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _amountController,
-              autofocus: true,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))],
-              decoration: const InputDecoration(labelText: 'Valor', prefixText: 'R\$ '),
-            ),
-            const SizedBox(height: 12),
-            Row(children: [
-              Expanded(child: Text(context.l10n.netValueDescription,
-                  style: TextStyle(fontSize: 13, color: colors.onSurfaceMuted))),
-              Switch(
-                value: _isNet,
-                onChanged: (v) => setState(() => _isNet = v),
-                activeThumbColor: tokens.FarolColors.tide,
-              ),
-            ]),
-            if (_type == IncomeType.netSalary) ...[
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: colors.surfaceLow,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            'Dependentes (IRRF)',
-                            style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft),
+          child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Novo Ingresso',
+                    style: GoogleFonts.manrope(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: colors.onSurface)),
+                const SizedBox(height: 20),
+                Text('Tipo',
+                    style:
+                        TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
+                const SizedBox(height: 6),
+                SizedBox(
+                  height: 44,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: IncomeType.values.map((t) {
+                      final active = _type == t;
+                      return GestureDetector(
+                        onTap: () => setState(() => _type = t),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 150),
+                          margin: const EdgeInsets.only(right: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: active
+                                ? tokens.FarolColors.tide
+                                : colors.surfaceLow,
+                            borderRadius: BorderRadius.circular(99),
                           ),
+                          child: Text('${t.emoji} ${t.label}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: active ? Colors.white : colors.onSurface,
+                              )),
                         ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _amountController,
+                  autofocus: true,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))
+                  ],
+                  decoration: const InputDecoration(
+                      labelText: 'Valor', prefixText: 'R\$ '),
+                ),
+                const SizedBox(height: 12),
+                Row(children: [
+                  Expanded(
+                      child: Text(context.l10n.netValueDescription,
+                          style: TextStyle(
+                              fontSize: 13, color: colors.onSurfaceMuted))),
+                  Switch(
+                    value: _isNet,
+                    onChanged: (v) => setState(() => _isNet = v),
+                    activeThumbColor: tokens.FarolColors.tide,
+                  ),
+                ]),
+                if (_type == IncomeType.netSalary) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: colors.surfaceLow,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Dependentes (IRRF)',
+                                style: TextStyle(
+                                    fontSize: 12, color: colors.onSurfaceSoft),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 60,
+                              child: TextField(
+                                controller: _dependentsController,
+                                keyboardType: TextInputType.number,
+                                textAlign: TextAlign.center,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                decoration: const InputDecoration(
+                                  isDense: true,
+                                  contentPadding:
+                                      EdgeInsets.symmetric(vertical: 8),
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
                         SizedBox(
-                          width: 60,
-                          child: TextField(
-                            controller: _dependentsController,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(vertical: 8),
-                              border: OutlineInputBorder(),
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: _calculateNet,
+                            icon:
+                                const Icon(Icons.calculate_outlined, size: 18),
+                            label: const Text('Calcular líquido'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: tokens.FarolColors.tide,
+                              side: BorderSide(
+                                  color: tokens.FarolColors.tide
+                                      .withValues(alpha: 0.3)),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: _calculateNet,
-                        icon: const Icon(Icons.calculate_outlined, size: 18),
-                        label: const Text('Calcular líquido'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: tokens.FarolColors.tide,
-                          side: BorderSide(color: tokens.FarolColors.tide.withValues(alpha: 0.3)),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ],
+                if (_showCalculation && _calculatedNet != null) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: tokens.FarolColors.tide.withValues(alpha: 0.06),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                          color:
+                              tokens.FarolColors.tide.withValues(alpha: 0.15)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Desglose del salario',
+                          style: GoogleFonts.manrope(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: tokens.FarolColors.tide,
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            if (_showCalculation && _calculatedNet != null) ...[
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: tokens.FarolColors.tide.withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: tokens.FarolColors.tide.withValues(alpha: 0.15)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Desglose del salario',
-                      style: GoogleFonts.manrope(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: tokens.FarolColors.tide,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    _buildAddCalcRow('Bruto', _calculatedNet!.gross, colors.onSurface),
-                    _buildAddCalcRow('INSS', -_calculatedNet!.inss, const Color(0xFFFF6B35)),
-                    _buildAddCalcRow('IRRF', -_calculatedNet!.irrf, const Color(0xFFFF6B35)),
-                    const Divider(height: 20),
-                    _buildAddCalcRow('Líquido', _calculatedNet!.net, tokens.FarolColors.tide, bold: true),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton.icon(
-                        onPressed: _useNetValue,
-                        icon: const Icon(Icons.download_outlined, size: 16),
-                        label: const Text('Usar valor líquido'),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: tokens.FarolColors.tide,
-                          padding: const EdgeInsets.symmetric(vertical: 10),
+                        const SizedBox(height: 10),
+                        _buildAddCalcRow(
+                            'Bruto', _calculatedNet!.gross, colors.onSurface),
+                        _buildAddCalcRow('INSS', -_calculatedNet!.inss,
+                            const Color(0xFFFF6B35)),
+                        _buildAddCalcRow('IRRF', -_calculatedNet!.irrf,
+                            const Color(0xFFFF6B35)),
+                        const Divider(height: 20),
+                        _buildAddCalcRow('Líquido', _calculatedNet!.net,
+                            tokens.FarolColors.tide,
+                            bold: true),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            onPressed: _useNetValue,
+                            icon: const Icon(Icons.download_outlined, size: 16),
+                            label: const Text('Usar valor líquido'),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: tokens.FarolColors.tide,
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
+                ],
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _notesController,
+                  decoration: const InputDecoration(
+                      labelText: 'Observación (opcional)'),
                 ),
-              ),
-            ],
-            const SizedBox(height: 12),
-            TextField(
-              controller: _notesController,
-              decoration: const InputDecoration(labelText: 'Observación (opcional)'),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                style: FilledButton.styleFrom(backgroundColor: tokens.FarolColors.tide),
-                onPressed: _saving ? null : _save,
-                child: _saving
-                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                    : const Text('Guardar ingresso'),
-              ),
-            ),
-          ]),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(
+                        backgroundColor: tokens.FarolColors.tide),
+                    onPressed: _saving ? null : _save,
+                    child: _saving
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white))
+                        : const Text('Guardar ingresso'),
+                  ),
+                ),
+              ]),
         ),
       ),
     );
   }
 
-  Widget _buildAddCalcRow(String label, double value, Color color, {bool bold = false}) {
+  Widget _buildAddCalcRow(String label, double value, Color color,
+      {bool bold = false}) {
     final formatted = FinancialCalculatorService.formatBRL(value);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
@@ -730,12 +814,16 @@ class _Avatar extends ConsumerWidget {
       width: 36,
       height: 36,
       decoration: const BoxDecoration(
-        gradient: LinearGradient(colors: [tokens.FarolColors.tide, tokens.FarolColors.beam]),
+        gradient: LinearGradient(
+            colors: [tokens.FarolColors.tide, tokens.FarolColors.beam]),
         shape: BoxShape.circle,
       ),
       child: Center(
         child: Text(initials,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 14)),
+            style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+                fontSize: 14)),
       ),
     );
   }
@@ -812,7 +900,8 @@ class _SearchBarState extends ConsumerState<_SearchBar> {
 class _FilterChips extends ConsumerWidget {
   final bool showCategories;
   final ValueChanged<bool> onToggleCategories;
-  const _FilterChips({required this.showCategories, required this.onToggleCategories});
+  const _FilterChips(
+      {required this.showCategories, required this.onToggleCategories});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -956,7 +1045,8 @@ class _TotalMonthlyHero extends ConsumerWidget {
     final byCategory = ref.watch(filteredByCategoryProvider);
     final payFilter = ref.watch(txPayTypeFilterProvider);
     final catsMap = ref.watch(categoriesMapProvider);
-    final sorted = byCategory.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    final sorted = byCategory.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
 
     String label = 'TOTAL MENSUAL';
     if (payFilter == 'swile') label = 'TOTAL SWILE';
@@ -1022,9 +1112,13 @@ class _HeroBar extends StatelessWidget {
       child: Column(children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text(label,
-              style:
-                  TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.88))),
-          _BRLSmall(value: value, size: 12, weight: FontWeight.w600, color: Colors.white),
+              style: TextStyle(
+                  fontSize: 12, color: Colors.white.withValues(alpha: 0.88))),
+          _BRLSmall(
+              value: value,
+              size: 12,
+              weight: FontWeight.w600,
+              color: Colors.white),
         ]),
         const SizedBox(height: DSSpacing.xs + 2),
         DSProgressBar(
@@ -1060,7 +1154,10 @@ class _DaySeparator extends StatelessWidget {
                 color: colors.onSurfaceSoft,
                 fontWeight: FontWeight.w700)),
         _BRLSmall(
-            value: total, size: 11, color: colors.onSurfaceSoft, weight: FontWeight.w600),
+            value: total,
+            size: 11,
+            color: colors.onSurfaceSoft,
+            weight: FontWeight.w600),
       ]),
     );
   }
@@ -1119,7 +1216,9 @@ class _TxRowState extends ConsumerState<_TxRow> {
           const SizedBox(height: 4),
           Text(l10n.delete,
               style: const TextStyle(
-                  color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
+                  color: Colors.white,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600)),
         ]),
       ),
       confirmDismiss: (_) async {
@@ -1141,7 +1240,8 @@ class _TxRowState extends ConsumerState<_TxRow> {
               await ref
                   .read(installmentPlanRepositoryProvider)
                   .delete(planUuid);
-              if (context.mounted) context.showSuccessSnackBar('Plano excluído');
+              if (context.mounted)
+                context.showSuccessSnackBar('Plano excluído');
             } catch (e) {
               if (context.mounted) context.showErrorSnackBar(e);
             }
@@ -1175,15 +1275,16 @@ class _TxRowState extends ConsumerState<_TxRow> {
           return confirmed == true;
         }
 
-        return showConfirmDeleteDialog(
-            context, title: l10n.confirmDelete, body: l10n.cannotUndo);
+        return showConfirmDeleteDialog(context,
+            title: l10n.confirmDelete, body: l10n.cannotUndo);
       },
       onDismissed: (_) async {
         try {
           await ref
               .read(expenseRepositoryProvider)
               .delete(widget.expense.id as int);
-          if (context.mounted) context.showSuccessSnackBar(l10n.transactionDeleted);
+          if (context.mounted)
+            context.showSuccessSnackBar(l10n.transactionDeleted);
         } catch (e) {
           if (context.mounted) context.showErrorSnackBar(e);
         }
@@ -1237,54 +1338,61 @@ class _TxRowState extends ConsumerState<_TxRow> {
               ),
               const SizedBox(width: 14),
               Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(
-                    widget.expense.storeDescription as String? ?? 'Gasto',
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: colors.onSurface,
-                        height: 1.3),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Row(children: [
-                    Text(catLabel,
-                        style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
-                    const SizedBox(width: 6),
-                    Text('·', style: TextStyle(color: colors.onSurfaceFaint)),
-                    const SizedBox(width: 6),
-                    if (isSwile)
-                      const _TxBadge(
-                          label: 'SWILE',
-                          color: tokens.FarolColors.tide,
-                          bgAlpha: 0.14)
-                    else
-                      Text(widget.expense.payType as String? ?? 'Cash',
-                          style: TextStyle(
-                              fontSize: 10,
-                              color: colors.onSurfaceSoft,
-                              letterSpacing: 0.4,
-                              fontWeight: FontWeight.w600)),
-                    if (widget.expense.isFixed as bool) ...[
-                      const SizedBox(width: 6),
-                      const _TxBadge(label: 'FIXO', color: Color(0xFF3B6A9C), bgAlpha: 0.14),
-                    ],
-                    if (widget.expense.isProjected as bool) ...[
-                      const SizedBox(width: 6),
-                      _TxBadge(
-                          label: 'PREVISTO',
-                          color: Colors.orange.shade600,
-                          bgAlpha: 0.14,
-                          outlined: true),
-                    ],
-                  ]),
-                  if (author != null) ...[
-                    const SizedBox(height: 4),
-                    MemberChip(member: author),
-                  ],
-                ]),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.expense.storeDescription as String? ?? 'Gasto',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: colors.onSurface,
+                            height: 1.3),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Row(children: [
+                        Text(catLabel,
+                            style: TextStyle(
+                                fontSize: 11, color: colors.onSurfaceSoft)),
+                        const SizedBox(width: 6),
+                        Text('·',
+                            style: TextStyle(color: colors.onSurfaceFaint)),
+                        const SizedBox(width: 6),
+                        if (isSwile)
+                          const _TxBadge(
+                              label: 'SWILE',
+                              color: tokens.FarolColors.tide,
+                              bgAlpha: 0.14)
+                        else
+                          Text(widget.expense.payType as String? ?? 'Cash',
+                              style: TextStyle(
+                                  fontSize: 10,
+                                  color: colors.onSurfaceSoft,
+                                  letterSpacing: 0.4,
+                                  fontWeight: FontWeight.w600)),
+                        if (widget.expense.isFixed as bool) ...[
+                          const SizedBox(width: 6),
+                          const _TxBadge(
+                              label: 'FIXO',
+                              color: Color(0xFF3B6A9C),
+                              bgAlpha: 0.14),
+                        ],
+                        if (widget.expense.isProjected as bool) ...[
+                          const SizedBox(width: 6),
+                          _TxBadge(
+                              label: 'PREVISTO',
+                              color: Colors.orange.shade600,
+                              bgAlpha: 0.14,
+                              outlined: true),
+                        ],
+                      ]),
+                      if (author != null) ...[
+                        const SizedBox(height: 4),
+                        MemberChip(member: author),
+                      ],
+                    ]),
               ),
               Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
                 _BRLSmall(
@@ -1292,7 +1400,8 @@ class _TxRowState extends ConsumerState<_TxRow> {
                     size: 15,
                     weight: FontWeight.w700),
                 Text(timeLabel,
-                    style: TextStyle(fontSize: 11, color: colors.onSurfaceFaint)),
+                    style:
+                        TextStyle(fontSize: 11, color: colors.onSurfaceFaint)),
               ]),
             ]),
           ),
@@ -1319,7 +1428,9 @@ class _TxBadge extends StatelessWidget {
         decoration: BoxDecoration(
           color: color.withValues(alpha: bgAlpha),
           borderRadius: DSRadius.xsBR,
-          border: outlined ? Border.all(color: color.withValues(alpha: 0.35)) : null,
+          border: outlined
+              ? Border.all(color: color.withValues(alpha: 0.35))
+              : null,
         ),
         child: Text(
           label,
@@ -1352,13 +1463,19 @@ class _BRLBig extends StatelessWidget {
       textBaseline: TextBaseline.alphabetic,
       children: [
         Text('R\$ ',
-            style: GoogleFonts.manrope(fontSize: size * 0.48, fontWeight: FontWeight.w500, color: c)),
+            style: GoogleFonts.manrope(
+                fontSize: size * 0.48, fontWeight: FontWeight.w500, color: c)),
         Text(f.replaceFirst('R\$ ', ''),
             style: GoogleFonts.manrope(
-                fontSize: size, fontWeight: w, color: c, letterSpacing: -size * 0.028)),
+                fontSize: size,
+                fontWeight: w,
+                color: c,
+                letterSpacing: -size * 0.028)),
         Text(',$cents',
             style: GoogleFonts.manrope(
-                fontSize: size * 0.56, fontWeight: w, color: c.withValues(alpha: 0.85))),
+                fontSize: size * 0.56,
+                fontWeight: w,
+                color: c.withValues(alpha: 0.85))),
       ],
     );
   }
@@ -1370,7 +1487,10 @@ class _BRLSmall extends StatelessWidget {
   final Color? color;
   final FontWeight weight;
   const _BRLSmall(
-      {required this.value, required this.size, this.color, this.weight = FontWeight.w600});
+      {required this.value,
+      required this.size,
+      this.color,
+      this.weight = FontWeight.w600});
   @override
   Widget build(BuildContext context) {
     return Text(

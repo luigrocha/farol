@@ -45,7 +45,8 @@ void main() {
       expect(states[1].hasError, isFalse);
     });
 
-    test('invalid credentials: transitions to AsyncError with descriptive message',
+    test(
+        'invalid credentials: transitions to AsyncError with descriptive message',
         () async {
       final fake = FakeAuthRepository()
         ..seedUser('valid@example.com', 'rightpassword');

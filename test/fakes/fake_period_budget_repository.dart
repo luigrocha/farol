@@ -50,11 +50,13 @@ class FakePeriodBudgetRepository implements PeriodBudgetRepository {
   }
 
   @override
-  Future<List<BudgetWithUsage>> getBudgetsWithUsage(FinancialPeriod period) async {
+  Future<List<BudgetWithUsage>> getBudgetsWithUsage(
+      FinancialPeriod period) async {
     await _applyDelay();
     _checkBehavior();
     return _budgets
-        .where((b) => b.periodStart == period.start && b.periodEnd == period.end)
+        .where(
+            (b) => b.periodStart == period.start && b.periodEnd == period.end)
         .map((b) => BudgetWithUsage(budget: b, spent: 0))
         .toList();
   }
@@ -64,7 +66,8 @@ class FakePeriodBudgetRepository implements PeriodBudgetRepository {
     await _applyDelay();
     _checkBehavior();
     return _budgets
-        .where((b) => b.periodStart == period.start && b.periodEnd == period.end)
+        .where(
+            (b) => b.periodStart == period.start && b.periodEnd == period.end)
         .toList();
   }
 
@@ -128,7 +131,8 @@ class FakePeriodBudgetRepository implements PeriodBudgetRepository {
     _checkBehavior();
 
     final toCopy = _budgets.where((b) =>
-        b.periodStart == from.start && b.periodEnd == from.end &&
+        b.periodStart == from.start &&
+        b.periodEnd == from.end &&
         !_budgets.any((existing) =>
             existing.category == b.category &&
             existing.periodStart == to.start &&

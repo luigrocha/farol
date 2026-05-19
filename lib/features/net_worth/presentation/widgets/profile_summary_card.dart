@@ -45,11 +45,23 @@ class ProfileSummaryCard extends ConsumerWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              _MiniPill(label: context.l10n.accountsLabel, value: banks, isPrivate: isPrivate, color: tokens.FarolColors.navy),
+              _MiniPill(
+                  label: context.l10n.accountsLabel,
+                  value: banks,
+                  isPrivate: isPrivate,
+                  color: tokens.FarolColors.navy),
               const SizedBox(width: 8),
-              _MiniPill(label: context.l10n.investments, value: investments, isPrivate: isPrivate, color: tokens.FarolColors.tide),
+              _MiniPill(
+                  label: context.l10n.investments,
+                  value: investments,
+                  isPrivate: isPrivate,
+                  color: tokens.FarolColors.tide),
               const SizedBox(width: 8),
-              _MiniPill(label: 'FGTS', value: fgts, isPrivate: isPrivate, color: tokens.FarolColors.beam),
+              _MiniPill(
+                  label: 'FGTS',
+                  value: fgts,
+                  isPrivate: isPrivate,
+                  color: tokens.FarolColors.beam),
             ],
           ),
         ],
@@ -85,7 +97,11 @@ class _MiniPill extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(children: [
-              Container(width: 6, height: 6, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+              Container(
+                  width: 6,
+                  height: 6,
+                  decoration:
+                      BoxDecoration(color: color, shape: BoxShape.circle)),
               const SizedBox(width: 4),
               Text(label,
                   style: GoogleFonts.manrope(
@@ -95,7 +111,11 @@ class _MiniPill extends StatelessWidget {
             ]),
             const SizedBox(height: 4),
             isPrivate
-                ? Text('•••', style: GoogleFonts.manrope(fontSize: 12, fontWeight: FontWeight.w700, color: colors.onSurface))
+                ? Text('•••',
+                    style: GoogleFonts.manrope(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: colors.onSurface))
                 : BrlText(value: value, fontSize: 12, color: colors.onSurface),
           ],
         ),

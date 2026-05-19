@@ -34,8 +34,7 @@ class InstallmentPayment {
   bool get isPending => status == 'pending';
   bool get isPaid => status == 'paid';
 
-  bool get isOverdue =>
-      status == 'pending' && dueDate.isBefore(DateTime.now());
+  bool get isOverdue => status == 'pending' && dueDate.isBefore(DateTime.now());
 
   int get daysUntilDue => dueDate.difference(DateTime.now()).inDays;
 

@@ -97,25 +97,28 @@ class _ActivityFeedScreenState extends ConsumerState<ActivityFeedScreen> {
       );
     }
 
-    final memberMap =
-        ref.watch(memberDisplayMapProvider).valueOrNull ?? {};
-    final currentUserId =
-        Supabase.instance.client.auth.currentUser?.id ?? '';
+    final memberMap = ref.watch(memberDisplayMapProvider).valueOrNull ?? {};
+    final currentUserId = Supabase.instance.client.auth.currentUser?.id ?? '';
     final ws = ref.watch(activeWorkspaceProvider).valueOrNull;
 
     return Scaffold(
       appBar: AppBar(
         title: Row(children: [
-          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const FarolMark(
+              size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
           const SizedBox(width: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Atividade', style: GoogleFonts.manrope(fontWeight: FontWeight.w700, fontSize: 15)),
+              Text('Atividade',
+                  style: GoogleFonts.manrope(
+                      fontWeight: FontWeight.w700, fontSize: 15)),
               if (ws != null)
-                Text(ws.name, style: TextStyle(fontSize: 11,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                Text(ws.name,
+                    style: TextStyle(
+                        fontSize: 11,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant)),
             ],
           ),
         ]),
@@ -142,8 +145,7 @@ class _ActivityFeedScreenState extends ConsumerState<ActivityFeedScreen> {
                       Text(
                         'Nenhuma atividade ainda',
                         style: GoogleFonts.manrope(
-                          color:
-                              Theme.of(context).colorScheme.onSurfaceVariant,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -158,14 +160,12 @@ class _ActivityFeedScreenState extends ConsumerState<ActivityFeedScreen> {
                       if (index == _items.length) {
                         return const Padding(
                           padding: EdgeInsets.all(16),
-                          child:
-                              Center(child: CircularProgressIndicator()),
+                          child: Center(child: CircularProgressIndicator()),
                         );
                       }
 
                       final item = _items[index];
-                      final display =
-                          memberMap[item.userId];
+                      final display = memberMap[item.userId];
 
                       // Day separator
                       final showDate = index == 0 ||
@@ -175,8 +175,7 @@ class _ActivityFeedScreenState extends ConsumerState<ActivityFeedScreen> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (showDate)
-                            _DateHeader(date: item.createdAt),
+                          if (showDate) _DateHeader(date: item.createdAt),
                           ActivityFeedTile(
                             activity: item,
                             currentUserId: currentUserId,

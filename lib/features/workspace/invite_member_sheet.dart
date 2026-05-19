@@ -59,7 +59,9 @@ class _InviteMemberSheetState extends ConsumerState<InviteMemberSheet> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).errorSendingInvite(e.toString()))),
+          SnackBar(
+              content: Text(AppLocalizations.of(context)
+                  .errorSendingInvite(e.toString()))),
         );
       }
     } finally {
@@ -126,10 +128,12 @@ class _InviteMemberSheetState extends ConsumerState<InviteMemberSheet> {
                     ),
                     validator: (v) {
                       final l10n = AppLocalizations.of(context);
-                      if (v == null || v.trim().isEmpty) return l10n.emailRequired;
+                      if (v == null || v.trim().isEmpty)
+                        return l10n.emailRequired;
                       final emailRegex = RegExp(
                           r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$');
-                      if (!emailRegex.hasMatch(v.trim())) return l10n.emailInvalid;
+                      if (!emailRegex.hasMatch(v.trim()))
+                        return l10n.emailInvalid;
                       return null;
                     },
                   ),
@@ -157,8 +161,8 @@ class _InviteMemberSheetState extends ConsumerState<InviteMemberSheet> {
                           ? const SizedBox(
                               width: 18,
                               height: 18,
-                              child:
-                                  CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: Colors.white),
                             )
                           : const Icon(Icons.send_outlined),
                       label: Text(AppLocalizations.of(context).sendInvite),
@@ -187,20 +191,20 @@ class _RolePicker extends StatelessWidget {
   static String _label(BuildContext context, WorkspaceRole r) {
     final l10n = AppLocalizations.of(context);
     return switch (r) {
-      WorkspaceRole.admin  => l10n.roleAdmin,
+      WorkspaceRole.admin => l10n.roleAdmin,
       WorkspaceRole.member => l10n.roleMember,
       WorkspaceRole.viewer => l10n.roleViewer,
-      _                    => r.name,
+      _ => r.name,
     };
   }
 
   static String _description(BuildContext context, WorkspaceRole r) {
     final l10n = AppLocalizations.of(context);
     return switch (r) {
-      WorkspaceRole.admin  => l10n.roleAdminDesc,
+      WorkspaceRole.admin => l10n.roleAdminDesc,
       WorkspaceRole.member => l10n.roleMemberDesc,
       WorkspaceRole.viewer => l10n.roleViewerDesc,
-      _                    => '',
+      _ => '',
     };
   }
 
@@ -212,7 +216,8 @@ class _RolePicker extends StatelessWidget {
       children: [
         SegmentedButton<WorkspaceRole>(
           segments: _roles
-              .map((r) => ButtonSegment(value: r, label: Text(_label(context, r))))
+              .map((r) =>
+                  ButtonSegment(value: r, label: Text(_label(context, r))))
               .toList(),
           selected: {value},
           onSelectionChanged: (s) => onChanged(s.first),
@@ -242,8 +247,7 @@ class _InviteSuccessView extends StatelessWidget {
   final String workspaceName;
   final VoidCallback onDone;
 
-  String get _inviteLink =>
-      '${AppConfig.baseUrl}/#/invite/${invite.token}';
+  String get _inviteLink => '${AppConfig.baseUrl}/#/invite/${invite.token}';
 
   Future<void> _shareNative(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
@@ -255,25 +259,27 @@ class _InviteSuccessView extends StatelessWidget {
 
   Future<void> _shareWhatsApp(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
-    final text = Uri.encodeComponent(
-        l10n.inviteShareText(workspaceName, _inviteLink));
+    final text =
+        Uri.encodeComponent(l10n.inviteShareText(workspaceName, _inviteLink));
     final uri = Uri.parse('https://wa.me/?text=$text');
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).whatsappUnavailable)),
+        SnackBar(
+            content: Text(AppLocalizations.of(context).whatsappUnavailable)),
       );
     }
   }
 
   Future<void> _shareEmail(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
-    final subject = Uri.encodeComponent(
-        l10n.inviteShareEmailSubject(workspaceName));
-    final body = Uri.encodeComponent(
-        l10n.inviteShareText(workspaceName, _inviteLink));
-    final uri = Uri.parse('mailto:${invite.invitedEmail}?subject=$subject&body=$body');
+    final subject =
+        Uri.encodeComponent(l10n.inviteShareEmailSubject(workspaceName));
+    final body =
+        Uri.encodeComponent(l10n.inviteShareText(workspaceName, _inviteLink));
+    final uri =
+        Uri.parse('mailto:${invite.invitedEmail}?subject=$subject&body=$body');
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     } else if (context.mounted) {

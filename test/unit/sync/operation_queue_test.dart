@@ -55,8 +55,8 @@ void main() {
       await (db.update(db.syncQueueItems)
             ..where((t) => t.status.equals('pending')))
           .write(const SyncQueueItemsCompanion(
-            operationType: Value('unknown_op'),
-          ));
+        operationType: Value('unknown_op'),
+      ));
 
       await queue.processPending();
 
@@ -70,9 +70,9 @@ void main() {
       await (db.update(db.syncQueueItems)
             ..where((t) => t.status.equals('pending')))
           .write(const SyncQueueItemsCompanion(
-            operationType: Value('unknown_op'),
-            retryCount: Value(2), // next failure pushes to 3 → failed
-          ));
+        operationType: Value('unknown_op'),
+        retryCount: Value(2), // next failure pushes to 3 → failed
+      ));
 
       await queue.processPending();
 

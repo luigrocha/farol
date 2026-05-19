@@ -168,7 +168,8 @@ class _KpiItem extends StatefulWidget {
   State<_KpiItem> createState() => _KpiItemState();
 }
 
-class _KpiItemState extends State<_KpiItem> with SingleTickerProviderStateMixin {
+class _KpiItemState extends State<_KpiItem>
+    with SingleTickerProviderStateMixin {
   bool _hovered = false;
   late AnimationController _ctrl;
   late Animation<double> _anim;
@@ -225,7 +226,8 @@ class _KpiItemState extends State<_KpiItem> with SingleTickerProviderStateMixin 
                 : (_hovered ? DSShadow.cardHover : DSShadow.card);
             final border = isDark
                 ? Colors.white.withValues(alpha: _hovered ? 0.12 : 0.07)
-                : const Color(0xFF1B3A5C).withValues(alpha: _hovered ? 0.10 : 0.06);
+                : const Color(0xFF1B3A5C)
+                    .withValues(alpha: _hovered ? 0.10 : 0.06);
 
             return Transform.translate(
               offset: Offset(0, _anim.value * -2),
@@ -253,7 +255,8 @@ class _KpiItemState extends State<_KpiItem> with SingleTickerProviderStateMixin 
                   color: iconBg,
                   borderRadius: BorderRadius.circular(iconSize * 0.30),
                 ),
-                child: Icon(widget.icon, size: iconInner, color: widget.iconColor),
+                child:
+                    Icon(widget.icon, size: iconInner, color: widget.iconColor),
               ),
               const SizedBox(height: DSSpacing.md),
               // Label
@@ -340,7 +343,8 @@ class KpiCard extends StatelessWidget {
               color: bg,
               borderRadius: BorderRadius.circular(compact ? 8 : 10),
             ),
-            child: Icon(icon, size: iconInner, color: color ?? colors.onSurface),
+            child:
+                Icon(icon, size: iconInner, color: color ?? colors.onSurface),
           ),
           const SizedBox(height: 10),
           Text(

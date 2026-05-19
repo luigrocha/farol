@@ -123,7 +123,8 @@ class BurnRateCard extends ConsumerWidget {
                   Container(
                     width: 1,
                     height: 36,
-                    color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
+                    color:
+                        Theme.of(context).dividerColor.withValues(alpha: 0.5),
                   ),
                   Expanded(
                     child: Padding(
@@ -142,14 +143,18 @@ class BurnRateCard extends ConsumerWidget {
                   Container(
                     width: 1,
                     height: 36,
-                    color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
+                    color:
+                        Theme.of(context).dividerColor.withValues(alpha: 0.5),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: DSSpacing.lg),
                     child: _BurnMetric(
                       label: l10n.burnDaysRemaining,
                       value: '${br.daysRemaining}d',
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.5),
                     ),
                   ),
                 ],
@@ -165,7 +170,10 @@ class BurnRateCard extends ConsumerWidget {
                       l10n.burnPaceVsBudget,
                       style: TextStyle(
                         fontSize: 11,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.45),
                       ),
                     ),
                   ),

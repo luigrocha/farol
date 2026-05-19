@@ -17,7 +17,8 @@ class BrlText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final baseColor = color ?? DefaultTextStyle.of(context).style.color ?? Colors.black;
+    final baseColor =
+        color ?? DefaultTextStyle.of(context).style.color ?? Colors.black;
     final absValue = value.abs();
 
     // Format integer and decimal parts in BRL (. thousands, , decimal)

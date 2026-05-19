@@ -37,24 +37,29 @@ class RecurringSuggestionsCard extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(children: [
                 Container(
-                  width: 36, height: 36,
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
                     color: _amber.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.lightbulb_outline, size: 18, color: _amber),
+                  child: const Icon(Icons.lightbulb_outline,
+                      size: 18, color: _amber),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(
-                      'Encontrei ${candidates.length} possível${candidates.length == 1 ? '' : 'is'} recorrente${candidates.length == 1 ? '' : 's'}',
-                      style: GoogleFonts.manrope(
-                          fontSize: 13, fontWeight: FontWeight.w700),
-                    ),
-                    Text('Toque para revisar e confirmar',
-                        style: GoogleFonts.manrope(fontSize: 11, color: Colors.grey)),
-                  ]),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Encontrei ${candidates.length} possível${candidates.length == 1 ? '' : 'is'} recorrente${candidates.length == 1 ? '' : 's'}',
+                          style: GoogleFonts.manrope(
+                              fontSize: 13, fontWeight: FontWeight.w700),
+                        ),
+                        Text('Toque para revisar e confirmar',
+                            style: GoogleFonts.manrope(
+                                fontSize: 11, color: Colors.grey)),
+                      ]),
                 ),
                 const Icon(Icons.chevron_right, size: 18, color: Colors.grey),
               ]),

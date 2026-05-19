@@ -34,11 +34,12 @@ class WorkspaceSwitcherSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final workspacesAsync = ref.watch(userWorkspacesProvider);
-    final spacesAsync     = ref.watch(userSpacesProvider);
-    final activeWs        = ref.watch(activeWorkspaceProvider).valueOrNull;
-    final activeSpace     = ref.watch(activeSpaceProvider).valueOrNull;
-    final role            = ref.watch(currentUserRoleProvider);
-    final canManage       = role == WorkspaceRole.owner || role == WorkspaceRole.admin;
+    final spacesAsync = ref.watch(userSpacesProvider);
+    final activeWs = ref.watch(activeWorkspaceProvider).valueOrNull;
+    final activeSpace = ref.watch(activeSpaceProvider).valueOrNull;
+    final role = ref.watch(currentUserRoleProvider);
+    final canManage =
+        role == WorkspaceRole.owner || role == WorkspaceRole.admin;
 
     return DraggableScrollableSheet(
       expand: false,
@@ -131,33 +132,41 @@ class WorkspaceSwitcherSheet extends ConsumerWidget {
                       }
                       if (item is _WorkspaceItem) {
                         final ws = item.workspace;
-                        final isActive = activeSpace == null && ws.id == activeWs?.id;
+                        final isActive =
+                            activeSpace == null && ws.id == activeWs?.id;
                         return _WorkspaceTile(
                           workspace: ws,
                           isActive: isActive,
                           onTap: () {
                             if (!isActive) {
-                              ref.read(activeWorkspaceProvider.notifier).select(ws);
+                              ref
+                                  .read(activeWorkspaceProvider.notifier)
+                                  .select(ws);
                               // Deselect any active space when switching to workspace
-                              ref.read(activeSpaceProvider.notifier).select(null);
+                              ref
+                                  .read(activeSpaceProvider.notifier)
+                                  .select(null);
                             }
                             Navigator.pop(context);
                           },
                         );
                       }
                       if (item is _SpaceItem) {
-                        final space   = item.space;
+                        final space = item.space;
                         final isActive = space.id == activeSpace?.id;
                         return _SpaceTile(
-                          space:    space,
+                          space: space,
                           isActive: isActive,
                           onTap: () {
-                            ref.read(activeSpaceProvider.notifier).select(space);
+                            ref
+                                .read(activeSpaceProvider.notifier)
+                                .select(space);
                             Navigator.pop(context);
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => SpaceDashboardScreen(space: space),
+                                builder: (_) =>
+                                    SpaceDashboardScreen(space: space),
                               ),
                             );
                           },
@@ -176,8 +185,9 @@ class WorkspaceSwitcherSheet extends ConsumerWidget {
                         return ListTile(
                           leading: CircleAvatar(
                             radius: 22,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.surfaceContainerHighest,
+                            backgroundColor: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest,
                             child: const Icon(Icons.add, size: 20),
                           ),
                           title: const Text('Novo espaço'),
@@ -401,18 +411,15 @@ class WorkspaceAppBarChip extends ConsumerWidget {
     final bgColor = isShared
         ? const Color(0xFF00695C).withValues(alpha: 0.15)
         : colorScheme.secondaryContainer;
-    final fgColor = isShared
-        ? const Color(0xFF00695C)
-        : colorScheme.onSecondaryContainer;
+    final fgColor =
+        isShared ? const Color(0xFF00695C) : colorScheme.onSecondaryContainer;
 
     // Personal workspaces show a semantic label instead of the user's profile name.
-    final chipLabel = isShared
-        ? activeWs.name
-        : l10n.translate('workspace_personal');
+    final chipLabel =
+        isShared ? activeWs.name : l10n.translate('workspace_personal');
 
     // Presence: show green dot when co-members are online
-    final onlineUsers =
-        ref.watch(workspacePresenceProvider).valueOrNull ?? {};
+    final onlineUsers = ref.watch(workspacePresenceProvider).valueOrNull ?? {};
     final hasPresence = isShared && onlineUsers.isNotEmpty;
 
     return GestureDetector(
@@ -498,15 +505,16 @@ class _SpaceTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme  = Theme.of(context).colorScheme;
-    final memberCount  = space.members.length;
-    final accentColor  = _parseColor(space.color) ?? const Color(0xFF6366F1);
+    final colorScheme = Theme.of(context).colorScheme;
+    final memberCount = space.members.length;
+    final accentColor = _parseColor(space.color) ?? const Color(0xFF6366F1);
 
     return ListTile(
       onTap: onTap,
       leading: CircleAvatar(
         radius: 22,
-        backgroundColor: isActive ? accentColor : accentColor.withValues(alpha: 0.18),
+        backgroundColor:
+            isActive ? accentColor : accentColor.withValues(alpha: 0.18),
         child: Text(
           space.emoji ?? space.type.defaultEmoji,
           style: const TextStyle(fontSize: 18),
@@ -526,9 +534,7 @@ class _SpaceTile extends StatelessWidget {
           ),
         ],
       ),
-      trailing: isActive
-          ? Icon(Icons.check_circle, color: accentColor)
-          : null,
+      trailing: isActive ? Icon(Icons.check_circle, color: accentColor) : null,
     );
   }
 

@@ -34,15 +34,15 @@ class CreateSpaceSheet extends ConsumerStatefulWidget {
 }
 
 class _CreateSpaceSheetState extends ConsumerState<CreateSpaceSheet> {
-  final _formKey   = GlobalKey<FormState>();
-  final _nameCtrl  = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
 
-  SpaceType _type         = SpaceType.household;
-  String?   _selectedEmoji;
-  String?   _selectedColor;
-  bool      _loading      = false;
-  int       _page         = 0; // 0 = details, 1 = invite
+  SpaceType _type = SpaceType.household;
+  String? _selectedEmoji;
+  String? _selectedColor;
+  bool _loading = false;
+  int _page = 0; // 0 = details, 1 = invite
 
   // Invite state
   final List<String> _pendingInvites = [];
@@ -68,11 +68,66 @@ class _CreateSpaceSheetState extends ConsumerState<CreateSpaceSheet> {
 
   // ── Emoji palettes per type ──────────────────────────────────────
   static const _emojiPalettes = <SpaceType, List<String>>{
-    SpaceType.household: ['🏠','🏡','🛋️','🏗️','🔑','🪴','🧹','💡','🛏️','🚿'],
-    SpaceType.trip:      ['✈️','🏖️','🏕️','🗺️','🎒','🚢','🚂','🏔️','🌴','🧳'],
-    SpaceType.project:   ['💼','📊','🎯','🖥️','🔧','⚙️','📐','🔬','🚀','💡'],
-    SpaceType.family:    ['👨‍👩‍👧','👪','❤️','🎂','🎁','🏡','🌻','👶','🎓','🐾'],
-    SpaceType.business:  ['🏢','💹','📈','🤝','💰','🏦','⚖️','📋','🖊️','🔒'],
+    SpaceType.household: [
+      '🏠',
+      '🏡',
+      '🛋️',
+      '🏗️',
+      '🔑',
+      '🪴',
+      '🧹',
+      '💡',
+      '🛏️',
+      '🚿'
+    ],
+    SpaceType.trip: [
+      '✈️',
+      '🏖️',
+      '🏕️',
+      '🗺️',
+      '🎒',
+      '🚢',
+      '🚂',
+      '🏔️',
+      '🌴',
+      '🧳'
+    ],
+    SpaceType.project: [
+      '💼',
+      '📊',
+      '🎯',
+      '🖥️',
+      '🔧',
+      '⚙️',
+      '📐',
+      '🔬',
+      '🚀',
+      '💡'
+    ],
+    SpaceType.family: [
+      '👨‍👩‍👧',
+      '👪',
+      '❤️',
+      '🎂',
+      '🎁',
+      '🏡',
+      '🌻',
+      '👶',
+      '🎓',
+      '🐾'
+    ],
+    SpaceType.business: [
+      '🏢',
+      '💹',
+      '📈',
+      '🤝',
+      '💰',
+      '🏦',
+      '⚖️',
+      '📋',
+      '🖊️',
+      '🔒'
+    ],
   };
 
   // ── Submission ───────────────────────────────────────────────────
@@ -84,8 +139,8 @@ class _CreateSpaceSheetState extends ConsumerState<CreateSpaceSheet> {
       final repo = ref.read(spaceRepositoryProvider);
 
       final space = await repo.createSpace(
-        name:  _nameCtrl.text.trim(),
-        type:  _type,
+        name: _nameCtrl.text.trim(),
+        type: _type,
         emoji: _emoji,
         color: _selectedColor,
       );
@@ -96,9 +151,9 @@ class _CreateSpaceSheetState extends ConsumerState<CreateSpaceSheet> {
       // Send invites if the user added any on page 1
       for (final email in _pendingInvites) {
         await repo.createInvite(
-          spaceId:       space.id,
-          invitedEmail:  email,
-          role:          SpaceRole.member,
+          spaceId: space.id,
+          invitedEmail: email,
+          role: SpaceRole.member,
         );
       }
 
@@ -124,14 +179,14 @@ class _CreateSpaceSheetState extends ConsumerState<CreateSpaceSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final theme  = Theme.of(context);
+    final theme = Theme.of(context);
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
 
     return DraggableScrollableSheet(
       expand: false,
       initialChildSize: 0.88,
-      minChildSize:     0.5,
-      maxChildSize:     0.95,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
       builder: (_, controller) => ClipRRect(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         child: Scaffold(
@@ -142,7 +197,8 @@ class _CreateSpaceSheetState extends ConsumerState<CreateSpaceSheet> {
               const SizedBox(height: 8),
               Center(
                 child: Container(
-                  width: 40, height: 4,
+                  width: 40,
+                  height: 4,
                   decoration: BoxDecoration(
                     color: theme.colorScheme.outlineVariant,
                     borderRadius: BorderRadius.circular(2),
@@ -223,11 +279,11 @@ class _CreateSpaceSheetState extends ConsumerState<CreateSpaceSheet> {
         _sectionLabel('Nome', theme),
         const SizedBox(height: 8),
         TextFormField(
-          controller:  _nameCtrl,
+          controller: _nameCtrl,
           decoration: InputDecoration(
-            hintText:       'Ex: Casa dos Roommates',
-            border:         const OutlineInputBorder(),
-            prefixIcon:     Padding(
+            hintText: 'Ex: Casa dos Roommates',
+            border: const OutlineInputBorder(),
+            prefixIcon: Padding(
               padding: const EdgeInsets.all(12),
               child: Text(_emoji, style: const TextStyle(fontSize: 20)),
             ),
@@ -245,9 +301,9 @@ class _CreateSpaceSheetState extends ConsumerState<CreateSpaceSheet> {
         _sectionLabel('Emoji', theme),
         const SizedBox(height: 8),
         _EmojiPicker(
-          emojis:   _emojiPalettes[_type]!,
+          emojis: _emojiPalettes[_type]!,
           selected: _emoji,
-          onPick:   (e) => setState(() => _selectedEmoji = e),
+          onPick: (e) => setState(() => _selectedEmoji = e),
         ),
         const SizedBox(height: 24),
 
@@ -255,9 +311,9 @@ class _CreateSpaceSheetState extends ConsumerState<CreateSpaceSheet> {
         _sectionLabel('Cor do espaço', theme),
         const SizedBox(height: 8),
         _ColorPicker(
-          colors:   _colors,
+          colors: _colors,
           selected: _selectedColor,
-          onPick:   (c) => setState(() => _selectedColor = c),
+          onPick: (c) => setState(() => _selectedColor = c),
         ),
       ],
     );
@@ -278,7 +334,6 @@ class _CreateSpaceSheetState extends ConsumerState<CreateSpaceSheet> {
           ),
         ),
         const SizedBox(height: 20),
-
         _sectionLabel('E-mail', theme),
         const SizedBox(height: 8),
         Row(
@@ -303,7 +358,6 @@ class _CreateSpaceSheetState extends ConsumerState<CreateSpaceSheet> {
             ),
           ],
         ),
-
         if (_pendingInvites.isNotEmpty) ...[
           const SizedBox(height: 16),
           _sectionLabel('Será convidado(a)', theme),
@@ -311,15 +365,16 @@ class _CreateSpaceSheetState extends ConsumerState<CreateSpaceSheet> {
           ..._pendingInvites.map((email) => ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                leading: const CircleAvatar(radius: 16, child: Icon(Icons.person, size: 16)),
+                leading: const CircleAvatar(
+                    radius: 16, child: Icon(Icons.person, size: 16)),
                 title: Text(email),
                 trailing: IconButton(
                   icon: const Icon(Icons.remove_circle_outline, size: 20),
-                  onPressed: () => setState(() => _pendingInvites.remove(email)),
+                  onPressed: () =>
+                      setState(() => _pendingInvites.remove(email)),
                 ),
               )),
         ],
-
         const SizedBox(height: 12),
         Text(
           'Você também pode convidar depois, nas configurações do espaço.',
@@ -383,7 +438,8 @@ class _CreateSpaceSheetState extends ConsumerState<CreateSpaceSheet> {
                       onPressed: _loading ? null : _submit,
                       child: _loading
                           ? const SizedBox(
-                              width: 18, height: 18,
+                              width: 18,
+                              height: 18,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Text('Criar espaço'),
@@ -440,9 +496,7 @@ class _TypePicker extends StatelessWidget {
                   : theme.colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: active
-                    ? theme.colorScheme.primary
-                    : Colors.transparent,
+                color: active ? theme.colorScheme.primary : Colors.transparent,
                 width: 1.5,
               ),
             ),
@@ -497,7 +551,8 @@ class _EmojiPicker extends StatelessWidget {
           onTap: () => onPick(e),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
-            width: 44, height: 44,
+            width: 44,
+            height: 44,
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: active
@@ -538,16 +593,17 @@ class _ColorPicker extends StatelessWidget {
       spacing: 12,
       runSpacing: 12,
       children: colors.map((hex) {
-        final color  = _hexToColor(hex);
+        final color = _hexToColor(hex);
         final active = hex == selected;
         return GestureDetector(
           onTap: () => onPick(hex),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
-            width: 36, height: 36,
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
-              color:  color,
-              shape:  BoxShape.circle,
+              color: color,
+              shape: BoxShape.circle,
               border: active
                   ? Border.all(
                       color: Theme.of(context).colorScheme.onSurface,
@@ -555,7 +611,10 @@ class _ColorPicker extends StatelessWidget {
                     )
                   : null,
               boxShadow: active
-                  ? [BoxShadow(color: color.withValues(alpha: 0.5), blurRadius: 6)]
+                  ? [
+                      BoxShadow(
+                          color: color.withValues(alpha: 0.5), blurRadius: 6)
+                    ]
                   : null,
             ),
           ),

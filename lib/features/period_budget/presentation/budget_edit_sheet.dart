@@ -117,9 +117,10 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
     // setState-during-build.
     final slugs = categories.map((c) => c.slug).toSet();
     final normalizedSelected = _selectedCategory?.toLowerCase();
-    final effectiveCategory = (normalizedSelected != null && slugs.contains(normalizedSelected))
-        ? normalizedSelected
-        : (categories.isNotEmpty ? categories.first.slug : null);
+    final effectiveCategory =
+        (normalizedSelected != null && slugs.contains(normalizedSelected))
+            ? normalizedSelected
+            : (categories.isNotEmpty ? categories.first.slug : null);
 
     if (effectiveCategory != _selectedCategory) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -169,7 +170,9 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isEdit ? AppLocalizations.of(context).editBudget : AppLocalizations.of(context).newBudget,
+                        isEdit
+                            ? AppLocalizations.of(context).editBudget
+                            : AppLocalizations.of(context).newBudget,
                         style: GoogleFonts.manrope(
                             fontSize: 18, fontWeight: FontWeight.w700),
                       ),
@@ -239,9 +242,10 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
                 if (goalAmount != null) ...[
                   const SizedBox(width: 8),
                   Text(
-                    AppLocalizations.of(context).budgetGoalLabel(FinancialCalculatorService.formatBRL(goalAmount)),
-                    style: TextStyle(
-                        fontSize: 11, color: colors.onSurfaceFaint),
+                    AppLocalizations.of(context).budgetGoalLabel(
+                        FinancialCalculatorService.formatBRL(goalAmount)),
+                    style:
+                        TextStyle(fontSize: 11, color: colors.onSurfaceFaint),
                   ),
                 ],
               ],
@@ -253,9 +257,8 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
-                hintText: goalAmount != null
-                    ? goalAmount.toStringAsFixed(2)
-                    : '0.00',
+                hintText:
+                    goalAmount != null ? goalAmount.toStringAsFixed(2) : '0.00',
                 prefixText: 'R\$ ',
                 prefixStyle: TextStyle(color: colors.onSurfaceSoft),
                 filled: true,
@@ -292,7 +295,9 @@ class _BudgetEditSheetState extends ConsumerState<BudgetEditSheet> {
                             strokeWidth: 2, color: Colors.white),
                       )
                     : Text(
-                        isEdit ? AppLocalizations.of(context).saveChanges : AppLocalizations.of(context).createBudget,
+                        isEdit
+                            ? AppLocalizations.of(context).saveChanges
+                            : AppLocalizations.of(context).createBudget,
                         style: const TextStyle(
                             fontSize: 15, fontWeight: FontWeight.w600),
                       ),

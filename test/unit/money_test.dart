@@ -18,8 +18,8 @@ void main() {
     });
 
     test('no floating point error: 0.1 + 0.2 == 0.3', () {
-      expect(Money.fromDouble(0.1) + Money.fromDouble(0.2),
-          Money.fromDouble(0.3));
+      expect(
+          Money.fromDouble(0.1) + Money.fromDouble(0.2), Money.fromDouble(0.3));
     });
 
     test('negation', () {

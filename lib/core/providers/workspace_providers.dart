@@ -42,7 +42,7 @@ class WorkspaceNotifier extends AsyncNotifier<Workspace?> {
   @override
   Future<Workspace?> build() async {
     final repo = ref.watch(workspaceRepositoryProvider);
-    final db   = ref.watch(databaseProvider);
+    final db = ref.watch(databaseProvider);
 
     final workspaces = await repo.getUserWorkspaces();
     if (workspaces.isEmpty) return null;
@@ -91,7 +91,7 @@ final workspacePlanProvider = Provider<WorkspacePlan>((ref) {
 // ─────────────────────────────────────────────────────────────
 
 final currentUserRoleProvider = Provider<WorkspaceRole>((ref) {
-  final ws     = ref.watch(activeWorkspaceProvider).valueOrNull;
+  final ws = ref.watch(activeWorkspaceProvider).valueOrNull;
   final userId = Supabase.instance.client.auth.currentUser?.id;
   if (ws == null || userId == null) return WorkspaceRole.viewer;
   return ws.roleFor(userId);
@@ -152,8 +152,7 @@ final memberDisplayMapProvider =
   final members = ref.watch(activeWorkspaceMembersProvider);
   if (members.isEmpty) return {};
 
-  final currentUserId =
-      Supabase.instance.client.auth.currentUser?.id ?? '';
+  final currentUserId = Supabase.instance.client.auth.currentUser?.id ?? '';
   final userIds = members.map((m) => m.userId).toList();
 
   // Fetch profiles for all member user IDs in one query.
@@ -171,7 +170,12 @@ final memberDisplayMapProvider =
     for (final m in members)
       m.userId: MemberDisplay.fromProfile(
         profileMap[m.userId] ??
-            {'id': m.userId, 'display_name': null, 'email': null, 'photo_url': null},
+            {
+              'id': m.userId,
+              'display_name': null,
+              'email': null,
+              'photo_url': null
+            },
         avatarColor: avatarColorForUserId(m.userId),
         currentUserId: currentUserId,
       ),
@@ -269,7 +273,6 @@ final workspacePresenceProvider = StreamProvider.autoDispose<Set<String>>(
 // ─────────────────────────────────────────────────────────────
 // User Notifications
 // ─────────────────────────────────────────────────────────────
-
 
 final userNotificationsRepositoryProvider = Provider.autoDispose(
   (ref) => UserNotificationsRepository(Supabase.instance.client),

@@ -245,20 +245,20 @@ class _InviteBannerState extends ConsumerState<_InviteBanner>
 
   Widget _buildContent() {
     return switch (_state) {
-      _BannerState.idle      => _buildIdle(),
+      _BannerState.idle => _buildIdle(),
       _BannerState.accepting => _buildBusy('Aceitando convite...'),
       _BannerState.declining => _buildBusy('Recusando convite...'),
-      _BannerState.accepted  => _buildResult(
+      _BannerState.accepted => _buildResult(
           icon: Icons.check_circle_rounded,
           color: Colors.green,
           message: 'Você entrou em "${widget.notification.workspaceName}"!',
         ),
-      _BannerState.declined  => _buildResult(
+      _BannerState.declined => _buildResult(
           icon: Icons.do_not_disturb_rounded,
           color: Colors.white54,
           message: 'Convite recusado.',
         ),
-      _BannerState.error     => _buildResult(
+      _BannerState.error => _buildResult(
           icon: Icons.error_outline_rounded,
           color: tokens.FarolColors.coral,
           message: 'Não foi possível processar. Tente pelo link do convite.',
@@ -387,10 +387,10 @@ class _InviteBannerState extends ConsumerState<_InviteBanner>
   }
 
   String _roleLabel(String role) => switch (role) {
-    'admin'  => 'Admin',
-    'viewer' => 'Visualizador',
-    _        => 'Membro',
-  };
+        'admin' => 'Admin',
+        'viewer' => 'Visualizador',
+        _ => 'Membro',
+      };
 }
 
 // ── _ActionBtn ────────────────────────────────────────────────────────────────
@@ -417,7 +417,7 @@ class _ActionBtnState extends State<_ActionBtn> {
   Widget build(BuildContext context) {
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
-      onExit:  (_) => setState(() => _hovered = false),
+      onExit: (_) => setState(() => _hovered = false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: widget.onTap,

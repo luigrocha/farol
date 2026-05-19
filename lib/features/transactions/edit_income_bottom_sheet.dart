@@ -16,7 +16,8 @@ class EditIncomeBottomSheet extends ConsumerStatefulWidget {
   const EditIncomeBottomSheet({super.key, required this.income});
 
   @override
-  ConsumerState<EditIncomeBottomSheet> createState() => _EditIncomeBottomSheetState();
+  ConsumerState<EditIncomeBottomSheet> createState() =>
+      _EditIncomeBottomSheetState();
 }
 
 class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
@@ -32,15 +33,19 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _amountController = TextEditingController(text: widget.income.amount.toStringAsFixed(2).replaceAll('.', ','));
+    _amountController = TextEditingController(
+        text: widget.income.amount.toStringAsFixed(2).replaceAll('.', ','));
     _notesController = TextEditingController(text: widget.income.notes ?? '');
     _dependentsController = TextEditingController(text: '0');
     _type = IncomeType.fromDb(widget.income.incomeType);
     _isNet = widget.income.isNet;
-    if (widget.income.inssDeducted != null && widget.income.irrfDeducted != null) {
+    if (widget.income.inssDeducted != null &&
+        widget.income.irrfDeducted != null) {
       _showCalculation = true;
       _calculatedNet = NetSalaryResult(
-        gross: widget.income.amount + (widget.income.inssDeducted ?? 0) + (widget.income.irrfDeducted ?? 0),
+        gross: widget.income.amount +
+            (widget.income.inssDeducted ?? 0) +
+            (widget.income.irrfDeducted ?? 0),
         inss: widget.income.inssDeducted ?? 0,
         irrf: widget.income.irrfDeducted ?? 0,
         net: widget.income.amount,
@@ -59,12 +64,14 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
   }
 
   void _calculateNet() {
-    final amountStr = _amountController.text.replaceAll('.', '').replaceAll(',', '.');
+    final amountStr =
+        _amountController.text.replaceAll('.', '').replaceAll(',', '.');
     final gross = double.tryParse(amountStr);
     if (gross == null || gross <= 0) return;
     final dependents = int.tryParse(_dependentsController.text) ?? 0;
     setState(() {
-      _calculatedNet = FinancialCalculatorService.calculateNetFromGross(gross, dependents: dependents);
+      _calculatedNet = FinancialCalculatorService.calculateNetFromGross(gross,
+          dependents: dependents);
       _showCalculation = true;
     });
   }
@@ -72,13 +79,15 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
   void _useNetValue() {
     if (_calculatedNet == null) return;
     setState(() {
-      _amountController.text = _calculatedNet!.net.toStringAsFixed(2).replaceAll('.', ',');
+      _amountController.text =
+          _calculatedNet!.net.toStringAsFixed(2).replaceAll('.', ',');
       _isNet = true;
     });
   }
 
   Future<void> _save() async {
-    final amountStr = _amountController.text.replaceAll('.', '').replaceAll(',', '.');
+    final amountStr =
+        _amountController.text.replaceAll('.', '').replaceAll(',', '.');
     final amount = double.tryParse(amountStr);
     if (amount == null || amount <= 0) {
       if (mounted) context.showErrorSnackBar(context.l10n.invalidAmount);
@@ -106,7 +115,9 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
             isNet: _isNet,
             inssDeducted: inssDeducted,
             irrfDeducted: irrfDeducted,
-            notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+            notes: _notesController.text.trim().isEmpty
+                ? null
+                : _notesController.text.trim(),
           );
       if (mounted) {
         Navigator.pop(context);
@@ -124,7 +135,8 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
     final colors = context.colors;
     final l10n = context.l10n;
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -142,7 +154,9 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                Text(l10n.translate('type'), style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
+                Text(l10n.translate('type'),
+                    style:
+                        TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
                 const SizedBox(height: 6),
                 SizedBox(
                   height: 44,
@@ -155,9 +169,12 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 150),
                           margin: const EdgeInsets.only(right: 8),
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 8),
                           decoration: BoxDecoration(
-                            color: active ? tokens.FarolColors.tide : colors.surfaceLow,
+                            color: active
+                                ? tokens.FarolColors.tide
+                                : colors.surfaceLow,
                             borderRadius: BorderRadius.circular(99),
                           ),
                           child: Text(
@@ -176,9 +193,13 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: _amountController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))],
-                  decoration: InputDecoration(labelText: l10n.amount, prefixText: 'R\$ '),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))
+                  ],
+                  decoration: InputDecoration(
+                      labelText: l10n.amount, prefixText: 'R\$ '),
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -186,7 +207,8 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                     Expanded(
                       child: Text(
                         l10n.netValueHint,
-                        style: TextStyle(fontSize: 13, color: colors.onSurfaceMuted),
+                        style: TextStyle(
+                            fontSize: 13, color: colors.onSurfaceMuted),
                       ),
                     ),
                     Switch(
@@ -212,7 +234,8 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                             Expanded(
                               child: Text(
                                 l10n.dependentsIrrf,
-                                style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft),
+                                style: TextStyle(
+                                    fontSize: 12, color: colors.onSurfaceSoft),
                               ),
                             ),
                             SizedBox(
@@ -221,10 +244,13 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                                 controller: _dependentsController,
                                 keyboardType: TextInputType.number,
                                 textAlign: TextAlign.center,
-                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
                                 decoration: const InputDecoration(
                                   isDense: true,
-                                  contentPadding: EdgeInsets.symmetric(vertical: 8),
+                                  contentPadding:
+                                      EdgeInsets.symmetric(vertical: 8),
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -236,11 +262,14 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                           width: double.infinity,
                           child: OutlinedButton.icon(
                             onPressed: _calculateNet,
-                            icon: const Icon(Icons.calculate_outlined, size: 18),
+                            icon:
+                                const Icon(Icons.calculate_outlined, size: 18),
                             label: Text(l10n.calculateNet),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: tokens.FarolColors.tide,
-                              side: BorderSide(color: tokens.FarolColors.tide.withValues(alpha: 0.3)),
+                              side: BorderSide(
+                                  color: tokens.FarolColors.tide
+                                      .withValues(alpha: 0.3)),
                               padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
                           ),
@@ -256,7 +285,9 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                     decoration: BoxDecoration(
                       color: tokens.FarolColors.tide.withValues(alpha: 0.06),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: tokens.FarolColors.tide.withValues(alpha: 0.15)),
+                      border: Border.all(
+                          color:
+                              tokens.FarolColors.tide.withValues(alpha: 0.15)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,11 +301,16 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        _buildCalcRow(l10n.lblGross, _calculatedNet!.gross, colors.onSurface),
-                        _buildCalcRow('INSS', -_calculatedNet!.inss, const Color(0xFFFF6B35)),
-                        _buildCalcRow('IRRF', -_calculatedNet!.irrf, const Color(0xFFFF6B35)),
+                        _buildCalcRow(l10n.lblGross, _calculatedNet!.gross,
+                            colors.onSurface),
+                        _buildCalcRow('INSS', -_calculatedNet!.inss,
+                            const Color(0xFFFF6B35)),
+                        _buildCalcRow('IRRF', -_calculatedNet!.irrf,
+                            const Color(0xFFFF6B35)),
                         const Divider(height: 20),
-                        _buildCalcRow(l10n.lblNet, _calculatedNet!.net, tokens.FarolColors.tide, bold: true),
+                        _buildCalcRow(l10n.lblNet, _calculatedNet!.net,
+                            tokens.FarolColors.tide,
+                            bold: true),
                         const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
@@ -295,19 +331,22 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: _notesController,
-                  decoration: InputDecoration(labelText: l10n.translate('notes_optional')),
+                  decoration: InputDecoration(
+                      labelText: l10n.translate('notes_optional')),
                 ),
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
-                    style: FilledButton.styleFrom(backgroundColor: tokens.FarolColors.tide),
+                    style: FilledButton.styleFrom(
+                        backgroundColor: tokens.FarolColors.tide),
                     onPressed: _saving ? null : _save,
                     child: _saving
                         ? const SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white),
                           )
                         : Text(l10n.saveChanges),
                   ),
@@ -320,7 +359,8 @@ class _EditIncomeBottomSheetState extends ConsumerState<EditIncomeBottomSheet> {
     );
   }
 
-  Widget _buildCalcRow(String label, double value, Color color, {bool bold = false}) {
+  Widget _buildCalcRow(String label, double value, Color color,
+      {bool bold = false}) {
     final formatted = FinancialCalculatorService.formatBRL(value);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),

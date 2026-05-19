@@ -28,23 +28,23 @@ enum PremiumFeature {
   bool isAllowed(WorkspacePlan plan) {
     if (!_kFreemiumActive) return true;
     return switch (this) {
-      PremiumFeature.multiWorkspace      => plan == WorkspacePlan.premium,
+      PremiumFeature.multiWorkspace => plan == WorkspacePlan.premium,
       PremiumFeature.cashflowProjections => plan == WorkspacePlan.premium,
-      PremiumFeature.aiInsights          => plan == WorkspacePlan.premium,
-      PremiumFeature.exportPdf           => plan == WorkspacePlan.premium,
-      _                                  => true,
+      PremiumFeature.aiInsights => plan == WorkspacePlan.premium,
+      PremiumFeature.exportPdf => plan == WorkspacePlan.premium,
+      _ => true,
     };
   }
 
   String get label => switch (this) {
-        PremiumFeature.advancedForecasting   => 'Previsão avançada',
-        PremiumFeature.aiInsights            => 'Insights inteligentes',
-        PremiumFeature.multiWorkspace        => 'Múltiplos workspaces',
-        PremiumFeature.advancedAnalytics     => 'Análises avançadas',
-        PremiumFeature.cashflowProjections   => 'Projeção de caixa',
-        PremiumFeature.exportPdf             => 'Exportar PDF',
+        PremiumFeature.advancedForecasting => 'Previsão avançada',
+        PremiumFeature.aiInsights => 'Insights inteligentes',
+        PremiumFeature.multiWorkspace => 'Múltiplos workspaces',
+        PremiumFeature.advancedAnalytics => 'Análises avançadas',
+        PremiumFeature.cashflowProjections => 'Projeção de caixa',
+        PremiumFeature.exportPdf => 'Exportar PDF',
         PremiumFeature.unlimitedInstallments => 'Parcelamentos ilimitados',
-        PremiumFeature.recurringDetection    => 'Detecção de recorrências',
+        PremiumFeature.recurringDetection => 'Detecção de recorrências',
       };
 }
 

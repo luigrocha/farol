@@ -40,7 +40,9 @@ class ConnectivityBanner extends ConsumerWidget {
             child: Text(
               message,
               style: GoogleFonts.manrope(
-                  fontSize: 12, color: Colors.white, fontWeight: FontWeight.w500),
+                  fontSize: 12,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500),
             ),
           ),
         ]),

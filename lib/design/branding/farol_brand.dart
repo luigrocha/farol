@@ -26,15 +26,15 @@ abstract final class FarolBrand {
   //   subtitleControlled → "Tudo sob controle."
   //   subtitleNeutral  → "Acompanhando seu dinheiro."
 
-  static const String keySubtitleOnTrack    = 'subtitle_on_track';
-  static const String keySubtitleAdjust     = 'subtitle_adjust';
-  static const String keySubtitleNewPeriod  = 'subtitle_new_period';
+  static const String keySubtitleOnTrack = 'subtitle_on_track';
+  static const String keySubtitleAdjust = 'subtitle_adjust';
+  static const String keySubtitleNewPeriod = 'subtitle_new_period';
   static const String keySubtitleControlled = 'subtitle_controlled';
-  static const String keySubtitleNeutral    = 'subtitle_neutral';
+  static const String keySubtitleNeutral = 'subtitle_neutral';
 
-  static const String keyGoodMorning   = 'good_morning';
+  static const String keyGoodMorning = 'good_morning';
   static const String keyGoodAfternoon = 'good_afternoon';
-  static const String keyGoodEvening   = 'good_evening';
+  static const String keyGoodEvening = 'good_evening';
 
   // ── Palette aliases (semantic layer over raw tokens) ─────────────────────
 
@@ -57,7 +57,8 @@ abstract final class FarolBrand {
   static const Color navySidebarHover = Color(0xFF1A2436);
 
   /// Beam at 12% opacity — used for selected state backgrounds.
-  static Color get beamSubtle => palette.FarolColors.beam.withValues(alpha: 0.12);
+  static Color get beamSubtle =>
+      palette.FarolColors.beam.withValues(alpha: 0.12);
 
   // ── Logo mark dimensions ─────────────────────────────────────────────────
 

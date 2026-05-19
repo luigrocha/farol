@@ -40,22 +40,20 @@ class OnboardingScreen extends ConsumerWidget {
             const Positioned(
               top: -80,
               left: -80,
-              child: _Aurora(
-                  color: Color(0x38F5A623)), // beam @22%
+              child: _Aurora(color: Color(0x38F5A623)), // beam @22%
             ),
             const Positioned(
               bottom: -100,
               right: -60,
-              child: _Aurora(
-                  color: Color(0x241A7A4A)), // tide @14%
+              child: _Aurora(color: Color(0x241A7A4A)), // tide @14%
             ),
 
             // ── Content ──────────────────────────────────────────────────────
             SafeArea(
               child: Center(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                      maxWidth: isWide ? 480 : double.infinity),
+                  constraints:
+                      BoxConstraints(maxWidth: isWide ? 480 : double.infinity),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -63,8 +61,8 @@ class OnboardingScreen extends ConsumerWidget {
 
                       // ── Logo ───────────────────────────────────────────────
                       Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: isWide ? 40 : 32),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: isWide ? 40 : 32),
                         child: const FarolLogo(
                           variant: FarolLogoVariant.dark,
                           markSize: FarolBrand.markSizeOnboarding,
@@ -80,8 +78,8 @@ class OnboardingScreen extends ConsumerWidget {
 
                       // ── CTAs ───────────────────────────────────────────────
                       Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: isWide ? 40 : 32),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: isWide ? 40 : 32),
                         child: Column(
                           children: [
                             const SizedBox(height: 16),
@@ -96,13 +94,13 @@ class OnboardingScreen extends ConsumerWidget {
                                   foregroundColor: tokens.FarolColors.navy,
                                   elevation: 0,
                                   shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(18)),
+                                      borderRadius: BorderRadius.circular(18)),
                                   textStyle: GoogleFonts.inter(
                                       fontWeight: FontWeight.w700,
                                       fontSize: 15),
                                 ),
-                                child: Text(l10n.translate('onboarding_button')),
+                                child:
+                                    Text(l10n.translate('onboarding_button')),
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -114,12 +112,11 @@ class OnboardingScreen extends ConsumerWidget {
                                     Navigator.pushNamed(context, '/login'),
                                 style: OutlinedButton.styleFrom(
                                   side: BorderSide(
-                                      color: Colors.white
-                                          .withValues(alpha: 0.20)),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.20)),
                                   foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(18)),
+                                      borderRadius: BorderRadius.circular(18)),
                                   textStyle: GoogleFonts.inter(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 14),

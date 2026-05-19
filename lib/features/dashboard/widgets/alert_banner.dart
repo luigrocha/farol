@@ -20,15 +20,16 @@ class AlertBanner extends ConsumerWidget {
     final color = switch (top.level) {
       AlertLevel.exceeded => tokens.FarolColors.coral,
       AlertLevel.critical => const Color(0xFFFF6B35),
-      AlertLevel.warning  => tokens.FarolColors.beam,
+      AlertLevel.warning => tokens.FarolColors.beam,
     };
     final icon = switch (top.level) {
       AlertLevel.exceeded => Icons.error_outline,
       AlertLevel.critical => Icons.warning_amber_outlined,
-      AlertLevel.warning  => Icons.info_outline,
+      AlertLevel.warning => Icons.info_outline,
     };
 
-    final catModel = catsMap[top.category] ?? catsMap[top.category.toLowerCase()];
+    final catModel =
+        catsMap[top.category] ?? catsMap[top.category.toLowerCase()];
     final label = catModel?.name ?? top.category;
     final emoji = catModel?.emoji ?? '📊';
 

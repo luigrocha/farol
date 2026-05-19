@@ -72,12 +72,9 @@ class ProfileRepository {
   }
 
   Future<UserProfile?> getProfile(String uid) async {
-    final response = await _supabase
-        .from('profiles')
-        .select()
-        .eq('id', uid)
-        .maybeSingle();
-        
+    final response =
+        await _supabase.from('profiles').select().eq('id', uid).maybeSingle();
+
     if (response == null) return null;
     return UserProfile.fromSupabase(response);
   }
@@ -113,10 +110,11 @@ class ProfileRepository {
     final path = 'profiles/$uid/avatar_$timestamp.jpg';
 
     await _supabase.storage.from('avatars').uploadBinary(
-      path,
-      imageBytes,
-      fileOptions: const FileOptions(contentType: 'image/jpeg', upsert: true),
-    );
+          path,
+          imageBytes,
+          fileOptions:
+              const FileOptions(contentType: 'image/jpeg', upsert: true),
+        );
 
     return _supabase.storage.from('avatars').getPublicUrl(path);
   }

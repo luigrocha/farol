@@ -54,8 +54,10 @@ void main() {
     });
 
     test('consecutive inserts add multiple incomes', () async {
-      await repo.insert(month: 5, year: 2026, incomeType: 'NET_SALARY', amount: 5000);
-      await repo.insert(month: 5, year: 2026, incomeType: 'SWILE_MEAL', amount: 500);
+      await repo.insert(
+          month: 5, year: 2026, incomeType: 'NET_SALARY', amount: 5000);
+      await repo.insert(
+          month: 5, year: 2026, incomeType: 'SWILE_MEAL', amount: 500);
 
       final all = await repo.getAll();
       expect(all.length, 2);
@@ -65,16 +67,19 @@ void main() {
       repo.behavior = FakeIncomeBehavior(shouldThrowNetworkError: true);
 
       await expectLater(
-        repo.insert(month: 5, year: 2026, incomeType: 'NET_SALARY', amount: 5000),
+        repo.insert(
+            month: 5, year: 2026, incomeType: 'NET_SALARY', amount: 5000),
         throwsA(isA<Exception>()),
       );
     });
 
     test('insert with delay respects the delay', () async {
-      repo.behavior = FakeIncomeBehavior(delay: const Duration(milliseconds: 50));
+      repo.behavior =
+          FakeIncomeBehavior(delay: const Duration(milliseconds: 50));
       final stopwatch = Stopwatch()..start();
 
-      await repo.insert(month: 5, year: 2026, incomeType: 'NET_SALARY', amount: 5000);
+      await repo.insert(
+          month: 5, year: 2026, incomeType: 'NET_SALARY', amount: 5000);
 
       stopwatch.stop();
       expect(stopwatch.elapsedMilliseconds, greaterThanOrEqualTo(45));
@@ -83,8 +88,18 @@ void main() {
     // ─── GetAll ────────────────────────────────────────────────────────────────
 
     test('getAll returns all seeded incomes', () async {
-      repo.seedIncome(userId: 'user-1', month: 5, year: 2026, incomeType: 'NET_SALARY', amount: 5000);
-      repo.seedIncome(userId: 'user-1', month: 5, year: 2026, incomeType: 'SWILE_MEAL', amount: 500);
+      repo.seedIncome(
+          userId: 'user-1',
+          month: 5,
+          year: 2026,
+          incomeType: 'NET_SALARY',
+          amount: 5000);
+      repo.seedIncome(
+          userId: 'user-1',
+          month: 5,
+          year: 2026,
+          incomeType: 'SWILE_MEAL',
+          amount: 500);
 
       final all = await repo.getAll();
       expect(all.length, 2);
@@ -98,9 +113,24 @@ void main() {
     // ─── GetByRange ────────────────────────────────────────────────────────────
 
     test('getByRange returns incomes within the month/year range', () async {
-      repo.seedIncome(userId: 'user-1', month: 1, year: 2026, incomeType: 'NET_SALARY', amount: 5000);
-      repo.seedIncome(userId: 'user-1', month: 4, year: 2026, incomeType: 'BONUS', amount: 2000);
-      repo.seedIncome(userId: 'user-1', month: 8, year: 2026, incomeType: 'NET_SALARY', amount: 5000);
+      repo.seedIncome(
+          userId: 'user-1',
+          month: 1,
+          year: 2026,
+          incomeType: 'NET_SALARY',
+          amount: 5000);
+      repo.seedIncome(
+          userId: 'user-1',
+          month: 4,
+          year: 2026,
+          incomeType: 'BONUS',
+          amount: 2000);
+      repo.seedIncome(
+          userId: 'user-1',
+          month: 8,
+          year: 2026,
+          incomeType: 'NET_SALARY',
+          amount: 5000);
 
       final result = await repo.getByRange(3, 2026, 6, 2026);
       expect(result.length, 1);
@@ -108,7 +138,12 @@ void main() {
     });
 
     test('getByRange empty when nothing matches', () async {
-      repo.seedIncome(userId: 'user-1', month: 1, year: 2025, incomeType: 'NET_SALARY', amount: 5000);
+      repo.seedIncome(
+          userId: 'user-1',
+          month: 1,
+          year: 2025,
+          incomeType: 'NET_SALARY',
+          amount: 5000);
 
       final result = await repo.getByRange(1, 2026, 12, 2026);
       expect(result, isEmpty);
@@ -119,14 +154,18 @@ void main() {
     test('update modifies income fields in place', () async {
       final id = repo.seedIncome(
         userId: 'user-1',
-        month: 5, year: 2026,
-        incomeType: 'NET_SALARY', amount: 5000,
+        month: 5,
+        year: 2026,
+        incomeType: 'NET_SALARY',
+        amount: 5000,
       );
 
       await repo.update(
         id: id,
-        month: 5, year: 2026,
-        incomeType: 'BONUS', amount: 3000,
+        month: 5,
+        year: 2026,
+        incomeType: 'BONUS',
+        amount: 3000,
         isNet: false,
         notes: 'Adjusted',
       );
@@ -143,8 +182,10 @@ void main() {
       await expectLater(
         repo.update(
           id: 999,
-          month: 5, year: 2026,
-          incomeType: 'NET_SALARY', amount: 5000,
+          month: 5,
+          year: 2026,
+          incomeType: 'NET_SALARY',
+          amount: 5000,
         ),
         throwsA(isA<Exception>()),
       );
@@ -153,8 +194,18 @@ void main() {
     // ─── Delete ────────────────────────────────────────────────────────────────
 
     test('delete removes income by id', () async {
-      final id1 = repo.seedIncome(userId: 'user-1', month: 5, year: 2026, incomeType: 'NET_SALARY', amount: 5000);
-      repo.seedIncome(userId: 'user-1', month: 5, year: 2026, incomeType: 'SWILE_MEAL', amount: 500);
+      final id1 = repo.seedIncome(
+          userId: 'user-1',
+          month: 5,
+          year: 2026,
+          incomeType: 'NET_SALARY',
+          amount: 5000);
+      repo.seedIncome(
+          userId: 'user-1',
+          month: 5,
+          year: 2026,
+          incomeType: 'SWILE_MEAL',
+          amount: 500);
 
       await repo.delete(id1);
 
@@ -164,13 +215,23 @@ void main() {
     });
 
     test('delete non-existent id does not throw', () async {
-      repo.seedIncome(userId: 'user-1', month: 5, year: 2026, incomeType: 'NET_SALARY', amount: 5000);
+      repo.seedIncome(
+          userId: 'user-1',
+          month: 5,
+          year: 2026,
+          incomeType: 'NET_SALARY',
+          amount: 5000);
       await repo.delete(999);
       expect((await repo.getAll()).length, 1);
     });
 
     test('delete with shouldThrowNetworkError throws', () async {
-      repo.seedIncome(userId: 'user-1', month: 5, year: 2026, incomeType: 'NET_SALARY', amount: 5000);
+      repo.seedIncome(
+          userId: 'user-1',
+          month: 5,
+          year: 2026,
+          incomeType: 'NET_SALARY',
+          amount: 5000);
       repo.behavior = FakeIncomeBehavior(shouldThrowNetworkError: true);
 
       await expectLater(repo.delete(1), throwsA(isA<Exception>()));
@@ -180,7 +241,8 @@ void main() {
 
     test('watchAll emits from insert', () async {
       final future = repo.watchAll().first;
-      await repo.insert(month: 5, year: 2026, incomeType: 'NET_SALARY', amount: 5000);
+      await repo.insert(
+          month: 5, year: 2026, incomeType: 'NET_SALARY', amount: 5000);
 
       final emitted = await future;
       expect(emitted.length, 1);
@@ -192,8 +254,10 @@ void main() {
       final id = repo.seedIncome(
         id: 42,
         userId: 'user-1',
-        month: 5, year: 2026,
-        incomeType: 'NET_SALARY', amount: 5000,
+        month: 5,
+        year: 2026,
+        incomeType: 'NET_SALARY',
+        amount: 5000,
       );
 
       expect(id, 42);
@@ -201,8 +265,10 @@ void main() {
     });
 
     test('seedIncome auto-increments when no id given', () async {
-      final id1 = repo.seedIncome(userId: 'user-1', month: 5, year: 2026, incomeType: 'A', amount: 100);
-      final id2 = repo.seedIncome(userId: 'user-1', month: 5, year: 2026, incomeType: 'B', amount: 200);
+      final id1 = repo.seedIncome(
+          userId: 'user-1', month: 5, year: 2026, incomeType: 'A', amount: 100);
+      final id2 = repo.seedIncome(
+          userId: 'user-1', month: 5, year: 2026, incomeType: 'B', amount: 200);
 
       expect(id2, id1 + 1);
     });
@@ -213,12 +279,14 @@ void main() {
       repo.behavior = FakeIncomeBehavior(shouldThrowNetworkError: true);
 
       await expectLater(
-        repo.insert(month: 5, year: 2026, incomeType: 'NET_SALARY', amount: 5000),
+        repo.insert(
+            month: 5, year: 2026, incomeType: 'NET_SALARY', amount: 5000),
         throwsA(isA<Exception>()),
       );
 
       repo.behavior = FakeIncomeBehavior();
-      await repo.insert(month: 5, year: 2026, incomeType: 'NET_SALARY', amount: 5000);
+      await repo.insert(
+          month: 5, year: 2026, incomeType: 'NET_SALARY', amount: 5000);
 
       expect((await repo.getAll()).length, 1);
     });

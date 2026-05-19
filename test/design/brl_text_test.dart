@@ -30,9 +30,11 @@ void main() {
     test('zero', () => expect(_fmt(0), 'R\$ 0,00'));
     test('1234.56', () => expect(_fmt(1234.56), 'R\$ 1.234,56'));
     test('-89.10 unsigned', () => expect(_fmt(-89.10), 'R\$ 89,10'));
-    test('-89.10 signed', () => expect(_fmt(-89.10, signed: true), '− R\$ 89,10'));
+    test('-89.10 signed',
+        () => expect(_fmt(-89.10, signed: true), '− R\$ 89,10'));
     test('1000000.00', () => expect(_fmt(1000000.00), 'R\$ 1.000.000,00'));
     test('0.5', () => expect(_fmt(0.5), 'R\$ 0,50'));
-    test('positive signed', () => expect(_fmt(1234.56, signed: true), '+ R\$ 1.234,56'));
+    test('positive signed',
+        () => expect(_fmt(1234.56, signed: true), '+ R\$ 1.234,56'));
   });
 }

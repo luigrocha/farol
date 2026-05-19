@@ -49,7 +49,8 @@ class Expense {
       userId: json['user_id'] as String,
       month: (json['month'] as num).toInt(),
       year: (json['year'] as num).toInt(),
-      transactionDate: rawDate != null ? DateTime.parse(rawDate as String) : createdAt,
+      transactionDate:
+          rawDate != null ? DateTime.parse(rawDate as String) : createdAt,
       payType: json['pay_type'] as String,
       category: json['category'] as String,
       subcategory: json['subcategory'] as String?,

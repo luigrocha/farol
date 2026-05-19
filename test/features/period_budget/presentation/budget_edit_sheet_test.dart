@@ -65,7 +65,8 @@ void main() {
       end: DateTime(2026, 5, 31),
     );
 
-    Future<void> pumpSheet(WidgetTester tester, {PeriodBudgetEntry? entry}) async {
+    Future<void> pumpSheet(WidgetTester tester,
+        {PeriodBudgetEntry? entry}) async {
       await pumpAppWithFakeAuth(
         tester,
         BudgetEditSheet(entry: entry),
@@ -164,7 +165,8 @@ void main() {
     // ─── Error handling ────────────────────────────────────────────────
 
     testWidgets('network error shows snackbar', (tester) async {
-      budgetRepo.behavior = FakePeriodBudgetBehavior(shouldThrowNetworkError: true);
+      budgetRepo.behavior =
+          FakePeriodBudgetBehavior(shouldThrowNetworkError: true);
 
       await pumpSheet(tester);
 

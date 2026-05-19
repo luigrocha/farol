@@ -4,8 +4,10 @@ import '../value_objects/money.dart';
 enum BurnPace {
   /// Projected spend < 80% of allocated
   comfortable,
+
   /// 80–100% of allocated
   onTrack,
+
   /// > 100% — will overspend
   overspending,
 }

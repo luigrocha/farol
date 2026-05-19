@@ -65,13 +65,15 @@ class AppLifecycleService {
         ? now.difference(pausedAt)
         : staleTtl + const Duration(seconds: 1); // treat first resume as stale
 
-    debugPrint('[Lifecycle] ▶ App resumed — was inactive for ${elapsed.inSeconds}s');
+    debugPrint(
+        '[Lifecycle] ▶ App resumed — was inactive for ${elapsed.inSeconds}s');
 
     if (elapsed >= staleTtl) {
       debugPrint('[Lifecycle] ♻ Data stale — invalidating stream providers');
       _invalidateStreams(container);
     } else {
-      debugPrint('[Lifecycle] ✓ Data fresh (${elapsed.inSeconds}s < ${staleTtl.inSeconds}s threshold)');
+      debugPrint(
+          '[Lifecycle] ✓ Data fresh (${elapsed.inSeconds}s < ${staleTtl.inSeconds}s threshold)');
     }
 
     // Always re-sync realtime channel regardless of data staleness
@@ -85,9 +87,12 @@ class AppLifecycleService {
   void _invalidateStreams(ProviderContainer container) {
     // 1. Reset realtime state flags so providers re-enter WebSocket mode
     _tryInvalidate(container, realtimeActiveProvider,
-        resetState: (_) => container.read(realtimeActiveProvider.notifier).state = true);
+        resetState: (_) =>
+            container.read(realtimeActiveProvider.notifier).state = true);
     _tryInvalidate(container, realtimeMaxRetriesReachedProvider,
-        resetState: (_) => container.read(realtimeMaxRetriesReachedProvider.notifier).state = false);
+        resetState: (_) => container
+            .read(realtimeMaxRetriesReachedProvider.notifier)
+            .state = false);
 
     // 2. Invalidate root stream providers (Supabase websocket connections)
     _tryInvalidate(container, allExpensesStreamProvider);

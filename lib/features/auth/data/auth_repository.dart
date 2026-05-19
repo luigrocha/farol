@@ -12,7 +12,8 @@ abstract class AuthRepository {
   AppUser? get currentUser;
 
   Future<AppUser> signInWithEmail(String email, String password);
-  Future<AppUser> signUpWithEmail(String email, String password, {String? fullName, String? cpf});
+  Future<AppUser> signUpWithEmail(String email, String password,
+      {String? fullName, String? cpf});
   Future<AppUser> signInWithGoogle();
   Future<void> signInWithApple();
 
@@ -71,7 +72,8 @@ class SupabaseAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<AppUser> signUpWithEmail(String email, String password, {String? fullName, String? cpf}) async {
+  Future<AppUser> signUpWithEmail(String email, String password,
+      {String? fullName, String? cpf}) async {
     try {
       final response = await _supabase.auth.signUp(
         email: email,
@@ -121,7 +123,8 @@ class SupabaseAuthRepository implements AuthRepository {
         accessToken: accessToken,
       );
 
-      if (response.user == null) throw Exception('User is null after Google sign in');
+      if (response.user == null)
+        throw Exception('User is null after Google sign in');
       return AppUser.fromSupabase(response.user!);
     } on GoogleRedirectException {
       rethrow;
@@ -226,13 +229,15 @@ class SupabaseAuthRepository implements AuthRepository {
     }
     if (msg.contains('user already registered') ||
         msg.contains('already registered')) {
-      return Exception('This email is already registered. Try signing in instead.');
+      return Exception(
+          'This email is already registered. Try signing in instead.');
     }
     if (msg.contains('email not confirmed')) {
       return Exception('Please verify your email before signing in.');
     }
     if (msg.contains('rate limit') || e.statusCode == '429') {
-      return Exception('Too many attempts. Please wait a moment and try again.');
+      return Exception(
+          'Too many attempts. Please wait a moment and try again.');
     }
     return Exception(e.message);
   }

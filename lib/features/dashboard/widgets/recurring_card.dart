@@ -29,10 +29,12 @@ class RecurringCard extends ConsumerWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
               Container(
-                width: 36, height: 36,
+                width: 36,
+                height: 36,
                 decoration: BoxDecoration(
                   color: _teal.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(10),
@@ -52,15 +54,13 @@ class RecurringCard extends ConsumerWidget {
               loading: () => const LinearProgressIndicator(minHeight: 2),
               error: (_, __) => const SizedBox.shrink(),
               data: (pending) {
-                final total = pending.fold<double>(
-                    0, (s, o) => s + o.expectedAmount);
+                final total =
+                    pending.fold<double>(0, (s, o) => s + o.expectedAmount);
                 return Row(children: [
                   _Stat(
                     label: l10n.recurringPending,
                     value: '${pending.length}',
-                    color: pending.any((o) => o.isOverdue)
-                        ? Colors.red
-                        : _teal,
+                    color: pending.any((o) => o.isOverdue) ? Colors.red : _teal,
                   ),
                   const SizedBox(width: 24),
                   _Stat(

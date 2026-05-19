@@ -57,7 +57,8 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
   Future<void> _save() async {
     final gross = _parse(_grossCtrl.text);
     if (gross <= 0) {
-      context.showSuccessSnackBar(AppLocalizations.of(context).translate('enter_gross_salary'));
+      context.showSuccessSnackBar(
+          AppLocalizations.of(context).translate('enter_gross_salary'));
       return;
     }
     setState(() => _saving = true);
@@ -71,7 +72,8 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
       HapticFeedback.mediumImpact();
       if (mounted) {
         Navigator.pop(context);
-        context.showSuccessSnackBar(AppLocalizations.of(context).translate('salary_saved'));
+        context.showSuccessSnackBar(
+            AppLocalizations.of(context).translate('salary_saved'));
       }
     } catch (e) {
       if (mounted) {
@@ -172,38 +174,37 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide: BorderSide.none),
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 14),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 ),
               ),
               const SizedBox(height: 16),
 
               // ── Dependents ────────────────────────────────────────────────
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                      Text(l10n.dependents,
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: colors.onSurface)),
-                      Text(
-                          l10n.dependentsDeduction(FinancialCalculatorService.formatBRL(189.59 * _dependents)),
-                          style: TextStyle(
-                              fontSize: 11, color: colors.onSurfaceSoft)),
-                    ]),
-                    _Counter(
-                      value: _dependents,
-                      min: 0,
-                      max: 10,
-                      onChanged: (v) {
-                        setState(() => _dependents = v);
-                        _recompute();
-                      },
-                    ),
-                  ]),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(l10n.dependents,
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: colors.onSurface)),
+                  Text(
+                      l10n.dependentsDeduction(
+                          FinancialCalculatorService.formatBRL(
+                              189.59 * _dependents)),
+                      style:
+                          TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+                ]),
+                _Counter(
+                  value: _dependents,
+                  min: 0,
+                  max: 10,
+                  onChanged: (v) {
+                    setState(() => _dependents = v);
+                    _recompute();
+                  },
+                ),
+              ]),
               const SizedBox(height: 16),
 
               // ── Simplified deduction ──────────────────────────────────────
@@ -221,8 +222,8 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
                           fontWeight: FontWeight.w600,
                           color: colors.onSurface)),
                   subtitle: Text(l10n.simplifiedDeductionDesc,
-                      style: TextStyle(
-                          fontSize: 11, color: colors.onSurfaceSoft)),
+                      style:
+                          TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
                   value: _useSimplified,
                   activeThumbColor: _kGreen,
                   onChanged: (v) {
@@ -251,8 +252,8 @@ class _SalarySettingsSheetState extends ConsumerState<SalarySettingsSheet> {
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide: BorderSide.none),
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 14),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 ),
               ),
               const SizedBox(height: 20),
@@ -334,7 +335,8 @@ class _PreviewCard extends StatelessWidget {
                 color: Colors.white.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(20)),
             child: Text(
-              AppLocalizations.of(context).effectiveRateSuffix(result.effectiveRate.toStringAsFixed(1)),
+              AppLocalizations.of(context)
+                  .effectiveRateSuffix(result.effectiveRate.toStringAsFixed(1)),
               style: const TextStyle(
                   fontSize: 9,
                   color: Colors.white70,
@@ -356,8 +358,14 @@ class _PreviewCard extends StatelessWidget {
         const SizedBox(height: 14),
         Row(children: [
           _Stat(label: 'INSS', value: result.inss, color: Colors.white70),
-          _Stat(label: 'IRRF', value: result.irrf, color: const Color(0xFFFFB3B3)),
-          _Stat(label: 'FGTS*', value: result.fgts, color: const Color(0xFFB3E5FC)),
+          _Stat(
+              label: 'IRRF',
+              value: result.irrf,
+              color: const Color(0xFFFFB3B3)),
+          _Stat(
+              label: 'FGTS*',
+              value: result.fgts,
+              color: const Color(0xFFB3E5FC)),
         ]),
         if (result.reducaoMensal > 0) ...[
           const SizedBox(height: 10),
@@ -370,7 +378,8 @@ class _PreviewCard extends StatelessWidget {
               const Icon(Icons.info_outline, size: 12, color: Colors.white70),
               const SizedBox(width: 6),
               Text(
-                AppLocalizations.of(context).monthlyReductionApplied(FinancialCalculatorService.formatBRL(result.reducaoMensal)),
+                AppLocalizations.of(context).monthlyReductionApplied(
+                    FinancialCalculatorService.formatBRL(result.reducaoMensal)),
                 style: const TextStyle(fontSize: 10, color: Colors.white70),
               ),
             ]),
@@ -469,8 +478,7 @@ class _Btn extends StatelessWidget {
                 : context.colors.surfaceLow,
             borderRadius: BorderRadius.circular(8)),
         child: Icon(icon,
-            size: 16,
-            color: enabled ? _kGreen : context.colors.onSurfaceFaint),
+            size: 16, color: enabled ? _kGreen : context.colors.onSurfaceFaint),
       ),
     );
   }

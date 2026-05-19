@@ -24,8 +24,10 @@ class InstallmentsSummaryCard extends ConsumerWidget {
     final installments = instAsync.value ?? [];
     if (installments.isEmpty) return const SizedBox.shrink();
 
-    final totalMonthly = installments.fold(0.0, (s, i) => s + i.installmentAmount);
-    final totalRemaining = installments.fold(0.0, (s, i) => s + i.remainingAmount);
+    final totalMonthly =
+        installments.fold(0.0, (s, i) => s + i.installmentAmount);
+    final totalRemaining =
+        installments.fold(0.0, (s, i) => s + i.remainingAmount);
 
     return DSCard(
       onTap: () => Navigator.pushNamed(context, '/installments'),
@@ -145,7 +147,8 @@ class _InstallmentMetric extends StatelessWidget {
             fontSize: 9,
             letterSpacing: 0.8,
             fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+            color:
+                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
           ),
         ),
         const SizedBox(height: 3),

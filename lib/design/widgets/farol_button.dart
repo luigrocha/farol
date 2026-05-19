@@ -53,7 +53,8 @@ class FarolButton extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: tokens.FarolColors.beam,
               foregroundColor: tokens.FarolColors.navyDeep,
-              disabledBackgroundColor: tokens.FarolColors.beam.withValues(alpha: 0.5),
+              disabledBackgroundColor:
+                  tokens.FarolColors.beam.withValues(alpha: 0.5),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
               elevation: 0,
@@ -82,8 +83,8 @@ class FarolButton extends StatelessWidget {
           onPressed: loading ? null : onPressed,
           style: TextButton.styleFrom(
             foregroundColor: tokens.FarolColors.navy,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
           child: child,
         );

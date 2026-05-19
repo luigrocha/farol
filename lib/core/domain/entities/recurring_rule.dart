@@ -14,10 +14,14 @@ enum RecurringFrequency {
   /// Localized label — use in widget build() methods.
   String localizedLabel(String languageCode) => switch (this) {
         weekly => AppLocalizations.translateStatic(languageCode, 'freq_weekly'),
-        biweekly => AppLocalizations.translateStatic(languageCode, 'freq_biweekly'),
-        monthly => AppLocalizations.translateStatic(languageCode, 'freq_monthly'),
-        quarterly => AppLocalizations.translateStatic(languageCode, 'freq_quarterly'),
-        semiannual => AppLocalizations.translateStatic(languageCode, 'freq_semiannual'),
+        biweekly =>
+          AppLocalizations.translateStatic(languageCode, 'freq_biweekly'),
+        monthly =>
+          AppLocalizations.translateStatic(languageCode, 'freq_monthly'),
+        quarterly =>
+          AppLocalizations.translateStatic(languageCode, 'freq_quarterly'),
+        semiannual =>
+          AppLocalizations.translateStatic(languageCode, 'freq_semiannual'),
         yearly => AppLocalizations.translateStatic(languageCode, 'freq_yearly'),
       };
 }
@@ -127,8 +131,8 @@ class RecurringRule {
         name: json['name'] as String,
         description: json['description'] as String?,
         baseAmount: (json['base_amount'] as num).toDouble(),
-        amountType: AmountType.fromString(
-            (json['amount_type'] as String?) ?? 'fixed'),
+        amountType:
+            AmountType.fromString((json['amount_type'] as String?) ?? 'fixed'),
         amountMin: (json['amount_min'] as num?)?.toDouble(),
         amountMax: (json['amount_max'] as num?)?.toDouble(),
         frequency: RecurringFrequency.fromString(json['frequency'] as String),
@@ -142,15 +146,14 @@ class RecurringRule {
             ? DateTime.parse(json['ends_on'] as String)
             : null,
         endsAfterN: json['ends_after_n'] as int?,
-        status: RecurringStatus.fromString(
-            (json['status'] as String?) ?? 'active'),
+        status:
+            RecurringStatus.fromString((json['status'] as String?) ?? 'active'),
         pausedUntil: json['paused_until'] != null
             ? DateTime.parse(json['paused_until'] as String)
             : null,
         paymentMethod: json['payment_method'] as String?,
         isAutoDetected: (json['is_auto_detected'] as bool?) ?? false,
-        detectionConfidence:
-            (json['detection_confidence'] as num?)?.toDouble(),
+        detectionConfidence: (json['detection_confidence'] as num?)?.toDouble(),
         legacyExpenseId: json['legacy_expense_id'] as int?,
         createdAt: DateTime.parse(json['created_at'] as String),
         updatedAt: DateTime.parse(json['updated_at'] as String),

@@ -16,7 +16,8 @@ class RescissionSimulatorScreen extends ConsumerStatefulWidget {
       _RescissionSimulatorScreenState();
 }
 
-class _RescissionSimulatorScreenState extends ConsumerState<RescissionSimulatorScreen> {
+class _RescissionSimulatorScreenState
+    extends ConsumerState<RescissionSimulatorScreen> {
   final _salaryCtrl = TextEditingController();
   final _monthsCtrl = TextEditingController(text: '12');
   final _vacationCtrl = TextEditingController(text: '0.00');
@@ -41,7 +42,14 @@ class _RescissionSimulatorScreenState extends ConsumerState<RescissionSimulatorS
     final vacation = _parse(_vacationCtrl.text);
     final fgts = _parse(_fgtsCtrl.text);
 
-    if (salary == null || salary <= 0 || months == null || months < 0 || vacation == null || vacation < 0 || fgts == null || fgts < 0) return;
+    if (salary == null ||
+        salary <= 0 ||
+        months == null ||
+        months < 0 ||
+        vacation == null ||
+        vacation < 0 ||
+        fgts == null ||
+        fgts < 0) return;
 
     setState(() {
       _result = _RescissionResult.compute(
@@ -60,12 +68,17 @@ class _RescissionSimulatorScreenState extends ConsumerState<RescissionSimulatorS
     return Scaffold(
       backgroundColor: colors.surfaceLow,
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
-        title: Text('Simulador de Rescisão', style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700)),
+        leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context)),
+        title: Text('Simulador de Rescisão',
+            style:
+                GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700)),
         backgroundColor: colors.surfaceLow,
         elevation: 0,
         actions: const [
-          FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          FarolMark(
+              size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
           SizedBox(width: 16),
         ],
       ),
@@ -112,9 +125,15 @@ class _InputCard extends StatelessWidget {
     final colors = context.colors;
     return Container(
       padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(24)),
+      decoration: BoxDecoration(
+          color: colors.surfaceLowest, borderRadius: BorderRadius.circular(24)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('DADOS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1.6, color: colors.onSurfaceFaint)),
+        Text('DADOS',
+            style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.6,
+                color: colors.onSurfaceFaint)),
         const SizedBox(height: 16),
         _TextField(
           label: 'Salário Bruto Mensal (R\$)',
@@ -149,10 +168,13 @@ class _InputCard extends StatelessWidget {
               backgroundColor: tokens.FarolColors.navy,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
               elevation: 0,
             ),
-            child: Text('Calcular', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700)),
+            child: Text('Calcular',
+                style: GoogleFonts.manrope(
+                    fontSize: 15, fontWeight: FontWeight.w700)),
           ),
         ),
       ]),
@@ -180,16 +202,24 @@ class _TextField extends StatelessWidget {
       const SizedBox(height: 4),
       TextField(
         controller: controller,
-        keyboardType: keyboardType ?? const TextInputType.numberWithOptions(decimal: true),
+        keyboardType: keyboardType ??
+            const TextInputType.numberWithOptions(decimal: true),
         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))],
-        style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700, color: colors.onSurface),
+        style: GoogleFonts.inter(
+            fontSize: 18, fontWeight: FontWeight.w700, color: colors.onSurface),
         decoration: InputDecoration(
           prefixText: 'R\$ ',
-          prefixStyle: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurfaceMuted),
+          prefixStyle: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: colors.onSurfaceMuted),
           filled: true,
           fillColor: colors.surfaceLow,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
       ),
     ]);
@@ -212,19 +242,41 @@ class _ResultCard extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [Color(0xFF244A72), tokens.FarolColors.navy],
         ),
-        boxShadow: [BoxShadow(color: tokens.FarolColors.navy.withValues(alpha: 0.25), blurRadius: 20, offset: const Offset(0, 10))],
+        boxShadow: [
+          BoxShadow(
+              color: tokens.FarolColors.navy.withValues(alpha: 0.25),
+              blurRadius: 20,
+              offset: const Offset(0, 10))
+        ],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('TOTAL ESTIMADO', style: TextStyle(fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: Colors.white70)),
+        const Text('TOTAL ESTIMADO',
+            style: TextStyle(
+                fontSize: 10,
+                letterSpacing: 1.5,
+                fontWeight: FontWeight.w700,
+                color: Colors.white70)),
         const SizedBox(height: 4),
         _BigBRL(value: result.totalNet, size: 36, color: Colors.white),
         const SizedBox(height: 20),
         const Divider(color: Colors.white24, height: 1),
         const SizedBox(height: 16),
         Row(children: [
-          Expanded(child: _MiniStat(label: '13º Prop.', value: result.proportional13th, color: Colors.white)),
-          Expanded(child: _MiniStat(label: 'Férias', value: result.unusedVacationPay, color: Colors.white)),
-          Expanded(child: _MiniStat(label: 'Multa FGTS', value: result.fgtsFine, color: Colors.white)),
+          Expanded(
+              child: _MiniStat(
+                  label: '13º Prop.',
+                  value: result.proportional13th,
+                  color: Colors.white)),
+          Expanded(
+              child: _MiniStat(
+                  label: 'Férias',
+                  value: result.unusedVacationPay,
+                  color: Colors.white)),
+          Expanded(
+              child: _MiniStat(
+                  label: 'Multa FGTS',
+                  value: result.fgtsFine,
+                  color: Colors.white)),
         ]),
       ]),
     );
@@ -240,19 +292,40 @@ class _DetailsCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: context.colors.surfaceLowest, borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+          color: context.colors.surfaceLowest,
+          borderRadius: BorderRadius.circular(20)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('DETALHAMENTO', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1.6, color: context.colors.onSurfaceFaint)),
+        Text('DETALHAMENTO',
+            style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.6,
+                color: context.colors.onSurfaceFaint)),
         const SizedBox(height: 16),
-        _DetailRow(label: '13º Salário Proporcional', value: result.proportional13th),
-        _DetailRow(label: 'Férias Proporcionais/Vencidas', value: result.unusedVacationPay),
-        _DetailRow(label: 'Multa FGTS (40%)', value: result.fgtsFine, color: tokens.FarolColors.beam),
+        _DetailRow(
+            label: '13º Salário Proporcional', value: result.proportional13th),
+        _DetailRow(
+            label: 'Férias Proporcionais/Vencidas',
+            value: result.unusedVacationPay),
+        _DetailRow(
+            label: 'Multa FGTS (40%)',
+            value: result.fgtsFine,
+            color: tokens.FarolColors.beam),
         const Divider(height: 32),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Total Líquido', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.onSurface)),
-            Text(FinancialCalculatorService.formatBRL(result.totalNet), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: tokens.FarolColors.navy)),
+            Text('Total Líquido',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.onSurface)),
+            Text(FinancialCalculatorService.formatBRL(result.totalNet),
+                style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: tokens.FarolColors.navy)),
           ],
         ),
       ]),
@@ -274,8 +347,14 @@ class _DetailRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: 14, color: context.colors.onSurfaceSoft)),
-          Text(FinancialCalculatorService.formatBRL(value), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: color ?? context.colors.onSurface)),
+          Text(label,
+              style:
+                  TextStyle(fontSize: 14, color: context.colors.onSurfaceSoft)),
+          Text(FinancialCalculatorService.formatBRL(value),
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: color ?? context.colors.onSurface)),
         ],
       ),
     );
@@ -298,9 +377,22 @@ class _BigBRL extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
       children: [
-        Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.44, fontWeight: FontWeight.w500, color: c.withValues(alpha: 0.8))),
-        Text(integer.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: FontWeight.w800, color: c, letterSpacing: -size * 0.025)),
-        Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.52, fontWeight: FontWeight.w700, color: c.withValues(alpha: 0.8))),
+        Text('R\$ ',
+            style: GoogleFonts.manrope(
+                fontSize: size * 0.44,
+                fontWeight: FontWeight.w500,
+                color: c.withValues(alpha: 0.8))),
+        Text(integer.replaceFirst('R\$ ', ''),
+            style: GoogleFonts.manrope(
+                fontSize: size,
+                fontWeight: FontWeight.w800,
+                color: c,
+                letterSpacing: -size * 0.025)),
+        Text(',$cents',
+            style: GoogleFonts.manrope(
+                fontSize: size * 0.52,
+                fontWeight: FontWeight.w700,
+                color: c.withValues(alpha: 0.8))),
       ],
     );
   }
@@ -310,14 +402,24 @@ class _MiniStat extends StatelessWidget {
   final String label;
   final double value;
   final Color color;
-  const _MiniStat({required this.label, required this.value, required this.color});
+  const _MiniStat(
+      {required this.label, required this.value, required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label, style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: color.withValues(alpha: 0.7))),
+      Text(label,
+          style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.w700,
+              color: color.withValues(alpha: 0.7))),
       const SizedBox(height: 2),
-      Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: color, fontFeatures: const [FontFeature.tabularFigures()])),
+      Text(FinancialCalculatorService.formatBRL(value),
+          style: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: color,
+              fontFeatures: const [FontFeature.tabularFigures()])),
     ]);
   }
 }

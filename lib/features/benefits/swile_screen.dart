@@ -37,9 +37,11 @@ class SwileScreen extends ConsumerWidget {
             icon: const Icon(Icons.arrow_back),
             onPressed: () => Navigator.pop(context)),
         title: Text(l10n.corporateBenefits,
-            style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700)),
+            style:
+                GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700)),
         actions: const [
-          FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          FarolMark(
+              size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
           SizedBox(width: 16),
         ],
       ),
@@ -51,7 +53,9 @@ class SwileScreen extends ConsumerWidget {
             const SizedBox(height: 4),
             Text('Swile',
                 style: GoogleFonts.manrope(
-                    fontSize: 32, fontWeight: FontWeight.w800, letterSpacing: -0.8)),
+                    fontSize: 32,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.8)),
             const SizedBox(height: 18),
 
             // Virtual Card
@@ -101,11 +105,13 @@ class SwileScreen extends ConsumerWidget {
                               fontWeight: FontWeight.w700,
                               color: Colors.white70)),
                       const SizedBox(height: 4),
-                      _BRLBig(value: swileRemaining, size: 30, color: Colors.white),
+                      _BRLBig(
+                          value: swileRemaining, size: 30, color: Colors.white),
                       const SizedBox(height: 6),
                       Text(
                         'de ${FinancialCalculatorService.formatBRL(swileTotal)} total',
-                        style: const TextStyle(fontSize: 11, color: Colors.white60),
+                        style: const TextStyle(
+                            fontSize: 11, color: Colors.white60),
                       ),
                       const SizedBox(height: 18),
                       Row(
@@ -166,7 +172,9 @@ class SwileScreen extends ConsumerWidget {
                     (_) => const Padding(
                           padding: EdgeInsets.only(bottom: 8),
                           child: ShimmerBox(
-                              width: double.infinity, height: 68, borderRadius: 16),
+                              width: double.infinity,
+                              height: 68,
+                              borderRadius: 16),
                         )),
               ),
               error: (_, __) => Padding(
@@ -200,8 +208,7 @@ class SwileScreen extends ConsumerWidget {
                   children: txList
                       .take(20)
                       .map((tx) => _TxSwile(
-                            name: tx.storeDescription ??
-                                tx.category,
+                            name: tx.storeDescription ?? tx.category,
                             paymentMethod: tx.paymentMethod,
                             date: tx.createdAt,
                             value: tx.amount,
@@ -276,11 +283,13 @@ class _TxSwile extends StatelessWidget {
     final txDay = DateTime(date.year, date.month, date.day);
     String dateLabel;
     if (txDay == today) {
-      dateLabel = 'Hoje · ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+      dateLabel =
+          'Hoje · ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
     } else if (txDay == today.subtract(const Duration(days: 1))) {
       dateLabel = 'Ontem';
     } else {
-      dateLabel = '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}';
+      dateLabel =
+          '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}';
     }
 
     return Container(
@@ -296,8 +305,8 @@ class _TxSwile extends StatelessWidget {
             decoration: BoxDecoration(
                 color: const Color(0xFFF97366).withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10)),
-            child:
-                const Icon(Icons.restaurant, size: 16, color: Color(0xFFE84840)),
+            child: const Icon(Icons.restaurant,
+                size: 16, color: Color(0xFFE84840)),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -311,8 +320,7 @@ class _TxSwile extends StatelessWidget {
                         color: colors.onSurface),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis),
-                Text(
-                    '${paymentMethod.toUpperCase()} · $dateLabel',
+                Text('${paymentMethod.toUpperCase()} · $dateLabel',
                     style: TextStyle(
                         fontSize: 10,
                         letterSpacing: 0.8,
@@ -344,7 +352,9 @@ class _BRLBig extends StatelessWidget {
         children: [
           Text('R\$ ',
               style: GoogleFonts.manrope(
-                  fontSize: size * 0.48, fontWeight: FontWeight.w500, color: c)),
+                  fontSize: size * 0.48,
+                  fontWeight: FontWeight.w500,
+                  color: c)),
           Text(f.replaceFirst('R\$ ', ''),
               style: GoogleFonts.manrope(
                   fontSize: size,

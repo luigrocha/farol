@@ -11,7 +11,8 @@ import '../../design/farol_colors.dart' as tokens;
 class AddInvestmentBottomSheet extends ConsumerStatefulWidget {
   const AddInvestmentBottomSheet({super.key});
   @override
-  ConsumerState<AddInvestmentBottomSheet> createState() => _AddInvestmentState();
+  ConsumerState<AddInvestmentBottomSheet> createState() =>
+      _AddInvestmentState();
 }
 
 class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
@@ -51,150 +52,200 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.fromLTRB(20, 12, 20, bottom + 20),
-      child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-        // Handle
-        Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.outline, borderRadius: BorderRadius.circular(2)))),
-        const SizedBox(height: 16),
+      child: SingleChildScrollView(
+          child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+            // Handle
+            Center(
+                child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.outline,
+                        borderRadius: BorderRadius.circular(2)))),
+            const SizedBox(height: 16),
 
-        // Header
-        Center(child: Text(l10n.addInvestment, style: Theme.of(context).textTheme.titleLarge)),
-        const SizedBox(height: 24),
+            // Header
+            Center(
+                child: Text(l10n.addInvestment,
+                    style: Theme.of(context).textTheme.titleLarge)),
+            const SizedBox(height: 24),
 
-        // Type selector — horizontal scroll
-        Text(l10n.translate('type'), style: Theme.of(context).textTheme.labelLarge),
-        const SizedBox(height: 8),
-        SizedBox(height: 48, child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: InvestmentType.values.map((t) {
-            final sel = _type == t;
-            final c = tokens.FarolColors.getCategoryColor(t.dbValue);
-            return GestureDetector(
-              onTap: () => setState(() => _type = t),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                margin: const EdgeInsets.only(right: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                decoration: BoxDecoration(
-                  color: sel ? c.withValues(alpha: 0.12) : colors.surfaceLowest,
-                  borderRadius: BorderRadius.circular(99),
-                  border: Border.all(color: sel ? c : colors.surfaceLowest, width: sel ? 1.5 : 1),
-                ),
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Text(t.emoji, style: const TextStyle(fontSize: 14)),
-                  const SizedBox(width: 6),
-                  Text(t.label, style: TextStyle(
-                    fontSize: 12, fontWeight: sel ? FontWeight.w700 : FontWeight.w500,
-                    color: sel ? c : colors.onSurfaceSoft,
-                  )),
-                ]),
+            // Type selector — horizontal scroll
+            Text(l10n.translate('type'),
+                style: Theme.of(context).textTheme.labelLarge),
+            const SizedBox(height: 8),
+            SizedBox(
+                height: 48,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: InvestmentType.values.map((t) {
+                    final sel = _type == t;
+                    final c = tokens.FarolColors.getCategoryColor(t.dbValue);
+                    return GestureDetector(
+                      onTap: () => setState(() => _type = t),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 180),
+                        margin: const EdgeInsets.only(right: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: sel
+                              ? c.withValues(alpha: 0.12)
+                              : colors.surfaceLowest,
+                          borderRadius: BorderRadius.circular(99),
+                          border: Border.all(
+                              color: sel ? c : colors.surfaceLowest,
+                              width: sel ? 1.5 : 1),
+                        ),
+                        child: Row(mainAxisSize: MainAxisSize.min, children: [
+                          Text(t.emoji, style: const TextStyle(fontSize: 14)),
+                          const SizedBox(width: 6),
+                          Text(t.label,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight:
+                                    sel ? FontWeight.w700 : FontWeight.w500,
+                                color: sel ? c : colors.onSurfaceSoft,
+                              )),
+                        ]),
+                      ),
+                    );
+                  }).toList(),
+                )),
+            const SizedBox(height: 20),
+
+            // Amount — big
+            Text(l10n.amountInvested,
+                style: Theme.of(context).textTheme.labelLarge),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _amountCtrl,
+              autofocus: true,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[\d.,]'))
+              ],
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineMedium
+                  ?.copyWith(fontWeight: FontWeight.w700, color: typeColor),
+              decoration: InputDecoration(
+                prefixText: 'R\$ ',
+                hintText: '0,00',
+                prefixStyle: TextStyle(
+                    fontSize: 16, color: typeColor.withValues(alpha: 0.6)),
               ),
-            );
-          }).toList(),
-        )),
-        const SizedBox(height: 20),
-
-        // Amount — big
-        Text(l10n.amountInvested, style: Theme.of(context).textTheme.labelLarge),
-        const SizedBox(height: 8),
-        TextField(
-          controller: _amountCtrl,
-          autofocus: true,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.,]'))],
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.w700, color: typeColor),
-          decoration: InputDecoration(
-            prefixText: 'R\$ ',
-            hintText: '0,00',
-            prefixStyle: TextStyle(fontSize: 16, color: typeColor.withValues(alpha: 0.6)),
-          ),
-        ),
-        const SizedBox(height: 4),
-
-        // Current balance toggle
-        Row(children: [
-          Checkbox(
-            value: _balanceDiffers,
-            onChanged: (v) => setState(() { _balanceDiffers = v!; if (!v) _balanceCtrl.clear(); }),
-            visualDensity: VisualDensity.compact,
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          Text(l10n.currentBalanceDiffers, style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
-        ]),
-        if (_balanceDiffers) ...[
-          const SizedBox(height: 8),
-          TextField(
-            controller: _balanceCtrl,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.,]'))],
-            decoration: InputDecoration(labelText: l10n.translate('current_balance_input'), prefixText: 'R\$ '),
-          ),
-        ],
-        const SizedBox(height: 16),
-
-        // Product + Institution
-        TextField(
-          controller: _productCtrl,
-          textCapitalization: TextCapitalization.words,
-          decoration: InputDecoration(
-            labelText: l10n.translate('product_name'),
-            prefixIcon: const Icon(Icons.label_outline),
-          ),
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: _institutionCtrl,
-          textCapitalization: TextCapitalization.words,
-          decoration: InputDecoration(
-            labelText: l10n.translate('institution'),
-            prefixIcon: const Icon(Icons.account_balance_outlined),
-          ),
-        ),
-        const SizedBox(height: 12),
-
-        // Date
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: Icon(Icons.calendar_today, color: colors.onSurfaceMuted),
-          title: Text(
-            '${_dateAdded.day.toString().padLeft(2, '0')}/${_dateAdded.month.toString().padLeft(2, '0')}/${_dateAdded.year}',
-            style: const TextStyle(fontSize: 14),
-          ),
-          trailing: Icon(Icons.chevron_right, color: colors.onSurfaceMuted),
-          onTap: () async {
-            final d = await showDatePicker(
-              context: context, initialDate: _dateAdded,
-              firstDate: DateTime(2010), lastDate: DateTime(2030),
-            );
-            if (d != null) setState(() => _dateAdded = d);
-          },
-        ),
-
-        // Notes
-        TextField(
-          controller: _notesCtrl,
-          decoration: InputDecoration(
-            labelText: l10n.translate('notes_optional'),
-            prefixIcon: Icon(Icons.notes, color: colors.onSurfaceMuted),
-          ),
-        ),
-        const SizedBox(height: 24),
-
-        // Save
-        SizedBox(width: double.infinity, height: 52,
-          child: ElevatedButton(
-            onPressed: _saving ? null : _save,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: typeColor, foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              elevation: 0,
             ),
-            child: _saving
-                ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : Text(l10n.save.toUpperCase(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-          )),
-      ])),
+            const SizedBox(height: 4),
+
+            // Current balance toggle
+            Row(children: [
+              Checkbox(
+                value: _balanceDiffers,
+                onChanged: (v) => setState(() {
+                  _balanceDiffers = v!;
+                  if (!v) _balanceCtrl.clear();
+                }),
+                visualDensity: VisualDensity.compact,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              Text(l10n.currentBalanceDiffers,
+                  style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
+            ]),
+            if (_balanceDiffers) ...[
+              const SizedBox(height: 8),
+              TextField(
+                controller: _balanceCtrl,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[\d.,]'))
+                ],
+                decoration: InputDecoration(
+                    labelText: l10n.translate('current_balance_input'),
+                    prefixText: 'R\$ '),
+              ),
+            ],
+            const SizedBox(height: 16),
+
+            // Product + Institution
+            TextField(
+              controller: _productCtrl,
+              textCapitalization: TextCapitalization.words,
+              decoration: InputDecoration(
+                labelText: l10n.translate('product_name'),
+                prefixIcon: const Icon(Icons.label_outline),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _institutionCtrl,
+              textCapitalization: TextCapitalization.words,
+              decoration: InputDecoration(
+                labelText: l10n.translate('institution'),
+                prefixIcon: const Icon(Icons.account_balance_outlined),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Date
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.calendar_today, color: colors.onSurfaceMuted),
+              title: Text(
+                '${_dateAdded.day.toString().padLeft(2, '0')}/${_dateAdded.month.toString().padLeft(2, '0')}/${_dateAdded.year}',
+                style: const TextStyle(fontSize: 14),
+              ),
+              trailing: Icon(Icons.chevron_right, color: colors.onSurfaceMuted),
+              onTap: () async {
+                final d = await showDatePicker(
+                  context: context,
+                  initialDate: _dateAdded,
+                  firstDate: DateTime(2010),
+                  lastDate: DateTime(2030),
+                );
+                if (d != null) setState(() => _dateAdded = d);
+              },
+            ),
+
+            // Notes
+            TextField(
+              controller: _notesCtrl,
+              decoration: InputDecoration(
+                labelText: l10n.translate('notes_optional'),
+                prefixIcon: Icon(Icons.notes, color: colors.onSurfaceMuted),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Save
+            SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: _saving ? null : _save,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: typeColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
+                    elevation: 0,
+                  ),
+                  child: _saving
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white))
+                      : Text(l10n.save.toUpperCase(),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w700)),
+                )),
+          ])),
     );
   }
 
@@ -203,9 +254,8 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
     final productName = _productCtrl.text.trim();
     final institution = _institutionCtrl.text.trim();
     final totalInvested = _parseBRL(_amountCtrl.text);
-    final currentBalance = _balanceDiffers
-        ? _parseBRL(_balanceCtrl.text)
-        : totalInvested;
+    final currentBalance =
+        _balanceDiffers ? _parseBRL(_balanceCtrl.text) : totalInvested;
 
     if (productName.isEmpty) {
       _snack(l10n.translate('enter_product_name'));
@@ -228,15 +278,16 @@ class _AddInvestmentState extends ConsumerState<AddInvestmentBottomSheet> {
     try {
       final balance = currentBalance ?? totalInvested;
       await ref.read(investmentRepositoryProvider).insert(
-        type: _type.dbValue,
-        productName: productName,
-        institution: institution,
-        dateAdded: _dateAdded,
-        totalInvested: totalInvested,
-        currentBalance: balance,
-        returnAmount: balance - totalInvested,
-        notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
-      );
+            type: _type.dbValue,
+            productName: productName,
+            institution: institution,
+            dateAdded: _dateAdded,
+            totalInvested: totalInvested,
+            currentBalance: balance,
+            returnAmount: balance - totalInvested,
+            notes:
+                _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
+          );
       HapticFeedback.mediumImpact();
       if (mounted) {
         Navigator.pop(context);

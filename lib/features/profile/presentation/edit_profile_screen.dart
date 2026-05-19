@@ -46,7 +46,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     _jobTitleCtrl = TextEditingController(text: profile?.jobTitle ?? '');
     _companyCtrl = TextEditingController(text: profile?.company ?? '');
     _cpfCtrl = TextEditingController(
-      text: profile?.cpf != null ? CpfInputFormatter.formatCpf(profile!.cpf!) : '',
+      text: profile?.cpf != null
+          ? CpfInputFormatter.formatCpf(profile!.cpf!)
+          : '',
     );
     _initialized = true;
   }
@@ -61,8 +63,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           uid: uid,
           name: _nameCtrl.text.trim(),
           phone: _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
-          jobTitle: _jobTitleCtrl.text.trim().isEmpty ? null : _jobTitleCtrl.text.trim(),
-          company: _companyCtrl.text.trim().isEmpty ? null : _companyCtrl.text.trim(),
+          jobTitle: _jobTitleCtrl.text.trim().isEmpty
+              ? null
+              : _jobTitleCtrl.text.trim(),
+          company: _companyCtrl.text.trim().isEmpty
+              ? null
+              : _companyCtrl.text.trim(),
           cpf: cpfDigits.isEmpty ? null : cpfDigits,
         );
 
@@ -71,7 +77,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     }
   }
 
-  Future<void> _confirmDeleteAccount(BuildContext context, AppLocalizations l10n) async {
+  Future<void> _confirmDeleteAccount(
+      BuildContext context, AppLocalizations l10n) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -84,7 +91,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            style: FilledButton.styleFrom(backgroundColor: tokens.FarolColors.coral),
+            style: FilledButton.styleFrom(
+                backgroundColor: tokens.FarolColors.coral),
             child: Text(l10n.deleteAccountConfirm),
           ),
         ],
@@ -113,11 +121,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     });
 
     return profileAsync.when(
-      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (e, _) => Scaffold(body: Center(child: Text(e.toString()))),
       data: (profile) {
         _initControllers(profile);
-        final email = Supabase.instance.client.auth.currentUser?.email ?? profile?.email ?? '';
+        final email = Supabase.instance.client.auth.currentUser?.email ??
+            profile?.email ??
+            '';
         final initials = _initials(profile?.displayName ?? email);
 
         return Scaffold(
@@ -149,7 +160,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         ),
                       ),
               ),
-              const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+              const FarolMark(
+                  size: FarolBrand.markSizeCompact,
+                  variant: FarolLogoVariant.dark),
               const SizedBox(width: 16),
             ],
           ),
@@ -171,8 +184,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       label: l10n.name,
                       icon: Icons.person_outline,
                       colors: colors,
-                      validator: (v) =>
-                          (v == null || v.trim().isEmpty) ? l10n.nameRequired : null,
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? l10n.nameRequired
+                          : null,
                     ),
                     _Divider(),
                     _EditRow(
@@ -232,8 +246,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       icon: Icons.lock_outline,
                       colors: colors,
                       onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const PasswordResetScreen()),
-              ),
+                        MaterialPageRoute(
+                            builder: (_) => const PasswordResetScreen()),
+                      ),
                     ),
                     _Divider(),
                     _ActionRow(
@@ -264,7 +279,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     if (parts.length == 1) return parts[0][0].toUpperCase();
     return '${parts[0][0]}${parts[parts.length - 1][0]}'.toUpperCase();
   }
-
 }
 
 // ─── Avatar Section ───────────────────────────────────────────────────────────
@@ -311,7 +325,8 @@ class _AvatarSectionState extends ConsumerState<_AvatarSection> {
     } catch (e) {
       if (mounted) {
         // ignore: use_build_context_synchronously
-        context.showErrorSnackBar(AppLocalizations.of(context).uploadPhotoError);
+        context
+            .showErrorSnackBar(AppLocalizations.of(context).uploadPhotoError);
       }
     } finally {
       if (mounted) setState(() => _isUploading = false);
@@ -342,7 +357,8 @@ class _AvatarSectionState extends ConsumerState<_AvatarSection> {
               ),
               Text(
                 l10n.changePhoto,
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                style:
+                    const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
               ),
               const SizedBox(height: 8),
               ListTile(
@@ -377,7 +393,8 @@ class _AvatarSectionState extends ConsumerState<_AvatarSection> {
             radius: 48,
             backgroundColor: tokens.FarolColors.navy,
             backgroundImage: _isValidUrl(widget.photoUrl)
-                ? NetworkImage('${widget.photoUrl}?v=${widget.photoUrl.hashCode}')
+                ? NetworkImage(
+                    '${widget.photoUrl}?v=${widget.photoUrl.hashCode}')
                 : null,
             child: _isUploading
                 ? const CircularProgressIndicator(
@@ -407,9 +424,15 @@ class _AvatarSectionState extends ConsumerState<_AvatarSection> {
                 decoration: const BoxDecoration(
                   color: tokens.FarolColors.beam,
                   shape: BoxShape.circle,
-                  boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 4,
+                        offset: Offset(0, 2))
+                  ],
                 ),
-                child: const Icon(Icons.camera_alt, size: 16, color: Colors.white),
+                child:
+                    const Icon(Icons.camera_alt, size: 16, color: Colors.white),
               ),
             ),
           ),
@@ -497,7 +520,8 @@ class _EditRow extends StatelessWidget {
               style: TextStyle(fontSize: 15, color: colors.onSurface),
               decoration: InputDecoration(
                 labelText: label,
-                labelStyle: TextStyle(fontSize: 13, color: colors.onSurfaceSoft),
+                labelStyle:
+                    TextStyle(fontSize: 13, color: colors.onSurfaceSoft),
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(vertical: 14),
@@ -540,13 +564,18 @@ class _ReadOnlyRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: TextStyle(fontSize: 12, color: colors.onSurfaceFaint)),
+                Text(label,
+                    style:
+                        TextStyle(fontSize: 12, color: colors.onSurfaceFaint)),
                 const SizedBox(height: 2),
-                Text(value, style: TextStyle(fontSize: 15, color: colors.onSurfaceMuted)),
+                Text(value,
+                    style:
+                        TextStyle(fontSize: 15, color: colors.onSurfaceMuted)),
               ],
             ),
           ),
-          if (verified) _VerifiedBadge(label: AppLocalizations.of(context).verified),
+          if (verified)
+            _VerifiedBadge(label: AppLocalizations.of(context).verified),
         ],
       ),
     );
@@ -579,7 +608,9 @@ class _ActionRow extends StatelessWidget {
           children: [
             Icon(icon, size: 18, color: colors.onSurfaceSoft),
             const SizedBox(width: 12),
-            Expanded(child: Text(label, style: TextStyle(fontSize: 15, color: colors.onSurface))),
+            Expanded(
+                child: Text(label,
+                    style: TextStyle(fontSize: 15, color: colors.onSurface))),
             Icon(Icons.chevron_right, size: 18, color: colors.onSurfaceFaint),
           ],
         ),
@@ -599,7 +630,8 @@ class _VerifiedBadge extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Icon(Icons.check_circle, size: 14, color: tokens.FarolColors.tide),
+        const Icon(Icons.check_circle,
+            size: 14, color: tokens.FarolColors.tide),
         const SizedBox(width: 4),
         Text(
           label,
@@ -640,8 +672,11 @@ class _DeleteAccountButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton.icon(
       onPressed: onTap,
-      icon: const Icon(Icons.delete_outline, size: 18, color: tokens.FarolColors.coral),
-      label: Text(label, style: const TextStyle(color: tokens.FarolColors.coral, fontWeight: FontWeight.w600)),
+      icon: const Icon(Icons.delete_outline,
+          size: 18, color: tokens.FarolColors.coral),
+      label: Text(label,
+          style: const TextStyle(
+              color: tokens.FarolColors.coral, fontWeight: FontWeight.w600)),
       style: OutlinedButton.styleFrom(
         side: const BorderSide(color: tokens.FarolColors.coral, width: 1),
         padding: const EdgeInsets.symmetric(vertical: 14),

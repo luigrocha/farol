@@ -50,8 +50,18 @@ class FinancialPeriod {
 
   String get label {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     final s = '${start.day} ${months[start.month - 1]}';
     final e = '${end.day} ${months[end.month - 1]}';

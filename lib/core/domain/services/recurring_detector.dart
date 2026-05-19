@@ -72,7 +72,8 @@ class RecurringDetector {
 
     for (final expense in history) {
       if (expense.isProjected) continue;
-      if (expense.installmentPlanId != null || expense.installmentPlanUuid != null) continue;
+      if (expense.installmentPlanId != null ||
+          expense.installmentPlanUuid != null) continue;
 
       final desc = (expense.storeDescription ?? '').trim().toLowerCase();
       if (desc.isEmpty) continue;
@@ -85,8 +86,7 @@ class RecurringDetector {
     return _mergeByAmount(groups);
   }
 
-  Map<String, List<Expense>> _mergeByAmount(
-      Map<String, List<Expense>> groups) {
+  Map<String, List<Expense>> _mergeByAmount(Map<String, List<Expense>> groups) {
     // For this impl, we keep groups as-is (already keyed by desc+category)
     // and simply filter out groups whose amount variance is too high.
     final result = <String, List<Expense>>{};
@@ -94,8 +94,10 @@ class RecurringDetector {
       final amounts = entry.value.map((e) => e.amount).toList();
       final median = _median(amounts);
       // All expenses within ±5% of median → treat as same recurrent
-      final filtered =
-          entry.value.where((e) => (e.amount - median).abs() / median <= _amountVarianceTolerance).toList();
+      final filtered = entry.value
+          .where((e) =>
+              (e.amount - median).abs() / median <= _amountVarianceTolerance)
+          .toList();
       if (filtered.length >= _minOccurrences) {
         result[entry.key] = filtered;
       }
@@ -111,8 +113,10 @@ class RecurringDetector {
 
     final intervals = <int>[];
     for (int i = 1; i < sorted.length; i++) {
-      intervals.add(
-          sorted[i].transactionDate.difference(sorted[i - 1].transactionDate).inDays);
+      intervals.add(sorted[i]
+          .transactionDate
+          .difference(sorted[i - 1].transactionDate)
+          .inDays);
     }
 
     if (intervals.isEmpty) return null;

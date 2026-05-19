@@ -39,12 +39,20 @@ ThemeData _build({
   required Color secondaryContainer,
 }) {
   final isDark = brightness == Brightness.dark;
-  const emojiFallback = ['Apple Color Emoji', 'Noto Color Emoji', 'Segoe UI Emoji'];
+  const emojiFallback = [
+    'Apple Color Emoji',
+    'Noto Color Emoji',
+    'Segoe UI Emoji'
+  ];
 
   return ThemeData(
     useMaterial3: true,
     brightness: brightness,
-    fontFamilyFallback: const ['Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji'],
+    fontFamilyFallback: const [
+      'Noto Color Emoji',
+      'Apple Color Emoji',
+      'Segoe UI Emoji'
+    ],
     colorScheme: ColorScheme(
       brightness: brightness,
       primary: tokens.FarolColors.navy,
@@ -85,23 +93,32 @@ ThemeData _build({
       ThemeData(brightness: brightness).textTheme,
     ).copyWith(
       displayLarge:
-          GoogleFonts.manrope(fontWeight: FontWeight.w800, color: onSurface).copyWith(fontFamilyFallback: emojiFallback),
+          GoogleFonts.manrope(fontWeight: FontWeight.w800, color: onSurface)
+              .copyWith(fontFamilyFallback: emojiFallback),
       displayMedium:
-          GoogleFonts.manrope(fontWeight: FontWeight.w800, color: onSurface).copyWith(fontFamilyFallback: emojiFallback),
+          GoogleFonts.manrope(fontWeight: FontWeight.w800, color: onSurface)
+              .copyWith(fontFamilyFallback: emojiFallback),
       displaySmall:
-          GoogleFonts.manrope(fontWeight: FontWeight.w700, color: onSurface).copyWith(fontFamilyFallback: emojiFallback),
+          GoogleFonts.manrope(fontWeight: FontWeight.w700, color: onSurface)
+              .copyWith(fontFamilyFallback: emojiFallback),
       headlineLarge:
-          GoogleFonts.manrope(fontWeight: FontWeight.w800, color: onSurface).copyWith(fontFamilyFallback: emojiFallback),
+          GoogleFonts.manrope(fontWeight: FontWeight.w800, color: onSurface)
+              .copyWith(fontFamilyFallback: emojiFallback),
       headlineMedium:
-          GoogleFonts.manrope(fontWeight: FontWeight.w700, color: onSurface).copyWith(fontFamilyFallback: emojiFallback),
+          GoogleFonts.manrope(fontWeight: FontWeight.w700, color: onSurface)
+              .copyWith(fontFamilyFallback: emojiFallback),
       headlineSmall:
-          GoogleFonts.manrope(fontWeight: FontWeight.w700, color: onSurface).copyWith(fontFamilyFallback: emojiFallback),
+          GoogleFonts.manrope(fontWeight: FontWeight.w700, color: onSurface)
+              .copyWith(fontFamilyFallback: emojiFallback),
       titleLarge:
-          GoogleFonts.manrope(fontWeight: FontWeight.w700, color: onSurface).copyWith(fontFamilyFallback: emojiFallback),
+          GoogleFonts.manrope(fontWeight: FontWeight.w700, color: onSurface)
+              .copyWith(fontFamilyFallback: emojiFallback),
       titleMedium:
-          GoogleFonts.manrope(fontWeight: FontWeight.w600, color: onSurface).copyWith(fontFamilyFallback: emojiFallback),
+          GoogleFonts.manrope(fontWeight: FontWeight.w600, color: onSurface)
+              .copyWith(fontFamilyFallback: emojiFallback),
       titleSmall:
-          GoogleFonts.manrope(fontWeight: FontWeight.w600, color: onSurface).copyWith(fontFamilyFallback: emojiFallback),
+          GoogleFonts.manrope(fontWeight: FontWeight.w600, color: onSurface)
+              .copyWith(fontFamilyFallback: emojiFallback),
       bodyLarge: GoogleFonts.inter(color: onSurface),
       bodyMedium: GoogleFonts.inter(color: onSurface),
       bodySmall: GoogleFonts.inter(color: onSurfaceSoft),
@@ -126,7 +143,8 @@ ThemeData _build({
           ? surfaceLow.withValues(alpha: 0.95)
           : Colors.white.withValues(alpha: 0.85),
       elevation: 0,
-      indicatorColor: tokens.FarolColors.navy.withValues(alpha: isDark ? 0.2 : 0.1),
+      indicatorColor:
+          tokens.FarolColors.navy.withValues(alpha: isDark ? 0.2 : 0.1),
       labelTextStyle: WidgetStateProperty.resolveWith((states) {
         final isSelected = states.contains(WidgetState.selected);
         return TextStyle(

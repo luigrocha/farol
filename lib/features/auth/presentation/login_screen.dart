@@ -66,7 +66,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = ref.watch(authControllerProvider).isLoading;
 
     return Scaffold(
-       backgroundColor: cs.surface,
+      backgroundColor: cs.surface,
       body: AuthActionHandler(
         successMessage: l10n.welcomeBack,
         child: SafeArea(
@@ -117,9 +117,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Text(
                     l10n.translate('login_subtitle'),
                     style: GoogleFonts.inter(
-                        fontSize: 14,
-                        color: colors.onSurfaceSoft,
-                        height: 1.5),
+                        fontSize: 14, color: colors.onSurfaceSoft, height: 1.5),
                   ),
                   const SizedBox(height: 32),
 
@@ -131,8 +129,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       labelText: l10n.translate('email'),
                       prefixIcon: const Icon(Icons.mail_outline_rounded),
                     ),
-                    validator: (v) =>
-                        _emailRegex.hasMatch(v ?? '') ? null : l10n.translate('invalid_email'),
+                    validator: (v) => _emailRegex.hasMatch(v ?? '')
+                        ? null
+                        : l10n.translate('invalid_email'),
                   ),
                   const SizedBox(height: 12),
 
@@ -147,12 +146,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         icon: Icon(_obscurePassword
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined),
-                        onPressed: () =>
-                            setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword),
                       ),
                     ),
-                    validator: (v) =>
-                        (v?.length ?? 0) >= 6 ? null : l10n.translate('min_6_chars'),
+                    validator: (v) => (v?.length ?? 0) >= 6
+                        ? null
+                        : l10n.translate('min_6_chars'),
                   ),
                   const SizedBox(height: 4),
 
@@ -195,7 +195,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Row(children: [
                     Expanded(
                         child: Divider(
-                            color: tokens.FarolColors.navy.withValues(alpha: 0.1))),
+                            color: tokens.FarolColors.navy
+                                .withValues(alpha: 0.1))),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Text(
@@ -210,7 +211,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     Expanded(
                         child: Divider(
-                            color: tokens.FarolColors.navy.withValues(alpha: 0.1))),
+                            color: tokens.FarolColors.navy
+                                .withValues(alpha: 0.1))),
                   ]),
                   const SizedBox(height: 20),
 
@@ -246,7 +248,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     builder: (context, snap) => Center(
                       child: Text(
                         snap.hasData ? 'v${snap.data!.version}' : '',
-                        style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.outline, letterSpacing: 0.3),
+                        style: TextStyle(
+                            fontSize: 11,
+                            color: Theme.of(context).colorScheme.outline,
+                            letterSpacing: 0.3),
                       ),
                     ),
                   ),
@@ -286,7 +291,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 }
 
-
 class _SocialBtn extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -309,8 +313,7 @@ class _SocialBtn extends StatelessWidget {
         minimumSize: const Size(0, 52),
         foregroundColor: colors.onSurface,
         side: BorderSide(color: colors.onSurfaceFaint),
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
     );
   }

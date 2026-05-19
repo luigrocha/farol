@@ -10,7 +10,8 @@ class HealthGauge extends StatelessWidget {
   final double size;
   final String? statusLabel;
 
-  const HealthGauge({super.key, required this.score, this.size = 140, this.statusLabel});
+  const HealthGauge(
+      {super.key, required this.score, this.size = 140, this.statusLabel});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,8 @@ class HealthGauge extends StatelessWidget {
         children: [
           CustomPaint(
             size: Size(size, size),
-            painter: _GaugePainter(score: score, color: scoreColor, trackColor: colors.surfaceLow),
+            painter: _GaugePainter(
+                score: score, color: scoreColor, trackColor: colors.surfaceLow),
           ),
           Column(
             mainAxisSize: MainAxisSize.min,
@@ -68,7 +70,8 @@ class _GaugePainter extends CustomPainter {
   final Color color;
   final Color trackColor;
 
-  _GaugePainter({required this.score, required this.color, required this.trackColor});
+  _GaugePainter(
+      {required this.score, required this.color, required this.trackColor});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -81,17 +84,31 @@ class _GaugePainter extends CustomPainter {
 
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
-      startAngle, totalAngle, false,
-      Paint()..color = trackColor..style = PaintingStyle.stroke..strokeWidth = strokeWidth..strokeCap = StrokeCap.round,
+      startAngle,
+      totalAngle,
+      false,
+      Paint()
+        ..color = trackColor
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth
+        ..strokeCap = StrokeCap.round,
     );
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
-      startAngle, sweepAngle, false,
-      Paint()..color = color..style = PaintingStyle.stroke..strokeWidth = strokeWidth..strokeCap = StrokeCap.round,
+      startAngle,
+      sweepAngle,
+      false,
+      Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth
+        ..strokeCap = StrokeCap.round,
     );
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
-      startAngle, sweepAngle, false,
+      startAngle,
+      sweepAngle,
+      false,
       Paint()
         ..color = color.withValues(alpha: 0.15)
         ..style = PaintingStyle.stroke

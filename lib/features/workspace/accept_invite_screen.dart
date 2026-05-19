@@ -85,11 +85,12 @@ class _AcceptInviteScreenState extends ConsumerState<AcceptInviteScreen> {
     }
   }
 
-
   Future<void> _markNotificationRead() async {
     try {
-      final notifications = ref.read(pendingInviteNotificationsProvider).valueOrNull ?? [];
-      final matching = notifications.where((n) => n.inviteToken == widget.token);
+      final notifications =
+          ref.read(pendingInviteNotificationsProvider).valueOrNull ?? [];
+      final matching =
+          notifications.where((n) => n.inviteToken == widget.token);
       if (matching.isEmpty) return;
       final repo = ref.read(userNotificationsRepositoryProvider);
       await repo.markRead(matching.first.id);
@@ -98,12 +99,12 @@ class _AcceptInviteScreenState extends ConsumerState<AcceptInviteScreen> {
   }
 
   String _mapCode(String code, AppLocalizations l10n) => switch (code) {
-    'invite_expired'     => l10n.inviteErrorExpired,
-    'invite_already_used'=> l10n.inviteErrorUsed,
-    'already_member'     => l10n.inviteErrorMember,
-    'invite_not_found'   => l10n.inviteErrorNotFound,
-    _                    => l10n.inviteErrorNotFound,
-  };
+        'invite_expired' => l10n.inviteErrorExpired,
+        'invite_already_used' => l10n.inviteErrorUsed,
+        'already_member' => l10n.inviteErrorMember,
+        'invite_not_found' => l10n.inviteErrorNotFound,
+        _ => l10n.inviteErrorNotFound,
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -147,13 +148,15 @@ class _AcceptInviteScreenState extends ConsumerState<AcceptInviteScreen> {
                     AnimatedSwitcher(
                       duration: DSDuration.medium,
                       child: switch (_state) {
-                        _ScreenState.notAuthed  => _buildNotAuthed(context, l10n),
-                        _ScreenState.idle       => _buildLoading(l10n),
-                        _ScreenState.loading    => _buildLoading(l10n),
-                        _ScreenState.declining  => _buildLoading(l10n, label: 'Recusando convite...'),
-                        _ScreenState.success    => _buildSuccess(context, l10n),
-                        _ScreenState.declined   => _buildDeclined(context),
-                        _ScreenState.error      => _buildError(context, l10n),
+                        _ScreenState.notAuthed =>
+                          _buildNotAuthed(context, l10n),
+                        _ScreenState.idle => _buildLoading(l10n),
+                        _ScreenState.loading => _buildLoading(l10n),
+                        _ScreenState.declining =>
+                          _buildLoading(l10n, label: 'Recusando convite...'),
+                        _ScreenState.success => _buildSuccess(context, l10n),
+                        _ScreenState.declined => _buildDeclined(context),
+                        _ScreenState.error => _buildError(context, l10n),
                       },
                     ),
                   ],
@@ -177,15 +180,19 @@ class _AcceptInviteScreenState extends ConsumerState<AcceptInviteScreen> {
         Text(
           'Você foi convidado para um workspace',
           style: GoogleFonts.manrope(
-              fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white,
-              letterSpacing: -0.5, height: 1.1),
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+              letterSpacing: -0.5,
+              height: 1.1),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 12),
         Text(
           'Entre na sua conta ou crie uma para aceitar o convite.',
           style: TextStyle(
-              fontSize: 14, color: Colors.white.withValues(alpha: 0.72),
+              fontSize: 14,
+              color: Colors.white.withValues(alpha: 0.72),
               height: 1.5),
           textAlign: TextAlign.center,
         ),
@@ -202,7 +209,8 @@ class _AcceptInviteScreenState extends ConsumerState<AcceptInviteScreen> {
               elevation: 0,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
-              textStyle: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15),
+              textStyle:
+                  GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15),
             ),
             child: Text(l10n.inviteLoginToAccept),
           ),
@@ -266,7 +274,9 @@ class _AcceptInviteScreenState extends ConsumerState<AcceptInviteScreen> {
         Text(
           'Bem-vindo ao workspace!',
           style: GoogleFonts.manrope(
-              fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
               letterSpacing: -0.5),
           textAlign: TextAlign.center,
         ),
@@ -275,7 +285,8 @@ class _AcceptInviteScreenState extends ConsumerState<AcceptInviteScreen> {
           Text(
             ws.name,
             style: TextStyle(
-                fontSize: 16, color: Colors.white.withValues(alpha: 0.75),
+                fontSize: 16,
+                color: Colors.white.withValues(alpha: 0.75),
                 fontWeight: FontWeight.w600),
             textAlign: TextAlign.center,
           ),
@@ -293,7 +304,8 @@ class _AcceptInviteScreenState extends ConsumerState<AcceptInviteScreen> {
               elevation: 0,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
-              textStyle: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15),
+              textStyle:
+                  GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15),
             ),
             child: Text(l10n.inviteGoWorkspace),
           ),
@@ -322,7 +334,9 @@ class _AcceptInviteScreenState extends ConsumerState<AcceptInviteScreen> {
         Text(
           'Convite recusado',
           style: GoogleFonts.manrope(
-              fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
               letterSpacing: -0.5),
           textAlign: TextAlign.center,
         ),
@@ -330,7 +344,8 @@ class _AcceptInviteScreenState extends ConsumerState<AcceptInviteScreen> {
         Text(
           'O proprietário do workspace será notificado.',
           style: TextStyle(
-              fontSize: 14, color: Colors.white.withValues(alpha: 0.65),
+              fontSize: 14,
+              color: Colors.white.withValues(alpha: 0.65),
               height: 1.5),
           textAlign: TextAlign.center,
         ),
@@ -400,4 +415,12 @@ class _AcceptInviteScreenState extends ConsumerState<AcceptInviteScreen> {
   }
 }
 
-enum _ScreenState { idle, notAuthed, loading, declining, success, declined, error }
+enum _ScreenState {
+  idle,
+  notAuthed,
+  loading,
+  declining,
+  success,
+  declined,
+  error
+}

@@ -129,17 +129,19 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
       error: (err, _) => Center(child: Text('Error: $err')),
       data: (categories) {
         _initControllers(categories);
-        
+
         final cashCats = categories.where((c) => !c.isSwile).toList();
         final swileCats = categories.where((c) => c.isSwile).toList();
 
         return Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: Container(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
             decoration: BoxDecoration(
               color: colors.surfaceLowest,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(24)),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -231,7 +233,8 @@ class _BudgetGoalsSheetState extends ConsumerState<BudgetGoalsSheet> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    l10n.budgetFreeUp((_totalPct - 100).toStringAsFixed(1)),
+                                    l10n.budgetFreeUp(
+                                        (_totalPct - 100).toStringAsFixed(1)),
                                     style: const TextStyle(
                                         fontSize: 12, color: Colors.red),
                                   ),
@@ -367,8 +370,8 @@ class _SwileBalanceBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF00A86B).withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-            color: const Color(0xFF00A86B).withValues(alpha: 0.25)),
+        border:
+            Border.all(color: const Color(0xFF00A86B).withValues(alpha: 0.25)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -425,7 +428,8 @@ class _PercentageBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                AppLocalizations.of(context).budgetPctUsed(totalPct.toStringAsFixed(1)),
+                AppLocalizations.of(context)
+                    .budgetPctUsed(totalPct.toStringAsFixed(1)),
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -434,8 +438,10 @@ class _PercentageBar extends StatelessWidget {
               ),
               Text(
                 isOver
-                    ? AppLocalizations.of(context).budgetPctOverLimit((totalPct - 100).toStringAsFixed(1))
-                    : AppLocalizations.of(context).budgetPctRemaining(remaining.toStringAsFixed(1)),
+                    ? AppLocalizations.of(context)
+                        .budgetPctOverLimit((totalPct - 100).toStringAsFixed(1))
+                    : AppLocalizations.of(context)
+                        .budgetPctRemaining(remaining.toStringAsFixed(1)),
                 style: TextStyle(
                   fontSize: 12,
                   color: isOver ? Colors.red : colors.onSurfaceSoft,
@@ -577,8 +583,7 @@ class _BudgetCategoryRow extends StatelessWidget {
           const SizedBox(height: 10),
           TextFormField(
             controller: controller,
-            keyboardType:
-                const TextInputType.numberWithOptions(decimal: true),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
               hintText: l10n.translate('budget_amount'),
               prefixText: 'R\$ ',

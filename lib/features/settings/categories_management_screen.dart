@@ -24,9 +24,11 @@ class CategoriesManagementScreen extends ConsumerWidget {
       backgroundColor: colors.surfaceLow,
       appBar: AppBar(
         title: Row(children: [
-          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const FarolMark(
+              size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
           const SizedBox(width: 10),
-          Text(l10n.categories, style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
+          Text(l10n.categories,
+              style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
         ]),
         actions: [
           IconButton(
@@ -41,13 +43,15 @@ class CategoriesManagementScreen extends ConsumerWidget {
         data: (allCategories) {
           // Show only root categories in the management list.
           // Subcategories (parentId != null) are managed inline per parent.
-          final categories = allCategories.where((c) => c.parentId == null).toList();
+          final categories =
+              allCategories.where((c) => c.parentId == null).toList();
           if (categories.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.category_outlined, size: 48, color: colors.onSurfaceFaint),
+                  Icon(Icons.category_outlined,
+                      size: 48, color: colors.onSurfaceFaint),
                   const SizedBox(height: 16),
                   Text(
                     l10n.noCategoriesFound,
@@ -80,7 +84,8 @@ class CategoriesManagementScreen extends ConsumerWidget {
                 category: category,
                 onEdit: category.isSystem
                     ? null
-                    : () => _showCategoryDialog(context, ref, category: category),
+                    : () =>
+                        _showCategoryDialog(context, ref, category: category),
                 onDelete: category.isSystem
                     ? null
                     : () => _confirmDelete(context, ref, category),
@@ -99,14 +104,16 @@ class CategoriesManagementScreen extends ConsumerWidget {
     );
   }
 
-  void _showCategoryDialog(BuildContext context, WidgetRef ref, {Category? category}) {
+  void _showCategoryDialog(BuildContext context, WidgetRef ref,
+      {Category? category}) {
     showDialog(
       context: context,
       builder: (context) => _CategoryDialog(category: category),
     );
   }
 
-  Future<void> _confirmDelete(BuildContext context, WidgetRef ref, Category category) async {
+  Future<void> _confirmDelete(
+      BuildContext context, WidgetRef ref, Category category) async {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
@@ -120,7 +127,8 @@ class CategoriesManagementScreen extends ConsumerWidget {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: tokens.FarolColors.coral),
+            style:
+                TextButton.styleFrom(foregroundColor: tokens.FarolColors.coral),
             child: Text(l10n.delete),
           ),
         ],
@@ -219,7 +227,8 @@ class _CategoryTile extends StatelessWidget {
             if (category.isSystem)
               Tooltip(
                 message: 'Categoria do sistema — não editável',
-                child: Icon(Icons.lock_outline, size: 18, color: colors.onSurfaceFaint),
+                child: Icon(Icons.lock_outline,
+                    size: 18, color: colors.onSurfaceFaint),
               )
             else
               IconButton(
@@ -293,7 +302,8 @@ class _CategoryDialogState extends ConsumerState<_CategoryDialog> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.category?.name ?? '');
-    _emojiController = TextEditingController(text: widget.category?.emoji ?? '📁');
+    _emojiController =
+        TextEditingController(text: widget.category?.emoji ?? '📁');
     _isSwile = widget.category?.isSwile ?? false;
     _financialType = widget.category?.financialType ?? 'want';
   }
@@ -312,7 +322,8 @@ class _CategoryDialogState extends ConsumerState<_CategoryDialog> {
     try {
       final name = _nameController.text.trim();
       final emoji = _emojiController.text.trim();
-      final slug = widget.category?.slug ?? name.toLowerCase().replaceAll(' ', '_');
+      final slug =
+          widget.category?.slug ?? name.toLowerCase().replaceAll(' ', '_');
 
       final category = widget.category?.copyWith(
             name: name,
@@ -357,7 +368,8 @@ class _CategoryDialogState extends ConsumerState<_CategoryDialog> {
     final l10n = AppLocalizations.of(context);
 
     return AlertDialog(
-      title: Text(widget.category != null ? l10n.editCategory : l10n.newCategory),
+      title:
+          Text(widget.category != null ? l10n.editCategory : l10n.newCategory),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -387,7 +399,8 @@ class _CategoryDialogState extends ConsumerState<_CategoryDialog> {
                 initialValue: _financialType,
                 decoration: const InputDecoration(labelText: 'Tipo financeiro'),
                 items: _typeOptions
-                    .map((t) => DropdownMenuItem(value: t.$1, child: Text(t.$2)))
+                    .map(
+                        (t) => DropdownMenuItem(value: t.$1, child: Text(t.$2)))
                     .toList(),
                 onChanged: widget.category?.isSystem == true
                     ? null
@@ -419,7 +432,11 @@ class _CategoryDialogState extends ConsumerState<_CategoryDialog> {
             foregroundColor: Colors.white,
           ),
           child: _saving
-              ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+              ? const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Colors.white))
               : Text(l10n.save),
         ),
       ],

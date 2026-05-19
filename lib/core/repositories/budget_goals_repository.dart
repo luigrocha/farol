@@ -20,10 +20,8 @@ class BudgetGoalsRepository {
   Future<List<BudgetGoal>> getAll() async {
     final userId = _userId;
     if (userId == null) return [];
-    final data = await _supabase
-        .from('budget_goals')
-        .select()
-        .eq('user_id', userId);
+    final data =
+        await _supabase.from('budget_goals').select().eq('user_id', userId);
     return data.map((r) => BudgetGoal.fromJson(r)).toList();
   }
 
@@ -52,9 +50,9 @@ class BudgetGoalsRepository {
     final userId = _userId;
     if (userId == null) throw Exception('Not authenticated');
     await _supabase.from('budget_goals').upsert(
-      goal.toJson()..['user_id'] = userId,
-      onConflict: 'user_id,category',
-    );
+          goal.toJson()..['user_id'] = userId,
+          onConflict: 'user_id,category',
+        );
   }
 
   /// Bulk-updates target_percentage (and derives target_amount from netSalary)

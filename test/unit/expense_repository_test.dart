@@ -7,7 +7,12 @@ library;
 import 'package:flutter_test/flutter_test.dart';
 import '../../test/fakes/fake_expense_repository.dart';
 
-int _seed(FakeExpenseRepository repo, {int? id, int month = 5, int year = 2026, double amount = 100, String? storeDescription}) {
+int _seed(FakeExpenseRepository repo,
+    {int? id,
+    int month = 5,
+    int year = 2026,
+    double amount = 100,
+    String? storeDescription}) {
   return repo.seedExpense(
     id: id,
     userId: 'user-1',
@@ -86,13 +91,21 @@ void main() {
     test('consecutive inserts yield incrementing ids', () async {
       final id1 = await repo.insert(
         transactionDate: DateTime(2026, 5, 1),
-        month: 5, year: 2026,
-        payType: 'Cash', category: 'food', amount: 10, paymentMethod: 'DEBIT',
+        month: 5,
+        year: 2026,
+        payType: 'Cash',
+        category: 'food',
+        amount: 10,
+        paymentMethod: 'DEBIT',
       );
       final id2 = await repo.insert(
         transactionDate: DateTime(2026, 5, 2),
-        month: 5, year: 2026,
-        payType: 'Cash', category: 'transport', amount: 20, paymentMethod: 'PIX',
+        month: 5,
+        year: 2026,
+        payType: 'Cash',
+        category: 'transport',
+        amount: 20,
+        paymentMethod: 'PIX',
       );
 
       expect(id2, id1 + 1);
@@ -104,21 +117,30 @@ void main() {
       await expectLater(
         repo.insert(
           transactionDate: DateTime(2026, 5, 1),
-          month: 5, year: 2026,
-          payType: 'Cash', category: 'food', amount: 10, paymentMethod: 'DEBIT',
+          month: 5,
+          year: 2026,
+          payType: 'Cash',
+          category: 'food',
+          amount: 10,
+          paymentMethod: 'DEBIT',
         ),
         throwsA(isA<Exception>()),
       );
     });
 
     test('insert with delay respects the delay', () async {
-      repo.behavior = FakeExpenseBehavior(delay: const Duration(milliseconds: 50));
+      repo.behavior =
+          FakeExpenseBehavior(delay: const Duration(milliseconds: 50));
       final stopwatch = Stopwatch()..start();
 
       await repo.insert(
         transactionDate: DateTime(2026, 5, 1),
-        month: 5, year: 2026,
-        payType: 'Cash', category: 'food', amount: 10, paymentMethod: 'DEBIT',
+        month: 5,
+        year: 2026,
+        payType: 'Cash',
+        category: 'food',
+        amount: 10,
+        paymentMethod: 'DEBIT',
       );
 
       stopwatch.stop();
@@ -173,16 +195,24 @@ void main() {
     test('update modifies expense fields in place', () async {
       final sid = repo.seedExpense(
         userId: 'user-1',
-        month: 5, year: 2026,
+        month: 5,
+        year: 2026,
         transactionDate: DateTime(2026, 5, 15),
-        payType: 'Cash', category: 'food', amount: 50.0, paymentMethod: 'DEBIT',
+        payType: 'Cash',
+        category: 'food',
+        amount: 50.0,
+        paymentMethod: 'DEBIT',
       );
 
       await repo.update(
         id: sid,
         transactionDate: DateTime(2026, 5, 20),
-        month: 5, year: 2026,
-        payType: 'Cash', category: 'transport', amount: 75.0, paymentMethod: 'PIX',
+        month: 5,
+        year: 2026,
+        payType: 'Cash',
+        category: 'transport',
+        amount: 75.0,
+        paymentMethod: 'PIX',
       );
 
       final all = await repo.getAll();
@@ -198,8 +228,12 @@ void main() {
         repo.update(
           id: 999,
           transactionDate: DateTime(2026, 5, 1),
-          month: 5, year: 2026,
-          payType: 'Cash', category: 'food', amount: 10, paymentMethod: 'DEBIT',
+          month: 5,
+          year: 2026,
+          payType: 'Cash',
+          category: 'food',
+          amount: 10,
+          paymentMethod: 'DEBIT',
         ),
         throwsA(isA<Exception>()),
       );
@@ -239,8 +273,12 @@ void main() {
       final future = repo.watchAll().first;
       await repo.insert(
         transactionDate: DateTime(2026, 5, 1),
-        month: 5, year: 2026,
-        payType: 'Cash', category: 'food', amount: 10, paymentMethod: 'DEBIT',
+        month: 5,
+        year: 2026,
+        payType: 'Cash',
+        category: 'food',
+        amount: 10,
+        paymentMethod: 'DEBIT',
       );
 
       final emitted = await future;
@@ -249,27 +287,44 @@ void main() {
 
     // ─── UpdateFixedSeriesFrom ────────────────────────────────────────────────
 
-    test('updateFixedSeriesFrom updates future fixed expenses with same category/payment/description', () async {
+    test(
+        'updateFixedSeriesFrom updates future fixed expenses with same category/payment/description',
+        () async {
       final fromId = repo.seedExpense(
         userId: 'user-1',
-        month: 5, year: 2026,
+        month: 5,
+        year: 2026,
         transactionDate: DateTime(2026, 5, 15),
-        payType: 'Cash', category: 'food', amount: 50.0, paymentMethod: 'DEBIT',
-        isFixed: true, storeDescription: 'Mercado',
+        payType: 'Cash',
+        category: 'food',
+        amount: 50.0,
+        paymentMethod: 'DEBIT',
+        isFixed: true,
+        storeDescription: 'Mercado',
       );
       repo.seedExpense(
         userId: 'user-1',
-        month: 6, year: 2026,
+        month: 6,
+        year: 2026,
         transactionDate: DateTime(2026, 6, 15),
-        payType: 'Cash', category: 'food', amount: 50.0, paymentMethod: 'DEBIT',
-        isFixed: true, storeDescription: 'Mercado',
+        payType: 'Cash',
+        category: 'food',
+        amount: 50.0,
+        paymentMethod: 'DEBIT',
+        isFixed: true,
+        storeDescription: 'Mercado',
       );
       repo.seedExpense(
         userId: 'user-1',
-        month: 6, year: 2026,
+        month: 6,
+        year: 2026,
         transactionDate: DateTime(2026, 6, 10),
-        payType: 'Cash', category: 'transport', amount: 100.0, paymentMethod: 'DEBIT',
-        isFixed: true, storeDescription: 'Uber',
+        payType: 'Cash',
+        category: 'transport',
+        amount: 100.0,
+        paymentMethod: 'DEBIT',
+        isFixed: true,
+        storeDescription: 'Uber',
       );
 
       final all = await repo.getAll();
@@ -284,24 +339,39 @@ void main() {
       );
 
       final updated = await repo.getAll();
-      expect(updated.where((e) => e.category == 'food').every((e) => e.amount == 60.0), isTrue);
-      expect(updated.where((e) => e.category == 'transport').first.amount, 100.0);
+      expect(
+          updated
+              .where((e) => e.category == 'food')
+              .every((e) => e.amount == 60.0),
+          isTrue);
+      expect(
+          updated.where((e) => e.category == 'transport').first.amount, 100.0);
     });
 
     test('updateFixedSeriesFrom does not update past expenses', () async {
       repo.seedExpense(
         userId: 'user-1',
-        month: 4, year: 2026,
+        month: 4,
+        year: 2026,
         transactionDate: DateTime(2026, 4, 15),
-        payType: 'Cash', category: 'food', amount: 50.0, paymentMethod: 'DEBIT',
-        isFixed: true, storeDescription: 'Mercado',
+        payType: 'Cash',
+        category: 'food',
+        amount: 50.0,
+        paymentMethod: 'DEBIT',
+        isFixed: true,
+        storeDescription: 'Mercado',
       );
       final fromId = repo.seedExpense(
         userId: 'user-1',
-        month: 5, year: 2026,
+        month: 5,
+        year: 2026,
         transactionDate: DateTime(2026, 5, 15),
-        payType: 'Cash', category: 'food', amount: 50.0, paymentMethod: 'DEBIT',
-        isFixed: true, storeDescription: 'Mercado',
+        payType: 'Cash',
+        category: 'food',
+        amount: 50.0,
+        paymentMethod: 'DEBIT',
+        isFixed: true,
+        storeDescription: 'Mercado',
       );
       final all = await repo.getAll();
       final fromExpense = all.firstWhere((e) => e.id == fromId);
@@ -325,8 +395,12 @@ void main() {
       await expectLater(
         repo.insert(
           transactionDate: DateTime(2026, 5, 1),
-          month: 5, year: 2026,
-          payType: 'Cash', category: 'food', amount: 10, paymentMethod: 'DEBIT',
+          month: 5,
+          year: 2026,
+          payType: 'Cash',
+          category: 'food',
+          amount: 10,
+          paymentMethod: 'DEBIT',
         ),
         throwsA(isA<Exception>()),
       );
@@ -334,8 +408,12 @@ void main() {
       repo.behavior = FakeExpenseBehavior();
       final id = await repo.insert(
         transactionDate: DateTime(2026, 5, 1),
-        month: 5, year: 2026,
-        payType: 'Cash', category: 'food', amount: 20, paymentMethod: 'DEBIT',
+        month: 5,
+        year: 2026,
+        payType: 'Cash',
+        category: 'food',
+        amount: 20,
+        paymentMethod: 'DEBIT',
       );
 
       expect(id, greaterThan(0));

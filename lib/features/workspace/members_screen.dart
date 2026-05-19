@@ -30,8 +30,7 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
     _workspace = widget.workspace;
   }
 
-  String? get _currentUserId =>
-      Supabase.instance.client.auth.currentUser?.id;
+  String? get _currentUserId => Supabase.instance.client.auth.currentUser?.id;
 
   bool get _canManage {
     final uid = _currentUserId;
@@ -51,7 +50,8 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
     }
   }
 
-  Future<void> _changeRole(WorkspaceMember member, WorkspaceRole newRole) async {
+  Future<void> _changeRole(
+      WorkspaceMember member, WorkspaceRole newRole) async {
     final repo = ref.read(workspaceRepositoryProvider);
     try {
       await repo.updateMemberRole(_workspace.id, member.userId, newRole);
@@ -65,7 +65,9 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).errorUpdatingRole(e.toString()))),
+          SnackBar(
+              content: Text(AppLocalizations.of(context)
+                  .errorUpdatingRole(e.toString()))),
         );
       }
     }
@@ -121,16 +123,19 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Row(children: [
-          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const FarolMark(
+              size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
           const SizedBox(width: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(AppLocalizations.of(context).membersTitle,
-                  style: GoogleFonts.manrope(fontWeight: FontWeight.w700, fontSize: 15)),
+                  style: GoogleFonts.manrope(
+                      fontWeight: FontWeight.w700, fontSize: 15)),
               Text(_workspace.name,
-                  style: TextStyle(fontSize: 11, color: colorScheme.onSurfaceVariant)),
+                  style: TextStyle(
+                      fontSize: 11, color: colorScheme.onSurfaceVariant)),
             ],
           ),
         ]),
@@ -201,8 +206,8 @@ class _MemberTile extends StatelessWidget {
   String _roleLabel(BuildContext context, WorkspaceRole r) {
     final l10n = AppLocalizations.of(context);
     return switch (r) {
-      WorkspaceRole.owner  => l10n.roleOwner,
-      WorkspaceRole.admin  => l10n.roleAdmin,
+      WorkspaceRole.owner => l10n.roleOwner,
+      WorkspaceRole.admin => l10n.roleAdmin,
       WorkspaceRole.member => l10n.roleMember,
       WorkspaceRole.viewer => l10n.roleViewer,
     };
@@ -220,17 +225,16 @@ class _MemberTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final roleColor = switch (member.role) {
-      WorkspaceRole.owner  => colorScheme.primary,
-      WorkspaceRole.admin  => colorScheme.secondary,
+      WorkspaceRole.owner => colorScheme.primary,
+      WorkspaceRole.admin => colorScheme.secondary,
       WorkspaceRole.member => colorScheme.onSurfaceVariant,
       WorkspaceRole.viewer => colorScheme.outline,
     };
 
-    final avatarBg = display?.avatarColor ??
-        colorScheme.surfaceContainerHighest;
-    final avatarFg = display != null
-        ? Colors.white
-        : colorScheme.onSurfaceVariant;
+    final avatarBg =
+        display?.avatarColor ?? colorScheme.surfaceContainerHighest;
+    final avatarFg =
+        display != null ? Colors.white : colorScheme.onSurfaceVariant;
 
     return ListTile(
       leading: CircleAvatar(
@@ -271,7 +275,7 @@ class _MemberTile extends StatelessWidget {
               itemBuilder: (context) {
                 final l10n = AppLocalizations.of(context);
                 return [
-                  PopupMenuItem(value: 'admin',  child: Text(l10n.makeAdmin)),
+                  PopupMenuItem(value: 'admin', child: Text(l10n.makeAdmin)),
                   PopupMenuItem(value: 'member', child: Text(l10n.makeMember)),
                   PopupMenuItem(value: 'viewer', child: Text(l10n.makeViewer)),
                   const PopupMenuDivider(),
@@ -289,10 +293,10 @@ class _MemberTile extends StatelessWidget {
                   onRemove();
                 } else {
                   final role = switch (action) {
-                    'admin'  => WorkspaceRole.admin,
+                    'admin' => WorkspaceRole.admin,
                     'member' => WorkspaceRole.member,
                     'viewer' => WorkspaceRole.viewer,
-                    _        => WorkspaceRole.member,
+                    _ => WorkspaceRole.member,
                   };
                   onChangeRole(role);
                 }

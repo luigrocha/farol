@@ -46,7 +46,8 @@ class BudgetRecommendationService {
       // Skip Swile categories — they have their own budget pool
       if (cat.isSwile) continue;
       // Skip income / transfer types
-      if (cat.financialType == 'income' || cat.financialType == 'transfer') continue;
+      if (cat.financialType == 'income' || cat.financialType == 'transfer')
+        continue;
       final bucket = _bucketFor(cat.financialType);
       bucketCats.putIfAbsent(bucket, () => []).add(cat);
     }
@@ -85,11 +86,11 @@ class BudgetRecommendationService {
             netSalary > 0 ? (spent / netSalary) * 100.0 : 0.0;
 
         recommendations.add(CategoryRecommendation(
-          category:      slug,
-          name:          cat.name,
-          bucket:        bucket,
-          suggestedPct:  double.parse(suggestedPct.toStringAsFixed(1)),
-          actualPct:     double.parse(actualPct.toStringAsFixed(1)),
+          category: slug,
+          name: cat.name,
+          bucket: bucket,
+          suggestedPct: double.parse(suggestedPct.toStringAsFixed(1)),
+          actualPct: double.parse(actualPct.toStringAsFixed(1)),
           currentGoalPct: goalMap[slug] ?? 0.0,
         ));
       }
@@ -106,18 +107,21 @@ class BudgetRecommendationService {
         recommendations.fold(0.0, (s, r) => s + r.suggestedPct);
 
     return BudgetRecommendation(
-      items:             recommendations,
+      items: recommendations,
       totalSuggestedPct: double.parse(totalSuggested.toStringAsFixed(1)),
-      basedOnHistory:    basedOnHistory,
+      basedOnHistory: basedOnHistory,
     );
   }
 
   RecommendationBucket _bucketFor(String financialType) {
     switch (financialType) {
-      case 'need':       return RecommendationBucket.needs;
-      case 'investment': return RecommendationBucket.savings;
+      case 'need':
+        return RecommendationBucket.needs;
+      case 'investment':
+        return RecommendationBucket.savings;
       case 'want':
-      default:           return RecommendationBucket.wants;
+      default:
+        return RecommendationBucket.wants;
     }
   }
 }

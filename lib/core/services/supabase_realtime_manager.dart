@@ -67,7 +67,8 @@ class SupabaseRealtimeManager {
     }
   }
 
-  bool isMaxRetriesReached(String table) => (_retryAttempts[table] ?? 0) >= _maxRetries;
+  bool isMaxRetriesReached(String table) =>
+      (_retryAttempts[table] ?? 0) >= _maxRetries;
 
   /// One-shot HTTP fetch for polling fallback.
   /// When [workspaceId] is provided it is used instead of [userId] to filter,
@@ -79,11 +80,13 @@ class SupabaseRealtimeManager {
     String? workspaceId,
   }) async {
     if (workspaceId != null) {
-      final response = await _client.from(table).select().eq('workspace_id', workspaceId);
+      final response =
+          await _client.from(table).select().eq('workspace_id', workspaceId);
       return List<Map<String, dynamic>>.from(response);
     }
     if (userId == null) return [];
-    final response = await _client.from(table).select().eq(userIdColumn, userId);
+    final response =
+        await _client.from(table).select().eq(userIdColumn, userId);
     return List<Map<String, dynamic>>.from(response);
   }
 
@@ -110,40 +113,41 @@ class SupabaseRealtimeManager {
     // In workspace mode, listen on workspace_id so changes from any member
     // trigger a re-fetch. Fall back to user_id for personal workspaces.
     final filterColumn = workspaceId != null ? 'workspace_id' : userIdColumn;
-    final filterValue  = workspaceId ?? userId!;
+    final filterValue = workspaceId ?? userId!;
 
     final channel = _client.channel('realtime:$table');
     channel
         .onPostgresChanges(
-          event: PostgresChangeEvent.all,
-          schema: 'public',
+      event: PostgresChangeEvent.all,
+      schema: 'public',
+      table: table,
+      filter: PostgresChangeFilter(
+        type: PostgresChangeFilterType.eq,
+        column: filterColumn,
+        value: filterValue,
+      ),
+      callback: (_) {
+        _retryAttempts[table] = 0;
+        _fetchAndEmit<T>(
           table: table,
-          filter: PostgresChangeFilter(
-            type: PostgresChangeFilterType.eq,
-            column: filterColumn,
-            value: filterValue,
-          ),
-          callback: (_) {
-            _retryAttempts[table] = 0;
-            _fetchAndEmit<T>(
-              table: table,
-              userId: userId,
-              userIdColumn: userIdColumn,
-              workspaceId: workspaceId,
-              fromJson: fromJson,
-            );
-          },
-        )
-        .subscribe(
-          (status, error) {
-            if (status == RealtimeSubscribeStatus.subscribed) {
-              _channels[table] = channel;
-              _retryAttempts[table] = 0;
-            } else if (error != null || status == RealtimeSubscribeStatus.channelError) {
-              _handleChannelError(table);
-            }
-          },
+          userId: userId,
+          userIdColumn: userIdColumn,
+          workspaceId: workspaceId,
+          fromJson: fromJson,
         );
+      },
+    )
+        .subscribe(
+      (status, error) {
+        if (status == RealtimeSubscribeStatus.subscribed) {
+          _channels[table] = channel;
+          _retryAttempts[table] = 0;
+        } else if (error != null ||
+            status == RealtimeSubscribeStatus.channelError) {
+          _handleChannelError(table);
+        }
+      },
+    );
   }
 
   Future<void> _fetchAndEmit<T>({
@@ -154,7 +158,8 @@ class SupabaseRealtimeManager {
     required T Function(Map<String, dynamic>) fromJson,
   }) async {
     try {
-      final controller = _streamControllers[table] as StreamController<List<T>>?;
+      final controller =
+          _streamControllers[table] as StreamController<List<T>>?;
       if (controller == null || controller.isClosed) return;
 
       final query = workspaceId != null

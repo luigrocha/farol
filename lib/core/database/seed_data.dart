@@ -60,16 +60,22 @@ class SeedData {
       _expenseData('Cash', 'HOUSING', 'Electricity', 500.00, 'DEBIT', false),
       _expenseData('Cash', 'HOUSING', 'Internet', 107.00, 'DEBIT', true),
       // TRANSPORT
-      _expenseData('Cash', 'TRANSPORT', 'UberEats', 177.80, 'CREDIT_FULL', false),
+      _expenseData(
+          'Cash', 'TRANSPORT', 'UberEats', 177.80, 'CREDIT_FULL', false),
       _expenseData('Cash', 'TRANSPORT', 'Subway/Bus', 130.00, 'DEBIT', true),
       // SUBSCRIPTIONS
-      _expenseData('Cash', 'SUBSCRIPTIONS', 'Apps', 220.77, 'CREDIT_FULL', true),
+      _expenseData(
+          'Cash', 'SUBSCRIPTIONS', 'Apps', 220.77, 'CREDIT_FULL', true),
       _expenseData('Cash', 'SUBSCRIPTIONS', 'Gym', 150.00, 'DEBIT', true),
-      _expenseData('Cash', 'SUBSCRIPTIONS', 'Claude AI', 110.00, 'CREDIT_FULL', true),
-      _expenseData('Cash', 'SUBSCRIPTIONS', 'Mobile Phone', 151.90, 'DEBIT', true),
+      _expenseData(
+          'Cash', 'SUBSCRIPTIONS', 'Claude AI', 110.00, 'CREDIT_FULL', true),
+      _expenseData(
+          'Cash', 'SUBSCRIPTIONS', 'Mobile Phone', 151.90, 'DEBIT', true),
       // FOOD (Swile)
-      _expenseData('Swile', 'FOOD_GROCERY', 'Supermarket', 1400.00, 'SWILE_MEAL', true),
-      _expenseData('Swile', 'FOOD_GROCERY', 'Supermarket', 1031.00, 'SWILE_FOOD', true),
+      _expenseData(
+          'Swile', 'FOOD_GROCERY', 'Supermarket', 1400.00, 'SWILE_MEAL', true),
+      _expenseData(
+          'Swile', 'FOOD_GROCERY', 'Supermarket', 1031.00, 'SWILE_FOOD', true),
       // CARD_INSTALLMENTS
       _expenseData('Cash', 'CARD_INSTALLMENTS', 'Spouse Surgery (1/12)', 754.97,
           'CREDIT_INSTALLMENT', true),

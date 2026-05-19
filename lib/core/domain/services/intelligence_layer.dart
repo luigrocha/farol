@@ -39,9 +39,7 @@ class IntelligenceLayer {
 
     // ── Achievements ────────────────────────────────────────────────────────
     _rule8BudgetStreak(consecutiveUnderBudgetPeriods)?.let(raw.add);
-    _rule10DebtReduction(
-            snapshot, previousInstallmentTotal)
-        ?.let(raw.add);
+    _rule10DebtReduction(snapshot, previousInstallmentTotal)?.let(raw.add);
     raw.addAll(_rule12UnusualMerchants(recentExpenses, allExpenses));
 
     final filtered = raw
@@ -67,8 +65,7 @@ class IntelligenceLayer {
       bodyKey: 'insight_overdraft_body',
       actionKey: 'insight_overdraft_action',
       title: '⚠️ Você pode fechar no vermelho',
-      body:
-          'No ritmo atual, o período fecha em ${projected.formatted}. '
+      body: 'No ritmo atual, o período fecha em ${projected.formatted}. '
           'Ainda tem ${snap.totalFutureObligations.formatted} em contas a pagar.',
       actionLabel: 'Ver projeção →',
       actionRoute: '/analytics',
@@ -92,15 +89,17 @@ class IntelligenceLayer {
     return FinancialInsight(
       id: 'liquidity_${snap.period.start.millisecondsSinceEpoch}',
       type: InsightType.liquidityAlert,
-      priority:
-          isCritical ? InsightPriority.critical : InsightPriority.warning,
-      titleKey: isCritical ? 'insight_liquidity_critical_title' : 'insight_liquidity_warning_title',
+      priority: isCritical ? InsightPriority.critical : InsightPriority.warning,
+      titleKey: isCritical
+          ? 'insight_liquidity_critical_title'
+          : 'insight_liquidity_warning_title',
       bodyKey: 'insight_liquidity_body',
       actionKey: 'insight_liquidity_action',
       actionRoute: '/analytics',
-      title: isCritical ? '🚨 Crítico: pagamentos vencem esta semana' : '📅 Pagamentos vencem esta semana',
-      body:
-          'Seu saldo atual é ${snap.currentBalance.formatted}. '
+      title: isCritical
+          ? '🚨 Crítico: pagamentos vencem esta semana'
+          : '📅 Pagamentos vencem esta semana',
+      body: 'Seu saldo atual é ${snap.currentBalance.formatted}. '
           'Verifique se cobre todos os vencimentos antes de gastar.',
       actionLabel: 'Ver compromissos →',
       confidence: 0.95,
@@ -128,8 +127,7 @@ class IntelligenceLayer {
               bodyKey: 'insight_spike_body',
               actionKey: 'insight_spike_action',
               title: 'Aceleração em ${v.categoryName}',
-              body:
-                  '${v.currentSpend.formatted} até agora vs. média de '
+              body: '${v.currentSpend.formatted} até agora vs. média de '
                   '${v.historicalAverage.formatted}. '
                   '${v.deviationPercent.round()}% acima do usual.',
               actionLabel: 'Ver ${v.categoryName}',
@@ -176,8 +174,7 @@ class IntelligenceLayer {
         bodyKey: 'insight_duplicate_body',
         actionKey: 'insight_duplicate_action',
         title: 'Possível cobrança duplicada',
-        body:
-            '${group.length}x "$desc" por '
+        body: '${group.length}x "$desc" por '
             'R\$ ${group.first.amount.toStringAsFixed(2)} em $days dia${days == 1 ? '' : 's'}.',
         actionLabel: 'Verificar',
         confidence: confidence,
@@ -201,10 +198,14 @@ class IntelligenceLayer {
     final now = DateTime.now();
     final months = [
       (now.month, now.year),
-      (now.month - 1 <= 0 ? now.month + 11 : now.month - 1,
-          now.month - 1 <= 0 ? now.year - 1 : now.year),
-      (now.month - 2 <= 0 ? now.month + 10 : now.month - 2,
-          now.month - 2 <= 0 ? now.year - 1 : now.year),
+      (
+        now.month - 1 <= 0 ? now.month + 11 : now.month - 1,
+        now.month - 1 <= 0 ? now.year - 1 : now.year
+      ),
+      (
+        now.month - 2 <= 0 ? now.month + 10 : now.month - 2,
+        now.month - 2 <= 0 ? now.year - 1 : now.year
+      ),
     ];
 
     final monthlyTotals = months.map((pair) {
@@ -230,8 +231,7 @@ class IntelligenceLayer {
       bodyKey: 'insight_subscription_body',
       actionKey: 'insight_subscription_action',
       title: 'Assinaturas crescendo',
-      body:
-          'Seus gastos com assinaturas aumentaram '
+      body: 'Seus gastos com assinaturas aumentaram '
           'R\$ ${growth.toStringAsFixed(2)} nos últimos 3 meses.',
       actionLabel: 'Ver assinaturas',
       confidence: 0.75,
@@ -251,27 +251,26 @@ class IntelligenceLayer {
             e.status == EnvelopeStatus.overspent &&
             (e.spent - e.effectiveAllocated).amount > 50)
         .map((e) {
-          final overspent = e.spent - e.effectiveAllocated;
-          return FinancialInsight(
-            id: 'save_${e.category.slug}_${snap.period.start.millisecondsSinceEpoch}',
-            type: InsightType.savingsOpportunity,
-            priority: InsightPriority.info,
-            titleKey: 'insight_savings_title',
-            bodyKey: 'insight_savings_body',
-            actionKey: 'insight_savings_action',
-            title: 'Economia possível em ${e.category.name}',
-            body: '${e.category.name} está ${overspent.formatted} '
-                'acima do orçamento. Ajustar pode liberar essa quantia por período.',
-            actionLabel: 'Ajustar orçamento',
-            confidence: 0.65,
-            data: {
-              'category': e.category.slug,
-              'categoryName': e.category.name,
-              'overspentFormatted': overspent.formatted,
-            },
-          );
-        })
-        .toList();
+      final overspent = e.spent - e.effectiveAllocated;
+      return FinancialInsight(
+        id: 'save_${e.category.slug}_${snap.period.start.millisecondsSinceEpoch}',
+        type: InsightType.savingsOpportunity,
+        priority: InsightPriority.info,
+        titleKey: 'insight_savings_title',
+        bodyKey: 'insight_savings_body',
+        actionKey: 'insight_savings_action',
+        title: 'Economia possível em ${e.category.name}',
+        body: '${e.category.name} está ${overspent.formatted} '
+            'acima do orçamento. Ajustar pode liberar essa quantia por período.',
+        actionLabel: 'Ajustar orçamento',
+        confidence: 0.65,
+        data: {
+          'category': e.category.slug,
+          'categoryName': e.category.name,
+          'overspentFormatted': overspent.formatted,
+        },
+      );
+    }).toList();
   }
 
   // ── RULE 7: Investment opportunity ───────────────────────────────────────
@@ -288,8 +287,7 @@ class IntelligenceLayer {
       bodyKey: 'insight_invest_body',
       actionKey: 'insight_invest_action',
       title: 'Você vai sobrar ${closing.formatted}',
-      body:
-          'Com base no ritmo atual, você terá ${closing.formatted} '
+      body: 'Com base no ritmo atual, você terá ${closing.formatted} '
           'livres no final do período. Que tal destinar uma parte?',
       actionLabel: 'Ver opções',
       confidence: 0.70,
@@ -312,8 +310,7 @@ class IntelligenceLayer {
       titleKey: 'insight_streak_title',
       bodyKey: 'insight_streak_body',
       title: '$streakCount períodos dentro do orçamento! 🎉',
-      body:
-          'Você está mantendo suas finanças sob controle por '
+      body: 'Você está mantendo suas finanças sob controle por '
           '$streakCount períodos consecutivos. Continue assim!',
       confidence: 1.0,
       isDismissable: true,
@@ -336,8 +333,7 @@ class IntelligenceLayer {
       titleKey: 'insight_debt_title',
       bodyKey: 'insight_debt_body',
       title: 'Parcelas reduzindo!',
-      body:
-          'Suas parcelas ativas caíram '
+      body: 'Suas parcelas ativas caíram '
           'R\$ ${reduction.toStringAsFixed(2)} em relação ao período anterior.',
       confidence: 0.90,
       isDismissable: true,
@@ -358,8 +354,8 @@ class IntelligenceLayer {
       final desc = e.storeDescription?.toLowerCase();
       if (desc == null) continue;
       // Known if appeared in older history (not just recent)
-      final inOlderHistory =
-          all.any((h) => h.id != e.id && h.storeDescription?.toLowerCase() == desc);
+      final inOlderHistory = all.any(
+          (h) => h.id != e.id && h.storeDescription?.toLowerCase() == desc);
       if (inOlderHistory) continue;
 
       insights.add(FinancialInsight(
@@ -395,8 +391,8 @@ class IntelligenceLayer {
 
     // Current period spend by category
     final current = <String, double>{};
-    for (final e in all.where((e) =>
-        e.year == now.year && e.month == now.month && !e.isProjected)) {
+    for (final e in all.where(
+        (e) => e.year == now.year && e.month == now.month && !e.isProjected)) {
       current[e.category] = (current[e.category] ?? 0) + e.amount;
     }
 
@@ -404,8 +400,8 @@ class IntelligenceLayer {
     final historical = <String, List<double>>{};
     for (int i = 1; i <= 3; i++) {
       final dt = DateTime(now.year, now.month - i, 1);
-      for (final e in all.where((e) =>
-          e.year == dt.year && e.month == dt.month && !e.isProjected)) {
+      for (final e in all.where(
+          (e) => e.year == dt.year && e.month == dt.month && !e.isProjected)) {
         historical.putIfAbsent(e.category, () => []).add(e.amount);
       }
     }

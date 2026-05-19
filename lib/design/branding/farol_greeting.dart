@@ -115,7 +115,8 @@ class FarolGreeting extends ConsumerWidget {
     final period = ref.watch(selectedPeriodProvider);
 
     final effectiveNow = now ?? DateTime.now();
-    final greetingWord = l10n.translate(FarolGreetingHelper.greetingKey(effectiveNow));
+    final greetingWord =
+        l10n.translate(FarolGreetingHelper.greetingKey(effectiveNow));
 
     final name = overrideName ??
         profileAsync.whenOrNull(

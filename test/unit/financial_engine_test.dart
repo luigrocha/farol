@@ -30,7 +30,8 @@ Income _swile(double amount, {String type = 'SWILE_MEAL'}) => Income(
       createdAt: DateTime(2026, 5, 1),
     );
 
-Expense _cash(double amount, {String category = 'food_grocery', bool projected = false}) =>
+Expense _cash(double amount,
+        {String category = 'food_grocery', bool projected = false}) =>
     Expense(
       id: 1,
       userId: 'u',
@@ -107,7 +108,10 @@ void main() {
     test('sums SWILE_MEAL and SWILE_FOOD into swileIncome', () {
       final snap = engine.buildSnapshot(
         period: period,
-        incomes: [_swile(400, type: 'SWILE_MEAL'), _swile(200, type: 'SWILE_FOOD')],
+        incomes: [
+          _swile(400, type: 'SWILE_MEAL'),
+          _swile(200, type: 'SWILE_FOOD')
+        ],
         expenses: [],
         netSalaryOverride: 0,
         swileOverride: 0,
@@ -304,7 +308,8 @@ void main() {
 
   group('FinancialEngine — upcomingPayments', () {
     test('produces ScheduledPayment for next unpaid installment', () {
-      final plan = _plan(installmentAmount: 300, numInstallments: 3, paidCount: 1);
+      final plan =
+          _plan(installmentAmount: 300, numInstallments: 3, paidCount: 1);
       final snap = engine.buildSnapshot(
         period: period,
         incomes: [],
@@ -319,7 +324,8 @@ void main() {
     });
 
     test('no upcoming payment when all installments are paid', () {
-      final plan = _plan(installmentAmount: 300, numInstallments: 3, paidCount: 3);
+      final plan =
+          _plan(installmentAmount: 300, numInstallments: 3, paidCount: 3);
       final snap = engine.buildSnapshot(
         period: period,
         incomes: [],
@@ -333,8 +339,10 @@ void main() {
     });
 
     test('totalFutureObligations sums upcoming payment amounts', () {
-      final plan1 = _plan(installmentAmount: 200, numInstallments: 3, paidCount: 0);
-      final plan2 = _plan(installmentAmount: 300, numInstallments: 2, paidCount: 0);
+      final plan1 =
+          _plan(installmentAmount: 200, numInstallments: 3, paidCount: 0);
+      final plan2 =
+          _plan(installmentAmount: 300, numInstallments: 2, paidCount: 0);
       final snap = engine.buildSnapshot(
         period: period,
         incomes: [],

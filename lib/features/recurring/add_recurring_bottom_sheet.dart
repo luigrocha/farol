@@ -16,8 +16,7 @@ class AddRecurringBottomSheet extends ConsumerStatefulWidget {
   final RecurringRule? editRule;
 
   @override
-  ConsumerState<AddRecurringBottomSheet> createState() =>
-      _AddRecurringState();
+  ConsumerState<AddRecurringBottomSheet> createState() => _AddRecurringState();
 }
 
 class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
@@ -56,8 +55,7 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
   double? get _amount =>
       double.tryParse(_amountCtrl.text.trim().replaceAll(',', '.'));
 
-  bool get _valid =>
-      _nameCtrl.text.trim().isNotEmpty && (_amount ?? 0) > 0;
+  bool get _valid => _nameCtrl.text.trim().isNotEmpty && (_amount ?? 0) > 0;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +74,8 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Center(
             child: Container(
-              width: 40, height: 4,
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
                   color: Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(2)),
@@ -84,7 +83,8 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
           ),
           const SizedBox(height: 16),
           Text(isEdit ? l10n.recurringEditTitle : l10n.recurringAddTitle,
-              style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w800)),
+              style: GoogleFonts.manrope(
+                  fontSize: 18, fontWeight: FontWeight.w800)),
           const SizedBox(height: 20),
 
           // Name
@@ -101,7 +101,9 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
           TextField(
             controller: _amountCtrl,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))],
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))
+            ],
             onChanged: (_) => setState(() {}),
             decoration: _inputDec('0,00'),
           ),
@@ -150,7 +152,8 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
               value: _categorySlug,
               decoration: _inputDec(l10n.recurringFieldCategoryHint),
               items: cats
-                  .map((c) => DropdownMenuItem(value: c.slug, child: Text(c.name)))
+                  .map((c) =>
+                      DropdownMenuItem(value: c.slug, child: Text(c.name)))
                   .toList(),
               onChanged: (v) => setState(() => _categorySlug = v),
             ),
@@ -172,12 +175,13 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
           const SizedBox(height: 20),
 
           // Preview
-          if (_valid) _PreviewSection(
-            amount: _amount!,
-            frequency: _frequency,
-            dayOfMonth: _dayOfMonth,
-            startsOn: _startsOn,
-          ),
+          if (_valid)
+            _PreviewSection(
+              amount: _amount!,
+              frequency: _frequency,
+              dayOfMonth: _dayOfMonth,
+              startsOn: _startsOn,
+            ),
 
           const SizedBox(height: 20),
 
@@ -189,13 +193,17 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
                 backgroundColor: _teal,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
               child: _saving
                   ? const SizedBox(
-                      height: 20, width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : Text(isEdit ? l10n.recurringBtnSave : l10n.recurringBtnCreate,
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white))
+                  : Text(
+                      isEdit ? l10n.recurringBtnSave : l10n.recurringBtnCreate,
                       style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
             ),
           ),
@@ -255,8 +263,9 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
       }
       if (mounted) {
         Navigator.pop(context);
-        context.showSuccessSnackBar(
-            edit != null ? context.l10n.recurringUpdatedSnack : context.l10n.recurringCreatedSnack);
+        context.showSuccessSnackBar(edit != null
+            ? context.l10n.recurringUpdatedSnack
+            : context.l10n.recurringCreatedSnack);
       }
     } catch (e) {
       if (mounted) context.showErrorSnackBar(e);
@@ -268,7 +277,8 @@ class _AddRecurringState extends ConsumerState<AddRecurringBottomSheet> {
   InputDecoration _inputDec(String? hint) => InputDecoration(
         hintText: hint,
         isDense: true,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       );
 }
@@ -348,6 +358,7 @@ class _Label extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.only(bottom: 6),
         child: Text(text,
-            style: GoogleFonts.manrope(fontSize: 12, fontWeight: FontWeight.w600)),
+            style:
+                GoogleFonts.manrope(fontSize: 12, fontWeight: FontWeight.w600)),
       );
 }

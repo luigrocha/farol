@@ -70,21 +70,21 @@ class InviteAcceptedBanner extends StatefulWidget {
 class _InviteAcceptedBannerState extends State<InviteAcceptedBanner>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
-  late final Animation<Offset>   _slide;
-  late final Animation<double>   _fade;
+  late final Animation<Offset> _slide;
+  late final Animation<double> _fade;
 
   @override
   void initState() {
     super.initState();
 
     _ctrl = AnimationController(
-      vsync:    this,
+      vsync: this,
       duration: const Duration(milliseconds: 300),
     );
 
     _slide = Tween<Offset>(
       begin: const Offset(0, -1.5),
-      end:   Offset.zero,
+      end: Offset.zero,
     ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
 
     _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
@@ -111,19 +111,21 @@ class _InviteAcceptedBannerState extends State<InviteAcceptedBanner>
 
   @override
   Widget build(BuildContext context) {
-    final cs      = Theme.of(context).colorScheme;
-    final initials = widget.initials
-        ?? widget.memberName.substring(0, widget.memberName.length.clamp(1, 2)).toUpperCase();
-    final bgColor  = widget.avatarColor ?? cs.primary;
+    final cs = Theme.of(context).colorScheme;
+    final initials = widget.initials ??
+        widget.memberName
+            .substring(0, widget.memberName.length.clamp(1, 2))
+            .toUpperCase();
+    final bgColor = widget.avatarColor ?? cs.primary;
 
     return SlideTransition(
       position: _slide,
       child: FadeTransition(
         opacity: _fade,
         child: Material(
-          elevation:    6,
+          elevation: 6,
           borderRadius: BorderRadius.circular(16),
-          color:        cs.surface,
+          color: cs.surface,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
@@ -139,14 +141,14 @@ class _InviteAcceptedBannerState extends State<InviteAcceptedBanner>
                         backgroundImage: NetworkImage(widget.photoUrl!),
                       )
                     : CircleAvatar(
-                        radius:          20,
+                        radius: 20,
                         backgroundColor: bgColor,
                         child: Text(
                           initials,
                           style: const TextStyle(
-                            color:      Colors.white,
+                            color: Colors.white,
                             fontWeight: FontWeight.w700,
-                            fontSize:   13,
+                            fontSize: 13,
                           ),
                         ),
                       ),
@@ -162,15 +164,15 @@ class _InviteAcceptedBannerState extends State<InviteAcceptedBanner>
                         '${widget.memberName} entrou no espaço 🎉',
                         style: GoogleFonts.manrope(
                           fontWeight: FontWeight.w700,
-                          fontSize:   14,
-                          color:      cs.onSurface,
+                          fontSize: 14,
+                          color: cs.onSurface,
                         ),
                       ),
                       Text(
                         'Agora é possível dividir os gastos juntos.',
                         style: GoogleFonts.manrope(
                           fontSize: 12,
-                          color:    cs.onSurfaceVariant,
+                          color: cs.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -180,9 +182,9 @@ class _InviteAcceptedBannerState extends State<InviteAcceptedBanner>
 
                 // Dismiss
                 IconButton(
-                  icon:         const Icon(Icons.close, size: 18),
-                  onPressed:    _dismiss,
-                  color:        cs.onSurfaceVariant,
+                  icon: const Icon(Icons.close, size: 18),
+                  onPressed: _dismiss,
+                  color: cs.onSurfaceVariant,
                   visualDensity: VisualDensity.compact,
                 ),
               ],
@@ -227,8 +229,8 @@ mixin InviteAcceptedOverlayMixin<T extends StatefulWidget> on State<T> {
   String? _pendingMemberName;
   String? _pendingInitials;
   String? _pendingPhotoUrl;
-  Color?  _pendingAvatarColor;
-  bool    _showBanner = false;
+  Color? _pendingAvatarColor;
+  bool _showBanner = false;
 
   /// Call from `initState` to subscribe to member_joined events.
   ///
@@ -236,17 +238,17 @@ mixin InviteAcceptedOverlayMixin<T extends StatefulWidget> on State<T> {
   /// look up the new member's display name / photo.
   void showBannerForMember({
     required String memberName,
-    String?  initials,
-    String?  photoUrl,
-    Color?   avatarColor,
+    String? initials,
+    String? photoUrl,
+    Color? avatarColor,
   }) {
     if (!mounted) return;
     setState(() {
-      _pendingMemberName  = memberName;
-      _pendingInitials    = initials;
-      _pendingPhotoUrl    = photoUrl;
+      _pendingMemberName = memberName;
+      _pendingInitials = initials;
+      _pendingPhotoUrl = photoUrl;
       _pendingAvatarColor = avatarColor;
-      _showBanner         = true;
+      _showBanner = true;
     });
   }
 
@@ -256,18 +258,19 @@ mixin InviteAcceptedOverlayMixin<T extends StatefulWidget> on State<T> {
 
   /// Returns the overlay widget. Place inside a [Stack] as the last child.
   Widget buildInviteOverlay(BuildContext context) {
-    if (!_showBanner || _pendingMemberName == null) return const SizedBox.shrink();
+    if (!_showBanner || _pendingMemberName == null)
+      return const SizedBox.shrink();
 
     return Positioned(
-      top:   MediaQuery.of(context).padding.top + 8,
-      left:  16,
+      top: MediaQuery.of(context).padding.top + 8,
+      left: 16,
       right: 16,
       child: InviteAcceptedBanner(
-        memberName:  _pendingMemberName!,
-        initials:    _pendingInitials,
-        photoUrl:    _pendingPhotoUrl,
+        memberName: _pendingMemberName!,
+        initials: _pendingInitials,
+        photoUrl: _pendingPhotoUrl,
         avatarColor: _pendingAvatarColor,
-        onDismiss:   _hideBanner,
+        onDismiss: _hideBanner,
       ),
     );
   }

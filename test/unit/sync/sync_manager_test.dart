@@ -155,7 +155,8 @@ void main() {
       // ignore: invalid_use_of_visible_for_testing_member
       // We trigger it twice concurrently; second call should be a no-op.
       final f1 = mgr.processPendingQueue();
-      final f2 = mgr.processPendingQueue(); // concurrent call — should be skipped
+      final f2 =
+          mgr.processPendingQueue(); // concurrent call — should be skipped
       await Future.wait([f1, f2]);
 
       await Future<void>.delayed(Duration.zero);

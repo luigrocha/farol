@@ -27,7 +27,10 @@ class ForecastingEngine {
     final today = DateTime(now.year, now.month, now.day);
 
     final daysElapsed = math.max(
-        today.difference(DateTime(period.start.year, period.start.month, period.start.day)).inDays,
+        today
+            .difference(DateTime(
+                period.start.year, period.start.month, period.start.day))
+            .inDays,
         0);
     final daysRemaining = math.max(
         DateTime(period.end.year, period.end.month, period.end.day)
@@ -51,10 +54,10 @@ class ForecastingEngine {
     final projectedVariableSpend =
         burnRate.dailyRate * daysRemaining.toDouble();
 
-    final projectedClosing = currentBalance
-        + projectedIncome
-        - projectedVariableSpend
-        - confirmedObligations;
+    final projectedClosing = currentBalance +
+        projectedIncome -
+        projectedVariableSpend -
+        confirmedObligations;
 
     // ── LiquidityRisk ─────────────────────────────────────────────────────────
     final next7 = obligations

@@ -41,9 +41,8 @@ class FinancialEngine {
     final effectiveCashIncome = netSalaryOverride > 0
         ? Money.fromDouble(netSalaryOverride)
         : cashIncome;
-    final effectiveSwileIncome = swileOverride > 0
-        ? Money.fromDouble(swileOverride)
-        : swileIncome;
+    final effectiveSwileIncome =
+        swileOverride > 0 ? Money.fromDouble(swileOverride) : swileIncome;
 
     final totalIncome = effectiveCashIncome + effectiveSwileIncome;
 
@@ -69,8 +68,7 @@ class FinancialEngine {
     // ── Health score ──────────────────────────────────────────────────────────
     final byCategory = <String, double>{};
     for (final e in realExpenses.where((e) => e.payType == 'Cash')) {
-      byCategory[e.category] =
-          (byCategory[e.category] ?? 0) + e.amount;
+      byCategory[e.category] = (byCategory[e.category] ?? 0) + e.amount;
     }
     final housingExpenses = byCategory['housing'] ?? byCategory['HOUSING'] ?? 0;
     final activeInstallmentsTotal =

@@ -23,8 +23,7 @@ class UserNotificationsRepository {
   Future<void> markRead(String id) async {
     await _supabase
         .from('user_notifications')
-        .update({'read_at': DateTime.now().toIso8601String()})
-        .eq('id', id);
+        .update({'read_at': DateTime.now().toIso8601String()}).eq('id', id);
   }
 
   Future<void> markAllRead() async {

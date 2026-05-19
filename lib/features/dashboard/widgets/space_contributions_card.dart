@@ -25,15 +25,15 @@ class SpaceContributionsCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final month = ref.watch(selectedMonthProvider);
-    final year  = ref.watch(selectedYearProvider);
+    final year = ref.watch(selectedYearProvider);
     final period = (year: year, month: month);
 
     final contribAsync = ref.watch(ledgerContributionsProvider(period));
 
     return contribAsync.when(
       loading: () => const SizedBox.shrink(),
-      error:   (_, __) => const SizedBox.shrink(),
-      data:    (contributions) {
+      error: (_, __) => const SizedBox.shrink(),
+      data: (contributions) {
         if (contributions.isEmpty) return const SizedBox.shrink();
         return _SpaceContributionsContent(contributions: contributions);
       },
@@ -57,12 +57,12 @@ class _SpaceContributionsContent extends StatelessWidget {
     // Group by space and sum amounts
     final bySpace = <String, _SpaceTotal>{};
     for (final c in contributions) {
-      final key   = c.spaceId;
+      final key = c.spaceId;
       final entry = bySpace[key];
       if (entry == null) {
         bySpace[key] = _SpaceTotal(
-          name:   c.spaceName ?? 'Espaço',
-          emoji:  c.spaceEmoji,
+          name: c.spaceName ?? 'Espaço',
+          emoji: c.spaceEmoji,
           amount: c.amount,
         );
       } else {
@@ -70,15 +70,15 @@ class _SpaceContributionsContent extends StatelessWidget {
       }
     }
 
-    final totals    = bySpace.values.toList()
+    final totals = bySpace.values.toList()
       ..sort((a, b) => b.amount.compareTo(a.amount));
     final grandTotal = totals.fold(0.0, (s, t) => s + t.amount);
 
     return Card(
-      margin:       const EdgeInsets.symmetric(horizontal: 0),
-      elevation:    0,
-      color:        theme.colorScheme.surfaceContainerLow,
-      shape:        RoundedRectangleBorder(
+      margin: const EdgeInsets.symmetric(horizontal: 0),
+      elevation: 0,
+      color: theme.colorScheme.surfaceContainerLow,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
       child: Padding(
@@ -99,8 +99,8 @@ class _SpaceContributionsContent extends StatelessWidget {
                   'Contribuições a espaços',
                   style: GoogleFonts.manrope(
                     fontWeight: FontWeight.w700,
-                    fontSize:   14,
-                    color:      theme.colorScheme.onSurface,
+                    fontSize: 14,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
                 const Spacer(),
@@ -108,8 +108,8 @@ class _SpaceContributionsContent extends StatelessWidget {
                   _brlFmt.format(grandTotal),
                   style: GoogleFonts.manrope(
                     fontWeight: FontWeight.w700,
-                    fontSize:   14,
-                    color:      theme.colorScheme.primary,
+                    fontSize: 14,
+                    color: theme.colorScheme.primary,
                   ),
                 ),
               ],
@@ -119,10 +119,10 @@ class _SpaceContributionsContent extends StatelessWidget {
 
             // ── Progress bars + rows ─────────────────────────────
             ...totals.map((t) => _SpaceRow(
-              total:      t,
-              fraction:   grandTotal > 0 ? t.amount / grandTotal : 0,
-              theme:      theme,
-            )),
+                  total: t,
+                  fraction: grandTotal > 0 ? t.amount / grandTotal : 0,
+                  theme: theme,
+                )),
           ],
         ),
       ),
@@ -177,7 +177,7 @@ class _SpaceRow extends StatelessWidget {
                 _brlFmt.format(total.amount),
                 style: theme.textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color:      theme.colorScheme.onSurface,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ],
@@ -186,10 +186,11 @@ class _SpaceRow extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
-              value:            fraction,
-              minHeight:        4,
-              backgroundColor:  theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
-              valueColor:       AlwaysStoppedAnimation<Color>(
+              value: fraction,
+              minHeight: 4,
+              backgroundColor:
+                  theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+              valueColor: AlwaysStoppedAnimation<Color>(
                 theme.colorScheme.primary.withValues(alpha: 0.7),
               ),
             ),
@@ -205,9 +206,9 @@ class _SpaceRow extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────
 
 class _SpaceTotal {
-  final String  name;
+  final String name;
   final String? emoji;
-  final double  amount;
+  final double amount;
 
   const _SpaceTotal({
     required this.name,

@@ -12,7 +12,7 @@ extension WorkspaceTypeX on WorkspaceType {
 
   static WorkspaceType parse(String? value) => switch (value) {
         'shared' => WorkspaceType.shared,
-        _        => WorkspaceType.personal,
+        _ => WorkspaceType.personal,
       };
 }
 
@@ -38,39 +38,39 @@ class WorkspaceMember {
   });
 
   static WorkspaceRole _parseRole(String? r) => switch (r) {
-        'owner'  => WorkspaceRole.owner,
-        'admin'  => WorkspaceRole.admin,
+        'owner' => WorkspaceRole.owner,
+        'admin' => WorkspaceRole.admin,
         'member' => WorkspaceRole.member,
-        _        => WorkspaceRole.viewer,
+        _ => WorkspaceRole.viewer,
       };
 
   factory WorkspaceMember.fromJson(Map<String, dynamic> json) {
     return WorkspaceMember(
-      id:          json['id'] as String,
+      id: json['id'] as String,
       workspaceId: json['workspace_id'] as String,
-      userId:      json['user_id'] as String,
-      role:        _parseRole(json['role'] as String?),
-      invitedBy:   json['invited_by'] as String?,
-      joinedAt:    DateTime.parse(json['joined_at'] as String),
+      userId: json['user_id'] as String,
+      role: _parseRole(json['role'] as String?),
+      invitedBy: json['invited_by'] as String?,
+      joinedAt: DateTime.parse(json['joined_at'] as String),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id':           id,
+        'id': id,
         'workspace_id': workspaceId,
-        'user_id':      userId,
-        'role':         role.name,
+        'user_id': userId,
+        'role': role.name,
         if (invitedBy != null) 'invited_by': invitedBy,
-        'joined_at':    joinedAt.toIso8601String(),
+        'joined_at': joinedAt.toIso8601String(),
       };
 
   WorkspaceMember copyWith({WorkspaceRole? role}) => WorkspaceMember(
-        id:          id,
+        id: id,
         workspaceId: workspaceId,
-        userId:      userId,
-        role:        role ?? this.role,
-        invitedBy:   invitedBy,
-        joinedAt:    joinedAt,
+        userId: userId,
+        role: role ?? this.role,
+        invitedBy: invitedBy,
+        joinedAt: joinedAt,
       );
 }
 
@@ -103,27 +103,27 @@ class WorkspaceInvite {
     required this.createdAt,
   });
 
-  bool get isExpired  => DateTime.now().isAfter(expiresAt);
+  bool get isExpired => DateTime.now().isAfter(expiresAt);
   bool get isAccepted => acceptedAt != null;
   bool get isDeclined => declinedAt != null;
-  bool get isPending  => !isExpired && !isAccepted && !isDeclined;
+  bool get isPending => !isExpired && !isAccepted && !isDeclined;
 
   factory WorkspaceInvite.fromJson(Map<String, dynamic> json) {
     return WorkspaceInvite(
-      id:            json['id'] as String,
-      workspaceId:   json['workspace_id'] as String,
-      invitedEmail:  json['invited_email'] as String,
-      role:          WorkspaceMember._parseRole(json['role'] as String?),
-      token:         json['token'] as String,
-      invitedBy:     json['invited_by'] as String,
-      expiresAt:     DateTime.parse(json['expires_at'] as String),
-      acceptedAt:    json['accepted_at'] != null
-                       ? DateTime.parse(json['accepted_at'] as String)
-                       : null,
-      declinedAt:    json['declined_at'] != null
-                       ? DateTime.parse(json['declined_at'] as String)
-                       : null,
-      createdAt:     DateTime.parse(json['created_at'] as String),
+      id: json['id'] as String,
+      workspaceId: json['workspace_id'] as String,
+      invitedEmail: json['invited_email'] as String,
+      role: WorkspaceMember._parseRole(json['role'] as String?),
+      token: json['token'] as String,
+      invitedBy: json['invited_by'] as String,
+      expiresAt: DateTime.parse(json['expires_at'] as String),
+      acceptedAt: json['accepted_at'] != null
+          ? DateTime.parse(json['accepted_at'] as String)
+          : null,
+      declinedAt: json['declined_at'] != null
+          ? DateTime.parse(json['declined_at'] as String)
+          : null,
+      createdAt: DateTime.parse(json['created_at'] as String),
     );
   }
 }
@@ -168,43 +168,45 @@ class Workspace {
     this.description,
   });
 
-  bool get isPremium => plan == WorkspacePlan.premium &&
+  bool get isPremium =>
+      plan == WorkspacePlan.premium &&
       (planExpiresAt == null || planExpiresAt!.isAfter(DateTime.now()));
 
   factory Workspace.fromJson(Map<String, dynamic> json) {
     final membersRaw = json['workspace_members'] as List<dynamic>? ?? [];
     return Workspace(
-      id:             json['id'] as String,
-      name:           json['name'] as String,
-      slug:           json['slug'] as String?,
-      ownerId:        json['owner_id'] as String,
-      plan:           (json['plan'] as String?) == 'premium'
-                        ? WorkspacePlan.premium
-                        : WorkspacePlan.free,
-      planExpiresAt:  json['plan_expires_at'] != null
-                        ? DateTime.parse(json['plan_expires_at'] as String)
-                        : null,
-      settings:       (json['settings'] as Map<String, dynamic>?) ?? {},
-      members:        membersRaw
-                        .map((m) => WorkspaceMember.fromJson(m as Map<String, dynamic>))
-                        .toList(),
-      createdAt:      DateTime.parse(json['created_at'] as String),
-      updatedAt:      DateTime.parse(json['updated_at'] as String),
-      type:           WorkspaceTypeX.parse(json['workspace_type'] as String?),
-      emoji:          json['emoji'] as String?,
-      color:          json['color'] as String?,
-      description:    json['description'] as String?,
+      id: json['id'] as String,
+      name: json['name'] as String,
+      slug: json['slug'] as String?,
+      ownerId: json['owner_id'] as String,
+      plan: (json['plan'] as String?) == 'premium'
+          ? WorkspacePlan.premium
+          : WorkspacePlan.free,
+      planExpiresAt: json['plan_expires_at'] != null
+          ? DateTime.parse(json['plan_expires_at'] as String)
+          : null,
+      settings: (json['settings'] as Map<String, dynamic>?) ?? {},
+      members: membersRaw
+          .map((m) => WorkspaceMember.fromJson(m as Map<String, dynamic>))
+          .toList(),
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
+      type: WorkspaceTypeX.parse(json['workspace_type'] as String?),
+      emoji: json['emoji'] as String?,
+      color: json['color'] as String?,
+      description: json['description'] as String?,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id':             id,
-        'name':           name,
+        'id': id,
+        'name': name,
         if (slug != null) 'slug': slug,
-        'owner_id':       ownerId,
-        'plan':           plan.name,
-        if (planExpiresAt != null) 'plan_expires_at': planExpiresAt!.toIso8601String(),
-        'settings':       settings,
+        'owner_id': ownerId,
+        'plan': plan.name,
+        if (planExpiresAt != null)
+          'plan_expires_at': planExpiresAt!.toIso8601String(),
+        'settings': settings,
         'workspace_type': type.name,
         if (emoji != null) 'emoji': emoji,
         if (color != null) 'color': color,
@@ -223,28 +225,25 @@ class Workspace {
     String? description,
   }) =>
       Workspace(
-        id:             id,
-        name:           name ?? this.name,
-        slug:           slug,
-        ownerId:        ownerId,
-        plan:           plan ?? this.plan,
-        planExpiresAt:  planExpiresAt ?? this.planExpiresAt,
-        settings:       settings ?? this.settings,
-        members:        members ?? this.members,
-        createdAt:      createdAt,
-        updatedAt:      updatedAt,
-        type:           type ?? this.type,
-        emoji:          emoji ?? this.emoji,
-        color:          color ?? this.color,
-        description:    description ?? this.description,
+        id: id,
+        name: name ?? this.name,
+        slug: slug,
+        ownerId: ownerId,
+        plan: plan ?? this.plan,
+        planExpiresAt: planExpiresAt ?? this.planExpiresAt,
+        settings: settings ?? this.settings,
+        members: members ?? this.members,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+        type: type ?? this.type,
+        emoji: emoji ?? this.emoji,
+        color: color ?? this.color,
+        description: description ?? this.description,
       );
 
   /// Role do usuário neste workspace. Retorna viewer se não for membro.
   WorkspaceRole roleFor(String userId) =>
-      members
-          .where((m) => m.userId == userId)
-          .map((m) => m.role)
-          .firstOrNull ??
+      members.where((m) => m.userId == userId).map((m) => m.role).firstOrNull ??
       WorkspaceRole.viewer;
 
   /// Build a minimal Workspace from the accept-workspace-invite Edge Function
@@ -252,14 +251,14 @@ class Workspace {
   factory Workspace.fromEdgeFunctionResponse(Map<String, dynamic> json) {
     final now = DateTime.now();
     return Workspace(
-      id:        json['id'] as String,
-      name:      json['name'] as String? ?? '',
-      ownerId:   json['owner_id'] as String? ?? '',
+      id: json['id'] as String,
+      name: json['name'] as String? ?? '',
+      ownerId: json['owner_id'] as String? ?? '',
       createdAt: now,
       updatedAt: now,
-      type:      WorkspaceTypeX.parse(json['workspace_type'] as String?),
-      emoji:     json['emoji'] as String?,
-      color:     json['color'] as String?,
+      type: WorkspaceTypeX.parse(json['workspace_type'] as String?),
+      emoji: json['emoji'] as String?,
+      color: json['color'] as String?,
     );
   }
 }

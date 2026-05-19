@@ -87,9 +87,9 @@ void main() {
   group('LoginScreen — loading state', () {
     testWidgets('shows loading indicator while sign-in is in progress',
         (tester) async {
-      final fake = FakeAuthRepository(
-          )..seedUser('user@example.com', 'pass123')
-          ..behavior = FakeAuthBehavior(delay: const Duration(seconds: 1));
+      final fake = FakeAuthRepository()
+        ..seedUser('user@example.com', 'pass123')
+        ..behavior = FakeAuthBehavior(delay: const Duration(seconds: 1));
 
       await pumpAppWithFakeAuth(
         tester,

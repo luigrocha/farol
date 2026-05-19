@@ -44,7 +44,8 @@ class InvestmentRepository {
     });
   }
 
-  Future<void> update(int id, {
+  Future<void> update(
+    int id, {
     double? currentBalance,
     double? returnAmount,
   }) async {

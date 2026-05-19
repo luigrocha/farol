@@ -198,7 +198,8 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
                   ),
                   items: [
                     DropdownMenuItem(
-                        value: null, child: Text(context.l10n.installmentsNoCategory)),
+                        value: null,
+                        child: Text(context.l10n.installmentsNoCategory)),
                     ...cats.map((c) => DropdownMenuItem(
                         value: c.slug,
                         child: Text('${c.emoji}  ${c.name}',
@@ -281,8 +282,7 @@ class _AddInstallmentState extends ConsumerState<AddInstallmentBottomSheet> {
 
     setState(() => _saving = true);
     try {
-      final cutoffDay =
-          ref.read(budgetSettingsProvider).value?.cutoffDay ?? 1;
+      final cutoffDay = ref.read(budgetSettingsProvider).value?.cutoffDay ?? 1;
 
       // Resolve category_id from slug
       String? categoryId;
@@ -342,10 +342,9 @@ class _PreviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final lastAmount = double.parse(
-        (total - installmentAmount * (numInstallments - 1))
-            .toStringAsFixed(2));
-    final lastDue = InstallmentService.addMonthsPublic(
-        firstDueDate, numInstallments - 1);
+        (total - installmentAmount * (numInstallments - 1)).toStringAsFixed(2));
+    final lastDue =
+        InstallmentService.addMonthsPublic(firstDueDate, numInstallments - 1);
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -378,8 +377,7 @@ class _PreviewCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             context.l10n.installmentsPreviewRoundingNote,
-            style:
-                TextStyle(fontSize: 10, color: colors.onSurfaceFaint),
+            style: TextStyle(fontSize: 10, color: colors.onSurfaceFaint),
           ),
         ]
       ]),
@@ -401,9 +399,7 @@ class _PreviewStat extends StatelessWidget {
       const SizedBox(height: 2),
       Text(value,
           style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: _purple)),
+              fontSize: 12, fontWeight: FontWeight.w700, color: _purple)),
     ]);
   }
 }
@@ -437,8 +433,7 @@ class _DatePicker extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(children: [
-          Icon(Icons.calendar_today,
-              size: 14, color: colors.onSurfaceMuted),
+          Icon(Icons.calendar_today, size: 14, color: colors.onSurfaceMuted),
           const SizedBox(width: 6),
           Expanded(
               child: Column(
@@ -490,9 +485,7 @@ class _StepButton extends StatelessWidget {
         ),
         child: Icon(icon,
             size: 18,
-            color: onTap != null
-                ? _purple
-                : context.colors.onSurfaceFaint),
+            color: onTap != null ? _purple : context.colors.onSurfaceFaint),
       ),
     );
   }

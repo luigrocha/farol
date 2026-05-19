@@ -4,7 +4,8 @@ import '../../design/farol_colors.dart' as tokens;
 extension FarolSnackbar on BuildContext {
   void showSuccessSnackBar(String message) {
     ScaffoldMessenger.of(this).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: tokens.FarolColors.beam),
+      SnackBar(
+          content: Text(message), backgroundColor: tokens.FarolColors.beam),
     );
   }
 

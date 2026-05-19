@@ -23,20 +23,20 @@ class SpaceAppBarChip extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spaceAsync = ref.watch(activeSpaceProvider);
-    final space      = spaceAsync.valueOrNull;
+    final space = spaceAsync.valueOrNull;
 
     if (space == null) return const SizedBox.shrink();
 
     final accentColor = _parseColor(space.color) ?? const Color(0xFF6366F1);
-    final bgColor     = accentColor.withValues(alpha: 0.15);
-    final fgColor     = accentColor;
+    final bgColor = accentColor.withValues(alpha: 0.15);
+    final fgColor = accentColor;
 
     return GestureDetector(
       onTap: () => WorkspaceSwitcherSheet.show(context),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
-          color:        bgColor,
+          color: bgColor,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -57,12 +57,12 @@ class SpaceAppBarChip extends ConsumerWidget {
               child: Text(
                 space.name,
                 style: GoogleFonts.manrope(
-                  fontSize:   12,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color:      fgColor,
+                  color: fgColor,
                 ),
-                maxLines:  1,
-                overflow:  TextOverflow.ellipsis,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             const SizedBox(width: 2),

@@ -23,7 +23,7 @@ import 'add_space_transaction_sheet.dart';
 import '../../design/branding/branding.dart';
 import '../../design/layout/layout.dart';
 
-final _brlFmt  = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+final _brlFmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 final _dateFmt = DateFormat('dd/MM/yy');
 
 // ─────────────────────────────────────────────────────────────────
@@ -52,15 +52,14 @@ class _SpaceTransactionsScreenState
   final List<SpaceTransaction> _items = [];
   final ScrollController _scroll = ScrollController();
 
-  bool   _loading     = false;
-  bool   _hasMore     = true;
-  String? _filterCatId;    // null = all categories
-  String? _filterUserId;   // null = all members
+  bool _loading = false;
+  bool _hasMore = true;
+  String? _filterCatId; // null = all categories
+  String? _filterUserId; // null = all members
 
   static const _pageSize = 20;
 
-  String get _currentUserId =>
-      Supabase.instance.client.auth.currentUser!.id;
+  String get _currentUserId => Supabase.instance.client.auth.currentUser!.id;
 
   @override
   void initState() {
@@ -82,8 +81,12 @@ class _SpaceTransactionsScreenState
   }
 
   Future<void> _loadPage({bool reset = false}) async {
-    if (_loading) { return; }
-    if (!_hasMore && !reset) { return; }
+    if (_loading) {
+      return;
+    }
+    if (!_hasMore && !reset) {
+      return;
+    }
 
     setState(() => _loading = true);
 
@@ -98,9 +101,9 @@ class _SpaceTransactionsScreenState
 
       final page = await repo.getTransactions(
         widget.space.id,
-        limit:      _pageSize,
+        limit: _pageSize,
         beforeDate: last?.date,
-        beforeId:   last?.id,
+        beforeId: last?.id,
       );
 
       setState(() {
@@ -131,9 +134,13 @@ class _SpaceTransactionsScreenState
 
   List<SpaceTransaction> get _filtered {
     return _items.where((tx) {
-      if (_filterCatId != null && tx.categoryId != _filterCatId) { return false; }
+      if (_filterCatId != null && tx.categoryId != _filterCatId) {
+        return false;
+      }
       if (_filterUserId != null &&
-          !tx.shares.any((s) => s.userId == _filterUserId)) { return false; }
+          !tx.shares.any((s) => s.userId == _filterUserId)) {
+        return false;
+      }
       return true;
     }).toList();
   }
@@ -144,11 +151,12 @@ class _SpaceTransactionsScreenState
 
   @override
   Widget build(BuildContext context) {
-    final canWrite   = ref.watch(canWriteInSpaceProvider);
-    final cats       = ref.watch(spaceCategoriesProvider).valueOrNull ?? [];
-    final displayMap = ref.watch(spaceMemberDisplayMapProvider).valueOrNull ?? {};
-    final filtered   = _filtered;
-    final isDesktop  = FarolBreakpoints.isDesktop(context);
+    final canWrite = ref.watch(canWriteInSpaceProvider);
+    final cats = ref.watch(spaceCategoriesProvider).valueOrNull ?? [];
+    final displayMap =
+        ref.watch(spaceMemberDisplayMapProvider).valueOrNull ?? {};
+    final filtered = _filtered;
+    final isDesktop = FarolBreakpoints.isDesktop(context);
 
     final scrollBody = RefreshIndicator(
       onRefresh: () => _loadPage(reset: true),
@@ -158,13 +166,13 @@ class _SpaceTransactionsScreenState
           // ── Filter chips ─────────────────────────────────────
           SliverToBoxAdapter(
             child: _FilterBar(
-              categories:      cats,
-              members:         widget.space.members,
-              displayMap:      displayMap,
-              selectedCatId:   _filterCatId,
-              selectedUserId:  _filterUserId,
-              onCatChanged:    (id) => setState(() => _filterCatId = id),
-              onUserChanged:   (id) => setState(() => _filterUserId = id),
+              categories: cats,
+              members: widget.space.members,
+              displayMap: displayMap,
+              selectedCatId: _filterCatId,
+              selectedUserId: _filterUserId,
+              onCatChanged: (id) => setState(() => _filterCatId = id),
+              onUserChanged: (id) => setState(() => _filterUserId = id),
             ),
           ),
 
@@ -176,7 +184,8 @@ class _SpaceTransactionsScreenState
 
           // ── Transaction list ─────────────────────────────────
           if (filtered.isEmpty && !_loading)
-            const SliverFarolEmptyState(type: FarolEmptyStateType.spaceTransactions)
+            const SliverFarolEmptyState(
+                type: FarolEmptyStateType.spaceTransactions)
           else
             SliverList(
               delegate: SliverChildBuilderDelegate(
@@ -191,11 +200,11 @@ class _SpaceTransactionsScreenState
                   }
                   final tx = filtered[i];
                   return _TxRow(
-                    tx:            tx,
+                    tx: tx,
                     currentUserId: _currentUserId,
-                    displayMap:    displayMap,
-                    canDelete:     canWrite && tx.paidBy == _currentUserId,
-                    onDelete:      () => _delete(tx),
+                    displayMap: displayMap,
+                    canDelete: canWrite && tx.paidBy == _currentUserId,
+                    onDelete: () => _delete(tx),
                   );
                 },
                 childCount: filtered.length + 1, // +1 for loader/padding
@@ -208,9 +217,11 @@ class _SpaceTransactionsScreenState
     return Scaffold(
       appBar: AppBar(
         title: Row(children: [
-          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const FarolMark(
+              size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
           const SizedBox(width: 10),
-          Text('Transações', style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
+          Text('Transações',
+              style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
         ]),
       ),
       floatingActionButton: canWrite
@@ -239,13 +250,13 @@ class _SpaceTransactionsScreenState
 // ─────────────────────────────────────────────────────────────────
 
 class _FilterBar extends StatelessWidget {
-  final List<SpaceCategory>       categories;
-  final List<SpaceMember>         members;
+  final List<SpaceCategory> categories;
+  final List<SpaceMember> members;
   final Map<String, MemberDisplay> displayMap;
-  final String?                   selectedCatId;
-  final String?                   selectedUserId;
-  final ValueChanged<String?>     onCatChanged;
-  final ValueChanged<String?>     onUserChanged;
+  final String? selectedCatId;
+  final String? selectedUserId;
+  final ValueChanged<String?> onCatChanged;
+  final ValueChanged<String?> onUserChanged;
 
   const _FilterBar({
     required this.categories,
@@ -269,7 +280,7 @@ class _FilterBar extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: FilterChip(
-              label:    const Text('Todos'),
+              label: const Text('Todos'),
               selected: selectedCatId == null && selectedUserId == null,
               onSelected: (_) {
                 onCatChanged(null);
@@ -279,24 +290,25 @@ class _FilterBar extends StatelessWidget {
           ),
           // Categories
           ...categories.map((c) => Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: FilterChip(
-              avatar: c.icon != null
-                  ? Text(c.icon!, style: const TextStyle(fontSize: 12))
-                  : null,
-              label:    Text(c.name),
-              selected: selectedCatId == c.id,
-              onSelected: (_) =>
-                  onCatChanged(selectedCatId == c.id ? null : c.id),
-            ),
-          )),
+                padding: const EdgeInsets.only(right: 8),
+                child: FilterChip(
+                  avatar: c.icon != null
+                      ? Text(c.icon!, style: const TextStyle(fontSize: 12))
+                      : null,
+                  label: Text(c.name),
+                  selected: selectedCatId == c.id,
+                  onSelected: (_) =>
+                      onCatChanged(selectedCatId == c.id ? null : c.id),
+                ),
+              )),
           // Members
           ...members.map((m) {
             final display = displayMap[m.userId];
-            final initials = display?.initials ?? m.userId.substring(0, 1).toUpperCase();
+            final initials =
+                display?.initials ?? m.userId.substring(0, 1).toUpperCase();
             final avatarBg = display?.avatarColor ?? _avatarColor(m.userId);
-            final name     = display?.displayName ?? m.userId.substring(0, 6);
-            final photo    = display?.photoUrl;
+            final name = display?.displayName ?? m.userId.substring(0, 6);
+            final photo = display?.photoUrl;
 
             return Padding(
               padding: const EdgeInsets.only(right: 8),
@@ -311,10 +323,11 @@ class _FilterBar extends StatelessWidget {
                         backgroundColor: avatarBg,
                         child: Text(
                           initials,
-                          style: const TextStyle(color: Colors.white, fontSize: 8),
+                          style:
+                              const TextStyle(color: Colors.white, fontSize: 8),
                         ),
                       ),
-                label:    Text(name),
+                label: Text(name),
                 selected: selectedUserId == m.userId,
                 onSelected: (_) =>
                     onUserChanged(selectedUserId == m.userId ? null : m.userId),
@@ -328,8 +341,12 @@ class _FilterBar extends StatelessWidget {
 
   static Color _avatarColor(String userId) {
     const palette = [
-      Color(0xFF6366F1), Color(0xFF0EA5E9), Color(0xFF10B981),
-      Color(0xFFF59E0B), Color(0xFFEF4444), Color(0xFF8B5CF6),
+      Color(0xFF6366F1),
+      Color(0xFF0EA5E9),
+      Color(0xFF10B981),
+      Color(0xFFF59E0B),
+      Color(0xFFEF4444),
+      Color(0xFF8B5CF6),
     ];
     return palette[userId.codeUnitAt(0) % palette.length];
   }
@@ -353,7 +370,7 @@ class _SummaryStrip extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color:        theme.colorScheme.surfaceContainerHighest,
+        color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -383,11 +400,11 @@ class _SummaryStrip extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────
 
 class _TxRow extends StatelessWidget {
-  final SpaceTransaction           tx;
-  final String                     currentUserId;
+  final SpaceTransaction tx;
+  final String currentUserId;
   final Map<String, MemberDisplay> displayMap;
-  final bool                       canDelete;
-  final VoidCallback               onDelete;
+  final bool canDelete;
+  final VoidCallback onDelete;
 
   const _TxRow({
     required this.tx,
@@ -399,12 +416,12 @@ class _TxRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme          = Theme.of(context);
-    final myShareAmount  = tx.shareFor(currentUserId);
-    final isPayer        = tx.paidBy == currentUserId;
-    final isParticipant  = myShareAmount > 0;
-    final payerDisplay   = displayMap[tx.paidBy];
-    final payerName      = isPayer
+    final theme = Theme.of(context);
+    final myShareAmount = tx.shareFor(currentUserId);
+    final isPayer = tx.paidBy == currentUserId;
+    final isParticipant = myShareAmount > 0;
+    final payerDisplay = displayMap[tx.paidBy];
+    final payerName = isPayer
         ? 'Você pagou'
         : payerDisplay?.displayName != null
             ? '${payerDisplay!.displayName} pagou'

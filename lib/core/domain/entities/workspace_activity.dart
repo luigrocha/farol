@@ -57,13 +57,13 @@ class WorkspaceActivity {
   String actionLabel({required bool isSelf}) {
     final subject = isSelf ? 'Você' : null;
     return switch (action) {
-      'added_expense'      => '${subject ?? 'adicionou'} uma despesa',
-      'deleted_expense'    => '${subject ?? 'removeu'} uma despesa',
-      'added_recurring'    => '${subject ?? 'adicionou'} recorrência',
-      'deleted_recurring'  => '${subject ?? 'removeu'} recorrência',
-      'added_installment'  => '${subject ?? 'adicionou'} parcelamento',
-      'deleted_installment'=> '${subject ?? 'removeu'} parcelamento',
-      _                    => action,
+      'added_expense' => '${subject ?? 'adicionou'} uma despesa',
+      'deleted_expense' => '${subject ?? 'removeu'} uma despesa',
+      'added_recurring' => '${subject ?? 'adicionou'} recorrência',
+      'deleted_recurring' => '${subject ?? 'removeu'} recorrência',
+      'added_installment' => '${subject ?? 'adicionou'} parcelamento',
+      'deleted_installment' => '${subject ?? 'removeu'} parcelamento',
+      _ => action,
     };
   }
 }

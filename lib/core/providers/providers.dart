@@ -66,7 +66,8 @@ import '../domain/entities/recurring_rule.dart';
 import '../domain/entities/recurring_occurrence.dart';
 import '../repositories/recurring_rules_repository.dart';
 import '../repositories/recurring_occurrences_repository.dart';
-import 'workspace_providers.dart' show activeWorkspaceIdProvider, activeWorkspaceProvider;
+import 'workspace_providers.dart'
+    show activeWorkspaceIdProvider, activeWorkspaceProvider;
 
 // ═══════════════════════════════════════════
 // LOCAL-DEVICE PROVIDERS (Drift)
@@ -107,11 +108,14 @@ final userPreferencesRepositoryProvider =
 });
 
 // Single fetch shared by locale, theme and privacy — avoids 3 separate Supabase round-trips.
-final remotePreferencesProvider = FutureProvider<({String? locale, String? themeMode, bool? privacyMode})>((ref) {
+final remotePreferencesProvider =
+    FutureProvider<({String? locale, String? themeMode, bool? privacyMode})>(
+        (ref) {
   return ref.read(userPreferencesRepositoryProvider).fetch();
 });
 
-final localeProvider = NotifierProvider<LocaleNotifier, Locale>(LocaleNotifier.new);
+final localeProvider =
+    NotifierProvider<LocaleNotifier, Locale>(LocaleNotifier.new);
 
 class LocaleNotifier extends Notifier<Locale> {
   @override
@@ -135,12 +139,15 @@ class LocaleNotifier extends Notifier<Locale> {
     state = locale;
     await Future.wait([
       ref.read(databaseProvider).setSetting('locale', locale.languageCode),
-      ref.read(userPreferencesRepositoryProvider).setLocale(locale.languageCode),
+      ref
+          .read(userPreferencesRepositoryProvider)
+          .setLocale(locale.languageCode),
     ]);
   }
 }
 
-final privacyModeProvider = NotifierProvider<PrivacyModeNotifier, bool>(PrivacyModeNotifier.new);
+final privacyModeProvider =
+    NotifierProvider<PrivacyModeNotifier, bool>(PrivacyModeNotifier.new);
 
 class PrivacyModeNotifier extends Notifier<bool> {
   @override
@@ -248,7 +255,8 @@ final installmentServiceProvider = Provider<InstallmentService>((ref) {
 final realtimeActiveProvider = StateProvider<bool>((ref) => true);
 final realtimeMaxRetriesReachedProvider = StateProvider<bool>((ref) => false);
 
-final allIncomesStreamProvider = StreamProvider.autoDispose<List<Income>>((ref) {
+final allIncomesStreamProvider =
+    StreamProvider.autoDispose<List<Income>>((ref) {
   final useRealtime = ref.watch(realtimeActiveProvider);
   final repository = ref.watch(incomeRepositoryProvider);
   final maxRetries = ref.watch(realtimeMaxRetriesReachedProvider);
@@ -275,7 +283,8 @@ final allIncomesStreamProvider = StreamProvider.autoDispose<List<Income>>((ref) 
 /// Public alias — widgets can call `ref.invalidate(allExpensesStreamProvider)`
 /// after a successful insert to trigger an immediate re-fetch without waiting
 /// for the next realtime event or 30-second polling cycle.
-final allExpensesStreamProvider = StreamProvider.autoDispose<List<Expense>>((ref) {
+final allExpensesStreamProvider =
+    StreamProvider.autoDispose<List<Expense>>((ref) {
   final useRealtime = ref.watch(realtimeActiveProvider);
   final repository = ref.watch(expenseRepositoryProvider);
   final maxRetries = ref.watch(realtimeMaxRetriesReachedProvider);
@@ -299,7 +308,8 @@ final allExpensesStreamProvider = StreamProvider.autoDispose<List<Expense>>((ref
   }
 });
 
-final categoriesStreamProvider = StreamProvider.autoDispose<List<Category>>((ref) {
+final categoriesStreamProvider =
+    StreamProvider.autoDispose<List<Category>>((ref) {
   // Wait for the active workspace to resolve before subscribing.
   // While loading, activeWorkspaceIdProvider returns null → the repo uses the
   // userId branch and may miss workspace-scoped categories. Gating here ensures
@@ -314,7 +324,8 @@ final categoriesStreamProvider = StreamProvider.autoDispose<List<Category>>((ref
   return ref.watch(categoryRepositoryProvider).watchAll();
 });
 
-final categoriesMapProvider = Provider.autoDispose<Map<String, Category>>((ref) {
+final categoriesMapProvider =
+    Provider.autoDispose<Map<String, Category>>((ref) {
   final cats = ref.watch(categoriesStreamProvider).value ?? [];
   return {for (var c in cats) c.slug: c};
 });
@@ -327,22 +338,30 @@ final categoriesRefProvider = Provider.autoDispose<List<CategoryRef>>((ref) {
 
 /// Only root categories (parentId == null). Use this for category pickers in
 /// expense sheets so subcategories don't bleed into the top-level grid.
-final rootCategoriesRefProvider = Provider.autoDispose<List<CategoryRef>>((ref) {
-  return ref.watch(categoriesRefProvider).where((c) => c.parentId == null).toList();
+final rootCategoriesRefProvider =
+    Provider.autoDispose<List<CategoryRef>>((ref) {
+  return ref
+      .watch(categoriesRefProvider)
+      .where((c) => c.parentId == null)
+      .toList();
 });
 
 /// Subcategories for a given parent category id. Returns empty list when the
 /// category has no children in the DB (i.e. hardcoded subcategories are gone).
 final subcategoriesForProvider =
     Provider.autoDispose.family<List<CategoryRef>, String>((ref, parentId) {
-  return ref.watch(categoriesRefProvider).where((c) => c.parentId == parentId).toList();
+  return ref
+      .watch(categoriesRefProvider)
+      .where((c) => c.parentId == parentId)
+      .toList();
 });
 
 /// Singleton CategoryResolver kept in sync with loaded categories.
 /// Use this to safely resolve raw category strings without risk of StateError.
 final categoryResolverProvider = Provider<CategoryResolver>((ref) {
   final resolver = CategoryResolver();
-  ref.listen(categoriesRefProvider, (_, refs) => resolver.updateCache(refs), fireImmediately: true);
+  ref.listen(categoriesRefProvider, (_, refs) => resolver.updateCache(refs),
+      fireImmediately: true);
   return resolver;
 });
 
@@ -355,8 +374,8 @@ final incomesProvider = Provider.autoDispose<AsyncValue<List<Income>>>((ref) {
   final month = ref.watch(selectedMonthProvider);
   final year = ref.watch(selectedYearProvider);
   return ref.watch(allIncomesStreamProvider).whenData(
-    (all) => all.where((i) => i.month == month && i.year == year).toList(),
-  );
+        (all) => all.where((i) => i.month == month && i.year == year).toList(),
+      );
 });
 
 final totalNetSalaryProvider = Provider.autoDispose<double>((ref) {
@@ -369,7 +388,8 @@ final totalNetSalaryProvider = Provider.autoDispose<double>((ref) {
 final totalSwileProvider = Provider.autoDispose<double>((ref) {
   final incomes = ref.watch(incomesProvider).value ?? [];
   return incomes
-      .where((i) => i.incomeType == 'SWILE_MEAL' || i.incomeType == 'SWILE_FOOD')
+      .where(
+          (i) => i.incomeType == 'SWILE_MEAL' || i.incomeType == 'SWILE_FOOD')
       .fold(0.0, (sum, i) => sum + i.amount);
 });
 
@@ -387,16 +407,17 @@ final expensesProvider = Provider.autoDispose<AsyncValue<List<Expense>>>((ref) {
   final month = ref.watch(selectedMonthProvider);
   final year = ref.watch(selectedYearProvider);
   return ref.watch(allExpensesStreamProvider).whenData(
-    (all) => all.where((e) => e.month == month && e.year == year).toList(),
-  );
+        (all) => all.where((e) => e.month == month && e.year == year).toList(),
+      );
 });
 
 /// Real (non-projected) expenses for the selected month/year.
 /// Use this for totals and budget calculations.
-final realExpensesProvider = Provider.autoDispose<AsyncValue<List<Expense>>>((ref) {
+final realExpensesProvider =
+    Provider.autoDispose<AsyncValue<List<Expense>>>((ref) {
   return ref.watch(expensesProvider).whenData(
-    (all) => all.where((e) => !e.isProjected).toList(),
-  );
+        (all) => all.where((e) => !e.isProjected).toList(),
+      );
 });
 
 final totalExpensesProvider = Provider.autoDispose<double>((ref) {
@@ -425,7 +446,8 @@ final filteredTotalProvider = Provider.autoDispose<double>((ref) {
 });
 
 // Category breakdown for the currently active filter
-final filteredByCategoryProvider = Provider.autoDispose<Map<String, double>>((ref) {
+final filteredByCategoryProvider =
+    Provider.autoDispose<Map<String, double>>((ref) {
   final filtered = ref.watch(filteredExpensesProvider);
   final map = <String, double>{};
   for (final e in filtered) {
@@ -434,7 +456,8 @@ final filteredByCategoryProvider = Provider.autoDispose<Map<String, double>>((re
   return map;
 });
 
-final swileTransactionsProvider = Provider.autoDispose<AsyncValue<List<Expense>>>((ref) {
+final swileTransactionsProvider =
+    Provider.autoDispose<AsyncValue<List<Expense>>>((ref) {
   return ref.watch(allExpensesStreamProvider).whenData(
     (all) {
       final swile = all.where((e) => e.payType == 'Swile').toList()
@@ -458,7 +481,8 @@ final swileFoodBalanceProvider = Provider.autoDispose<double>((ref) {
       .fold(0.0, (s, i) => s + i.amount);
 });
 
-final expensesByCategoryProvider = Provider.autoDispose<Map<String, double>>((ref) {
+final expensesByCategoryProvider =
+    Provider.autoDispose<Map<String, double>>((ref) {
   final expenses = ref.watch(realExpensesProvider).value ?? [];
   final map = <String, double>{};
   for (final e in expenses) {
@@ -468,7 +492,8 @@ final expensesByCategoryProvider = Provider.autoDispose<Map<String, double>>((re
   return map;
 });
 
-final cashExpensesByCategoryProvider = Provider.autoDispose<Map<String, double>>((ref) {
+final cashExpensesByCategoryProvider =
+    Provider.autoDispose<Map<String, double>>((ref) {
   final expenses = ref.watch(realExpensesProvider).value ?? [];
   final map = <String, double>{};
   for (final e in expenses.where((e) => e.payType == 'Cash')) {
@@ -574,7 +599,8 @@ final budgetGoalsProvider = StreamProvider.autoDispose<List<BudgetGoal>>((ref) {
   return ref.watch(budgetGoalsRepositoryProvider).watchAll();
 });
 
-final budgetGoalsMapProvider = Provider.autoDispose<Map<String, BudgetGoal>>((ref) {
+final budgetGoalsMapProvider =
+    Provider.autoDispose<Map<String, BudgetGoal>>((ref) {
   final goals = ref.watch(budgetGoalsProvider).value ?? [];
   // Normalize keys to lowercase to match category slug normalization in expense providers
   return {for (var g in goals) g.category.toLowerCase(): g};
@@ -590,7 +616,8 @@ final budgetCashPercentageTotalProvider = Provider.autoDispose<double>((ref) {
 
 /// How many percentage points remain before hitting 100% (clamped to 0).
 final budgetPercentageRemainingProvider = Provider.autoDispose<double>((ref) {
-  return (100.0 - ref.watch(budgetCashPercentageTotalProvider)).clamp(0.0, 100.0);
+  return (100.0 - ref.watch(budgetCashPercentageTotalProvider))
+      .clamp(0.0, 100.0);
 });
 
 /// True when the total cash budget percentage exceeds 100%.
@@ -599,9 +626,12 @@ final budgetPercentageOverflowProvider = Provider.autoDispose<bool>((ref) {
 });
 
 /// Non-Swile categories that contribute to the overflow, sorted by targetPercentage descending.
-final overBudgetCategoriesProvider = Provider.autoDispose<List<BudgetGoal>>((ref) {
+final overBudgetCategoriesProvider =
+    Provider.autoDispose<List<BudgetGoal>>((ref) {
   final goals = ref.watch(budgetGoalsProvider).value ?? [];
-  final cashGoals = goals.where((g) => !swileCategories.contains(g.category)).toList()
+  final cashGoals = goals
+      .where((g) => !swileCategories.contains(g.category))
+      .toList()
     ..sort((a, b) => b.targetPercentage.compareTo(a.targetPercentage));
   return cashGoals;
 });
@@ -610,7 +640,8 @@ final overBudgetCategoriesProvider = Provider.autoDispose<List<BudgetGoal>>((ref
 // NET WORTH PROVIDER
 // ═══════════════════════════════════════════
 
-final netWorthSnapshotProvider = FutureProvider.autoDispose<NetWorthSnapshot?>((ref) {
+final netWorthSnapshotProvider =
+    FutureProvider.autoDispose<NetWorthSnapshot?>((ref) {
   final month = ref.watch(selectedMonthProvider);
   final year = ref.watch(selectedYearProvider);
   return ref.watch(netWorthRepositoryProvider).getByMonth(month, year);
@@ -618,9 +649,11 @@ final netWorthSnapshotProvider = FutureProvider.autoDispose<NetWorthSnapshot?>((
 
 enum NetWorthFilter { sixMonths, oneYear, allTime }
 
-final netWorthFilterProvider = StateProvider<NetWorthFilter>((ref) => NetWorthFilter.sixMonths);
+final netWorthFilterProvider =
+    StateProvider<NetWorthFilter>((ref) => NetWorthFilter.sixMonths);
 
-final netWorthHistoryProvider = FutureProvider.autoDispose<List<NetWorthSnapshot>>((ref) async {
+final netWorthHistoryProvider =
+    FutureProvider.autoDispose<List<NetWorthSnapshot>>((ref) async {
   final filter = ref.watch(netWorthFilterProvider);
   final repo = ref.watch(netWorthRepositoryProvider);
   final limit = switch (filter) {
@@ -639,7 +672,8 @@ final accountRepositoryProvider = Provider<AccountRepository>((ref) {
   return AccountRepository(Supabase.instance.client);
 });
 
-final accountTransferRepositoryProvider = Provider<AccountTransferRepository>((ref) {
+final accountTransferRepositoryProvider =
+    Provider<AccountTransferRepository>((ref) {
   return AccountTransferRepository(Supabase.instance.client);
 });
 
@@ -647,26 +681,30 @@ final accountTransferRepositoryProvider = Provider<AccountTransferRepository>((r
 // ACCOUNTS PROVIDERS
 // ═══════════════════════════════════════════
 
-final _allAccountsStreamProvider = StreamProvider.autoDispose<List<Account>>((ref) {
+final _allAccountsStreamProvider =
+    StreamProvider.autoDispose<List<Account>>((ref) {
   return ref.watch(accountRepositoryProvider).watchAll();
 });
 
 final accountsProvider = Provider.autoDispose<AsyncValue<List<Account>>>((ref) {
   return ref.watch(_allAccountsStreamProvider).whenData(
-    (all) => all.where((a) => a.isActive).toList(),
-  );
+        (all) => all.where((a) => a.isActive).toList(),
+      );
 });
 
-final liquidAccountsProvider = Provider.autoDispose<AsyncValue<List<Account>>>((ref) {
+final liquidAccountsProvider =
+    Provider.autoDispose<AsyncValue<List<Account>>>((ref) {
   return ref.watch(_allAccountsStreamProvider).whenData(
-    (all) => all.where((a) => a.isActive && a.accountType.isLiquid).toList(),
-  );
+        (all) =>
+            all.where((a) => a.isActive && a.accountType.isLiquid).toList(),
+      );
 });
 
 final fgtsAccountProvider = Provider.autoDispose<Account?>((ref) {
   final all = ref.watch(_allAccountsStreamProvider).value ?? [];
   try {
-    return all.firstWhere((a) => a.type == AccountType.fgts.dbValue && a.isActive);
+    return all
+        .firstWhere((a) => a.type == AccountType.fgts.dbValue && a.isActive);
   } catch (_) {
     return null;
   }
@@ -685,18 +723,21 @@ final fgtsBalanceFromAccountsProvider = Provider.autoDispose<double>((ref) {
 // ACCOUNT TRANSFERS PROVIDERS
 // ═══════════════════════════════════════════
 
-final _allTransfersStreamProvider = StreamProvider.autoDispose<List<AccountTransfer>>((ref) {
+final _allTransfersStreamProvider =
+    StreamProvider.autoDispose<List<AccountTransfer>>((ref) {
   return ref.watch(accountTransferRepositoryProvider).watchAll();
 });
 
-final periodTransfersProvider = Provider.autoDispose<AsyncValue<List<AccountTransfer>>>((ref) {
+final periodTransfersProvider =
+    Provider.autoDispose<AsyncValue<List<AccountTransfer>>>((ref) {
   final month = ref.watch(selectedMonthProvider);
   final year = ref.watch(selectedYearProvider);
   return ref.watch(_allTransfersStreamProvider).whenData(
-    (all) => all
-        .where((t) => t.transferDate.month == month && t.transferDate.year == year)
-        .toList(),
-  );
+        (all) => all
+            .where((t) =>
+                t.transferDate.month == month && t.transferDate.year == year)
+            .toList(),
+      );
 });
 
 // ═══════════════════════════════════════════
@@ -710,15 +751,20 @@ final enhancedNetWorthProvider = Provider.autoDispose<double>((ref) {
   final snap = ref.watch(netWorthSnapshotProvider).value;
   final patrimonyTotal = snap?.patrimonyTotal ?? 0.0;
   final pendingInstallments = ref.watch(totalRemainingInstallmentsProvider);
-  return liquidTotal + fgtsTotal + investmentsTotal + patrimonyTotal - pendingInstallments;
+  return liquidTotal +
+      fgtsTotal +
+      investmentsTotal +
+      patrimonyTotal -
+      pendingInstallments;
 });
 
-final assetAllocationProvider = Provider.autoDispose<({
-  double banks,
-  double investments,
-  double fgts,
-  double patrimony,
-})>((ref) {
+final assetAllocationProvider = Provider.autoDispose<
+    ({
+      double banks,
+      double investments,
+      double fgts,
+      double patrimony,
+    })>((ref) {
   return (
     banks: ref.watch(liquidAccountsTotalProvider),
     investments: ref.watch(totalInvestmentBalanceProvider),
@@ -760,7 +806,11 @@ class AccountNotifier extends AsyncNotifier<void> {
     ref.invalidate(_allAccountsStreamProvider);
   }
 
-  Future<void> updateAccount(int id, {String? name, String? institution, String? notes, bool? isActive}) async {
+  Future<void> updateAccount(int id,
+      {String? name,
+      String? institution,
+      String? notes,
+      bool? isActive}) async {
     await ref.read(accountRepositoryProvider).update(
           id,
           name: name,
@@ -807,7 +857,8 @@ class TransferNotifier extends AsyncNotifier<void> {
 // BUDGET SETTINGS PROVIDERS
 // ═══════════════════════════════════════════
 
-final budgetSettingsRepositoryProvider = Provider<BudgetSettingsRepository>((ref) {
+final budgetSettingsRepositoryProvider =
+    Provider<BudgetSettingsRepository>((ref) {
   return BudgetSettingsRepository(Supabase.instance.client);
 });
 
@@ -850,7 +901,8 @@ class BudgetGoalsNotifier extends AsyncNotifier<void> {
   }
 }
 
-final categoryNotifierProvider = AsyncNotifierProvider<CategoryNotifier, void>(() {
+final categoryNotifierProvider =
+    AsyncNotifierProvider<CategoryNotifier, void>(() {
   return CategoryNotifier();
 });
 
@@ -895,7 +947,8 @@ final effectiveSwileProvider = Provider.autoDispose<double>((ref) {
 
 /// Remaining cash: budget net salary minus actual cash expenses.
 final cashRemainingProvider = Provider.autoDispose<double>((ref) {
-  return ref.watch(effectiveNetSalaryProvider) - ref.watch(cashExpensesProvider);
+  return ref.watch(effectiveNetSalaryProvider) -
+      ref.watch(cashExpensesProvider);
 });
 
 /// Remaining Swile: budget swile minus actual swile expenses.
@@ -927,13 +980,13 @@ class NetWorthNotifier extends AsyncNotifier<void> {
     double emergencyFund = 0,
   }) async {
     await ref.read(netWorthRepositoryProvider).upsert(
-      month: month,
-      year: year,
-      patrimonyTotal: patrimonyTotal,
-      fgtsBalance: fgtsBalance,
-      investmentsTotal: investmentsTotal,
-      emergencyFund: emergencyFund,
-    );
+          month: month,
+          year: year,
+          patrimonyTotal: patrimonyTotal,
+          fgtsBalance: fgtsBalance,
+          investmentsTotal: investmentsTotal,
+          emergencyFund: emergencyFund,
+        );
     ref.invalidate(netWorthSnapshotProvider);
   }
 }
@@ -956,12 +1009,11 @@ final exportServiceProvider = Provider<ExportService>((ref) => ExportService(
 // HEALTH PROVIDERS
 // ═══════════════════════════════════════════
 
-final healthRepositoryProvider = Provider<HealthRepository>((ref) =>
-    HealthRepository(Supabase.instance.client));
+final healthRepositoryProvider = Provider<HealthRepository>(
+    (ref) => HealthRepository(Supabase.instance.client));
 
-final healthHistoryProvider =
-    FutureProvider.autoDispose<List<HealthSnapshot>>((ref) =>
-        ref.watch(healthRepositoryProvider).fetchHistory());
+final healthHistoryProvider = FutureProvider.autoDispose<List<HealthSnapshot>>(
+    (ref) => ref.watch(healthRepositoryProvider).fetchHistory());
 
 final healthAutoSaveProvider =
     AsyncNotifierProvider.autoDispose<HealthAutoSaveNotifier, void>(
@@ -1008,16 +1060,16 @@ class HealthAutoSaveNotifier extends AutoDisposeAsyncNotifier<void> {
     );
     try {
       await ref.read(healthRepositoryProvider).upsert(
-        month: month,
-        year: year,
-        score: score,
-        savingsRate: (net - cash) / net * 100,
-        housingRate: housing / net * 100,
-        monthlyBalance: balance,
-        emergencyFundMonths: efMonths,
-        installmentsRate: instTotal / net * 100,
-        netSalary: net,
-      );
+            month: month,
+            year: year,
+            score: score,
+            savingsRate: (net - cash) / net * 100,
+            housingRate: housing / net * 100,
+            monthlyBalance: balance,
+            emergencyFundMonths: efMonths,
+            installmentsRate: instTotal / net * 100,
+            netSalary: net,
+          );
     } catch (_) {}
   }
 }
@@ -1107,7 +1159,8 @@ class _SelectedPeriodNotifier extends StateNotifier<FinancialPeriod> {
 }
 
 /// User-selected financial period (editable). Initialized from currentPeriodProvider.
-final selectedPeriodProvider = StateNotifierProvider<_SelectedPeriodNotifier, FinancialPeriod>((ref) {
+final selectedPeriodProvider =
+    StateNotifierProvider<_SelectedPeriodNotifier, FinancialPeriod>((ref) {
   final defaultPeriod = ref.read(currentPeriodProvider);
   return _SelectedPeriodNotifier(defaultPeriod);
 });
@@ -1148,7 +1201,9 @@ final periodBudgetEntriesProvider =
       spentByCategory[slug] = (spentByCategory[slug] ?? 0) + e.amount;
     }
 
-    final overrideMap = {for (final o in overrides) o.category.toLowerCase(): o};
+    final overrideMap = {
+      for (final o in overrides) o.category.toLowerCase(): o
+    };
     final seen = <String>{};
     final entries = <PeriodBudgetEntry>[];
 
@@ -1300,9 +1355,8 @@ final budgetAlertsProvider = Provider.autoDispose<List<BudgetAlert>>((ref) {
 // SALARY SETTINGS (CLT 2026)
 // ═══════════════════════════════════════════
 
-final salarySettingsRepositoryProvider =
-    Provider<SalarySettingsRepository>((ref) =>
-        SalarySettingsRepository(Supabase.instance.client));
+final salarySettingsRepositoryProvider = Provider<SalarySettingsRepository>(
+    (ref) => SalarySettingsRepository(Supabase.instance.client));
 
 final salarySettingsProvider =
     AsyncNotifierProvider<SalarySettingsNotifier, SalarySettings?>(
@@ -1354,8 +1408,10 @@ class SalarySettingsNotifier extends AsyncNotifier<SalarySettings?> {
 // FINANCIAL SNAPSHOT PROVIDER
 // ═══════════════════════════════════════════
 
-final _financialEngineProvider = Provider<FinancialEngine>((_) => const FinancialEngine());
-final _envelopeEngineProvider = Provider<EnvelopeEngine>((_) => const EnvelopeEngine());
+final _financialEngineProvider =
+    Provider<FinancialEngine>((_) => const FinancialEngine());
+final _envelopeEngineProvider =
+    Provider<EnvelopeEngine>((_) => const EnvelopeEngine());
 
 /// Envelopes for the current period, with rollover from the previous period.
 final envelopesProvider = Provider.autoDispose<List<Envelope>>((ref) {
@@ -1381,7 +1437,8 @@ final envelopesProvider = Provider.autoDispose<List<Envelope>>((ref) {
 
 /// Single source of truth for the current period's financial state.
 /// All dashboard widgets should consume this instead of individual providers.
-final financialSnapshotProvider = Provider.autoDispose<FinancialSnapshot>((ref) {
+final financialSnapshotProvider =
+    Provider.autoDispose<FinancialSnapshot>((ref) {
   final engine = ref.watch(_financialEngineProvider);
   final incomes = ref.watch(incomesProvider).value ?? [];
   final expenses = ref.watch(realExpensesProvider).value ?? [];
@@ -1397,8 +1454,8 @@ final financialSnapshotProvider = Provider.autoDispose<FinancialSnapshot>((ref) 
   final month = ref.watch(selectedMonthProvider);
   final year = ref.watch(selectedYearProvider);
   final cutoffDay = ref.watch(budgetSettingsProvider).value?.cutoffDay ?? 1;
-  final period = FinancialPeriod.current(cutoffDay,
-      now: DateTime(year, month, cutoffDay));
+  final period =
+      FinancialPeriod.current(cutoffDay, now: DateTime(year, month, cutoffDay));
 
   final envelopeEngine = ref.watch(_envelopeEngineProvider);
   final totalAllocated = envelopeEngine.totalAllocated(envelopes);
@@ -1447,10 +1504,11 @@ final recurringRulesStreamProvider =
 final activeRecurringRulesProvider =
     Provider.autoDispose<List<RecurringRule>>((ref) {
   return ref
-      .watch(recurringRulesStreamProvider)
-      .value
-      ?.where((r) => r.isActive)
-      .toList() ?? [];
+          .watch(recurringRulesStreamProvider)
+          .value
+          ?.where((r) => r.isActive)
+          .toList() ??
+      [];
 });
 
 /// Job provider — call ref.watch(generateRecurringOccurrencesProvider) in a
@@ -1474,7 +1532,8 @@ final pendingRecurringOccurrencesProvider =
 // FORECASTING PROVIDERS
 // ═══════════════════════════════════════════
 
-final forecastCacheRepositoryProvider = Provider<ForecastCacheRepository>((ref) {
+final forecastCacheRepositoryProvider =
+    Provider<ForecastCacheRepository>((ref) {
   return ForecastCacheRepository(ref.read(databaseProvider));
 });
 
@@ -1595,7 +1654,8 @@ final recurringCandidatesProvider =
   final expenses = await ref.watch(expenseRepositoryProvider).getAll();
   final rules = ref.watch(recurringRulesStreamProvider).value ?? [];
   final existingNames = rules.map((r) => r.name).toList();
-  return const RecurringDetector().detect(expenses, existingRuleNames: existingNames);
+  return const RecurringDetector()
+      .detect(expenses, existingRuleNames: existingNames);
 });
 
 // ═══════════════════════════════════════════
@@ -1687,5 +1747,3 @@ final insightsProvider =
     );
   }).toList();
 });
-
-

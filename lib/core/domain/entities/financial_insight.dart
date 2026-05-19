@@ -30,8 +30,10 @@ class FinancialInsight {
 
   /// Localization key for the title (resolved in InsightCard via l10n).
   final String titleKey;
+
   /// Localization key for the body text.
   final String bodyKey;
+
   /// Localization key for the action label (null = no action).
   final String? actionKey;
 
@@ -68,8 +70,7 @@ class FinancialInsight {
   })  : data = data ?? const {},
         generatedAt = generatedAt ?? DateTime.now();
 
-  bool isExpired() =>
-      expiresAt != null && DateTime.now().isAfter(expiresAt!);
+  bool isExpired() => expiresAt != null && DateTime.now().isAfter(expiresAt!);
 
   FinancialInsight copyWith({
     Map<String, dynamic>? data,

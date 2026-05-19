@@ -10,34 +10,34 @@ import 'package:flutter/material.dart';
 // ── Spacing ──────────────────────────────────────────────────────────────────
 
 abstract final class DSSpacing {
-  static const double xs  = 4;
-  static const double sm  = 8;
-  static const double md  = 12;
-  static const double lg  = 16;
-  static const double xl  = 20;
+  static const double xs = 4;
+  static const double sm = 8;
+  static const double md = 12;
+  static const double lg = 16;
+  static const double xl = 20;
   static const double xxl = 24;
-  static const double h   = 32;
-  static const double hh  = 40;
-  static const double p   = 48;
-  static const double pp  = 64;
+  static const double h = 32;
+  static const double hh = 40;
+  static const double p = 48;
+  static const double pp = 64;
 }
 
 // ── Radius ────────────────────────────────────────────────────────────────────
 
 abstract final class DSRadius {
-  static const double xs  = 6;
-  static const double sm  = 10;
-  static const double md  = 14;
-  static const double lg  = 18;
-  static const double xl  = 24;
+  static const double xs = 6;
+  static const double sm = 10;
+  static const double md = 14;
+  static const double lg = 18;
+  static const double xl = 24;
   static const double xxl = 32;
   static const double full = 999;
 
-  static BorderRadius get xsBR  => BorderRadius.circular(xs);
-  static BorderRadius get smBR  => BorderRadius.circular(sm);
-  static BorderRadius get mdBR  => BorderRadius.circular(md);
-  static BorderRadius get lgBR  => BorderRadius.circular(lg);
-  static BorderRadius get xlBR  => BorderRadius.circular(xl);
+  static BorderRadius get xsBR => BorderRadius.circular(xs);
+  static BorderRadius get smBR => BorderRadius.circular(sm);
+  static BorderRadius get mdBR => BorderRadius.circular(md);
+  static BorderRadius get lgBR => BorderRadius.circular(lg);
+  static BorderRadius get xlBR => BorderRadius.circular(xl);
   static BorderRadius get xxlBR => BorderRadius.circular(xxl);
   static BorderRadius get fullBR => BorderRadius.circular(full);
 }
@@ -47,74 +47,74 @@ abstract final class DSRadius {
 abstract final class DSShadow {
   /// Ultra-subtle card shadow for light mode
   static List<BoxShadow> get card => [
-    BoxShadow(
-      color: const Color(0xFF1B3A5C).withValues(alpha: 0.06),
-      blurRadius: 16,
-      spreadRadius: 0,
-      offset: const Offset(0, 4),
-    ),
-    BoxShadow(
-      color: const Color(0xFF1B3A5C).withValues(alpha: 0.03),
-      blurRadius: 4,
-      spreadRadius: 0,
-      offset: const Offset(0, 1),
-    ),
-  ];
+        BoxShadow(
+          color: const Color(0xFF1B3A5C).withValues(alpha: 0.06),
+          blurRadius: 16,
+          spreadRadius: 0,
+          offset: const Offset(0, 4),
+        ),
+        BoxShadow(
+          color: const Color(0xFF1B3A5C).withValues(alpha: 0.03),
+          blurRadius: 4,
+          spreadRadius: 0,
+          offset: const Offset(0, 1),
+        ),
+      ];
 
   /// Elevated card (hover state)
   static List<BoxShadow> get cardHover => [
-    BoxShadow(
-      color: const Color(0xFF1B3A5C).withValues(alpha: 0.10),
-      blurRadius: 24,
-      spreadRadius: 0,
-      offset: const Offset(0, 8),
-    ),
-    BoxShadow(
-      color: const Color(0xFF1B3A5C).withValues(alpha: 0.04),
-      blurRadius: 6,
-      spreadRadius: 0,
-      offset: const Offset(0, 2),
-    ),
-  ];
+        BoxShadow(
+          color: const Color(0xFF1B3A5C).withValues(alpha: 0.10),
+          blurRadius: 24,
+          spreadRadius: 0,
+          offset: const Offset(0, 8),
+        ),
+        BoxShadow(
+          color: const Color(0xFF1B3A5C).withValues(alpha: 0.04),
+          blurRadius: 6,
+          spreadRadius: 0,
+          offset: const Offset(0, 2),
+        ),
+      ];
 
   /// Dark mode card shadow
   static List<BoxShadow> get cardDark => [
-    BoxShadow(
-      color: Colors.black.withValues(alpha: 0.25),
-      blurRadius: 16,
-      spreadRadius: 0,
-      offset: const Offset(0, 4),
-    ),
-  ];
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.25),
+          blurRadius: 16,
+          spreadRadius: 0,
+          offset: const Offset(0, 4),
+        ),
+      ];
 
   /// Dark mode hover shadow
   static List<BoxShadow> get cardDarkHover => [
-    BoxShadow(
-      color: Colors.black.withValues(alpha: 0.40),
-      blurRadius: 24,
-      spreadRadius: 0,
-      offset: const Offset(0, 8),
-    ),
-  ];
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.40),
+          blurRadius: 24,
+          spreadRadius: 0,
+          offset: const Offset(0, 8),
+        ),
+      ];
 
   /// Hero card (large prominent cards)
   static List<BoxShadow> get hero => [
-    BoxShadow(
-      color: const Color(0xFF1B3A5C).withValues(alpha: 0.18),
-      blurRadius: 32,
-      spreadRadius: -4,
-      offset: const Offset(0, 12),
-    ),
-  ];
+        BoxShadow(
+          color: const Color(0xFF1B3A5C).withValues(alpha: 0.18),
+          blurRadius: 32,
+          spreadRadius: -4,
+          offset: const Offset(0, 12),
+        ),
+      ];
 }
 
 // ── Animation Durations ───────────────────────────────────────────────────────
 
 abstract final class DSDuration {
-  static const fast     = Duration(milliseconds: 120);
-  static const normal   = Duration(milliseconds: 200);
-  static const medium   = Duration(milliseconds: 300);
-  static const slow     = Duration(milliseconds: 450);
+  static const fast = Duration(milliseconds: 120);
+  static const normal = Duration(milliseconds: 200);
+  static const medium = Duration(milliseconds: 300);
+  static const slow = Duration(milliseconds: 450);
   static const verySlow = Duration(milliseconds: 600);
 }
 
@@ -122,7 +122,7 @@ abstract final class DSDuration {
 
 abstract final class DSCurve {
   static const enter = Curves.easeOut;
-  static const exit  = Curves.easeIn;
+  static const exit = Curves.easeIn;
   static const inOut = Curves.easeInOut;
   static const spring = Curves.elasticOut;
   static const smooth = Curves.fastOutSlowIn;
@@ -205,16 +205,16 @@ class _DSCardState extends State<DSCard> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final r = widget.radius ?? DSRadius.xl;
-    final bgColor = widget.color ?? (isDark
-        ? const Color(0xFF1C3047)
-        : Colors.white);
-    final border = widget.borderColor ?? (isDark
-        ? Colors.white.withValues(alpha: 0.07)
-        : const Color(0xFF1B3A5C).withValues(alpha: 0.06));
+    final bgColor =
+        widget.color ?? (isDark ? const Color(0xFF1C3047) : Colors.white);
+    final border = widget.borderColor ??
+        (isDark
+            ? Colors.white.withValues(alpha: 0.07)
+            : const Color(0xFF1B3A5C).withValues(alpha: 0.06));
 
     return MouseRegion(
       onEnter: (_) => _onHoverChange(true),
-      onExit:  (_) => _onHoverChange(false),
+      onExit: (_) => _onHoverChange(false),
       cursor: widget.onTap != null
           ? SystemMouseCursors.click
           : SystemMouseCursors.basic,
@@ -288,9 +288,10 @@ class DSProgressBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final barColor = color ?? const Color(0xFF1A7A4A);
-    final bgColor = backgroundColor ?? (isDark
-        ? Colors.white.withValues(alpha: 0.08)
-        : const Color(0xFF1B3A5C).withValues(alpha: 0.07));
+    final bgColor = backgroundColor ??
+        (isDark
+            ? Colors.white.withValues(alpha: 0.08)
+            : const Color(0xFF1B3A5C).withValues(alpha: 0.07));
     final r = radius ?? height / 2;
 
     return ClipRRect(
@@ -505,7 +506,7 @@ class _DSTextButtonState extends State<DSTextButton> {
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
-      onExit:  (_) => setState(() => _hovered = false),
+      onExit: (_) => setState(() => _hovered = false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: widget.onTap,

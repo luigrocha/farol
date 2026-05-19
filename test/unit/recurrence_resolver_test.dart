@@ -264,8 +264,7 @@ void main() {
         rangeEnd: DateTime(2026, 12, 31),
       );
       expect(result.length, 4);
-      expect(result.map((o) => o.scheduledDate.month).toList(),
-          [1, 4, 7, 10]);
+      expect(result.map((o) => o.scheduledDate.month).toList(), [1, 4, 7, 10]);
     });
   });
 

@@ -12,7 +12,8 @@ class PeriodBudgetRepository {
 
   /// Returns budgets for [period] with aggregated cash spending — single query
   /// via the `get_period_budgets_with_spending` RPC.
-  Future<List<BudgetWithUsage>> getBudgetsWithUsage(FinancialPeriod period) async {
+  Future<List<BudgetWithUsage>> getBudgetsWithUsage(
+      FinancialPeriod period) async {
     final uid = _userId;
     if (uid == null) return [];
 

@@ -11,14 +11,12 @@ import '../../../core/services/financial_calculator_service.dart';
 
 /// Maps each author_user_id to their total spend for the selected month.
 /// Only meaningful in shared workspaces — returns empty map in personal ones.
-final _contributionProvider =
-    Provider.autoDispose<Map<String, double>>((ref) {
+final _contributionProvider = Provider.autoDispose<Map<String, double>>((ref) {
   final expenses = ref.watch(realExpensesProvider).valueOrNull ?? [];
   final totals = <String, double>{};
   for (final e in expenses) {
     if (e.authorUserId == null) continue;
-    totals[e.authorUserId!] =
-        (totals[e.authorUserId!] ?? 0.0) + e.amount;
+    totals[e.authorUserId!] = (totals[e.authorUserId!] ?? 0.0) + e.amount;
   }
   return totals;
 });
@@ -105,8 +103,8 @@ class _StackedBar extends StatelessWidget {
         height: 12,
         child: Row(
           children: entries.map((e) {
-            final color = memberMap[e.key]?.avatarColor ??
-                avatarColorForUserId(e.key);
+            final color =
+                memberMap[e.key]?.avatarColor ?? avatarColorForUserId(e.key);
             final flex = (e.value / total * 1000).round();
             return Expanded(
               flex: flex,
@@ -136,8 +134,7 @@ class _LegendRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        display?.avatarColor ?? avatarColorForUserId(userId);
+    final color = display?.avatarColor ?? avatarColorForUserId(userId);
     final name = display?.displayName ?? '${userId.substring(0, 8)}…';
     final percent = (share * 100).toStringAsFixed(0);
 

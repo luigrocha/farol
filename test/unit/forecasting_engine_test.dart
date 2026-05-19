@@ -107,7 +107,8 @@ void main() {
       expect(br.pace, BurnPace.overspending);
     });
 
-    test('paceVsBudget returns 0 when allocated is zero (no division by zero)', () {
+    test('paceVsBudget returns 0 when allocated is zero (no division by zero)',
+        () {
       final br = BurnRate(
         totalSpent: Money.fromDouble(500),
         daysElapsed: 5,
@@ -121,7 +122,9 @@ void main() {
   // ─── ForecastingEngine.buildProjection ──────────────────────────────────────
 
   group('ForecastingEngine.buildProjection', () {
-    test('projectedClosingBalance = currentBalance - projected variable spend - obligations', () {
+    test(
+        'projectedClosingBalance = currentBalance - projected variable spend - obligations',
+        () {
       final period = _period();
       final obligations = [_payment(amount: 500, daysFromNow: 5)];
 
@@ -143,7 +146,9 @@ void main() {
       expect(proj.liquidityRisk, isNotNull);
     });
 
-    test('projectedClosingBalance is negative when balance cannot cover obligations', () {
+    test(
+        'projectedClosingBalance is negative when balance cannot cover obligations',
+        () {
       final period = _period();
       // R$100 balance, R$5000 in obligations
       final proj = _engine.buildProjection(
@@ -159,7 +164,9 @@ void main() {
       expect(proj.projectedClosingBalance.isNegative, isTrue);
     });
 
-    test('projectedClosingBalance is positive with no obligations and low burn rate', () {
+    test(
+        'projectedClosingBalance is positive with no obligations and low burn rate',
+        () {
       final period = _period();
       final proj = _engine.buildProjection(
         period: period,
@@ -199,7 +206,9 @@ void main() {
       expect(proj.cashflowForecast!.points.length, 91); // 0..90 inclusive
     });
 
-    test('cashflow points: today is marked isReal=true, tomorrow is isReal=false', () {
+    test(
+        'cashflow points: today is marked isReal=true, tomorrow is isReal=false',
+        () {
       final proj = _engine.buildProjection(
         period: _period(),
         totalSpent: Money.fromDouble(500),
@@ -229,9 +238,12 @@ void main() {
       expect(points[4].hasObligation, isFalse);
     });
 
-    test('obligations outside 0..daysRemaining are excluded from projectedClosing', () {
+    test(
+        'obligations outside 0..daysRemaining are excluded from projectedClosing',
+        () {
       final period = _period();
-      final futureObligation = _payment(amount: 10000, daysFromNow: 400); // way beyond period
+      final futureObligation =
+          _payment(amount: 10000, daysFromNow: 400); // way beyond period
       final proj = _engine.buildProjection(
         period: period,
         totalSpent: Money.fromDouble(100),
@@ -314,7 +326,8 @@ void main() {
       // dailyRate = 500/days_elapsed; with 100 balance, empty very fast
       final level = proj.liquidityRisk.level;
       expect(
-        level == LiquidityRiskLevel.critical || level == LiquidityRiskLevel.high,
+        level == LiquidityRiskLevel.critical ||
+            level == LiquidityRiskLevel.high,
         isTrue,
       );
     });
@@ -378,7 +391,8 @@ void main() {
           daysUntilEmpty: -1,
           upcomingObligations: const [],
         );
-        expect(risk.isAtRisk, isFalse, reason: '$level should be isAtRisk=false');
+        expect(risk.isAtRisk, isFalse,
+            reason: '$level should be isAtRisk=false');
       }
     });
   });
@@ -552,7 +566,8 @@ void main() {
       );
     });
 
-    test('daysUntilEmpty: returns -1 when solvent across full 365-day horizon', () {
+    test('daysUntilEmpty: returns -1 when solvent across full 365-day horizon',
+        () {
       expect(
         obligation.daysUntilEmpty(
           balance: Money.fromDouble(1000000),
@@ -599,7 +614,8 @@ void main() {
     test('isDueThisWeek is true for 0–7 days', () {
       for (int i = 0; i <= 7; i++) {
         final p = _payment(amount: 100, daysFromNow: i);
-        expect(p.isDueThisWeek, isTrue, reason: 'daysFromNow=$i should be thisWeek');
+        expect(p.isDueThisWeek, isTrue,
+            reason: 'daysFromNow=$i should be thisWeek');
       }
     });
 

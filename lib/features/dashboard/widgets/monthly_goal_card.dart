@@ -45,7 +45,8 @@ class MonthlyGoalCard extends ConsumerWidget {
                 ),
                 children: [
                   TextSpan(
-                    text: '${AppLocalizations.of(context).translate('missing')} ',
+                    text:
+                        '${AppLocalizations.of(context).translate('missing')} ',
                   ),
                   TextSpan(
                     text: FinancialCalculatorService.formatBRL(remaining),
@@ -55,7 +56,8 @@ class MonthlyGoalCard extends ConsumerWidget {
                     ),
                   ),
                   TextSpan(
-                    text: ' ${AppLocalizations.of(context).translate('to_reach_goal')}',
+                    text:
+                        ' ${AppLocalizations.of(context).translate('to_reach_goal')}',
                   ),
                 ],
               ),
@@ -70,7 +72,8 @@ class MonthlyGoalCard extends ConsumerWidget {
                       value: pct,
                       minHeight: 8,
                       backgroundColor: colors.secondaryContainer,
-                      valueColor: const AlwaysStoppedAnimation(tokens.FarolColors.beam),
+                      valueColor:
+                          const AlwaysStoppedAnimation(tokens.FarolColors.beam),
                     ),
                   ),
                 ),

@@ -87,7 +87,8 @@ class MemberAvatarGroup extends StatelessWidget {
     final diameter = radius * 2;
     // Each additional avatar overlaps by 1/3 of its diameter
     final overlap = diameter * 0.33;
-    final totalWidth = diameter + (visible.length - 1) * (diameter - overlap) +
+    final totalWidth = diameter +
+        (visible.length - 1) * (diameter - overlap) +
         (overflow > 0 ? (diameter - overlap) : 0);
 
     return SizedBox(
@@ -139,9 +140,8 @@ class _MemberAvatar extends StatelessWidget {
     final Widget avatar = CircleAvatar(
       radius: radius,
       backgroundColor: member.avatarColor,
-      backgroundImage: member.photoUrl != null
-          ? NetworkImage(member.photoUrl!)
-          : null,
+      backgroundImage:
+          member.photoUrl != null ? NetworkImage(member.photoUrl!) : null,
       child: member.photoUrl == null
           ? Text(
               member.initials,

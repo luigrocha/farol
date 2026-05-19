@@ -18,8 +18,7 @@ class Incomes extends Table {
   RealColumn get inssDeducted => real().nullable()();
   RealColumn get irrfDeducted => real().nullable()();
   TextColumn get notes => text().nullable()();
-  DateTimeColumn get createdAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
 // ═══════════════════════════════════════════
@@ -37,8 +36,7 @@ class Expenses extends Table {
   IntColumn get installments => integer().withDefault(const Constant(1))();
   BoolColumn get isFixed => boolean().withDefault(const Constant(false))();
   TextColumn get storeDescription => text().nullable()();
-  DateTimeColumn get createdAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
 // ═══════════════════════════════════════════
@@ -55,8 +53,7 @@ class Investments extends Table {
   RealColumn get returnAmount => real().withDefault(const Constant(0.0))();
   TextColumn get liquidity => text().nullable()();
   TextColumn get notes => text().nullable()();
-  DateTimeColumn get createdAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
 // ═══════════════════════════════════════════
@@ -67,15 +64,12 @@ class NetWorthSnapshots extends Table {
   IntColumn get month => integer()();
   IntColumn get year => integer()();
   RealColumn get fgtsBalance => real().withDefault(const Constant(0.0))();
-  RealColumn get investmentsTotal =>
-      real().withDefault(const Constant(0.0))();
-  RealColumn get emergencyFund =>
-      real().withDefault(const Constant(0.0))();
+  RealColumn get investmentsTotal => real().withDefault(const Constant(0.0))();
+  RealColumn get emergencyFund => real().withDefault(const Constant(0.0))();
   RealColumn get pendingInstallments =>
       real().withDefault(const Constant(0.0))();
   TextColumn get notes => text().nullable()();
-  DateTimeColumn get createdAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
 // ═══════════════════════════════════════════
@@ -87,8 +81,7 @@ class BudgetGoals extends Table {
   RealColumn get targetPercentage => real()();
   RealColumn get targetAmount => real()();
   TextColumn get type => text()(); // Need | Want | Invest
-  DateTimeColumn get createdAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
 // ═══════════════════════════════════════════
@@ -164,15 +157,61 @@ class AppDatabase extends _$AppDatabase {
             // Seed initial categories
             await batch((batch) {
               batch.insertAll(categoryTable, [
-                CategoryTableCompanion.insert(dbValue: 'HOUSING', name: 'Housing', emoji: '🏠', isSystem: const Value(true), orderIndex: const Value(0)),
-                CategoryTableCompanion.insert(dbValue: 'TRANSPORT', name: 'Transport', emoji: '🚗', isSystem: const Value(true), orderIndex: const Value(1)),
-                CategoryTableCompanion.insert(dbValue: 'FOOD_GROCERY', name: 'Food/Grocery', emoji: '🛒', isSwile: const Value(true), isSystem: const Value(true), orderIndex: const Value(2)),
-                CategoryTableCompanion.insert(dbValue: 'HEALTH', name: 'Health', emoji: '🏥', isSystem: const Value(true), orderIndex: const Value(3)),
-                CategoryTableCompanion.insert(dbValue: 'SUBSCRIPTIONS', name: 'Subscriptions', emoji: '📱', isSystem: const Value(true), orderIndex: const Value(4)),
-                CategoryTableCompanion.insert(dbValue: 'LEISURE', name: 'Leisure', emoji: '🎮', isSystem: const Value(true), orderIndex: const Value(5)),
-                CategoryTableCompanion.insert(dbValue: 'EDUCATION', name: 'Education', emoji: '📚', isSystem: const Value(true), orderIndex: const Value(6)),
-                CategoryTableCompanion.insert(dbValue: 'CARD_INSTALLMENTS', name: 'Card Installments', emoji: '💳', isSystem: const Value(true), orderIndex: const Value(7)),
-                CategoryTableCompanion.insert(dbValue: 'OTHER', name: 'Other', emoji: '📋', isSystem: const Value(true), orderIndex: const Value(8)),
+                CategoryTableCompanion.insert(
+                    dbValue: 'HOUSING',
+                    name: 'Housing',
+                    emoji: '🏠',
+                    isSystem: const Value(true),
+                    orderIndex: const Value(0)),
+                CategoryTableCompanion.insert(
+                    dbValue: 'TRANSPORT',
+                    name: 'Transport',
+                    emoji: '🚗',
+                    isSystem: const Value(true),
+                    orderIndex: const Value(1)),
+                CategoryTableCompanion.insert(
+                    dbValue: 'FOOD_GROCERY',
+                    name: 'Food/Grocery',
+                    emoji: '🛒',
+                    isSwile: const Value(true),
+                    isSystem: const Value(true),
+                    orderIndex: const Value(2)),
+                CategoryTableCompanion.insert(
+                    dbValue: 'HEALTH',
+                    name: 'Health',
+                    emoji: '🏥',
+                    isSystem: const Value(true),
+                    orderIndex: const Value(3)),
+                CategoryTableCompanion.insert(
+                    dbValue: 'SUBSCRIPTIONS',
+                    name: 'Subscriptions',
+                    emoji: '📱',
+                    isSystem: const Value(true),
+                    orderIndex: const Value(4)),
+                CategoryTableCompanion.insert(
+                    dbValue: 'LEISURE',
+                    name: 'Leisure',
+                    emoji: '🎮',
+                    isSystem: const Value(true),
+                    orderIndex: const Value(5)),
+                CategoryTableCompanion.insert(
+                    dbValue: 'EDUCATION',
+                    name: 'Education',
+                    emoji: '📚',
+                    isSystem: const Value(true),
+                    orderIndex: const Value(6)),
+                CategoryTableCompanion.insert(
+                    dbValue: 'CARD_INSTALLMENTS',
+                    name: 'Card Installments',
+                    emoji: '💳',
+                    isSystem: const Value(true),
+                    orderIndex: const Value(7)),
+                CategoryTableCompanion.insert(
+                    dbValue: 'OTHER',
+                    name: 'Other',
+                    emoji: '📋',
+                    isSystem: const Value(true),
+                    orderIndex: const Value(8)),
               ]);
             });
           }
@@ -333,8 +372,7 @@ class AppDatabase extends _$AppDatabase {
       entry.year.value,
     );
     if (existing != null) {
-      await (update(netWorthSnapshots)
-            ..where((t) => t.id.equals(existing.id)))
+      await (update(netWorthSnapshots)..where((t) => t.id.equals(existing.id)))
           .write(entry);
     } else {
       await into(netWorthSnapshots).insert(entry);
@@ -368,8 +406,7 @@ class AppDatabase extends _$AppDatabase {
   // USER SETTINGS DAOs
   // ═══════════════════════════════════════════
   Future<String?> getSetting(String key) async {
-    final result = await (select(userSettings)
-          ..where((t) => t.key.equals(key)))
+    final result = await (select(userSettings)..where((t) => t.key.equals(key)))
         .getSingleOrNull();
     return result?.value;
   }

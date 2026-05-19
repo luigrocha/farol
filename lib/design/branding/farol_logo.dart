@@ -120,9 +120,12 @@ class FarolMark extends StatelessWidget {
   /// - mono  → translucent white bg, white mono painter — for dark surfaces without the navy bg
   static (Color bg, FarolMarkScheme scheme) _config(FarolLogoVariant variant) {
     return switch (variant) {
-      FarolLogoVariant.dark  => (palette.FarolColors.navy,                            FarolMarkScheme.full),
-      FarolLogoVariant.light => (Colors.white,                                         FarolMarkScheme.navy),
-      FarolLogoVariant.mono  => (Colors.white.withValues(alpha: 0.15),                 FarolMarkScheme.white),
+      FarolLogoVariant.dark => (palette.FarolColors.navy, FarolMarkScheme.full),
+      FarolLogoVariant.light => (Colors.white, FarolMarkScheme.navy),
+      FarolLogoVariant.mono => (
+          Colors.white.withValues(alpha: 0.15),
+          FarolMarkScheme.white
+        ),
     };
   }
 }
@@ -192,8 +195,8 @@ class FarolLogo extends StatelessWidget {
   static Color _wordmarkColor(FarolLogoVariant variant) {
     return switch (variant) {
       FarolLogoVariant.light => palette.FarolColors.navy,
-      FarolLogoVariant.dark  => Colors.white,
-      FarolLogoVariant.mono  => Colors.white,
+      FarolLogoVariant.dark => Colors.white,
+      FarolLogoVariant.mono => Colors.white,
     };
   }
 }

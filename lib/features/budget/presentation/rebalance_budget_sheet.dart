@@ -30,13 +30,13 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
     if (_initialized) return;
     final goals = ref.read(budgetGoalsProvider).value ?? [];
     final catsMap = ref.read(categoriesMapProvider);
-    
+
     // We only rebalance non-swile categories for now (as per original logic)
     for (final goal in goals) {
       final dbVal = goal.category;
       final cat = catsMap[dbVal];
       if (cat == null || cat.isSwile) continue;
-      
+
       _orderedCategoryIds.add(dbVal);
       final pct = widget.initialPercentages?[dbVal] ?? goal.targetPercentage;
       _percentages[dbVal] = pct;
@@ -58,8 +58,7 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
     super.dispose();
   }
 
-  double get _total =>
-      _percentages.values.fold(0.0, (s, v) => s + v);
+  double get _total => _percentages.values.fold(0.0, (s, v) => s + v);
 
   bool get _canSave => (_total - 100.0).abs() <= 0.5;
 
@@ -71,8 +70,7 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
   }
 
   void _step(String category, double delta) {
-    final newVal =
-        ((_percentages[category] ?? 0.0) + delta).clamp(0.0, 100.0);
+    final newVal = ((_percentages[category] ?? 0.0) + delta).clamp(0.0, 100.0);
     setState(() => _percentages[category] = newVal);
     final text = newVal.toStringAsFixed(1);
     final ctrl = _controllers[category];
@@ -169,8 +167,7 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
                     ),
                     Text(
                       '${e.value.oldPct.toStringAsFixed(1)}%',
-                      style: const TextStyle(
-                          fontSize: 12, color: Colors.grey),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 4),
@@ -234,8 +231,7 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
         decoration: BoxDecoration(
           color: colors.surfaceLowest,
-          borderRadius:
-              const BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -265,8 +261,7 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
                   child: Icon(
                     Icons.balance,
                     size: 20,
-                    color:
-                        isOver ? Colors.red : tokens.FarolColors.navy,
+                    color: isOver ? Colors.red : tokens.FarolColors.navy,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -296,13 +291,11 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
             const SizedBox(height: 16),
             // ── Total bar ────────────────────────────────────────────────
             Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 14, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
                 color: totalColor.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                    color: totalColor.withValues(alpha: 0.3)),
+                border: Border.all(color: totalColor.withValues(alpha: 0.3)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -357,9 +350,8 @@ class _RebalanceBudgetSheetState extends ConsumerState<RebalanceBudgetSheet> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: (_saving || !_canSave)
-                    ? null
-                    : () => _trySave(context),
+                onPressed:
+                    (_saving || !_canSave) ? null : () => _trySave(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
                       _canSave ? tokens.FarolColors.navy : Colors.grey,
@@ -424,8 +416,7 @@ class _RebalanceRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      padding:
-          const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: colors.surfaceLow,
         borderRadius: BorderRadius.circular(12),
@@ -452,8 +443,7 @@ class _RebalanceRow extends StatelessWidget {
             onPressed: onDecrement,
             color: tokens.FarolColors.navy,
             padding: const EdgeInsets.symmetric(horizontal: 8),
-            constraints:
-                const BoxConstraints(minWidth: 32, minHeight: 32),
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
           ),
           SizedBox(
             width: 68,
@@ -462,17 +452,16 @@ class _RebalanceRow extends StatelessWidget {
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                  fontSize: 13, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
               decoration: InputDecoration(
                 isDense: true,
-                contentPadding: const EdgeInsets.symmetric(
-                    vertical: 6, horizontal: 4),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(6)),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
                 suffixText: '%',
-                suffixStyle: TextStyle(
-                    fontSize: 11, color: colors.onSurfaceSoft),
+                suffixStyle:
+                    TextStyle(fontSize: 11, color: colors.onSurfaceSoft),
               ),
             ),
           ),
@@ -481,8 +470,7 @@ class _RebalanceRow extends StatelessWidget {
             onPressed: onIncrement,
             color: tokens.FarolColors.navy,
             padding: const EdgeInsets.symmetric(horizontal: 8),
-            constraints:
-                const BoxConstraints(minWidth: 32, minHeight: 32),
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
           ),
         ],
       ),

@@ -10,8 +10,7 @@ class FinancialCalculatorService {
   // Rule: (Net Salary - Cash Expenses) / Net Salary × 100
   // Swile expenses excluded
   // ═══════════════════════════════════════════
-  static double calculateSavingsRate(
-      double netSalary, double cashExpenses) {
+  static double calculateSavingsRate(double netSalary, double cashExpenses) {
     if (netSalary <= 0) return 0.0;
     return ((netSalary - cashExpenses) / netSalary) * 100;
   }
@@ -54,14 +53,12 @@ class FinancialCalculatorService {
     }
 
     // 4. Emergency fund ≥ 3 months expenses → +2 pts
-    if (avgMonthlyExpenses > 0 &&
-        emergencyFund >= avgMonthlyExpenses * 3) {
+    if (avgMonthlyExpenses > 0 && emergencyFund >= avgMonthlyExpenses * 3) {
       score += 2;
     }
 
     // 5. Active installments ≤ 30% of net → +1 pt
-    if (netSalary > 0 &&
-        activeInstallmentsTotal / netSalary <= 0.30) {
+    if (netSalary > 0 && activeInstallmentsTotal / netSalary <= 0.30) {
       score += 1;
     }
 
@@ -89,11 +86,10 @@ class FinancialCalculatorService {
   // FGTS PROJECTION
   // Rule: 8% of gross salary per month
   // ═══════════════════════════════════════════
-  static double projectFgts(
-      double currentBalance, int monthsAhead,
+  static double projectFgts(double currentBalance, int monthsAhead,
       {double? grossSalary}) {
-    final monthly =
-        (grossSalary ?? AppConstants.defaultGrossSalary) * AppConstants.fgtsRate;
+    final monthly = (grossSalary ?? AppConstants.defaultGrossSalary) *
+        AppConstants.fgtsRate;
     return currentBalance + (monthly * monthsAhead);
   }
 
@@ -133,7 +129,11 @@ class FinancialCalculatorService {
     required double emergencyFund,
     required double pendingInstallments,
   }) {
-    return patrimonyTotal + fgtsBalance + investmentsTotal + emergencyFund - pendingInstallments;
+    return patrimonyTotal +
+        fgtsBalance +
+        investmentsTotal +
+        emergencyFund -
+        pendingInstallments;
   }
 
   // ═══════════════════════════════════════════
@@ -204,7 +204,8 @@ class FinancialCalculatorService {
         inss += contrib;
         if (contrib > 0) {
           rows.add(TaxBreakdownRow(
-            label: 'Até ${formatBRL(limit)} (${(rate * 100).toStringAsFixed(1)}%)',
+            label:
+                'Até ${formatBRL(limit)} (${(rate * 100).toStringAsFixed(1)}%)',
             value: formatBRL(contrib),
           ));
         }
@@ -214,21 +215,23 @@ class FinancialCalculatorService {
 
     if (inss > inssMax) {
       rows.clear();
-      rows.add(TaxBreakdownRow(label: 'Teto máximo INSS', value: formatBRL(inssMax)));
+      rows.add(TaxBreakdownRow(
+          label: 'Teto máximo INSS', value: formatBRL(inssMax)));
       inss = inssMax;
     }
 
     return TaxCalculationResult(total: inss, rows: rows);
   }
 
-  static TaxCalculationResult calculateIRRF(double taxableBase, int dependents) {
+  static TaxCalculationResult calculateIRRF(
+      double taxableBase, int dependents) {
     final depDeduction = dependents * AppConstants.dependentDeduction;
     final base = (taxableBase - depDeduction).clamp(0.0, double.infinity);
 
     const irrfTable = <(double, double, double)>[
-      (2259.20, 0.0,   0.0),
+      (2259.20, 0.0, 0.0),
       (2826.65, 0.075, 169.44),
-      (3751.05, 0.15,  381.44),
+      (3751.05, 0.15, 381.44),
       (4664.68, 0.225, 662.77),
       (double.infinity, 0.275, 896.00),
     ];
@@ -241,11 +244,13 @@ class FinancialCalculatorService {
         irrf = (base * rate - ded).clamp(0.0, double.infinity);
         if (irrf > 0) {
           rows.add(TaxBreakdownRow(
-            label: 'Base ${formatBRL(base)} × ${(rate * 100).toStringAsFixed(1)}%',
+            label:
+                'Base ${formatBRL(base)} × ${(rate * 100).toStringAsFixed(1)}%',
             value: formatBRL(irrf),
           ));
         } else {
-          rows.add(TaxBreakdownRow(label: 'Base ${formatBRL(base)}', value: 'Isento'));
+          rows.add(TaxBreakdownRow(
+              label: 'Base ${formatBRL(base)}', value: 'Isento'));
         }
         break;
       }
@@ -259,7 +264,8 @@ class FinancialCalculatorService {
   // Computes INSS + IRRF deductions from gross
   // ═══════════════════════════════════════════
 
-  static NetSalaryResult calculateNetFromGross(double grossSalary, {int dependents = 0}) {
+  static NetSalaryResult calculateNetFromGross(double grossSalary,
+      {int dependents = 0}) {
     if (grossSalary <= 0) {
       return NetSalaryResult(
         gross: grossSalary,
@@ -350,7 +356,10 @@ class FinancialCalculatorService {
       bracketIndex: br1.idx,
       projections: [
         FgtsYearProjection(
-            year: now.year, balance: bal1, withdrawal: w1, afterBalance: after1),
+            year: now.year,
+            balance: bal1,
+            withdrawal: w1,
+            afterBalance: after1),
         FgtsYearProjection(
             year: now.year + 1,
             balance: bal2,

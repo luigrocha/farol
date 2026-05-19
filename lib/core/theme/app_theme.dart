@@ -28,12 +28,18 @@ class AppTheme {
 
   // Noto Sans covers all pt_BR + R$ glyphs. Noto Sans Symbols 2 covers
   // Unicode symbols used by fl_chart (arrows, bullets, etc.).
-  static const List<String> _fontFallback = ['Noto Sans', 'Noto Sans Symbols 2'];
+  static const List<String> _fontFallback = [
+    'Noto Sans',
+    'Noto Sans Symbols 2'
+  ];
 
-  static TextStyle _fb(TextStyle s) => s.copyWith(fontFamilyFallback: _fontFallback);
+  static TextStyle _fb(TextStyle s) =>
+      s.copyWith(fontFamilyFallback: _fontFallback);
 
-  static ThemeData get lightTheme => _buildTheme(FarolColors.light, Brightness.light);
-  static ThemeData get darkTheme => _buildTheme(FarolColors.dark, Brightness.dark);
+  static ThemeData get lightTheme =>
+      _buildTheme(FarolColors.light, Brightness.light);
+  static ThemeData get darkTheme =>
+      _buildTheme(FarolColors.dark, Brightness.dark);
 
   static ThemeData _buildTheme(FarolColors c, Brightness brightness) {
     final isDark = brightness == Brightness.dark;
@@ -74,20 +80,32 @@ class AppTheme {
         ),
         margin: EdgeInsets.zero,
       ),
-      textTheme: GoogleFonts.interTextTheme(ThemeData(brightness: brightness).textTheme).copyWith(
-        displayLarge: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w800, color: c.onSurface)),
-        displayMedium: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w800, color: c.onSurface)),
-        displaySmall: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w700, color: c.onSurface)),
-        headlineLarge: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w800, color: c.onSurface)),
-        headlineMedium: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w700, color: c.onSurface)),
-        headlineSmall: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w700, color: c.onSurface)),
-        titleLarge: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w700, color: c.onSurface)),
-        titleMedium: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w600, color: c.onSurface)),
-        titleSmall: _fb(GoogleFonts.manrope(fontWeight: FontWeight.w600, color: c.onSurface)),
+      textTheme: GoogleFonts.interTextTheme(
+              ThemeData(brightness: brightness).textTheme)
+          .copyWith(
+        displayLarge: _fb(GoogleFonts.manrope(
+            fontWeight: FontWeight.w800, color: c.onSurface)),
+        displayMedium: _fb(GoogleFonts.manrope(
+            fontWeight: FontWeight.w800, color: c.onSurface)),
+        displaySmall: _fb(GoogleFonts.manrope(
+            fontWeight: FontWeight.w700, color: c.onSurface)),
+        headlineLarge: _fb(GoogleFonts.manrope(
+            fontWeight: FontWeight.w800, color: c.onSurface)),
+        headlineMedium: _fb(GoogleFonts.manrope(
+            fontWeight: FontWeight.w700, color: c.onSurface)),
+        headlineSmall: _fb(GoogleFonts.manrope(
+            fontWeight: FontWeight.w700, color: c.onSurface)),
+        titleLarge: _fb(GoogleFonts.manrope(
+            fontWeight: FontWeight.w700, color: c.onSurface)),
+        titleMedium: _fb(GoogleFonts.manrope(
+            fontWeight: FontWeight.w600, color: c.onSurface)),
+        titleSmall: _fb(GoogleFonts.manrope(
+            fontWeight: FontWeight.w600, color: c.onSurface)),
         bodyLarge: _fb(GoogleFonts.inter(color: c.onSurface)),
         bodyMedium: _fb(GoogleFonts.inter(color: c.onSurface)),
         bodySmall: _fb(GoogleFonts.inter(color: c.onSurfaceSoft)),
-        labelLarge: _fb(GoogleFonts.inter(color: c.onSurface, fontWeight: FontWeight.w500)),
+        labelLarge: _fb(
+            GoogleFonts.inter(color: c.onSurface, fontWeight: FontWeight.w500)),
         labelMedium: _fb(GoogleFonts.inter(color: c.onSurfaceSoft)),
         labelSmall: _fb(GoogleFonts.inter(color: c.onSurfaceSoft)),
       ),
@@ -119,7 +137,9 @@ class AppTheme {
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           return IconThemeData(
-            color: states.contains(WidgetState.selected) ? c.onSurface : c.onSurfaceFaint,
+            color: states.contains(WidgetState.selected)
+                ? c.onSurface
+                : c.onSurfaceFaint,
             size: 24,
           );
         }),
@@ -137,10 +157,12 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: isDark ? secondaryColor : primaryColor, width: 1.5),
+          borderSide: BorderSide(
+              color: isDark ? secondaryColor : primaryColor, width: 1.5),
         ),
         labelStyle: TextStyle(color: c.onSurfaceSoft),
-        floatingLabelStyle: TextStyle(color: isDark ? secondaryColor : primaryColor),
+        floatingLabelStyle:
+            TextStyle(color: isDark ? secondaryColor : primaryColor),
         hintStyle: TextStyle(color: c.onSurfaceSoft),
         prefixStyle: TextStyle(color: c.onSurface),
       ),
@@ -156,21 +178,35 @@ class AppTheme {
   static Color getCategoryColor(String category) {
     switch (category) {
       // Expense categories
-      case 'HOUSING': return const Color(0xFF1B3A5C);
-      case 'TRANSPORT': return const Color(0xFFF5A623);
-      case 'FOOD_GROCERY': return const Color(0xFF1A7A4A);
-      case 'HEALTH': return const Color(0xFFE84855);
-      case 'LEISURE': return const Color(0xFF8FA3B8);
+      case 'HOUSING':
+        return const Color(0xFF1B3A5C);
+      case 'TRANSPORT':
+        return const Color(0xFFF5A623);
+      case 'FOOD_GROCERY':
+        return const Color(0xFF1A7A4A);
+      case 'HEALTH':
+        return const Color(0xFFE84855);
+      case 'LEISURE':
+        return const Color(0xFF8FA3B8);
       // Investment types
-      case 'TESOURO_SELIC': return const Color(0xFF1B3A5C);
-      case 'CDB': return const Color(0xFF6B4EAF);
-      case 'LCI_LCA': return const Color(0xFF1A7A4A);
-      case 'FII': return const Color(0xFFF5A623);
-      case 'STOCKS_BR': return const Color(0xFF0D6E6E);
-      case 'STOCKS_INTL': return const Color(0xFF1A6BAA);
-      case 'PENSION': return const Color(0xFF9E6B3A);
-      case 'SAVINGS': return const Color(0xFFB94F82);
-      default: return onSurfaceSoft;
+      case 'TESOURO_SELIC':
+        return const Color(0xFF1B3A5C);
+      case 'CDB':
+        return const Color(0xFF6B4EAF);
+      case 'LCI_LCA':
+        return const Color(0xFF1A7A4A);
+      case 'FII':
+        return const Color(0xFFF5A623);
+      case 'STOCKS_BR':
+        return const Color(0xFF0D6E6E);
+      case 'STOCKS_INTL':
+        return const Color(0xFF1A6BAA);
+      case 'PENSION':
+        return const Color(0xFF9E6B3A);
+      case 'SAVINGS':
+        return const Color(0xFFB94F82);
+      default:
+        return onSurfaceSoft;
     }
   }
 }

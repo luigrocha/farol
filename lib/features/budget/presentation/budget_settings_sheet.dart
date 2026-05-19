@@ -13,7 +13,8 @@ class BudgetSettingsSheet extends ConsumerStatefulWidget {
   const BudgetSettingsSheet({super.key});
 
   @override
-  ConsumerState<BudgetSettingsSheet> createState() => _BudgetSettingsSheetState();
+  ConsumerState<BudgetSettingsSheet> createState() =>
+      _BudgetSettingsSheetState();
 }
 
 class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
@@ -28,9 +29,12 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
     super.initState();
     final budget = ref.read(budgetSettingsProvider).value;
     if (budget != null) {
-      if (budget.netSalary > 0) _netSalaryController.text = budget.netSalary.toStringAsFixed(2);
-      if (budget.swileMeal > 0) _swileMealController.text = budget.swileMeal.toStringAsFixed(2);
-      if (budget.swileFood > 0) _swileFoodController.text = budget.swileFood.toStringAsFixed(2);
+      if (budget.netSalary > 0)
+        _netSalaryController.text = budget.netSalary.toStringAsFixed(2);
+      if (budget.swileMeal > 0)
+        _swileMealController.text = budget.swileMeal.toStringAsFixed(2);
+      if (budget.swileFood > 0)
+        _swileFoodController.text = budget.swileFood.toStringAsFixed(2);
     }
   }
 
@@ -42,7 +46,8 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
     super.dispose();
   }
 
-  double _parse(String text) => double.tryParse(text.trim().replaceAll(',', '.')) ?? 0;
+  double _parse(String text) =>
+      double.tryParse(text.trim().replaceAll(',', '.')) ?? 0;
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
@@ -50,10 +55,10 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
     setState(() => _saving = true);
     try {
       await ref.read(budgetSettingsProvider.notifier).save(BudgetSettings(
-        netSalary: _parse(_netSalaryController.text),
-        swileMeal: _parse(_swileMealController.text),
-        swileFood: _parse(_swileFoodController.text),
-      ));
+            netSalary: _parse(_netSalaryController.text),
+            swileMeal: _parse(_swileMealController.text),
+            swileFood: _parse(_swileFoodController.text),
+          ));
       if (mounted) {
         Navigator.of(context).pop();
         context.showSuccessSnackBar(l10n.budgetSaved);
@@ -75,40 +80,98 @@ class _BudgetSettingsSheetState extends ConsumerState<BudgetSettingsSheet> {
     final total = budget?.totalBudget ?? 0;
 
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
         padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
-        decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
+        decoration: BoxDecoration(
+            color: colors.surfaceLowest,
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(24))),
         child: Form(
           key: _formKey,
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Center(child: Container(width: 36, height: 4, decoration: BoxDecoration(color: colors.onSurfaceFaint, borderRadius: BorderRadius.circular(2)))),
-            const SizedBox(height: 20),
-            Row(children: [
-              Container(width: 38, height: 38, decoration: BoxDecoration(color: colors.iconTintBlue, borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.account_balance_wallet_outlined, size: 20, color: tokens.FarolColors.navy)),
-              const SizedBox(width: 12),
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(l10n.monthlyBudget, style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700)),
-                if (total > 0) Text('Total: ${FinancialCalculatorService.formatBRL(total)}', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+          child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                    child: Container(
+                        width: 36,
+                        height: 4,
+                        decoration: BoxDecoration(
+                            color: colors.onSurfaceFaint,
+                            borderRadius: BorderRadius.circular(2)))),
+                const SizedBox(height: 20),
+                Row(children: [
+                  Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                          color: colors.iconTintBlue,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: const Icon(Icons.account_balance_wallet_outlined,
+                          size: 20, color: tokens.FarolColors.navy)),
+                  const SizedBox(width: 12),
+                  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(l10n.monthlyBudget,
+                            style: GoogleFonts.manrope(
+                                fontSize: 18, fontWeight: FontWeight.w700)),
+                        if (total > 0)
+                          Text(
+                              'Total: ${FinancialCalculatorService.formatBRL(total)}',
+                              style: TextStyle(
+                                  fontSize: 11, color: colors.onSurfaceSoft)),
+                      ]),
+                ]),
+                const SizedBox(height: 6),
+                Text(l10n.translate('set_planned_income'),
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: colors.onSurfaceSoft,
+                        height: 1.5)),
+                const SizedBox(height: 20),
+                _AmountField(
+                    controller: _netSalaryController,
+                    label: l10n.translate('net_salary'),
+                    hint: '6783.21',
+                    icon: Icons.account_balance_wallet),
+                const SizedBox(height: 12),
+                _AmountField(
+                    controller: _swileMealController,
+                    label: l10n.translate('pay_swile_meal'),
+                    hint: '1400.00',
+                    icon: Icons.restaurant),
+                const SizedBox(height: 12),
+                _AmountField(
+                    controller: _swileFoodController,
+                    label: l10n.translate('pay_swile_food'),
+                    hint: '1031.00',
+                    icon: Icons.shopping_basket_outlined),
+                const SizedBox(height: 24),
+                SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _saving ? null : _save,
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: tokens.FarolColors.navy,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14)),
+                          elevation: 0),
+                      child: _saving
+                          ? const SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: Colors.white))
+                          : Text(l10n.saveBudget,
+                              style: const TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.w600)),
+                    )),
               ]),
-            ]),
-            const SizedBox(height: 6),
-            Text(l10n.translate('set_planned_income'), style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft, height: 1.5)),
-            const SizedBox(height: 20),
-            _AmountField(controller: _netSalaryController, label: l10n.translate('net_salary'), hint: '6783.21', icon: Icons.account_balance_wallet),
-            const SizedBox(height: 12),
-            _AmountField(controller: _swileMealController, label: l10n.translate('pay_swile_meal'), hint: '1400.00', icon: Icons.restaurant),
-            const SizedBox(height: 12),
-            _AmountField(controller: _swileFoodController, label: l10n.translate('pay_swile_food'), hint: '1031.00', icon: Icons.shopping_basket_outlined),
-            const SizedBox(height: 24),
-            SizedBox(width: double.infinity, child: ElevatedButton(
-              onPressed: _saving ? null : _save,
-              style: ElevatedButton.styleFrom(backgroundColor: tokens.FarolColors.navy, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation: 0),
-              child: _saving
-                ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : Text(l10n.saveBudget, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-            )),
-          ]),
         ),
       ),
     );
@@ -119,7 +182,11 @@ class _AmountField extends StatelessWidget {
   final TextEditingController controller;
   final String label, hint;
   final IconData icon;
-  const _AmountField({required this.controller, required this.label, required this.hint, required this.icon});
+  const _AmountField(
+      {required this.controller,
+      required this.label,
+      required this.hint,
+      required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -132,12 +199,14 @@ class _AmountField extends StatelessWidget {
         prefixIcon: Icon(icon, size: 18),
         prefixText: 'R\$ ',
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       ),
       validator: (v) {
         if (v == null || v.trim().isEmpty) return null;
         final val = double.tryParse(v.trim().replaceAll(',', '.'));
-        if (val == null || val < 0) return AppLocalizations.of(context).translate('invalid_amount');
+        if (val == null || val < 0)
+          return AppLocalizations.of(context).translate('invalid_amount');
         return null;
       },
     );

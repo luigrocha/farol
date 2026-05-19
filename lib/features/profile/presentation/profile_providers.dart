@@ -29,14 +29,14 @@ class ProfileNotifier extends AsyncNotifier<void> {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       await ref.read(profileRepositoryProvider).updateProfile(
-        uid,
-        name: name,
-        avatarUrl: avatarUrl,
-        phone: phone,
-        jobTitle: jobTitle,
-        company: company,
-        cpf: cpf,
-      );
+            uid,
+            name: name,
+            avatarUrl: avatarUrl,
+            phone: phone,
+            jobTitle: jobTitle,
+            company: company,
+            cpf: cpf,
+          );
       ref.invalidate(currentProfileProvider);
     });
   }

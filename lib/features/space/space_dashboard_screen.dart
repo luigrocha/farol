@@ -52,9 +52,7 @@ class SpaceDashboardScreen extends ConsumerStatefulWidget {
 
 class _SpaceDashboardScreenState extends ConsumerState<SpaceDashboardScreen>
     with InviteAcceptedOverlayMixin<SpaceDashboardScreen> {
-  String get _currentUserId =>
-      Supabase.instance.client.auth.currentUser!.id;
-
+  String get _currentUserId => Supabase.instance.client.auth.currentUser!.id;
 
   // Track the latest activity id we have already shown an overlay for,
   // so that a rebuild doesn't re-trigger the same banner.
@@ -62,14 +60,15 @@ class _SpaceDashboardScreenState extends ConsumerState<SpaceDashboardScreen>
 
   @override
   Widget build(BuildContext context) {
-    final txAsync          = ref.watch(spaceTransactionsProvider);
+    final txAsync = ref.watch(spaceTransactionsProvider);
     final suggestionsAsync = ref.watch(settlementSuggestionsProvider);
-    final canSeeBalances   = ref.watch(canSeeBalancesProvider);
-    final canWrite         = ref.watch(canWriteInSpaceProvider);
-    final displayMap       = ref.watch(spaceMemberDisplayMapProvider).valueOrNull ?? {};
-    final theme            = Theme.of(context);
-    final width            = MediaQuery.sizeOf(context).width;
-    final isDesktop        = FarolBreakpoints.isDesktop(context);
+    final canSeeBalances = ref.watch(canSeeBalancesProvider);
+    final canWrite = ref.watch(canWriteInSpaceProvider);
+    final displayMap =
+        ref.watch(spaceMemberDisplayMapProvider).valueOrNull ?? {};
+    final theme = Theme.of(context);
+    final width = MediaQuery.sizeOf(context).width;
+    final isDesktop = FarolBreakpoints.isDesktop(context);
 
     // Keep the realtime subscriptions alive while dashboard is mounted.
     ref.watch(spaceTransactionsRealtimeProvider);
@@ -88,18 +87,18 @@ class _SpaceDashboardScreenState extends ConsumerState<SpaceDashboardScreen>
 
         _lastShownActivityId = latest.id;
 
-        final display   = displayMap[latest.userId];
-        final name      = display?.displayName
-            ?? latest.entityLabel
-            ?? latest.userId.substring(0, 6);
-        final initials  = display?.initials;
-        final photoUrl  = display?.photoUrl;
-        final bgColor   = display?.avatarColor;
+        final display = displayMap[latest.userId];
+        final name = display?.displayName ??
+            latest.entityLabel ??
+            latest.userId.substring(0, 6);
+        final initials = display?.initials;
+        final photoUrl = display?.photoUrl;
+        final bgColor = display?.avatarColor;
 
         showBannerForMember(
-          memberName:  name,
-          initials:    initials,
-          photoUrl:    photoUrl,
+          memberName: name,
+          initials: initials,
+          photoUrl: photoUrl,
           avatarColor: bgColor,
         );
       },
@@ -118,10 +117,12 @@ class _SpaceDashboardScreenState extends ConsumerState<SpaceDashboardScreen>
                 // ── AppBar ──────────────────────────────────────────
                 SliverAppBar(
                   expandedHeight: 140,
-                  pinned:         true,
+                  pinned: true,
                   backgroundColor: theme.colorScheme.surface,
                   title: const Row(children: [
-                    FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+                    FarolMark(
+                        size: FarolBrand.markSizeCompact,
+                        variant: FarolLogoVariant.dark),
                     SizedBox(width: 8),
                     SpaceAppBarChip(),
                   ]),
@@ -157,21 +158,21 @@ class _SpaceDashboardScreenState extends ConsumerState<SpaceDashboardScreen>
                 // ── Content — mobile vs desktop ─────────────────────
                 if (isDesktop)
                   _DesktopContentSliver(
-                    space:            widget.space,
-                    txAsync:          txAsync,
+                    space: widget.space,
+                    txAsync: txAsync,
                     suggestionsAsync: suggestionsAsync,
-                    canSeeBalances:   canSeeBalances,
-                    canWrite:         canWrite,
-                    currentUserId:    _currentUserId,
+                    canSeeBalances: canSeeBalances,
+                    canWrite: canWrite,
+                    currentUserId: _currentUserId,
                   )
                 else
                   _MobileContentSliver(
-                    space:            widget.space,
-                    txAsync:          txAsync,
+                    space: widget.space,
+                    txAsync: txAsync,
                     suggestionsAsync: suggestionsAsync,
-                    canSeeBalances:   canSeeBalances,
-                    canWrite:         canWrite,
-                    currentUserId:    _currentUserId,
+                    canSeeBalances: canSeeBalances,
+                    canWrite: canWrite,
+                    currentUserId: _currentUserId,
                   ),
 
                 // Bottom padding for FAB
@@ -188,7 +189,7 @@ class _SpaceDashboardScreenState extends ConsumerState<SpaceDashboardScreen>
           ? FloatingActionButton.extended(
               onPressed: () =>
                   AddSpaceTransactionSheet.show(context, widget.space),
-              icon:  const Icon(Icons.add),
+              icon: const Icon(Icons.add),
               label: const Text('Novo gasto'),
             )
           : null,
@@ -201,11 +202,11 @@ class _SpaceDashboardScreenState extends ConsumerState<SpaceDashboardScreen>
 // ─────────────────────────────────────────────────────────────────
 
 class _MobileContentSliver extends StatelessWidget {
-  final Space                        space;
+  final Space space;
   final AsyncValue<List<SpaceTransaction>> txAsync;
   final AsyncValue<List<SettlementSuggestion>> suggestionsAsync;
-  final bool  canSeeBalances;
-  final bool  canWrite;
+  final bool canSeeBalances;
+  final bool canWrite;
   final String currentUserId;
 
   const _MobileContentSliver({
@@ -226,13 +227,13 @@ class _MobileContentSliver extends StatelessWidget {
         // Balance summary
         if (canSeeBalances)
           suggestionsAsync.when(
-            data:    (s) => _BalanceSummary(
-              suggestions:   s,
+            data: (s) => _BalanceSummary(
+              suggestions: s,
               currentUserId: currentUserId,
-              spaceId:       space.id,
+              spaceId: space.id,
             ),
             loading: () => const _SectionSkeleton(height: 80),
-            error:   (_, __) => const SizedBox.shrink(),
+            error: (_, __) => const SizedBox.shrink(),
           ),
 
         // Category envelopes header
@@ -249,9 +250,9 @@ class _MobileContentSliver extends StatelessWidget {
         ),
 
         txAsync.when(
-          data:    (txs) => _CategoryEnvelopes(transactions: txs),
+          data: (txs) => _CategoryEnvelopes(transactions: txs),
           loading: () => const _SectionSkeleton(height: 120),
-          error:   (_, __) => const SizedBox.shrink(),
+          error: (_, __) => const SizedBox.shrink(),
         ),
 
         // Recent transactions header
@@ -271,8 +272,7 @@ class _MobileContentSliver extends StatelessWidget {
               if (txAsync.valueOrNull != null &&
                   txAsync.valueOrNull!.length > 5)
                 TextButton(
-                  onPressed: () =>
-                      SpaceTransactionsScreen.push(context, space),
+                  onPressed: () => SpaceTransactionsScreen.push(context, space),
                   child: const Text('Ver todos'),
                 ),
             ],
@@ -283,17 +283,17 @@ class _MobileContentSliver extends StatelessWidget {
         txAsync.when(
           data: (txs) => txs.isEmpty
               ? _EmptyTransactions(
-                  space:    space,
+                  space: space,
                   canWrite: canWrite,
-                  onAdd:    () => AddSpaceTransactionSheet.show(context, space),
+                  onAdd: () => AddSpaceTransactionSheet.show(context, space),
                 )
               : Column(
                   children: txs
                       .take(10)
                       .map((tx) => _TransactionTile(
-                            tx:            tx,
+                            tx: tx,
                             currentUserId: currentUserId,
-                            members:       space.members,
+                            members: space.members,
                           ))
                       .toList(),
                 ),
@@ -321,11 +321,11 @@ class _MobileContentSliver extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────
 
 class _DesktopContentSliver extends StatelessWidget {
-  final Space                          space;
-  final AsyncValue<List<SpaceTransaction>>     txAsync;
+  final Space space;
+  final AsyncValue<List<SpaceTransaction>> txAsync;
   final AsyncValue<List<SettlementSuggestion>> suggestionsAsync;
-  final bool   canSeeBalances;
-  final bool   canWrite;
+  final bool canSeeBalances;
+  final bool canWrite;
   final String currentUserId;
 
   const _DesktopContentSliver({
@@ -356,13 +356,13 @@ class _DesktopContentSliver extends StatelessWidget {
                   // Balance summary
                   if (canSeeBalances)
                     suggestionsAsync.when(
-                      data:    (s) => _BalanceSummary(
-                        suggestions:   s,
+                      data: (s) => _BalanceSummary(
+                        suggestions: s,
                         currentUserId: currentUserId,
-                        spaceId:       space.id,
+                        spaceId: space.id,
                       ),
                       loading: () => const _SectionSkeleton(height: 80),
-                      error:   (_, __) => const SizedBox.shrink(),
+                      error: (_, __) => const SizedBox.shrink(),
                     ),
 
                   // Recent transactions
@@ -393,17 +393,18 @@ class _DesktopContentSliver extends StatelessWidget {
                   txAsync.when(
                     data: (txs) => txs.isEmpty
                         ? _EmptyTransactions(
-                            space:    space,
+                            space: space,
                             canWrite: canWrite,
-                            onAdd:    () => AddSpaceTransactionSheet.show(context, space),
+                            onAdd: () =>
+                                AddSpaceTransactionSheet.show(context, space),
                           )
                         : Column(
                             children: txs
                                 .take(10)
                                 .map((tx) => _TransactionTile(
-                                      tx:            tx,
+                                      tx: tx,
                                       currentUserId: currentUserId,
-                                      members:       space.members,
+                                      members: space.members,
                                     ))
                                 .toList(),
                           ),
@@ -444,9 +445,9 @@ class _DesktopContentSliver extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   txAsync.when(
-                    data:    (txs) => _CategoryEnvelopes(transactions: txs),
+                    data: (txs) => _CategoryEnvelopes(transactions: txs),
                     loading: () => const _SectionSkeleton(height: 200),
-                    error:   (_, __) => const SizedBox.shrink(),
+                    error: (_, __) => const SizedBox.shrink(),
                   ),
                 ],
               ),
@@ -511,9 +512,9 @@ class _MemberAvatarRow extends StatelessWidget {
           itemCount: space.members.length,
           separatorBuilder: (_, __) => const SizedBox(width: 8),
           itemBuilder: (_, i) {
-            final m       = space.members[i];
+            final m = space.members[i];
             final initials = m.userId.substring(0, 2).toUpperCase();
-            final color    = _avatarColor(m.userId);
+            final color = _avatarColor(m.userId);
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -539,8 +540,12 @@ class _MemberAvatarRow extends StatelessWidget {
 
   static Color _avatarColor(String userId) {
     const palette = [
-      Color(0xFF6366F1), Color(0xFF0EA5E9), Color(0xFF10B981),
-      Color(0xFFF59E0B), Color(0xFFEF4444), Color(0xFF8B5CF6),
+      Color(0xFF6366F1),
+      Color(0xFF0EA5E9),
+      Color(0xFF10B981),
+      Color(0xFFF59E0B),
+      Color(0xFFEF4444),
+      Color(0xFF8B5CF6),
     ];
     return palette[userId.codeUnitAt(0) % palette.length];
   }
@@ -561,7 +566,8 @@ class _PrivacyChip extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.lock_outline, size: 13, color: theme.colorScheme.onSurfaceVariant),
+        Icon(Icons.lock_outline,
+            size: 13, color: theme.colorScheme.onSurfaceVariant),
         const SizedBox(width: 4),
         Text(
           'Gastos pessoais não são visíveis aqui',
@@ -595,7 +601,8 @@ class _BalanceSummary extends StatelessWidget {
 
     // Only show suggestions that involve the current user
     final mine = suggestions
-        .where((s) => s.fromUserId == currentUserId || s.toUserId == currentUserId)
+        .where(
+            (s) => s.fromUserId == currentUserId || s.toUserId == currentUserId)
         .toList();
 
     if (mine.isEmpty) {
@@ -604,7 +611,7 @@ class _BalanceSummary extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color:        theme.colorScheme.surfaceContainerHighest,
+            color: theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -640,9 +647,9 @@ class _BalanceSummary extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           ...mine.map((s) => _SettlementRow(
-                suggestion:    s,
+                suggestion: s,
                 currentUserId: currentUserId,
-                spaceId:       spaceId,
+                spaceId: spaceId,
               )),
         ],
       ),
@@ -669,9 +676,9 @@ class _SettlementRowState extends ConsumerState<_SettlementRow> {
   bool _settling = false;
 
   Future<void> _settle() async {
-    final now   = DateTime.now();
+    final now = DateTime.now();
     final start = DateTime(now.year, now.month, 1);
-    final end   = DateTime(now.year, now.month + 1, 0);
+    final end = DateTime(now.year, now.month + 1, 0);
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -699,11 +706,11 @@ class _SettlementRowState extends ConsumerState<_SettlementRow> {
     setState(() => _settling = true);
     try {
       await ref.read(spaceRepositoryProvider).saveSettlements(
-        widget.spaceId,
-        [widget.suggestion],
-        periodStart: start,
-        periodEnd:   end,
-      );
+            widget.spaceId,
+            [widget.suggestion],
+            periodStart: start,
+            periodEnd: end,
+          );
       ref.invalidate(settlementSuggestionsProvider);
       ref.invalidate(pendingSettlementsProvider);
       if (mounted) {
@@ -724,23 +731,21 @@ class _SettlementRowState extends ConsumerState<_SettlementRow> {
 
   @override
   Widget build(BuildContext context) {
-    final theme   = Theme.of(context);
+    final theme = Theme.of(context);
     final iOwePay = widget.suggestion.fromUserId == widget.currentUserId;
-    final label   = iOwePay
+    final label = iOwePay
         ? 'Você deve ${_brlFmt.format(widget.suggestion.amount)}'
         : 'Te devem ${_brlFmt.format(widget.suggestion.amount)}';
-    final color   = iOwePay
-        ? theme.colorScheme.error
-        : theme.colorScheme.primary;
+    final color = iOwePay ? theme.colorScheme.error : theme.colorScheme.primary;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color:        color.withValues(alpha: 0.08),
+          color: color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(10),
-          border:       Border.all(color: color.withValues(alpha: 0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Row(
           children: [
@@ -768,7 +773,8 @@ class _SettlementRowState extends ConsumerState<_SettlementRow> {
                 ),
                 child: _settling
                     ? const SizedBox(
-                        width: 14, height: 14,
+                        width: 14,
+                        height: 14,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Text('Pagar'),
@@ -796,7 +802,7 @@ class _CategoryEnvelopes extends StatelessWidget {
     double uncategorized = 0;
 
     for (final tx in transactions) {
-      final catId   = tx.categoryId;
+      final catId = tx.categoryId;
       final catName = tx.categoryName;
       final catIcon = tx.categoryIcon;
       if (catId == null || catName == null) {
@@ -804,8 +810,8 @@ class _CategoryEnvelopes extends StatelessWidget {
       } else {
         final existing = totals[catId];
         totals[catId] = (
-          name:   catName,
-          icon:   catIcon,
+          name: catName,
+          icon: catIcon,
           amount: (existing?.amount ?? 0) + tx.amount,
         );
       }
@@ -813,8 +819,8 @@ class _CategoryEnvelopes extends StatelessWidget {
 
     if (uncategorized > 0) {
       totals['_uncategorized'] = (
-        name:   'Sem categoria',
-        icon:   '📋',
+        name: 'Sem categoria',
+        icon: '📋',
         amount: uncategorized,
       );
     }
@@ -836,9 +842,9 @@ class _CategoryEnvelopes extends StatelessWidget {
         children: totals.entries.map((e) {
           final pct = maxAmount > 0 ? e.value.amount / maxAmount : 0.0;
           return _EnvelopeRow(
-            icon:       e.value.icon,
-            name:       e.value.name,
-            amount:     e.value.amount,
+            icon: e.value.icon,
+            name: e.value.name,
+            amount: e.value.amount,
             fillFraction: pct,
           );
         }).toList(),
@@ -897,8 +903,8 @@ class _EnvelopeRow extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
-              value:           fillFraction,
-              minHeight:       6,
+              value: fillFraction,
+              minHeight: 6,
               backgroundColor: theme.colorScheme.surfaceContainerHighest,
               valueColor: AlwaysStoppedAnimation(theme.colorScheme.primary),
             ),
@@ -926,10 +932,11 @@ class _TransactionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme   = Theme.of(context);
-    final myShareAmount = tx.shareFor(currentUserId); // returns 0.0 if not a participant
+    final theme = Theme.of(context);
+    final myShareAmount =
+        tx.shareFor(currentUserId); // returns 0.0 if not a participant
     final isParticipant = myShareAmount > 0;
-    final isPayer       = tx.paidBy == currentUserId;
+    final isPayer = tx.paidBy == currentUserId;
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
@@ -990,8 +997,8 @@ class _TransactionTile extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────
 
 class _EmptyTransactions extends StatelessWidget {
-  final Space      space;
-  final bool       canWrite;
+  final Space space;
+  final bool canWrite;
   final VoidCallback onAdd;
 
   const _EmptyTransactions({
@@ -1004,24 +1011,25 @@ class _EmptyTransactions extends StatelessWidget {
   String get _headline {
     return switch (space.type) {
       SpaceType.household => 'Registre as despesas da casa',
-      SpaceType.trip      => 'Registre os gastos da viagem',
-      SpaceType.project   => 'Registre os custos do projeto',
-      SpaceType.family    => 'Registre as despesas da família',
-      SpaceType.business  => 'Registre as despesas do negócio',
+      SpaceType.trip => 'Registre os gastos da viagem',
+      SpaceType.project => 'Registre os custos do projeto',
+      SpaceType.family => 'Registre as despesas da família',
+      SpaceType.business => 'Registre as despesas do negócio',
     };
   }
 
   String get _subheadline {
     return switch (space.type) {
-      SpaceType.household => 'Aluguel, contas, supermercado — tudo em um só lugar, '
-          'dividido automaticamente entre os moradores.',
-      SpaceType.trip      => 'Cada gasto da trip vai aparecer aqui. '
+      SpaceType.household =>
+        'Aluguel, contas, supermercado — tudo em um só lugar, '
+            'dividido automaticamente entre os moradores.',
+      SpaceType.trip => 'Cada gasto da trip vai aparecer aqui. '
           'Quem pagou o quê fica claro para todos.',
-      SpaceType.project   => 'Mantenha o orçamento do projeto transparente '
+      SpaceType.project => 'Mantenha o orçamento do projeto transparente '
           'para todos os envolvidos.',
-      SpaceType.family    => 'Organize as despesas familiares e veja '
+      SpaceType.family => 'Organize as despesas familiares e veja '
           'o que cada um contribuiu.',
-      SpaceType.business  => 'Controle os gastos do negócio com visibilidade '
+      SpaceType.business => 'Controle os gastos do negócio com visibilidade '
           'para toda a equipe.',
     };
   }
@@ -1042,9 +1050,9 @@ class _EmptyTransactions extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
             decoration: BoxDecoration(
-              color:        accentColor.withValues(alpha: 0.07),
+              color: accentColor.withValues(alpha: 0.07),
               borderRadius: BorderRadius.circular(20),
-              border:       Border.all(
+              border: Border.all(
                 color: accentColor.withValues(alpha: 0.18),
                 width: 1,
               ),
@@ -1062,8 +1070,8 @@ class _EmptyTransactions extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: GoogleFonts.manrope(
                     fontWeight: FontWeight.w700,
-                    fontSize:   18,
-                    color:      theme.colorScheme.onSurface,
+                    fontSize: 18,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -1071,7 +1079,7 @@ class _EmptyTransactions extends StatelessWidget {
                   _subheadline,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color:  theme.colorScheme.onSurfaceVariant,
+                    color: theme.colorScheme.onSurfaceVariant,
                     height: 1.5,
                   ),
                 ),
@@ -1084,29 +1092,31 @@ class _EmptyTransactions extends StatelessWidget {
           // ── How it works steps ─────────────────────────────────
           _OnboardingStep(
             number: '1',
-            icon:   Icons.add_circle_outline,
-            title:  'Adicione um gasto',
-            body:   'Toque em "Novo gasto" e informe o valor, quem pagou e como dividir.',
-            color:  accentColor,
-            theme:  theme,
+            icon: Icons.add_circle_outline,
+            title: 'Adicione um gasto',
+            body:
+                'Toque em "Novo gasto" e informe o valor, quem pagou e como dividir.',
+            color: accentColor,
+            theme: theme,
           ),
           const SizedBox(height: 12),
           _OnboardingStep(
             number: '2',
-            icon:   Icons.people_outline,
-            title:  'Defina a divisão',
-            body:   'Igualmente, por porcentagem ou valores personalizados por pessoa.',
-            color:  accentColor,
-            theme:  theme,
+            icon: Icons.people_outline,
+            title: 'Defina a divisão',
+            body:
+                'Igualmente, por porcentagem ou valores personalizados por pessoa.',
+            color: accentColor,
+            theme: theme,
           ),
           const SizedBox(height: 12),
           _OnboardingStep(
             number: '3',
-            icon:   Icons.handshake_outlined,
-            title:  'Acerte as contas',
-            body:   'O espaço calcula automaticamente quem deve quanto a quem.',
-            color:  accentColor,
-            theme:  theme,
+            icon: Icons.handshake_outlined,
+            title: 'Acerte as contas',
+            body: 'O espaço calcula automaticamente quem deve quanto a quem.',
+            color: accentColor,
+            theme: theme,
           ),
 
           const SizedBox(height: 28),
@@ -1118,12 +1128,12 @@ class _EmptyTransactions extends StatelessWidget {
               style: FilledButton.styleFrom(
                 backgroundColor: accentColor,
                 foregroundColor: Colors.white,
-                padding:         const EdgeInsets.symmetric(vertical: 16),
-                shape:           RoundedRectangleBorder(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              icon:  const Icon(Icons.add),
+              icon: const Icon(Icons.add),
               label: const Text(
                 'Adicionar primeiro gasto',
                 style: TextStyle(fontWeight: FontWeight.w700),
@@ -1149,11 +1159,11 @@ class _EmptyTransactions extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────
 
 class _OnboardingStep extends StatelessWidget {
-  final String    number;
-  final IconData  icon;
-  final String    title;
-  final String    body;
-  final Color     color;
+  final String number;
+  final IconData icon;
+  final String title;
+  final String body;
+  final Color color;
   final ThemeData theme;
 
   const _OnboardingStep({
@@ -1175,16 +1185,16 @@ class _OnboardingStep extends StatelessWidget {
           width: 32,
           height: 32,
           decoration: BoxDecoration(
-            color:  color.withValues(alpha: 0.12),
-            shape:  BoxShape.circle,
+            color: color.withValues(alpha: 0.12),
+            shape: BoxShape.circle,
           ),
           child: Center(
             child: Text(
               number,
               style: GoogleFonts.manrope(
                 fontWeight: FontWeight.w700,
-                fontSize:   13,
-                color:      color,
+                fontSize: 13,
+                color: color,
               ),
             ),
           ),
@@ -1198,15 +1208,15 @@ class _OnboardingStep extends StatelessWidget {
                 title,
                 style: GoogleFonts.manrope(
                   fontWeight: FontWeight.w600,
-                  fontSize:   13,
-                  color:      theme.colorScheme.onSurface,
+                  fontSize: 13,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 2),
               Text(
                 body,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color:  theme.colorScheme.onSurfaceVariant,
+                  color: theme.colorScheme.onSurfaceVariant,
                   height: 1.4,
                 ),
               ),
@@ -1233,9 +1243,9 @@ class _SectionSkeleton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Container(
-        height:       height,
+        height: height,
         decoration: BoxDecoration(
-          color:        theme.colorScheme.surfaceContainerHighest,
+          color: theme.colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
         ),
       ),

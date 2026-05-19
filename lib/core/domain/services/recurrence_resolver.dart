@@ -70,9 +70,7 @@ class RecurrenceResolver {
   DateTime _firstOccurrence(RecurringRule rule) {
     final start = rule.startsOn;
     return switch (rule.frequency) {
-      RecurringFrequency.weekly ||
-      RecurringFrequency.biweekly =>
-        start,
+      RecurringFrequency.weekly || RecurringFrequency.biweekly => start,
       RecurringFrequency.monthly ||
       RecurringFrequency.quarterly ||
       RecurringFrequency.semiannual ||

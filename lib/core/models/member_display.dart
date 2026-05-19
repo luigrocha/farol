@@ -38,7 +38,7 @@ class MemberDisplay {
   }) {
     final userId = profile['id'] as String;
     final rawName = profile['display_name'] as String?;
-    final email   = profile['email'] as String?;
+    final email = profile['email'] as String?;
 
     // Resolve best display name: profile name → email prefix → userId prefix
     final displayName = (rawName != null && rawName.isNotEmpty)
@@ -50,9 +50,9 @@ class MemberDisplay {
                 : userId.substring(0, 6);
 
     return MemberDisplay(
-      userId:      userId,
+      userId: userId,
       displayName: userId == currentUserId ? 'Você' : displayName,
-      photoUrl:    profile['photo_url'] as String?,
+      photoUrl: profile['photo_url'] as String?,
       avatarColor: avatarColor,
     );
   }

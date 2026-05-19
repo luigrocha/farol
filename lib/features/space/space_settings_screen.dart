@@ -39,23 +39,82 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
   late final TextEditingController _nameCtrl;
   late final TextEditingController _descCtrl;
 
-  late SpaceType   _type;
-  late String?     _emoji;
-  late String?     _color;
-  bool             _saving = false;
-  bool             _dirty  = false;
+  late SpaceType _type;
+  late String? _emoji;
+  late String? _color;
+  bool _saving = false;
+  bool _dirty = false;
 
   static const _colors = [
-    '#6366F1', '#0EA5E9', '#10B981',
-    '#F59E0B', '#EF4444', '#8B5CF6',
+    '#6366F1',
+    '#0EA5E9',
+    '#10B981',
+    '#F59E0B',
+    '#EF4444',
+    '#8B5CF6',
   ];
 
   static const _emojiPalettes = <SpaceType, List<String>>{
-    SpaceType.household: ['🏠','🏡','🛋️','🏗️','🔑','🪴','🧹','💡','🛏️','🚿'],
-    SpaceType.trip:      ['✈️','🏖️','🏕️','🗺️','🎒','🚢','🚂','🏔️','🌴','🧳'],
-    SpaceType.project:   ['💼','📊','🎯','🖥️','🔧','⚙️','📐','🔬','🚀','💡'],
-    SpaceType.family:    ['👨‍👩‍👧','👪','❤️','🎂','🎁','🏡','🌻','👶','🎓','🐾'],
-    SpaceType.business:  ['🏢','💹','📈','🤝','💰','🏦','⚖️','📋','🖊️','🔒'],
+    SpaceType.household: [
+      '🏠',
+      '🏡',
+      '🛋️',
+      '🏗️',
+      '🔑',
+      '🪴',
+      '🧹',
+      '💡',
+      '🛏️',
+      '🚿'
+    ],
+    SpaceType.trip: [
+      '✈️',
+      '🏖️',
+      '🏕️',
+      '🗺️',
+      '🎒',
+      '🚢',
+      '🚂',
+      '🏔️',
+      '🌴',
+      '🧳'
+    ],
+    SpaceType.project: [
+      '💼',
+      '📊',
+      '🎯',
+      '🖥️',
+      '🔧',
+      '⚙️',
+      '📐',
+      '🔬',
+      '🚀',
+      '💡'
+    ],
+    SpaceType.family: [
+      '👨‍👩‍👧',
+      '👪',
+      '❤️',
+      '🎂',
+      '🎁',
+      '🏡',
+      '🌻',
+      '👶',
+      '🎓',
+      '🐾'
+    ],
+    SpaceType.business: [
+      '🏢',
+      '💹',
+      '📈',
+      '🤝',
+      '💰',
+      '🏦',
+      '⚖️',
+      '📋',
+      '🖊️',
+      '🔒'
+    ],
   };
 
   @override
@@ -63,7 +122,7 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
     super.initState();
     _nameCtrl = TextEditingController(text: widget.space.name);
     _descCtrl = TextEditingController(text: widget.space.description ?? '');
-    _type  = widget.space.type;
+    _type = widget.space.type;
     _emoji = widget.space.emoji;
     _color = widget.space.color;
   }
@@ -86,18 +145,17 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
     if (name.isEmpty) return;
     setState(() => _saving = true);
     try {
-      final updated = await ref
-          .read(spaceRepositoryProvider)
-          .updateSpaceIdentity(
-            widget.space.id,
-            name:        name,
-            emoji:       _currentEmoji,
-            color:       _color,
-            description: _descCtrl.text.trim().isEmpty
-                ? null
-                : _descCtrl.text.trim(),
-            type:        _type,
-          );
+      final updated =
+          await ref.read(spaceRepositoryProvider).updateSpaceIdentity(
+                widget.space.id,
+                name: name,
+                emoji: _currentEmoji,
+                color: _color,
+                description: _descCtrl.text.trim().isEmpty
+                    ? null
+                    : _descCtrl.text.trim(),
+                type: _type,
+              );
 
       // Refresh active space if it's this one
       final active = ref.read(activeSpaceProvider).valueOrNull;
@@ -108,7 +166,7 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
 
       if (mounted) {
         setState(() {
-          _dirty  = false;
+          _dirty = false;
           _saving = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
@@ -127,19 +185,18 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
 
   Future<void> _copyInviteLink() async {
     try {
-      final invite = await ref
-          .read(spaceRepositoryProvider)
-          .createInvite(
-            spaceId:      widget.space.id,
-            invitedEmail: '',  // email-less token link (edge function handles)
-            role:         SpaceRole.member,
+      final invite = await ref.read(spaceRepositoryProvider).createInvite(
+            spaceId: widget.space.id,
+            invitedEmail: '', // email-less token link (edge function handles)
+            role: SpaceRole.member,
           );
       final token = invite['token'] as String? ?? '';
-      final link  = 'https://farol.app/join/$token';
+      final link = 'https://farol.app/join/$token';
       await Clipboard.setData(ClipboardData(text: link));
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Link copiado para a área de transferência')),
+          const SnackBar(
+              content: Text('Link copiado para a área de transferência')),
         );
       }
     } catch (e) {
@@ -203,8 +260,8 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme     = Theme.of(context);
-    final isOwner   = ref.watch(currentUserSpaceRoleProvider).isOwner;
+    final theme = Theme.of(context);
+    final isOwner = ref.watch(currentUserSpaceRoleProvider).isOwner;
     final isDesktop = FarolBreakpoints.isDesktop(context);
 
     // ── Identity column (left on desktop, top on mobile) ────────────
@@ -214,8 +271,8 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _EmojiButton(
-            emoji:   _currentEmoji,
-            emojis:  _emojiPalettes[_type]!,
+            emoji: _currentEmoji,
+            emojis: _emojiPalettes[_type]!,
             onPick: (e) {
               setState(() => _emoji = e);
               _markDirty();
@@ -225,10 +282,10 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
           Expanded(
             child: TextField(
               controller: _nameCtrl,
-              enabled:    isOwner,
+              enabled: isOwner,
               decoration: const InputDecoration(
                 labelText: 'Nome do espaço',
-                border:    OutlineInputBorder(),
+                border: OutlineInputBorder(),
               ),
               textCapitalization: TextCapitalization.words,
               onChanged: (_) => _markDirty(),
@@ -239,10 +296,10 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
       const SizedBox(height: 16),
       TextField(
         controller: _descCtrl,
-        enabled:    isOwner,
+        enabled: isOwner,
         decoration: const InputDecoration(
           labelText: 'Descrição (opcional)',
-          border:    OutlineInputBorder(),
+          border: OutlineInputBorder(),
         ),
         maxLines: 2,
         onChanged: (_) => _markDirty(),
@@ -258,9 +315,10 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
       ),
       const SizedBox(height: 8),
       Wrap(
-        spacing: 12, runSpacing: 12,
+        spacing: 12,
+        runSpacing: 12,
         children: _colors.map((hex) {
-          final color  = _hexColor(hex);
+          final color = _hexColor(hex);
           final active = hex == _color;
           return GestureDetector(
             onTap: isOwner
@@ -271,15 +329,19 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
                 : null,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
-              width: 36, height: 36,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
-                color:  color,
-                shape:  BoxShape.circle,
+                color: color,
+                shape: BoxShape.circle,
                 border: active
                     ? Border.all(color: theme.colorScheme.onSurface, width: 3)
                     : null,
                 boxShadow: active
-                    ? [BoxShadow(color: color.withValues(alpha: 0.45), blurRadius: 6)]
+                    ? [
+                        BoxShadow(
+                            color: color.withValues(alpha: 0.45), blurRadius: 6)
+                      ]
                     : null,
               ),
             ),
@@ -311,7 +373,8 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
         child: ListTile(
           leading: const Icon(Icons.link_outlined),
           title: const Text('Copiar link de convite'),
-          subtitle: const Text('Qualquer pessoa com o link pode entrar como membro'),
+          subtitle:
+              const Text('Qualquer pessoa com o link pode entrar como membro'),
           onTap: isOwner ? _copyInviteLink : null,
         ),
       ),
@@ -322,7 +385,8 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
           margin: EdgeInsets.zero,
           color: theme.colorScheme.errorContainer.withValues(alpha: 0.3),
           child: ListTile(
-            leading: Icon(Icons.archive_outlined, color: theme.colorScheme.error),
+            leading:
+                Icon(Icons.archive_outlined, color: theme.colorScheme.error),
             title: Text(
               'Arquivar espaço',
               style: TextStyle(color: theme.colorScheme.error),
@@ -338,9 +402,11 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Row(children: [
-          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const FarolMark(
+              size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
           const SizedBox(width: 10),
-          Text('Configurações', style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
+          Text('Configurações',
+              style: GoogleFonts.manrope(fontWeight: FontWeight.w700)),
         ]),
         actions: [
           if (_dirty && isOwner)
@@ -350,7 +416,8 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
                 onPressed: _saving ? null : _save,
                 child: _saving
                     ? const SizedBox(
-                        width: 16, height: 16,
+                        width: 16,
+                        height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Text('Salvar'),
@@ -369,7 +436,8 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
                     children: identityColumn,
                   ),
                 ),
-                VerticalDivider(width: 1, color: theme.colorScheme.outlineVariant),
+                VerticalDivider(
+                    width: 1, color: theme.colorScheme.outlineVariant),
                 Expanded(
                   flex: 2,
                   child: ListView(
@@ -381,7 +449,11 @@ class _SpaceSettingsScreenState extends ConsumerState<SpaceSettingsScreen> {
             )
           : ListView(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              children: [...identityColumn, const SizedBox(height: 16), ...secondaryColumn],
+              children: [
+                ...identityColumn,
+                const SizedBox(height: 16),
+                ...secondaryColumn
+              ],
             ),
     );
   }
@@ -439,10 +511,11 @@ class _EmojiButtonState extends State<_EmojiButton> {
         GestureDetector(
           onTap: () => setState(() => _open = !_open),
           child: Container(
-            width: 56, height: 56,
+            width: 56,
+            height: 56,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color:        theme.colorScheme.surfaceContainerHighest,
+              color: theme.colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(12),
               border: _open
                   ? Border.all(color: theme.colorScheme.primary, width: 2)
@@ -456,36 +529,40 @@ class _EmojiButtonState extends State<_EmojiButton> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color:        theme.colorScheme.surface,
-              border:       Border.all(color: theme.colorScheme.outlineVariant),
+              color: theme.colorScheme.surface,
+              border: Border.all(color: theme.colorScheme.outlineVariant),
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color:      Colors.black.withValues(alpha: 0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 8,
-                  offset:     const Offset(0, 2),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
             child: Wrap(
-              spacing: 4, runSpacing: 4,
-              children: widget.emojis.map((e) => GestureDetector(
-                onTap: () {
-                  widget.onPick(e);
-                  setState(() => _open = false);
-                },
-                child: Container(
-                  width: 36, height: 36,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: e == widget.emoji
-                        ? theme.colorScheme.primaryContainer
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(e, style: const TextStyle(fontSize: 20)),
-                ),
-              )).toList(),
+              spacing: 4,
+              runSpacing: 4,
+              children: widget.emojis
+                  .map((e) => GestureDetector(
+                        onTap: () {
+                          widget.onPick(e);
+                          setState(() => _open = false);
+                        },
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: e == widget.emoji
+                                ? theme.colorScheme.primaryContainer
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(e, style: const TextStyle(fontSize: 20)),
+                        ),
+                      ))
+                  .toList(),
             ),
           ),
         ],

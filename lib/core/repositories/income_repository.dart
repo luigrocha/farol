@@ -32,19 +32,20 @@ class IncomeRepository {
         .where((e) => e.session != null)
         .take(1)
         .asyncExpand((e) {
-          final uid = e.session!.user.id;
-          return _supabase
-              .from('incomes')
-              .stream(primaryKey: ['id'])
-              .eq('user_id', uid)
-              .map((rows) => rows.map(Income.fromJson).toList());
-        });
+      final uid = e.session!.user.id;
+      return _supabase
+          .from('incomes')
+          .stream(primaryKey: ['id'])
+          .eq('user_id', uid)
+          .map((rows) => rows.map(Income.fromJson).toList());
+    });
   }
 
   Future<List<Income>> getAll() async {
     final wsId = workspaceId;
     if (wsId != null) {
-      final data = await _supabase.from('incomes').select().eq('workspace_id', wsId);
+      final data =
+          await _supabase.from('incomes').select().eq('workspace_id', wsId);
       return data.map((r) => Income.fromJson(r)).toList();
     }
     final userId = _userId;
@@ -76,7 +77,8 @@ class IncomeRepository {
     }();
     return data
         .map((r) => Income.fromJson(r))
-        .where((i) => _inRange(i.month, i.year, startMonth, startYear, endMonth, endYear))
+        .where((i) =>
+            _inRange(i.month, i.year, startMonth, startYear, endMonth, endYear))
         .toList();
   }
 
@@ -148,7 +150,9 @@ class IncomeRepository {
   Future<void> unsubscribeRealtime() {
     return SupabaseRealtimeManager.instance.unsubscribe('incomes');
   }
-  bool get shouldFallbackToPolling => SupabaseRealtimeManager.instance.isMaxRetriesReached('incomes');
+
+  bool get shouldFallbackToPolling =>
+      SupabaseRealtimeManager.instance.isMaxRetriesReached('incomes');
 
   Future<List<Income>> fetchAll() async {
     return SupabaseRealtimeManager.instance

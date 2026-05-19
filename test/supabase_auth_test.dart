@@ -48,8 +48,7 @@ void main() {
     final repo = SupabaseAuthRepository();
 
     expect(
-      () => repo.signInWithEmail(
-          'farol.test.000@gmail.com', 'wrong-password'),
+      () => repo.signInWithEmail('farol.test.000@gmail.com', 'wrong-password'),
       // _mapException maps "invalid login credentials" → friendly message.
       throwsA(predicate((e) =>
           e.toString().contains('Invalid email or password') ||

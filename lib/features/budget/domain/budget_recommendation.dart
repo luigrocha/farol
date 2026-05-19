@@ -36,7 +36,8 @@ class CategoryRecommendation {
   bool get isOverspending => actualPct > suggestedPct * 1.1;
 
   /// True when the existing goal differs from the suggestion by >5pp.
-  bool get goalDiffersSignificantly => (currentGoalPct - suggestedPct).abs() > 5.0;
+  bool get goalDiffersSignificantly =>
+      (currentGoalPct - suggestedPct).abs() > 5.0;
 }
 
 /// The three buckets of the 50/30/20 rule.
@@ -55,19 +56,34 @@ extension RecommendationBucketX on RecommendationBucket {
   String label(String lang) {
     switch (this) {
       case RecommendationBucket.needs:
-        return lang == 'pt' ? 'Necessidades' : lang == 'es' ? 'Necesidades' : 'Needs';
+        return lang == 'pt'
+            ? 'Necessidades'
+            : lang == 'es'
+                ? 'Necesidades'
+                : 'Needs';
       case RecommendationBucket.wants:
-        return lang == 'pt' ? 'Desejos' : lang == 'es' ? 'Deseos' : 'Wants';
+        return lang == 'pt'
+            ? 'Desejos'
+            : lang == 'es'
+                ? 'Deseos'
+                : 'Wants';
       case RecommendationBucket.savings:
-        return lang == 'pt' ? 'Investimentos' : lang == 'es' ? 'Ahorros' : 'Savings';
+        return lang == 'pt'
+            ? 'Investimentos'
+            : lang == 'es'
+                ? 'Ahorros'
+                : 'Savings';
     }
   }
 
   double targetPct() {
     switch (this) {
-      case RecommendationBucket.needs:   return 50.0;
-      case RecommendationBucket.wants:   return 30.0;
-      case RecommendationBucket.savings: return 20.0;
+      case RecommendationBucket.needs:
+        return 50.0;
+      case RecommendationBucket.wants:
+        return 30.0;
+      case RecommendationBucket.savings:
+        return 20.0;
     }
   }
 }

@@ -17,10 +17,8 @@ class WorkspaceRepository {
   Stream<List<Workspace>> watchUserWorkspaces() {
     final userId = _userId;
     if (userId == null) return const Stream.empty();
-    return _supabase
-        .from('workspaces')
-        .stream(primaryKey: ['id'])
-        .asyncMap((_) => _fetchUserWorkspaces(userId));
+    return _supabase.from('workspaces').stream(
+        primaryKey: ['id']).asyncMap((_) => _fetchUserWorkspaces(userId));
   }
 
   Future<List<Workspace>> _fetchUserWorkspaces(String userId) async {
@@ -59,7 +57,7 @@ class WorkspaceRepository {
     String? description,
   }) async {
     final data = await _supabase.rpc('create_workspace', params: {
-      'name':           name,
+      'name': name,
       'workspace_type': type.name,
       if (emoji != null) 'emoji': emoji,
       if (color != null) 'color': color,
@@ -72,8 +70,7 @@ class WorkspaceRepository {
   Future<void> updateName(String workspaceId, String name) async {
     await _supabase
         .from('workspaces')
-        .update({'name': name})
-        .eq('id', workspaceId);
+        .update({'name': name}).eq('id', workspaceId);
   }
 
   Future<void> updateIdentity(
@@ -90,18 +87,14 @@ class WorkspaceRepository {
       if (description != null) 'description': description,
     };
     if (updates.isEmpty) return;
-    await _supabase
-        .from('workspaces')
-        .update(updates)
-        .eq('id', workspaceId);
+    await _supabase.from('workspaces').update(updates).eq('id', workspaceId);
   }
 
   Future<void> updateSettings(
       String workspaceId, Map<String, dynamic> settings) async {
     await _supabase
         .from('workspaces')
-        .update({'settings': settings})
-        .eq('id', workspaceId);
+        .update({'settings': settings}).eq('id', workspaceId);
   }
 
   // ─────────────────────────────────────────────────────────────
@@ -138,10 +131,10 @@ class WorkspaceRepository {
     final row = await _supabase
         .from('workspace_invites')
         .insert({
-          'workspace_id':  workspaceId,
+          'workspace_id': workspaceId,
           'invited_email': email.toLowerCase().trim(),
-          'role':          role.name,
-          'invited_by':    userId,
+          'role': role.name,
+          'invited_by': userId,
         })
         .select()
         .single();
@@ -180,27 +173,28 @@ class WorkspaceRepository {
       // On success (200), data is already JSON-decoded by the SDK.
       // Safe-cast: jsonDecode always returns Map<String, dynamic> for JSON objects.
       final data = response.data;
-      debugPrint('[InviteAccept] Edge Function response: status=${response.status} data=$data');
+      debugPrint(
+          '[InviteAccept] Edge Function response: status=${response.status} data=$data');
 
-      final dataMap = data is Map ? Map<String, dynamic>.from(data) : <String, dynamic>{};
+      final dataMap =
+          data is Map ? Map<String, dynamic>.from(data) : <String, dynamic>{};
       final wsRaw = dataMap['workspace'];
       if (wsRaw == null) {
         throw const WorkspaceInviteException('internal_error');
       }
 
-      final wsJson = wsRaw is Map
-          ? Map<String, dynamic>.from(wsRaw)
-          : <String, dynamic>{};
+      final wsJson =
+          wsRaw is Map ? Map<String, dynamic>.from(wsRaw) : <String, dynamic>{};
 
       return Workspace.fromEdgeFunctionResponse(wsJson);
-
     } on FunctionException catch (e) {
       // FunctionException is thrown for non-2xx responses.
       // details contains the parsed JSON body: { "error": "<code>" }
-      debugPrint('[InviteAccept] FunctionException: status=${e.status} details=${e.details}');
+      debugPrint(
+          '[InviteAccept] FunctionException: status=${e.status} details=${e.details}');
       final details = e.details;
-      final code = (details is Map ? details['error'] : null) as String?
-          ?? 'internal_error';
+      final code = (details is Map ? details['error'] : null) as String? ??
+          'internal_error';
       throw WorkspaceInviteException(code);
     } catch (e) {
       debugPrint('[InviteAccept] Unexpected error: $e');
@@ -219,7 +213,8 @@ class WorkspaceRepository {
       'decline_workspace_invite',
       params: {'p_token': token},
     );
-    final map = result is Map ? Map<String, dynamic>.from(result) : <String, dynamic>{};
+    final map =
+        result is Map ? Map<String, dynamic>.from(result) : <String, dynamic>{};
     final error = map['error'] as String?;
     if (error != null && error != 'invite_already_used') {
       // invite_already_used is idempotent — treat as success for the invitee UX

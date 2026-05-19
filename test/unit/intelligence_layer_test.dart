@@ -153,7 +153,8 @@ void main() {
         dismissedIds: const {},
       );
 
-      final insight = insights.firstWhere((i) => i.type == InsightType.overdraftRisk);
+      final insight =
+          insights.firstWhere((i) => i.type == InsightType.overdraftRisk);
       expect(insight.priority, InsightPriority.critical);
       expect(insight.confidence, greaterThanOrEqualTo(0.60));
     });
@@ -233,8 +234,16 @@ void main() {
   group('Rule 4 — Duplicate Charges', () {
     test('detects two identical charges on same day', () {
       final recent = [
-        _expense(id: 1, amount: 49.90, storeDescription: 'netflix', date: DateTime.now()),
-        _expense(id: 2, amount: 49.90, storeDescription: 'netflix', date: DateTime.now()),
+        _expense(
+            id: 1,
+            amount: 49.90,
+            storeDescription: 'netflix',
+            date: DateTime.now()),
+        _expense(
+            id: 2,
+            amount: 49.90,
+            storeDescription: 'netflix',
+            date: DateTime.now()),
       ];
 
       final insights = _layer.analyze(
@@ -245,10 +254,12 @@ void main() {
         dismissedIds: const {},
       );
 
-      expect(insights.any((i) => i.type == InsightType.duplicateCharge), isTrue);
+      expect(
+          insights.any((i) => i.type == InsightType.duplicateCharge), isTrue);
     });
 
-    test('does NOT emit for two charges of same merchant but different amounts', () {
+    test('does NOT emit for two charges of same merchant but different amounts',
+        () {
       final recent = [
         _expense(id: 1, amount: 49.90, storeDescription: 'spotify'),
         _expense(id: 2, amount: 29.90, storeDescription: 'spotify'),
@@ -262,14 +273,21 @@ void main() {
         dismissedIds: const {},
       );
 
-      expect(insights.any((i) => i.type == InsightType.duplicateCharge), isFalse);
+      expect(
+          insights.any((i) => i.type == InsightType.duplicateCharge), isFalse);
     });
 
     test('does NOT emit for charges more than 3 days apart', () {
       final recent = [
-        _expense(id: 1, amount: 100.00, storeDescription: 'mercado',
+        _expense(
+            id: 1,
+            amount: 100.00,
+            storeDescription: 'mercado',
             date: DateTime.now().subtract(const Duration(days: 10))),
-        _expense(id: 2, amount: 100.00, storeDescription: 'mercado',
+        _expense(
+            id: 2,
+            amount: 100.00,
+            storeDescription: 'mercado',
             date: DateTime.now()),
       ];
 
@@ -281,7 +299,8 @@ void main() {
         dismissedIds: const {},
       );
 
-      expect(insights.any((i) => i.type == InsightType.duplicateCharge), isFalse);
+      expect(
+          insights.any((i) => i.type == InsightType.duplicateCharge), isFalse);
     });
 
     test('does NOT emit when store description is empty', () {
@@ -298,13 +317,22 @@ void main() {
         dismissedIds: const {},
       );
 
-      expect(insights.any((i) => i.type == InsightType.duplicateCharge), isFalse);
+      expect(
+          insights.any((i) => i.type == InsightType.duplicateCharge), isFalse);
     });
 
     test('duplicate dismissed by group is suppressed', () {
       final recent = [
-        _expense(id: 1, amount: 49.90, storeDescription: 'netflix', date: DateTime.now()),
-        _expense(id: 2, amount: 49.90, storeDescription: 'netflix', date: DateTime.now()),
+        _expense(
+            id: 1,
+            amount: 49.90,
+            storeDescription: 'netflix',
+            date: DateTime.now()),
+        _expense(
+            id: 2,
+            amount: 49.90,
+            storeDescription: 'netflix',
+            date: DateTime.now()),
       ];
 
       final first = _layer.analyze(
@@ -340,7 +368,8 @@ void main() {
         dismissedIds: const {},
       );
 
-      expect(insights.any((i) => i.type == InsightType.investmentOpportunity), isTrue);
+      expect(insights.any((i) => i.type == InsightType.investmentOpportunity),
+          isTrue);
     });
 
     test('does NOT emit when projectedClosing < R\$500', () {
@@ -352,7 +381,8 @@ void main() {
         dismissedIds: const {},
       );
 
-      expect(insights.any((i) => i.type == InsightType.investmentOpportunity), isFalse);
+      expect(insights.any((i) => i.type == InsightType.investmentOpportunity),
+          isFalse);
     });
 
     test('does NOT emit when projectedClosing is negative', () {
@@ -364,7 +394,8 @@ void main() {
         dismissedIds: const {},
       );
 
-      expect(insights.any((i) => i.type == InsightType.investmentOpportunity), isFalse);
+      expect(insights.any((i) => i.type == InsightType.investmentOpportunity),
+          isFalse);
     });
   });
 
@@ -424,7 +455,8 @@ void main() {
         recentExpenses: const [],
         allExpenses: const [],
         dismissedIds: const {},
-        previousInstallmentTotal: 1500, // was R$1500, now R$1000 → R$500 reduction
+        previousInstallmentTotal:
+            1500, // was R$1500, now R$1000 → R$500 reduction
       );
 
       expect(insights.any((i) => i.type == InsightType.debtReduction), isTrue);
@@ -463,7 +495,8 @@ void main() {
   group('Rule 12 — Unusual Merchants', () {
     test('emits for high-value first-time merchant (>= R\$200)', () {
       final recent = [
-        _expense(id: 1, amount: 350.00, storeDescription: 'Loja Nova Desconhecida'),
+        _expense(
+            id: 1, amount: 350.00, storeDescription: 'Loja Nova Desconhecida'),
       ];
 
       final insights = _layer.analyze(
@@ -474,12 +507,15 @@ void main() {
         dismissedIds: const {},
       );
 
-      expect(insights.any((i) => i.type == InsightType.unusualMerchant), isTrue);
+      expect(
+          insights.any((i) => i.type == InsightType.unusualMerchant), isTrue);
     });
 
     test('does NOT emit for merchant that appears in older history', () {
       final older = _expense(
-          id: 99, amount: 300.00, storeDescription: 'Loja Conhecida',
+          id: 99,
+          amount: 300.00,
+          storeDescription: 'Loja Conhecida',
           date: DateTime.now().subtract(const Duration(days: 60)));
       final recent = [
         _expense(id: 1, amount: 300.00, storeDescription: 'Loja Conhecida'),
@@ -493,7 +529,8 @@ void main() {
         dismissedIds: const {},
       );
 
-      expect(insights.any((i) => i.type == InsightType.unusualMerchant), isFalse);
+      expect(
+          insights.any((i) => i.type == InsightType.unusualMerchant), isFalse);
     });
 
     test('does NOT emit for amounts < R\$200', () {
@@ -509,7 +546,8 @@ void main() {
         dismissedIds: const {},
       );
 
-      expect(insights.any((i) => i.type == InsightType.unusualMerchant), isFalse);
+      expect(
+          insights.any((i) => i.type == InsightType.unusualMerchant), isFalse);
     });
   });
 
@@ -519,8 +557,16 @@ void main() {
     test('returns at most 3 insights', () {
       // Setup conditions that trigger multiple rules simultaneously
       final recent = [
-        _expense(id: 1, amount: 49.90, storeDescription: 'netflix', date: DateTime.now()),
-        _expense(id: 2, amount: 49.90, storeDescription: 'netflix', date: DateTime.now()),
+        _expense(
+            id: 1,
+            amount: 49.90,
+            storeDescription: 'netflix',
+            date: DateTime.now()),
+        _expense(
+            id: 2,
+            amount: 49.90,
+            storeDescription: 'netflix',
+            date: DateTime.now()),
         _expense(id: 3, amount: 500.00, storeDescription: 'Loja Nova XYZ'),
       ];
 
@@ -558,7 +604,9 @@ void main() {
       }
     });
 
-    test('critical insights appear before warning before info before achievement', () {
+    test(
+        'critical insights appear before warning before info before achievement',
+        () {
       final recent = [
         _expense(id: 1, amount: 350.00, storeDescription: 'Loja Nova'),
       ];

@@ -75,7 +75,8 @@ class DismissedInsightsRepository {
 
       for (final entry in map.entries) {
         // Match the string key back to an InsightType enum value.
-        final type = InsightType.values.where((t) => t.name == entry.key).firstOrNull;
+        final type =
+            InsightType.values.where((t) => t.name == entry.key).firstOrNull;
         if (type == null) continue;
 
         final data = entry.value as Map<String, dynamic>;

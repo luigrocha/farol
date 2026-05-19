@@ -28,13 +28,22 @@ class InvestmentsScreen extends ConsumerWidget {
           SliverAppBar(
             floating: true,
             title: Row(children: [
-              const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+              const FarolMark(
+                  size: FarolBrand.markSizeCompact,
+                  variant: FarolLogoVariant.dark),
               const SizedBox(width: 10),
-              Text(AppLocalizations.of(context).translate('portfolio'), style: GoogleFonts.manrope(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
+              Text(AppLocalizations.of(context).translate('portfolio'),
+                  style: GoogleFonts.manrope(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.3)),
             ]),
             actions: [
-              IconButton(icon: const Icon(Icons.language, size: 22), onPressed: () {}),
-              IconButton(icon: const Icon(Icons.settings_outlined, size: 22), onPressed: () {}),
+              IconButton(
+                  icon: const Icon(Icons.language, size: 22), onPressed: () {}),
+              IconButton(
+                  icon: const Icon(Icons.settings_outlined, size: 22),
+                  onPressed: () {}),
               const SizedBox(width: 8),
             ],
           ),
@@ -83,13 +92,27 @@ class _ConsolidatedHero extends ConsumerWidget {
       padding: const EdgeInsets.all(DSSpacing.xl),
       decoration: BoxDecoration(
         borderRadius: DSRadius.lgBR,
-        gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF244A72), tokens.FarolColors.navy]),
-        boxShadow: [BoxShadow(color: tokens.FarolColors.navy.withValues(alpha: 0.28), blurRadius: 20, offset: const Offset(0, 6))],
+        gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF244A72), tokens.FarolColors.navy]),
+        boxShadow: [
+          BoxShadow(
+              color: tokens.FarolColors.navy.withValues(alpha: 0.28),
+              blurRadius: 20,
+              offset: const Offset(0, 6))
+        ],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(AppLocalizations.of(context).translate('total_consolidated'), style: const TextStyle(fontSize: 10, letterSpacing: 1.8, fontWeight: FontWeight.w700, color: Colors.white60)),
-          const Icon(Icons.account_balance_wallet_outlined, size: 18, color: Colors.white60),
+          Text(AppLocalizations.of(context).translate('total_consolidated'),
+              style: const TextStyle(
+                  fontSize: 10,
+                  letterSpacing: 1.8,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white60)),
+          const Icon(Icons.account_balance_wallet_outlined,
+              size: 18, color: Colors.white60),
         ]),
         const SizedBox(height: 6),
         _BRLBig(value: balance, size: 36, color: Colors.white),
@@ -97,9 +120,15 @@ class _ConsolidatedHero extends ConsumerWidget {
         Row(children: [
           const Icon(Icons.trending_up, size: 13, color: Color(0xFFFCD37D)),
           const SizedBox(width: 4),
-          const Text('+12.4%', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFFFCD37D))),
+          const Text('+12.4%',
+              style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFFFCD37D))),
           const SizedBox(width: 4),
-          Text(AppLocalizations.of(context).investmentsVsLastMonth, style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.5))),
+          Text(AppLocalizations.of(context).investmentsVsLastMonth,
+              style: TextStyle(
+                  fontSize: 13, color: Colors.white.withValues(alpha: 0.5))),
         ]),
         const SizedBox(height: 18),
         const Row(children: [
@@ -119,13 +148,25 @@ class _StatPill extends StatelessWidget {
   const _StatPill({required this.label, required this.value});
   @override
   Widget build(BuildContext context) {
-    return Expanded(child: Container(
+    return Expanded(
+        child: Container(
       padding: const EdgeInsets.symmetric(vertical: DSSpacing.sm),
-      decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.25), borderRadius: DSRadius.fullBR),
+      decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.25),
+          borderRadius: DSRadius.fullBR),
       child: Column(children: [
-        Text(label.toUpperCase(), style: const TextStyle(fontSize: 9, letterSpacing: 1, fontWeight: FontWeight.w600, color: Colors.white60)),
+        Text(label.toUpperCase(),
+            style: const TextStyle(
+                fontSize: 9,
+                letterSpacing: 1,
+                fontWeight: FontWeight.w600,
+                color: Colors.white60)),
         const SizedBox(height: 2),
-        Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white)),
+        Text(value,
+            style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: Colors.white)),
       ]),
     ));
   }
@@ -139,7 +180,9 @@ class _AllocationCard extends ConsumerWidget {
     final investments = ref.watch(investmentsProvider).value ?? [];
     if (investments.isEmpty) return const SizedBox();
     final byType = <String, double>{};
-    for (final inv in investments) { byType[inv.type] = (byType[inv.type] ?? 0) + inv.currentBalance; }
+    for (final inv in investments) {
+      byType[inv.type] = (byType[inv.type] ?? 0) + inv.currentBalance;
+    }
     final total = byType.values.fold(0.0, (s, v) => s + v);
     return DSCard(
       enableHover: false,
@@ -147,21 +190,53 @@ class _AllocationCard extends ConsumerWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(AppLocalizations.of(context).translate('asset_allocation'), style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700)),
-            Text(AppLocalizations.of(context).investmentsStrategicDistribution, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+            Text(AppLocalizations.of(context).translate('asset_allocation'),
+                style: GoogleFonts.manrope(
+                    fontSize: 15, fontWeight: FontWeight.w700)),
+            Text(AppLocalizations.of(context).investmentsStrategicDistribution,
+                style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
           ]),
           Icon(Icons.more_horiz, color: colors.onSurfaceSoft, size: 18),
         ]),
         const SizedBox(height: 16),
-        Center(child: FarolDonutChart(data: byType, total: total, centerLabel: AppLocalizations.of(context).investmentsDiversified)),
+        Center(
+            child: FarolDonutChart(
+                data: byType,
+                total: total,
+                centerLabel:
+                    AppLocalizations.of(context).investmentsDiversified)),
         const SizedBox(height: 14),
         ...byType.entries.map((e) {
-          String label; try { label = InvestmentType.fromDb(e.key).label; } catch (_) { label = e.key; }
+          String label;
+          try {
+            label = InvestmentType.fromDb(e.key).label;
+          } catch (_) {
+            label = e.key;
+          }
           final pct = total > 0 ? (e.value / total * 100).toInt() : 0;
-          return Padding(padding: const EdgeInsets.only(bottom: 10), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Row(children: [Container(width: 8, height: 8, decoration: BoxDecoration(color: tokens.FarolColors.getCategoryColor(e.key), shape: BoxShape.circle)), const SizedBox(width: 8), Text(label, style: TextStyle(fontSize: 13, color: colors.onSurface))]),
-            Text('$pct%', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colors.onSurface)),
-          ]));
+          return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(children: [
+                      Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                              color: tokens.FarolColors.getCategoryColor(e.key),
+                              shape: BoxShape.circle)),
+                      const SizedBox(width: 8),
+                      Text(label,
+                          style:
+                              TextStyle(fontSize: 13, color: colors.onSurface))
+                    ]),
+                    Text('$pct%',
+                        style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: colors.onSurface)),
+                  ]));
         }),
       ]),
     );
@@ -178,16 +253,29 @@ class _IASuggestionCard extends StatelessWidget {
       color: colors.secondaryContainer,
       padding: const EdgeInsets.all(DSSpacing.lg + 2),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Icon(Icons.auto_awesome, color: tokens.FarolColors.beam, size: 18),
+        const Icon(Icons.auto_awesome,
+            color: tokens.FarolColors.beam, size: 18),
         const SizedBox(height: 10),
-        Text(AppLocalizations.of(context).translate('ia_suggestion'), style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700)),
+        Text(AppLocalizations.of(context).translate('ia_suggestion'),
+            style:
+                GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700)),
         const SizedBox(height: 4),
-        Text(AppLocalizations.of(context).investmentsLowExposure, style: TextStyle(fontSize: 12, color: colors.onSurfaceMuted, height: 1.5)),
+        Text(AppLocalizations.of(context).investmentsLowExposure,
+            style: TextStyle(
+                fontSize: 12, color: colors.onSurfaceMuted, height: 1.5)),
         const SizedBox(height: 12),
         ElevatedButton(
           onPressed: () {},
-          style: ElevatedButton.styleFrom(backgroundColor: tokens.FarolColors.beam, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: DSRadius.mdBR), elevation: 0, padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg, vertical: DSSpacing.sm + 2)),
-          child: Text(AppLocalizations.of(context).investmentsExploreFiis, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+          style: ElevatedButton.styleFrom(
+              backgroundColor: tokens.FarolColors.beam,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: DSRadius.mdBR),
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(
+                  horizontal: DSSpacing.lg, vertical: DSSpacing.sm + 2)),
+          child: Text(AppLocalizations.of(context).investmentsExploreFiis,
+              style:
+                  const TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
         ),
       ]),
     );
@@ -200,16 +288,27 @@ class _InversionesHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final l10n = AppLocalizations.of(context);
-    return Padding(padding: const EdgeInsets.fromLTRB(4, 0, 4, 10), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(l10n.investmentsHeader, style: GoogleFonts.manrope(fontSize: 17, fontWeight: FontWeight.w800)),
-        Text(l10n.investmentsDetailByAsset, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
-      ]),
-      Row(children: [
-        Text(l10n.investmentsViewHistory, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: tokens.FarolColors.beam)),
-        const Icon(Icons.chevron_right, size: 14, color: tokens.FarolColors.beam),
-      ]),
-    ]));
+    return Padding(
+        padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(l10n.investmentsHeader,
+                style: GoogleFonts.manrope(
+                    fontSize: 17, fontWeight: FontWeight.w800)),
+            Text(l10n.investmentsDetailByAsset,
+                style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+          ]),
+          Row(children: [
+            Text(l10n.investmentsViewHistory,
+                style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: tokens.FarolColors.beam)),
+            const Icon(Icons.chevron_right,
+                size: 14, color: tokens.FarolColors.beam),
+          ]),
+        ]));
   }
 }
 
@@ -221,7 +320,8 @@ class _InvestmentsList extends ConsumerWidget {
     if (investments.isEmpty) {
       return const FarolEmptyState(type: FarolEmptyStateType.investments);
     }
-    return Column(children: investments.map((inv) => _InvRow(inv: inv)).toList());
+    return Column(
+        children: investments.map((inv) => _InvRow(inv: inv)).toList());
   }
 }
 
@@ -234,94 +334,157 @@ class _InvRow extends ConsumerWidget {
     final colors = context.colors;
     final typeColor = tokens.FarolColors.getCategoryColor(inv.type);
     String typeLabel;
-    try { typeLabel = InvestmentType.fromDb(inv.type).label; } catch (_) { typeLabel = inv.type; }
-    final returnPct = inv.totalInvested > 0 ? (inv.returnAmount / inv.totalInvested * 100) : 0.0;
+    try {
+      typeLabel = InvestmentType.fromDb(inv.type).label;
+    } catch (_) {
+      typeLabel = inv.type;
+    }
+    final returnPct = inv.totalInvested > 0
+        ? (inv.returnAmount / inv.totalInvested * 100)
+        : 0.0;
     final isPositive = returnPct >= 0;
 
     return Dismissible(
-      key: ValueKey(inv.id),
-      direction: DismissDirection.endToStart,
-      background: Container(
-        margin: const EdgeInsets.only(bottom: DSSpacing.sm + 2),
-        decoration: BoxDecoration(color: Colors.red.shade700, borderRadius: DSRadius.mdBR),
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: DSSpacing.lg),
-        child: const Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(Icons.delete_outline, color: Colors.white, size: 22),
-          SizedBox(height: 4),
-          Text('Delete', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
-        ]),
-      ),
-      confirmDismiss: (_) async {
-        final l10n = AppLocalizations.of(context);
-        return showConfirmDeleteDialog(
-          context,
-          title: l10n.deleteInvestment,
-          body: 'Remove "${inv.productName}"? ${l10n.cannotUndo}',
-        );
-      },
-      onDismissed: (_) async {
-        try {
-          await ref.read(investmentRepositoryProvider).delete(inv.id);
-        } catch (e) {
-          if (context.mounted) {
-            context.showErrorSnackBar(e);
+        key: ValueKey(inv.id),
+        direction: DismissDirection.endToStart,
+        background: Container(
+          margin: const EdgeInsets.only(bottom: DSSpacing.sm + 2),
+          decoration: BoxDecoration(
+              color: Colors.red.shade700, borderRadius: DSRadius.mdBR),
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.only(right: DSSpacing.lg),
+          child: const Column(mainAxisSize: MainAxisSize.min, children: [
+            Icon(Icons.delete_outline, color: Colors.white, size: 22),
+            SizedBox(height: 4),
+            Text('Delete',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600)),
+          ]),
+        ),
+        confirmDismiss: (_) async {
+          final l10n = AppLocalizations.of(context);
+          return showConfirmDeleteDialog(
+            context,
+            title: l10n.deleteInvestment,
+            body: 'Remove "${inv.productName}"? ${l10n.cannotUndo}',
+          );
+        },
+        onDismissed: (_) async {
+          try {
+            await ref.read(investmentRepositoryProvider).delete(inv.id);
+          } catch (e) {
+            if (context.mounted) {
+              context.showErrorSnackBar(e);
+            }
           }
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: DSSpacing.sm + 2),
-        child: DSCard(
-          onTap: () => Navigator.pushNamed(context, '/investment_detail', arguments: inv),
-          padding: const EdgeInsets.all(DSSpacing.lg),
-          child: Column(children: [
-            Row(children: [
-              Container(
-                width: 40, height: 40,
-                decoration: BoxDecoration(color: typeColor.withValues(alpha: 0.12), borderRadius: DSRadius.mdBR),
-                child: Center(child: Text(
-                  () { try { return InvestmentType.fromDb(inv.type).emoji; } catch (_) { return '📋'; } }(),
-                  style: const TextStyle(fontSize: 18),
-                )),
-              ),
-              const SizedBox(width: 14),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(inv.productName, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: colors.onSurface)),
-                const SizedBox(height: 2),
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: DSSpacing.sm + 2),
+          child: DSCard(
+              onTap: () => Navigator.pushNamed(context, '/investment_detail',
+                  arguments: inv),
+              padding: const EdgeInsets.all(DSSpacing.lg),
+              child: Column(children: [
                 Row(children: [
-                  Text(typeLabel, style: TextStyle(fontSize: 10, letterSpacing: 0.4, fontWeight: FontWeight.w600, color: typeColor)),
-                  const SizedBox(width: 6),
-                  Text('•', style: TextStyle(color: colors.onSurfaceFaint, fontSize: 10)),
-                  const SizedBox(width: 6),
-                  Text(inv.institution, style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft)),
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                        color: typeColor.withValues(alpha: 0.12),
+                        borderRadius: DSRadius.mdBR),
+                    child: Center(
+                        child: Text(
+                      () {
+                        try {
+                          return InvestmentType.fromDb(inv.type).emoji;
+                        } catch (_) {
+                          return '📋';
+                        }
+                      }(),
+                      style: const TextStyle(fontSize: 18),
+                    )),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                        Text(inv.productName,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                                color: colors.onSurface)),
+                        const SizedBox(height: 2),
+                        Row(children: [
+                          Text(typeLabel,
+                              style: TextStyle(
+                                  fontSize: 10,
+                                  letterSpacing: 0.4,
+                                  fontWeight: FontWeight.w600,
+                                  color: typeColor)),
+                          const SizedBox(width: 6),
+                          Text('•',
+                              style: TextStyle(
+                                  color: colors.onSurfaceFaint, fontSize: 10)),
+                          const SizedBox(width: 6),
+                          Text(inv.institution,
+                              style: TextStyle(
+                                  fontSize: 10, color: colors.onSurfaceSoft)),
+                        ]),
+                      ])),
+                  const Icon(Icons.chevron_right, size: 16),
                 ]),
+                const SizedBox(height: 12),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                                AppLocalizations.of(context)
+                                    .translate('current_balance'),
+                                style: TextStyle(
+                                    fontSize: 9,
+                                    color: colors.onSurfaceFaint,
+                                    letterSpacing: 0.5,
+                                    fontWeight: FontWeight.w600)),
+                            _BRLSmall(
+                                value: inv.currentBalance,
+                                size: 13,
+                                weight: FontWeight.w700),
+                          ]),
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text('RETURN',
+                                style: TextStyle(
+                                    fontSize: 9,
+                                    color: colors.onSurfaceFaint,
+                                    letterSpacing: 0.5,
+                                    fontWeight: FontWeight.w600)),
+                            Text(
+                              '${isPositive ? '+' : ''}${returnPct.toStringAsFixed(2)}%',
+                              style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: isPositive
+                                      ? tokens.FarolColors.tide
+                                      : tokens.FarolColors.coral),
+                            ),
+                          ]),
+                    ]),
               ])),
-              const Icon(Icons.chevron_right, size: 16),
-            ]),
-            const SizedBox(height: 12),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(AppLocalizations.of(context).translate('current_balance'),
-                  style: TextStyle(fontSize: 9, color: colors.onSurfaceFaint, letterSpacing: 0.5, fontWeight: FontWeight.w600)),
-                _BRLSmall(value: inv.currentBalance, size: 13, weight: FontWeight.w700),
-              ]),
-              Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                Text('RETURN', style: TextStyle(fontSize: 9, color: colors.onSurfaceFaint, letterSpacing: 0.5, fontWeight: FontWeight.w600)),
-                Text(
-                  '${isPositive ? '+' : ''}${returnPct.toStringAsFixed(2)}%',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700,
-                    color: isPositive ? tokens.FarolColors.tide : tokens.FarolColors.coral),
-                ),
-              ]),
-            ]),
-          ])),
-        )
-      );
+        ));
   }
 }
 
 class _BRLBig extends StatelessWidget {
-  final double value; final double size; final Color? color;
+  final double value;
+  final double size;
+  final Color? color;
   const _BRLBig({required this.value, required this.size, this.color});
   @override
   Widget build(BuildContext context) {
@@ -365,10 +528,18 @@ class _BRLBig extends StatelessWidget {
 }
 
 class _BRLSmall extends StatelessWidget {
-  final double value; final double size; final FontWeight weight;
-  const _BRLSmall({required this.value, required this.size, this.weight = FontWeight.w600});
+  final double value;
+  final double size;
+  final FontWeight weight;
+  const _BRLSmall(
+      {required this.value, required this.size, this.weight = FontWeight.w600});
   @override
   Widget build(BuildContext context) {
-    return Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: size, fontWeight: weight, color: context.colors.onSurface, fontFeatures: const [FontFeature.tabularFigures()]));
+    return Text(FinancialCalculatorService.formatBRL(value),
+        style: GoogleFonts.inter(
+            fontSize: size,
+            fontWeight: weight,
+            color: context.colors.onSurface,
+            fontFeatures: const [FontFeature.tabularFigures()]));
   }
 }

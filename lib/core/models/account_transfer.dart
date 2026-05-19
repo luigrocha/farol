@@ -19,7 +19,8 @@ class AccountTransfer {
     required this.createdAt,
   });
 
-  factory AccountTransfer.fromJson(Map<String, dynamic> json) => AccountTransfer(
+  factory AccountTransfer.fromJson(Map<String, dynamic> json) =>
+      AccountTransfer(
         id: (json['id'] as num).toInt(),
         userId: json['user_id'] as String,
         fromAccountId: (json['from_account_id'] as num).toInt(),

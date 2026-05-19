@@ -89,11 +89,15 @@ class FakeExpenseRepository implements ExpenseRepository {
 
   @override
   Future<List<Expense>> getByRange(
-    int startMonth, int startYear, int endMonth, int endYear,
+    int startMonth,
+    int startYear,
+    int endMonth,
+    int endYear,
   ) async {
     await _applyDelay();
     return _expenses
-        .where((e) => _inRange(e.month, e.year, startMonth, startYear, endMonth, endYear))
+        .where((e) =>
+            _inRange(e.month, e.year, startMonth, startYear, endMonth, endYear))
         .toList();
   }
 
@@ -264,13 +268,19 @@ class FakeExpenseRepository implements ExpenseRepository {
   // ─── ExpenseRepository interface stubs ───────────────────────────────
 
   @override
-  Future<void> updateProjectedByPlan(int planId, {required double amount, required String category, String? subcategory, required String paymentMethod}) async {
-    throw UnimplementedError('FakeExpenseRepository does not support updateProjectedByPlan');
+  Future<void> updateProjectedByPlan(int planId,
+      {required double amount,
+      required String category,
+      String? subcategory,
+      required String paymentMethod}) async {
+    throw UnimplementedError(
+        'FakeExpenseRepository does not support updateProjectedByPlan');
   }
 
   @override
   Future<int> getProjectedCountForPlan(int planId) async {
-    throw UnimplementedError('FakeExpenseRepository does not support getProjectedCountForPlan');
+    throw UnimplementedError(
+        'FakeExpenseRepository does not support getProjectedCountForPlan');
   }
 
   @override
@@ -287,16 +297,24 @@ class FakeExpenseRepository implements ExpenseRepository {
 
   @override
   Future<List<Expense>> getFixedForMonth(int month, int year) async {
-    return _expenses.where((e) => e.month == month && e.year == year && e.isFixed).toList();
+    return _expenses
+        .where((e) => e.month == month && e.year == year && e.isFixed)
+        .toList();
   }
 
   @override
   Future<int> propagateFixedExpenses(int toMonth, int toYear) async {
-    throw UnimplementedError('FakeExpenseRepository does not support propagateFixedExpenses');
+    throw UnimplementedError(
+        'FakeExpenseRepository does not support propagateFixedExpenses');
   }
 
   static bool _inRange(
-    int m, int y, int sm, int sy, int em, int ey,
+    int m,
+    int y,
+    int sm,
+    int sy,
+    int em,
+    int ey,
   ) {
     final v = y * 12 + m;
     return v >= sy * 12 + sm && v <= ey * 12 + em;

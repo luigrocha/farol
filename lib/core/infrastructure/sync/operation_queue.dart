@@ -91,26 +91,26 @@ class OperationQueue {
   Future<void> _markCompleted(int id) async {
     await (_db.update(_db.syncQueueItems)..where((t) => t.id.equals(id)))
         .write(SyncQueueItemsCompanion(
-          status: const Value('completed'),
-          processedAt: Value(DateTime.now()),
-        ));
+      status: const Value('completed'),
+      processedAt: Value(DateTime.now()),
+    ));
   }
 
   Future<void> _markFailed(int id, String error) async {
     await (_db.update(_db.syncQueueItems)..where((t) => t.id.equals(id)))
         .write(SyncQueueItemsCompanion(
-          status: const Value('failed'),
-          error: Value(error),
-          processedAt: Value(DateTime.now()),
-        ));
+      status: const Value('failed'),
+      error: Value(error),
+      processedAt: Value(DateTime.now()),
+    ));
   }
 
   Future<void> _incrementRetry(int id, int newCount, String error) async {
     await (_db.update(_db.syncQueueItems)..where((t) => t.id.equals(id)))
         .write(SyncQueueItemsCompanion(
-          retryCount: Value(newCount),
-          error: Value(error),
-        ));
+      retryCount: Value(newCount),
+      error: Value(error),
+    ));
   }
 
   Future<void> _pruneOldFailed() async {
@@ -120,8 +120,7 @@ class OperationQueue {
           ..limit(50))
         .get();
     for (final item in failed) {
-      await (_db.delete(_db.syncQueueItems)
-            ..where((t) => t.id.equals(item.id)))
+      await (_db.delete(_db.syncQueueItems)..where((t) => t.id.equals(item.id)))
           .go();
     }
   }

@@ -70,7 +70,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
     });
 
     return Scaffold(
-       backgroundColor: cs.surface,
+      backgroundColor: cs.surface,
       body: AuthActionHandler(
         child: SafeArea(
           child: SingleChildScrollView(
@@ -148,12 +148,13 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
                         icon: Icon(_obscurePassword
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined),
-                        onPressed: () =>
-                            setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword),
                       ),
                     ),
-                    validator: (v) =>
-                        (v?.length ?? 0) >= 8 ? null : l10n.translate('min_8_chars'),
+                    validator: (v) => (v?.length ?? 0) >= 8
+                        ? null
+                        : l10n.translate('min_8_chars'),
                   ),
                   const SizedBox(height: 8),
 
@@ -210,9 +211,7 @@ class _StrengthMeter extends StatelessWidget {
 
   Color _segmentColor(int index, bool isDark) {
     if (index >= strength) {
-      return isDark
-          ? const Color(0xFF2A2E3A)
-          : const Color(0xFFE8EBF0);
+      return isDark ? const Color(0xFF2A2E3A) : const Color(0xFFE8EBF0);
     }
     return switch (strength) {
       1 => const Color(0xFFE53935),
@@ -237,16 +236,18 @@ class _StrengthMeter extends StatelessWidget {
 
     return Row(
       children: [
-        ...List.generate(4, (i) => Expanded(
-          child: Container(
-            height: 4,
-            margin: EdgeInsets.only(right: i < 3 ? 4 : 0),
-            decoration: BoxDecoration(
-              color: _segmentColor(i, isDark),
-              borderRadius: BorderRadius.circular(99),
-            ),
-          ),
-        )),
+        ...List.generate(
+            4,
+            (i) => Expanded(
+                  child: Container(
+                    height: 4,
+                    margin: EdgeInsets.only(right: i < 3 ? 4 : 0),
+                    decoration: BoxDecoration(
+                      color: _segmentColor(i, isDark),
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                  ),
+                )),
         if (strength > 0) ...[
           const SizedBox(width: 10),
           Text(

@@ -34,18 +34,15 @@ class SpaceActivityRepository {
     int pageSize = 30,
     DateTime? before,
   }) async {
-    var query = _supabase
-        .from('space_activity')
-        .select()
-        .eq('space_id', spaceId);
+    var query =
+        _supabase.from('space_activity').select().eq('space_id', spaceId);
 
     if (before != null) {
       query = query.lt('created_at', before.toIso8601String());
     }
 
-    final rows = await query
-        .order('created_at', ascending: false)
-        .limit(pageSize);
+    final rows =
+        await query.order('created_at', ascending: false).limit(pageSize);
     return rows.map(SpaceActivity.fromJson).toList();
   }
 }

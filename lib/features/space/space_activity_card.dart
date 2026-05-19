@@ -32,20 +32,21 @@ class SpaceActivityCard extends ConsumerWidget {
     ref.watch(spaceActivityRealtimeProvider);
 
     final activityAsync = ref.watch(spaceActivityProvider(3));
-    final displayMap    = ref.watch(spaceMemberDisplayMapProvider).valueOrNull ?? {};
+    final displayMap =
+        ref.watch(spaceMemberDisplayMapProvider).valueOrNull ?? {};
     final currentUserId = Supabase.instance.client.auth.currentUser?.id ?? '';
-    final cs            = Theme.of(context).colorScheme;
+    final cs = Theme.of(context).colorScheme;
 
     return activityAsync.when(
       loading: () => const SizedBox.shrink(),
-      error:   (_, __) => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
       data: (items) {
         if (items.isEmpty) return const SizedBox.shrink();
 
         return Card(
           elevation: 0,
-          color:     cs.surfaceContainerLow,
-          shape:     RoundedRectangleBorder(
+          color: cs.surfaceContainerLow,
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -58,30 +59,30 @@ class SpaceActivityCard extends ConsumerWidget {
                   children: [
                     Icon(
                       Icons.history_outlined,
-                      size:  16,
+                      size: 16,
                       color: cs.onSurfaceVariant,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       'Atividade do espaço',
                       style: GoogleFonts.manrope(
-                        fontSize:   13,
+                        fontSize: 13,
                         fontWeight: FontWeight.w700,
-                        color:      cs.onSurfaceVariant,
+                        color: cs.onSurfaceVariant,
                       ),
                     ),
                     const Spacer(),
                     TextButton(
                       onPressed: () => _showFullFeed(context, ref),
                       style: TextButton.styleFrom(
-                        padding:         const EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 4),
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                       child: Text(
                         'Ver tudo',
                         style: GoogleFonts.manrope(
-                          fontSize:   12,
+                          fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -93,12 +94,11 @@ class SpaceActivityCard extends ConsumerWidget {
               // ── Items ────────────────────────────────────────────
               for (int i = 0; i < items.length; i++) ...[
                 _SpaceActivityTile(
-                  activity:      items[i],
+                  activity: items[i],
                   currentUserId: currentUserId,
-                  display:       displayMap[items[i].userId],
+                  display: displayMap[items[i].userId],
                 ),
-                if (i < items.length - 1)
-                  const Divider(height: 1, indent: 60),
+                if (i < items.length - 1) const Divider(height: 1, indent: 60),
               ],
               const SizedBox(height: 4),
             ],
@@ -113,7 +113,7 @@ class SpaceActivityCard extends ConsumerWidget {
       MaterialPageRoute(
         builder: (_) => SpaceActivityScreen(
           repository: ref.read(spaceActivityRepositoryProvider),
-          spaceId:    ref.read(activeSpaceIdProvider) ?? '',
+          spaceId: ref.read(activeSpaceIdProvider) ?? '',
           displayMap: ref.read(spaceMemberDisplayMapProvider).valueOrNull ?? {},
         ),
       ),
@@ -126,9 +126,9 @@ class SpaceActivityCard extends ConsumerWidget {
 // ─────────────────────────────────────────────────────────────────
 
 class _SpaceActivityTile extends StatelessWidget {
-  final SpaceActivity   activity;
-  final String          currentUserId;
-  final MemberDisplay?  display;
+  final SpaceActivity activity;
+  final String currentUserId;
+  final MemberDisplay? display;
 
   const _SpaceActivityTile({
     required this.activity,
@@ -144,11 +144,11 @@ class _SpaceActivityTile extends StatelessWidget {
   }
 
   IconData get _icon => switch (activity.action) {
-    'added_transaction'   => Icons.add_circle_outline,
-    'deleted_transaction' => Icons.remove_circle_outline,
-    'recorded_settlement' => Icons.handshake_outlined,
-    _                     => Icons.history,
-  };
+        'added_transaction' => Icons.add_circle_outline,
+        'deleted_transaction' => Icons.remove_circle_outline,
+        'recorded_settlement' => Icons.handshake_outlined,
+        _ => Icons.history,
+      };
 
   Color _iconColor(ColorScheme cs) => activity.isDeletion
       ? cs.error
@@ -158,19 +158,20 @@ class _SpaceActivityTile extends StatelessWidget {
 
   String _timeAgo() {
     final diff = DateTime.now().difference(activity.createdAt);
-    if (diff.inMinutes < 1)  return 'agora';
+    if (diff.inMinutes < 1) return 'agora';
     if (diff.inMinutes < 60) return '${diff.inMinutes}min';
-    if (diff.inHours < 24)   return '${diff.inHours}h';
-    if (diff.inDays == 1)    return 'ontem';
+    if (diff.inHours < 24) return '${diff.inHours}h';
+    if (diff.inDays == 1) return 'ontem';
     return '${diff.inDays}d';
   }
 
   @override
   Widget build(BuildContext context) {
-    final cs          = Theme.of(context).colorScheme;
-    final avatarColor = display?.avatarColor ?? avatarColorForUserId(activity.userId);
-    final initials    = display?.initials
-        ?? activity.userId.substring(0, 2).toUpperCase();
+    final cs = Theme.of(context).colorScheme;
+    final avatarColor =
+        display?.avatarColor ?? avatarColorForUserId(activity.userId);
+    final initials =
+        display?.initials ?? activity.userId.substring(0, 2).toUpperCase();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -184,14 +185,14 @@ class _SpaceActivityTile extends StatelessWidget {
                   backgroundImage: NetworkImage(display!.photoUrl!),
                 )
               : CircleAvatar(
-                  radius:          18,
+                  radius: 18,
                   backgroundColor: avatarColor,
                   child: Text(
                     initials,
                     style: const TextStyle(
-                      color:      Colors.white,
+                      color: Colors.white,
                       fontWeight: FontWeight.w700,
-                      fontSize:   12,
+                      fontSize: 12,
                     ),
                   ),
                 ),
@@ -208,7 +209,7 @@ class _SpaceActivityTile extends StatelessWidget {
                   text: TextSpan(
                     style: GoogleFonts.manrope(
                       fontSize: 13,
-                      color:    cs.onSurface,
+                      color: cs.onSurface,
                     ),
                     children: [
                       TextSpan(
@@ -232,9 +233,9 @@ class _SpaceActivityTile extends StatelessWidget {
                       child: Text(
                         activity.entityLabel ?? activity.entityType,
                         style: GoogleFonts.manrope(
-                          fontSize:   13,
+                          fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color:      cs.onSurface,
+                          color: cs.onSurface,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -244,11 +245,9 @@ class _SpaceActivityTile extends StatelessWidget {
                       Text(
                         _brlFmt.format(activity.amount!),
                         style: GoogleFonts.manrope(
-                          fontSize:   13,
+                          fontSize: 13,
                           fontWeight: FontWeight.w700,
-                          color: activity.isDeletion
-                              ? cs.error
-                              : cs.onSurface,
+                          color: activity.isDeletion ? cs.error : cs.onSurface,
                         ),
                       ),
                     ],
@@ -263,7 +262,7 @@ class _SpaceActivityTile extends StatelessWidget {
             _timeAgo(),
             style: GoogleFonts.manrope(
               fontSize: 11,
-              color:    cs.onSurfaceVariant,
+              color: cs.onSurfaceVariant,
             ),
           ),
         ],
@@ -277,8 +276,8 @@ class _SpaceActivityTile extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────
 
 class SpaceActivityScreen extends StatefulWidget {
-  final SpaceActivityRepository    repository;
-  final String                     spaceId;
+  final SpaceActivityRepository repository;
+  final String spaceId;
   final Map<String, MemberDisplay> displayMap;
 
   const SpaceActivityScreen({
@@ -293,8 +292,8 @@ class SpaceActivityScreen extends StatefulWidget {
 }
 
 class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
-  final List<SpaceActivity> _items  = [];
-  final ScrollController    _scroll = ScrollController();
+  final List<SpaceActivity> _items = [];
+  final ScrollController _scroll = ScrollController();
   bool _loading = false;
   bool _hasMore = true;
 
@@ -331,14 +330,14 @@ class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
 
     try {
       final page = await widget.repository.fetchPage(
-        spaceId:  widget.spaceId,
+        spaceId: widget.spaceId,
         pageSize: _pageSize,
-        before:   _items.isNotEmpty ? _items.last.createdAt : null,
+        before: _items.isNotEmpty ? _items.last.createdAt : null,
       );
       setState(() {
         _items.addAll(page);
-        _hasMore  = page.length == _pageSize;
-        _loading  = false;
+        _hasMore = page.length == _pageSize;
+        _loading = false;
       });
     } catch (_) {
       setState(() => _loading = false);
@@ -360,7 +359,7 @@ class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
         onRefresh: () => _loadPage(reset: true),
         child: ListView.separated(
           controller: _scroll,
-          itemCount:  _items.length + 1,
+          itemCount: _items.length + 1,
           separatorBuilder: (_, i) => i < _items.length - 1
               ? const Divider(height: 1, indent: 60)
               : const SizedBox.shrink(),
@@ -388,9 +387,9 @@ class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
               return const SizedBox(height: 40);
             }
             return _SpaceActivityTile(
-              activity:      _items[i],
+              activity: _items[i],
               currentUserId: currentUserId,
-              display:       widget.displayMap[_items[i].userId],
+              display: widget.displayMap[_items[i].userId],
             );
           },
         ),

@@ -5,10 +5,14 @@ void main() {
   group('InstallmentService._addMonths', () {
     test('advances month correctly', () {
       final base = DateTime(2026, 1, 10);
-      expect(InstallmentService.addMonthsPublic(base, 0), DateTime(2026, 1, 10));
-      expect(InstallmentService.addMonthsPublic(base, 1), DateTime(2026, 2, 10));
-      expect(InstallmentService.addMonthsPublic(base, 11), DateTime(2026, 12, 10));
-      expect(InstallmentService.addMonthsPublic(base, 12), DateTime(2027, 1, 10));
+      expect(
+          InstallmentService.addMonthsPublic(base, 0), DateTime(2026, 1, 10));
+      expect(
+          InstallmentService.addMonthsPublic(base, 1), DateTime(2026, 2, 10));
+      expect(
+          InstallmentService.addMonthsPublic(base, 11), DateTime(2026, 12, 10));
+      expect(
+          InstallmentService.addMonthsPublic(base, 12), DateTime(2027, 1, 10));
     });
 
     test('clamps day to end of month (Jan 31 → Feb 28)', () {
@@ -86,8 +90,7 @@ List<double> _simulatePayments({required double total, required int n}) {
 }
 
 // Minimal InstallmentPlan stub for dueDateFor tests
-_PlanStub _makePlan(DateTime firstDueDate, int n) =>
-    _PlanStub(firstDueDate, n);
+_PlanStub _makePlan(DateTime firstDueDate, int n) => _PlanStub(firstDueDate, n);
 
 class _PlanStub {
   final DateTime firstDueDate;
@@ -95,7 +98,6 @@ class _PlanStub {
   _PlanStub(this.firstDueDate, this.numInstallments);
 
   DateTime dueDateFor(int installmentNum) {
-    return InstallmentService.addMonthsPublic(
-        firstDueDate, installmentNum - 1);
+    return InstallmentService.addMonthsPublic(firstDueDate, installmentNum - 1);
   }
 }

@@ -9,6 +9,7 @@ import '../infrastructure/sync/sync_operations.dart';
 class ExpenseRepository {
   final SupabaseClient _supabase;
   final SyncManager? _syncManager;
+
   /// Workspace ativo. Quando presente, é incluído em INSERT/UPDATE/SELECT.
   /// RLS continua sendo a fonte de verdade de segurança.
   final String? workspaceId;
@@ -36,7 +37,8 @@ class ExpenseRepository {
       if (data.isEmpty) return null;
       // Prefer user-owned over system (user_id != null)
       final sorted = List<Map<String, dynamic>>.from(data)
-        ..sort((a, b) => (a['user_id'] == null ? 1 : 0) - (b['user_id'] == null ? 1 : 0));
+        ..sort((a, b) =>
+            (a['user_id'] == null ? 1 : 0) - (b['user_id'] == null ? 1 : 0));
       return sorted.first['id'] as String?;
     } catch (_) {
       // Category lookup failure (e.g. offline) must not block the insert.
@@ -68,25 +70,27 @@ class ExpenseRepository {
         .where((e) => e.session != null)
         .take(1)
         .asyncExpand((e) {
-          final uid = e.session!.user.id;
-          return _supabase
-              .from('expenses')
-              .stream(primaryKey: ['id'])
-              .eq('user_id', uid)
-              .order('transaction_date', ascending: false)
-              .map((rows) => rows.map(Expense.fromJson).toList());
-        });
+      final uid = e.session!.user.id;
+      return _supabase
+          .from('expenses')
+          .stream(primaryKey: ['id'])
+          .eq('user_id', uid)
+          .order('transaction_date', ascending: false)
+          .map((rows) => rows.map(Expense.fromJson).toList());
+    });
   }
 
   Future<List<Expense>> getAll() async {
     final wsId = workspaceId;
     final userId = _userId;
     if (wsId != null) {
-      final data = await _supabase.from('expenses').select().eq('workspace_id', wsId);
+      final data =
+          await _supabase.from('expenses').select().eq('workspace_id', wsId);
       return data.map((r) => Expense.fromJson(r)).toList();
     }
     if (userId == null) return [];
-    final data = await _supabase.from('expenses').select().eq('user_id', userId);
+    final data =
+        await _supabase.from('expenses').select().eq('user_id', userId);
     return data.map((r) => Expense.fromJson(r)).toList();
   }
 
@@ -114,7 +118,8 @@ class ExpenseRepository {
     }
     return data
         .map((r) => Expense.fromJson(r))
-        .where((e) => _inRange(e.month, e.year, startMonth, startYear, endMonth, endYear))
+        .where((e) =>
+            _inRange(e.month, e.year, startMonth, startYear, endMonth, endYear))
         .toList();
   }
 
@@ -159,17 +164,21 @@ class ExpenseRepository {
       if (storeDescription != null) 'store_description': storeDescription,
       'is_projected': isProjected,
       if (installmentPlanId != null) 'installment_plan_id': installmentPlanId,
-      if (installmentPlanUuidId != null) 'installment_plan_uuid_id': installmentPlanUuidId,
-      if (installmentPaymentId != null) 'installment_payment_id': installmentPaymentId,
+      if (installmentPlanUuidId != null)
+        'installment_plan_uuid_id': installmentPlanUuidId,
+      if (installmentPaymentId != null)
+        'installment_payment_id': installmentPaymentId,
       if (recurringRuleId != null) 'recurring_rule_id': recurringRuleId,
-      if (recurringOccurrenceId != null) 'recurring_occurrence_id': recurringOccurrenceId,
+      if (recurringOccurrenceId != null)
+        'recurring_occurrence_id': recurringOccurrenceId,
       if (categoryId != null) 'category_id': categoryId,
     };
 
     // Only use the SyncManager offline path when the device truly has no network.
     // When online, write directly to Supabase so the realtime stream picks it up
     // immediately and the UI updates without waiting for the queue to drain.
-    final isOffline = _syncManager != null && !_syncManager!.currentStatus.isOnline;
+    final isOffline =
+        _syncManager != null && !_syncManager!.currentStatus.isOnline;
     if (isOffline) {
       await _syncManager!.execute(InsertExpenseOperation(payload: row));
       // Return 0 as a sentinel — callers that need the real DB id should
@@ -177,7 +186,8 @@ class ExpenseRepository {
       return 0;
     }
 
-    final data = await _supabase.from('expenses').insert(row).select('id').single();
+    final data =
+        await _supabase.from('expenses').insert(row).select('id').single();
     return (data['id'] as num).toInt();
   }
 
@@ -216,7 +226,6 @@ class ExpenseRepository {
     await _supabase.from('expenses').delete().eq('id', id);
   }
 
-
   Future<void> updateFixedSeriesFrom(
     Expense from, {
     required double amount,
@@ -236,7 +245,8 @@ class ExpenseRepository {
         .eq('payment_method', from.paymentMethod);
     final ids = (data as List)
         .where((r) {
-          if ((r['store_description'] as String?) != from.storeDescription) return false;
+          if ((r['store_description'] as String?) != from.storeDescription)
+            return false;
           final y = (r['year'] as num).toInt();
           final m = (r['month'] as num).toInt();
           return y * 12 + m >= from.year * 12 + from.month;
@@ -263,13 +273,17 @@ class ExpenseRepository {
     required String paymentMethod,
   }) async {
     final categoryId = await _resolveCategoryId(category);
-    await _supabase.from('expenses').update({
-      'amount': amount,
-      'category': category,
-      if (subcategory != null) 'subcategory': subcategory,
-      'payment_method': paymentMethod,
-      if (categoryId != null) 'category_id': categoryId,
-    }).eq('installment_plan_id', planId).eq('is_projected', true);
+    await _supabase
+        .from('expenses')
+        .update({
+          'amount': amount,
+          'category': category,
+          if (subcategory != null) 'subcategory': subcategory,
+          'payment_method': paymentMethod,
+          if (categoryId != null) 'category_id': categoryId,
+        })
+        .eq('installment_plan_id', planId)
+        .eq('is_projected', true);
   }
 
   Future<int> getProjectedCountForPlan(int planId) async {
@@ -295,7 +309,9 @@ class ExpenseRepository {
   Future<void> unsubscribeRealtime() {
     return SupabaseRealtimeManager.instance.unsubscribe('expenses');
   }
-  bool get shouldFallbackToPolling => SupabaseRealtimeManager.instance.isMaxRetriesReached('expenses');
+
+  bool get shouldFallbackToPolling =>
+      SupabaseRealtimeManager.instance.isMaxRetriesReached('expenses');
 
   Future<List<Expense>> fetchAll() async {
     return SupabaseRealtimeManager.instance
@@ -353,8 +369,9 @@ class ExpenseRepository {
           if (workspaceId != null) 'workspace_id': workspaceId,
           // Preserve original author when propagating fixed expenses forward
           if (e.authorUserId != null) 'author_user_id': e.authorUserId,
-          'transaction_date':
-              DateTime(toYear, toMonth, day.clamp(1, maxDay)).toIso8601String().substring(0, 10),
+          'transaction_date': DateTime(toYear, toMonth, day.clamp(1, maxDay))
+              .toIso8601String()
+              .substring(0, 10),
           'month': toMonth,
           'year': toYear,
           'pay_type': e.payType,
@@ -364,7 +381,8 @@ class ExpenseRepository {
           'payment_method': e.paymentMethod,
           'installments': e.installments,
           'is_fixed': true,
-          if (e.storeDescription != null) 'store_description': e.storeDescription,
+          if (e.storeDescription != null)
+            'store_description': e.storeDescription,
           if (idMap[e.category] != null) 'category_id': idMap[e.category],
         };
       }).toList();

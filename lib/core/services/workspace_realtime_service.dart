@@ -33,8 +33,7 @@ class WorkspaceRealtimeService {
 
   // ── Presence stream ───────────────────────────────────────────────────────
 
-  final _presenceController =
-      StreamController<Set<String>>.broadcast();
+  final _presenceController = StreamController<Set<String>>.broadcast();
 
   /// Set of user IDs currently online in the workspace (excluding self).
   Stream<Set<String>> get onPresenceChange => _presenceController.stream;
@@ -116,7 +115,8 @@ class WorkspaceRealtimeService {
     channel.subscribe((status, error) async {
       if (status == RealtimeSubscribeStatus.subscribed) {
         // Announce our own presence
-        await channel.track({'user_id': uid, 'online_at': DateTime.now().toIso8601String()});
+        await channel.track(
+            {'user_id': uid, 'online_at': DateTime.now().toIso8601String()});
       }
     });
 

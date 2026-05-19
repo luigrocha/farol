@@ -39,8 +39,7 @@ class AccountRepository {
   Future<void> updateBalance(int id, double newBalance) async {
     await _supabase
         .from('accounts')
-        .update({'current_balance': newBalance})
-        .eq('id', id);
+        .update({'current_balance': newBalance}).eq('id', id);
   }
 
   Future<void> update(

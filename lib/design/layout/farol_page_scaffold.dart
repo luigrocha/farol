@@ -134,7 +134,8 @@ class FarolPageScaffold extends StatelessWidget {
             ),
           ),
         ),
-      ] else ...slivers,
+      ] else
+        ...slivers,
       SliverToBoxAdapter(child: FarolBottomPadding(hasFab: hasFab)),
     ];
 
@@ -276,10 +277,10 @@ class FarolAdaptiveScaffold extends StatelessWidget {
     final size = FarolBreakpoints.of(context);
 
     final child = switch (size) {
-      FarolScreenSize.wide    => wide ?? desktop ?? tablet ?? mobile,
+      FarolScreenSize.wide => wide ?? desktop ?? tablet ?? mobile,
       FarolScreenSize.desktop => desktop ?? tablet ?? mobile,
-      FarolScreenSize.tablet  => tablet ?? mobile,
-      FarolScreenSize.mobile  => mobile,
+      FarolScreenSize.tablet => tablet ?? mobile,
+      FarolScreenSize.mobile => mobile,
     };
 
     return Scaffold(

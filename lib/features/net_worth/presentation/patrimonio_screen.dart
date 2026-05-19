@@ -21,7 +21,8 @@ class PatrimonioScreen extends ConsumerStatefulWidget {
   ConsumerState<PatrimonioScreen> createState() => _PatrimonioScreenState();
 }
 
-class _PatrimonioScreenState extends ConsumerState<PatrimonioScreen> with WidgetsBindingObserver {
+class _PatrimonioScreenState extends ConsumerState<PatrimonioScreen>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -50,10 +51,14 @@ class _PatrimonioScreenState extends ConsumerState<PatrimonioScreen> with Widget
         backgroundColor: colors.surface,
         elevation: 0,
         title: Row(children: [
-          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const FarolMark(
+              size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
           const SizedBox(width: 10),
           Text(context.l10n.netWorthTitle,
-              style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700, color: colors.onSurface)),
+              style: GoogleFonts.manrope(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface)),
         ]),
         iconTheme: IconThemeData(color: colors.onSurface),
       ),
@@ -79,7 +84,8 @@ class _PatrimonioHero extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final accountsReady = ref.watch(accountsProvider).value?.isNotEmpty ?? false;
+    final accountsReady =
+        ref.watch(accountsProvider).value?.isNotEmpty ?? false;
     final enhancedNw = ref.watch(enhancedNetWorthProvider);
     final snapAsync = ref.watch(netWorthSnapshotProvider);
     final snap = snapAsync.value;
@@ -106,7 +112,8 @@ class _PatrimonioHero extends ConsumerWidget {
 
     if (nw == null) return const DashboardCardSkeleton(height: 140);
 
-    final investments = accountsReady ? investmentsLive : (snap?.investmentsTotal ?? 0.0);
+    final investments =
+        accountsReady ? investmentsLive : (snap?.investmentsTotal ?? 0.0);
     final fgts = accountsReady
         ? fgtsLive
         : ((snap?.fgtsBalance ?? 0.0) + (snap?.emergencyFund ?? 0.0));
@@ -130,16 +137,26 @@ class _PatrimonioHero extends ConsumerWidget {
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(context.l10n.netWorthTitle.toUpperCase(),
-            style: const TextStyle(fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: Colors.white60)),
+            style: const TextStyle(
+                fontSize: 10,
+                letterSpacing: 1.5,
+                fontWeight: FontWeight.w700,
+                color: Colors.white60)),
         const SizedBox(height: 6),
         _BRLBig(value: nw, size: 36, color: Colors.white),
         const SizedBox(height: 16),
         Row(children: [
           if (accountsReady) ...[
-            _MiniStat(label: context.l10n.accountsLabel, value: banks, color: Colors.white),
+            _MiniStat(
+                label: context.l10n.accountsLabel,
+                value: banks,
+                color: Colors.white),
             const SizedBox(width: 10),
           ],
-          _MiniStat(label: context.l10n.investedLabel, value: investments, color: Colors.white),
+          _MiniStat(
+              label: context.l10n.investedLabel,
+              value: investments,
+              color: Colors.white),
           const SizedBox(width: 10),
           _MiniStat(label: 'FGTS', value: fgts, color: tokens.FarolColors.beam),
         ]),
@@ -152,7 +169,8 @@ class _MiniStat extends StatelessWidget {
   final String label;
   final double value;
   final Color color;
-  const _MiniStat({required this.label, required this.value, required this.color});
+  const _MiniStat(
+      {required this.label, required this.value, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -166,9 +184,14 @@ class _MiniStat extends StatelessWidget {
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(label.toUpperCase(),
-              style: const TextStyle(fontSize: 9, letterSpacing: 1, fontWeight: FontWeight.w600, color: Colors.white60)),
+              style: const TextStyle(
+                  fontSize: 9,
+                  letterSpacing: 1,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white60)),
           const SizedBox(height: 4),
-          _BRLBig(value: value, size: 16, color: color, weight: FontWeight.w700),
+          _BRLBig(
+              value: value, size: 16, color: color, weight: FontWeight.w700),
         ]),
       ),
     );
@@ -180,22 +203,44 @@ class _BRLBig extends ConsumerWidget {
   final double size;
   final Color? color;
   final FontWeight weight;
-  const _BRLBig({required this.value, required this.size, this.color, this.weight = FontWeight.w800});
+  const _BRLBig(
+      {required this.value,
+      required this.size,
+      this.color,
+      this.weight = FontWeight.w800});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = color ?? context.colors.onSurface;
     final isPrivate = ref.watch(privacyModeProvider);
     if (isPrivate) {
-      return Text('••••••', style: GoogleFonts.manrope(fontSize: size, fontWeight: weight, color: c));
+      return Text('••••••',
+          style: GoogleFonts.manrope(
+              fontSize: size, fontWeight: weight, color: c));
     }
     final parts = FinancialCalculatorService.formatBRL(value).split(',');
     final f = parts[0];
     final cents = parts.length > 1 ? parts[1] : '00';
-    return Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
-      Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.48, fontWeight: FontWeight.w500, color: c)),
-      Text(f.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: weight, color: c, letterSpacing: -size * 0.028)),
-      Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.56, fontWeight: weight, color: c.withValues(alpha: 0.85))),
-    ]);
+    return Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          Text('R\$ ',
+              style: GoogleFonts.manrope(
+                  fontSize: size * 0.48,
+                  fontWeight: FontWeight.w500,
+                  color: c)),
+          Text(f.replaceFirst('R\$ ', ''),
+              style: GoogleFonts.manrope(
+                  fontSize: size,
+                  fontWeight: weight,
+                  color: c,
+                  letterSpacing: -size * 0.028)),
+          Text(',$cents',
+              style: GoogleFonts.manrope(
+                  fontSize: size * 0.56,
+                  fontWeight: weight,
+                  color: c.withValues(alpha: 0.85))),
+        ]);
   }
 }

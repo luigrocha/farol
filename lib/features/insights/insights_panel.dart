@@ -24,9 +24,11 @@ class InsightsPanel extends ConsumerWidget {
                   fontWeight: FontWeight.w700,
                   color: Colors.grey)),
           const SizedBox(height: 8),
-          const ShimmerBox(width: double.infinity, height: 64, borderRadius: 12),
+          const ShimmerBox(
+              width: double.infinity, height: 64, borderRadius: 12),
           const SizedBox(height: 8),
-          const ShimmerBox(width: double.infinity, height: 64, borderRadius: 12),
+          const ShimmerBox(
+              width: double.infinity, height: 64, borderRadius: 12),
         ],
       ),
       error: (_, __) => const SizedBox.shrink(),

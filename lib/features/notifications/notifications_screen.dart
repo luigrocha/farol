@@ -20,33 +20,49 @@ class NotificationsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
+        leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context)),
         title: Row(children: [
-          const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          const FarolMark(
+              size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
           const SizedBox(width: 10),
-          Text('Farol', style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w800)),
+          Text('Farol',
+              style: GoogleFonts.manrope(
+                  fontSize: 18, fontWeight: FontWeight.w800)),
         ]),
-        actions: [Icon(Icons.notifications_active_outlined, size: 22, color: colors.onSurface), const SizedBox(width: 20)],
+        actions: [
+          Icon(Icons.notifications_active_outlined,
+              size: 22, color: colors.onSurface),
+          const SizedBox(width: 20)
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.notificationsTitle, style: GoogleFonts.manrope(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -0.7)),
+            Text(l10n.notificationsTitle,
+                style: GoogleFonts.manrope(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.7)),
             const SizedBox(height: 6),
-            Text(l10n.notificationsSubtitle, style: TextStyle(fontSize: 13, color: colors.onSurfaceSoft)),
-
+            Text(l10n.notificationsSubtitle,
+                style: TextStyle(fontSize: 13, color: colors.onSurfaceSoft)),
             if (alerts.isEmpty) ...[
               const SizedBox(height: 40),
               _EmptyState(),
             ] else ...[
-              _buildAlertGroup(context, alerts, AlertLevel.exceeded, l10n.notificationsLevelExceeded, tokens.FarolColors.coral),
-              _buildAlertGroup(context, alerts, AlertLevel.critical, l10n.notificationsLevelCritical, const Color(0xFFFF6B35)),
-              _buildAlertGroup(context, alerts, AlertLevel.warning, l10n.notificationsLevelWarning, tokens.FarolColors.beam),
+              _buildAlertGroup(context, alerts, AlertLevel.exceeded,
+                  l10n.notificationsLevelExceeded, tokens.FarolColors.coral),
+              _buildAlertGroup(context, alerts, AlertLevel.critical,
+                  l10n.notificationsLevelCritical, const Color(0xFFFF6B35)),
+              _buildAlertGroup(context, alerts, AlertLevel.warning,
+                  l10n.notificationsLevelWarning, tokens.FarolColors.beam),
             ],
-
-            _CategoryLabel(label: l10n.notificationsTips, color: tokens.FarolColors.tide),
+            _CategoryLabel(
+                label: l10n.notificationsTips, color: tokens.FarolColors.tide),
             _NotifCard(
               icon: Icons.lightbulb_outline,
               iconBg: const Color(0xFFE8F5E9),
@@ -55,7 +71,6 @@ class NotificationsScreen extends ConsumerWidget {
               body: l10n.notificationsTipBody,
               accent: tokens.FarolColors.tide,
             ),
-
             const SizedBox(height: 40),
           ],
         ),
@@ -63,7 +78,8 @@ class NotificationsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAlertGroup(BuildContext context, List<BudgetAlert> alerts, AlertLevel level, String label, Color color) {
+  Widget _buildAlertGroup(BuildContext context, List<BudgetAlert> alerts,
+      AlertLevel level, String label, Color color) {
     final group = alerts.where((a) => a.level == level).toList();
     if (group.isEmpty) return const SizedBox.shrink();
     return Column(
@@ -91,17 +107,25 @@ class _AlertCard extends ConsumerWidget {
     final color = switch (alert.level) {
       AlertLevel.exceeded => tokens.FarolColors.coral,
       AlertLevel.critical => const Color(0xFFFF6B35),
-      AlertLevel.warning  => tokens.FarolColors.beam,
+      AlertLevel.warning => tokens.FarolColors.beam,
     };
     final icon = switch (alert.level) {
       AlertLevel.exceeded => Icons.error_outline,
       AlertLevel.critical => Icons.warning_amber_outlined,
-      AlertLevel.warning  => Icons.info_outline,
+      AlertLevel.warning => Icons.info_outline,
     };
     final bodyText = switch (alert.level) {
-      AlertLevel.exceeded => l10n.alertExceededBody(FinancialCalculatorService.formatBRL(alert.limit), label, FinancialCalculatorService.formatBRL(alert.spent)),
-      AlertLevel.critical => l10n.alertCriticalBody(alert.percentageLabel, label, FinancialCalculatorService.formatBRL(alert.spent), FinancialCalculatorService.formatBRL(alert.limit)),
-      AlertLevel.warning  => l10n.alertWarningBody(alert.percentageLabel, label, FinancialCalculatorService.formatBRL(alert.limit - alert.spent)),
+      AlertLevel.exceeded => l10n.alertExceededBody(
+          FinancialCalculatorService.formatBRL(alert.limit),
+          label,
+          FinancialCalculatorService.formatBRL(alert.spent)),
+      AlertLevel.critical => l10n.alertCriticalBody(
+          alert.percentageLabel,
+          label,
+          FinancialCalculatorService.formatBRL(alert.spent),
+          FinancialCalculatorService.formatBRL(alert.limit)),
+      AlertLevel.warning => l10n.alertWarningBody(alert.percentageLabel, label,
+          FinancialCalculatorService.formatBRL(alert.limit - alert.spent)),
     };
 
     return Column(children: [
@@ -126,11 +150,18 @@ class _EmptyState extends StatelessWidget {
     final colors = context.colors;
     return Center(
       child: Column(children: [
-        Icon(Icons.check_circle_outline, size: 48, color: tokens.FarolColors.tide.withValues(alpha: 0.5)),
+        Icon(Icons.check_circle_outline,
+            size: 48, color: tokens.FarolColors.tide.withValues(alpha: 0.5)),
         const SizedBox(height: 16),
-        Text(l10n.notificationsAllGood, style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700, color: colors.onSurface)),
+        Text(l10n.notificationsAllGood,
+            style: GoogleFonts.manrope(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: colors.onSurface)),
         const SizedBox(height: 6),
-        Text(l10n.notificationsNoCategoryOver, style: TextStyle(fontSize: 13, color: colors.onSurfaceSoft), textAlign: TextAlign.center),
+        Text(l10n.notificationsNoCategoryOver,
+            style: TextStyle(fontSize: 13, color: colors.onSurfaceSoft),
+            textAlign: TextAlign.center),
       ]),
     );
   }
@@ -146,8 +177,15 @@ class _CategoryLabel extends StatelessWidget {
       padding: const EdgeInsets.only(top: 24, bottom: 12),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(99)),
-        child: Text(label.toUpperCase(), style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1.2)),
+        decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(99)),
+        child: Text(label.toUpperCase(),
+            style: TextStyle(
+                color: color,
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.2)),
       ),
     );
   }
@@ -178,13 +216,21 @@ class _NotifCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(
+          color: colors.surfaceLowest, borderRadius: BorderRadius.circular(16)),
       child: Stack(
         children: [
           if (accent != null)
             Positioned(
-              left: -18, top: 0, bottom: 0,
-              child: Container(width: 3, decoration: BoxDecoration(color: accent, borderRadius: const BorderRadius.horizontal(right: Radius.circular(2)))),
+              left: -18,
+              top: 0,
+              bottom: 0,
+              child: Container(
+                  width: 3,
+                  decoration: BoxDecoration(
+                      color: accent,
+                      borderRadius: const BorderRadius.horizontal(
+                          right: Radius.circular(2)))),
             ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,23 +239,42 @@ class _NotifCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    width: 40, height: 40,
-                    decoration: BoxDecoration(color: iconBg, borderRadius: BorderRadius.circular(12)),
-                    child: Center(child: Icon(icon, size: 20, color: accent ?? colors.onSurfaceMuted)),
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                        color: iconBg, borderRadius: BorderRadius.circular(12)),
+                    child: Center(
+                        child: Icon(icon,
+                            size: 20, color: accent ?? colors.onSurfaceMuted)),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        Expanded(child: Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, height: 1.3, color: colors.onSurface))),
-                        if (time.isNotEmpty) ...[
-                          const SizedBox(width: 8),
-                          Text(time, style: const TextStyle(fontSize: 16)),
-                        ],
-                      ]),
-                      const SizedBox(height: 6),
-                      Text(body, style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft, height: 1.5)),
-                    ]),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                    child: Text(title,
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700,
+                                            height: 1.3,
+                                            color: colors.onSurface))),
+                                if (time.isNotEmpty) ...[
+                                  const SizedBox(width: 8),
+                                  Text(time,
+                                      style: const TextStyle(fontSize: 16)),
+                                ],
+                              ]),
+                          const SizedBox(height: 6),
+                          Text(body,
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: colors.onSurfaceSoft,
+                                  height: 1.5)),
+                        ]),
                   ),
                 ],
               ),
@@ -220,8 +285,10 @@ class _NotifCard extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: progressValue,
                     minHeight: 5,
-                    backgroundColor: (progressColor ?? tokens.FarolColors.beam).withValues(alpha: 0.12),
-                    valueColor: AlwaysStoppedAnimation(progressColor ?? tokens.FarolColors.beam),
+                    backgroundColor: (progressColor ?? tokens.FarolColors.beam)
+                        .withValues(alpha: 0.12),
+                    valueColor: AlwaysStoppedAnimation(
+                        progressColor ?? tokens.FarolColors.beam),
                   ),
                 ),
               ],

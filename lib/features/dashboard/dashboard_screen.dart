@@ -31,9 +31,10 @@ import '../../design/branding/branding.dart';
 
 // ── Layout breakpoints — sourced from FarolBreakpoints ───────────────────────
 
-const _kDesktopWide  = FarolBreakpoints.wide;          // 1200 — 3-column layout
-const _kDesktop      = FarolBreakpoints.desktop;        // 800  — 2-column layout
-const _kContentMaxW  = FarolBreakpoints.contentMaxWidth; // 1440 — max content width
+const _kDesktopWide = FarolBreakpoints.wide; // 1200 — 3-column layout
+const _kDesktop = FarolBreakpoints.desktop; // 800  — 2-column layout
+const _kContentMaxW =
+    FarolBreakpoints.contentMaxWidth; // 1440 — max content width
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -41,9 +42,9 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final month = ref.watch(selectedMonthProvider);
-    final year  = ref.watch(selectedYearProvider);
+    final year = ref.watch(selectedYearProvider);
     final period = ref.watch(selectedPeriodProvider);
-    final l10n   = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context);
     final months = l10n.months;
     final periodLabel =
         '${period.start.day} ${months[period.start.month - 1]} – '
@@ -99,10 +100,15 @@ class DashboardScreen extends ConsumerWidget {
 
   void _changeMonth(WidgetRef ref, int m, int y, int delta) {
     int nm = m + delta, ny = y;
-    if (nm < 1)  { nm = 12; ny--; }
-    else if (nm > 12) { nm = 1;  ny++; }
+    if (nm < 1) {
+      nm = 12;
+      ny--;
+    } else if (nm > 12) {
+      nm = 1;
+      ny++;
+    }
     ref.read(selectedMonthProvider.notifier).state = nm;
-    ref.read(selectedYearProvider.notifier).state  = ny;
+    ref.read(selectedYearProvider.notifier).state = ny;
   }
 }
 
@@ -163,7 +169,9 @@ class _PremiumAppBar extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg),
               child: Row(
                 children: [
-                  const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+                  const FarolMark(
+                      size: FarolBrand.markSizeCompact,
+                      variant: FarolLogoVariant.dark),
                   const SizedBox(width: DSSpacing.sm),
                   _MonthPicker(
                     month: month,
@@ -189,10 +197,13 @@ class _PremiumAppBar extends ConsumerWidget {
                   // ── Row 1: greeting + actions ─────────────────────────
                   Row(
                     children: [
-                      const FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+                      const FarolMark(
+                          size: FarolBrand.markSizeCompact,
+                          variant: FarolLogoVariant.dark),
                       const SizedBox(width: DSSpacing.sm),
                       const Expanded(
-                        child: FarolGreeting(variant: FarolGreetingVariant.appBar),
+                        child:
+                            FarolGreeting(variant: FarolGreetingVariant.appBar),
                       ),
                       const WorkspaceAppBarChip(),
                       const SizedBox(width: DSSpacing.xs),
@@ -292,7 +303,7 @@ class _NavArrowState extends State<_NavArrow> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
-      onExit:  (_) => setState(() => _hovered = false),
+      onExit: (_) => setState(() => _hovered = false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: widget.onTap,
@@ -318,7 +329,6 @@ class _NavArrowState extends State<_NavArrow> {
     );
   }
 }
-
 
 class _NotificationBell extends ConsumerWidget {
   @override
@@ -354,7 +364,7 @@ class _AppBarIconBtnState extends State<_AppBarIconBtn> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
-      onExit:  (_) => setState(() => _hovered = false),
+      onExit: (_) => setState(() => _hovered = false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: widget.onTap,
@@ -401,19 +411,28 @@ class _PremiumFabState extends State<_PremiumFab>
   void initState() {
     super.initState();
     _ctrl = AnimationController(vsync: this, duration: DSDuration.medium);
-    _rot  = Tween(begin: 0.0, end: 0.125).animate(
+    _rot = Tween(begin: 0.0, end: 0.125).animate(
       CurvedAnimation(parent: _ctrl, curve: DSCurve.smooth),
     );
   }
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      onEnter: (_) { setState(() => _hovered = true);  _ctrl.forward(); },
-      onExit:  (_) { setState(() => _hovered = false); _ctrl.reverse(); },
+      onEnter: (_) {
+        setState(() => _hovered = true);
+        _ctrl.forward();
+      },
+      onExit: (_) {
+        setState(() => _hovered = false);
+        _ctrl.reverse();
+      },
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: widget.onTap,
@@ -509,7 +528,10 @@ class _DesktopDashboardSliver extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(
-        DSSpacing.xxl, DSSpacing.xl, DSSpacing.xxl, DSSpacing.xl,
+        DSSpacing.xxl,
+        DSSpacing.xl,
+        DSSpacing.xxl,
+        DSSpacing.xl,
       ),
       sliver: SliverToBoxAdapter(
         child: Center(
@@ -590,7 +612,10 @@ class _WideDesktopSliver extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(
-        DSSpacing.xxl, DSSpacing.xl, DSSpacing.xxl, DSSpacing.xl,
+        DSSpacing.xxl,
+        DSSpacing.xl,
+        DSSpacing.xxl,
+        DSSpacing.xl,
       ),
       sliver: SliverToBoxAdapter(
         child: Center(

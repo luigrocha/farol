@@ -118,7 +118,8 @@ void main() {
       );
     });
 
-    testWidgets('strong password (8+, upper, number, symbol) shows strong label',
+    testWidgets(
+        'strong password (8+, upper, number, symbol) shows strong label',
         (tester) async {
       await pumpAppWithFakeAuth(tester, const SignUpScreen());
 

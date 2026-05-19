@@ -42,9 +42,8 @@ class InstallmentService {
 
     // Rounding: floor each installment to cents, add remainder to last
     final baseAmount = (totalAmount / numInstallments * 100).floor() / 100;
-    final lastAmount =
-        double.parse((totalAmount - baseAmount * (numInstallments - 1))
-            .toStringAsFixed(2));
+    final lastAmount = double.parse(
+        (totalAmount - baseAmount * (numInstallments - 1)).toStringAsFixed(2));
 
     final plan = await _planRepo.create(InstallmentPlan(
       id: '',
@@ -103,7 +102,8 @@ class InstallmentService {
     double? paidAmount,
   }) async {
     final actualDate = paidDate ?? payment.dueDate;
-    final actualAmount = paidDate != null ? (paidAmount ?? payment.amount) : payment.amount;
+    final actualAmount =
+        paidDate != null ? (paidAmount ?? payment.amount) : payment.amount;
 
     // Create the real expense — category slug passed by caller via plan
     final expenseId = await _expenseRepo.insert(
@@ -114,8 +114,8 @@ class InstallmentService {
       category: plan.categorySlug ?? 'card_installments',
       amount: actualAmount,
       paymentMethod: plan.paymentMethod,
-      storeDescription:
-          plan.storeName ?? '${plan.description} ${payment.installmentNum}/${plan.numInstallments}',
+      storeDescription: plan.storeName ??
+          '${plan.description} ${payment.installmentNum}/${plan.numInstallments}',
       installmentPlanUuidId: plan.id,
       installmentPaymentId: payment.id,
     );
@@ -160,7 +160,6 @@ class InstallmentService {
     final maxDay = DateTimeExtension.daysInMonth(year, month);
     return DateTime(year, month, date.day.clamp(1, maxDay));
   }
-
 }
 
 extension DateTimeExtension on DateTime {

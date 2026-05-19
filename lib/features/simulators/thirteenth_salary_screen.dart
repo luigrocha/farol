@@ -28,9 +28,11 @@ class _ThirteenthSalaryScreenState extends State<ThirteenthSalaryScreen> {
   }
 
   void _calculate() {
-    final gross = double.tryParse(_salaryCtrl.text.replaceAll('.', '').replaceAll(',', '.'));
+    final gross = double.tryParse(
+        _salaryCtrl.text.replaceAll('.', '').replaceAll(',', '.'));
     if (gross == null || gross <= 0) return;
-    setState(() => _result = _Calc.compute(gross: gross, months: _months, dependents: _dependents));
+    setState(() => _result =
+        _Calc.compute(gross: gross, months: _months, dependents: _dependents));
   }
 
   @override
@@ -39,12 +41,17 @@ class _ThirteenthSalaryScreenState extends State<ThirteenthSalaryScreen> {
     return Scaffold(
       backgroundColor: colors.surfaceLow,
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
-        title: Text('Simulador 13º Salário', style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700)),
+        leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context)),
+        title: Text('Simulador 13º Salário',
+            style:
+                GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700)),
         backgroundColor: colors.surfaceLow,
         elevation: 0,
         actions: const [
-          FarolMark(size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
+          FarolMark(
+              size: FarolBrand.markSizeCompact, variant: FarolLogoVariant.dark),
           SizedBox(width: 16),
         ],
       ),
@@ -57,8 +64,14 @@ class _ThirteenthSalaryScreenState extends State<ThirteenthSalaryScreen> {
               salaryCtrl: _salaryCtrl,
               months: _months,
               dependents: _dependents,
-              onMonthsChanged: (v) => setState(() { _months = v; _result = null; }),
-              onDependentsChanged: (v) => setState(() { _dependents = v; _result = null; }),
+              onMonthsChanged: (v) => setState(() {
+                _months = v;
+                _result = null;
+              }),
+              onDependentsChanged: (v) => setState(() {
+                _dependents = v;
+                _result = null;
+              }),
               onSalaryChanged: (_) => setState(() => _result = null),
               onCalculate: _calculate,
             ),
@@ -102,32 +115,55 @@ class _InputCard extends StatelessWidget {
     final colors = context.colors;
     return Container(
       padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(24)),
+      decoration: BoxDecoration(
+          color: colors.surfaceLowest, borderRadius: BorderRadius.circular(24)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('DADOS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1.6, color: colors.onSurfaceFaint)),
+        Text('DADOS',
+            style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.6,
+                color: colors.onSurfaceFaint)),
         const SizedBox(height: 16),
         TextField(
           controller: salaryCtrl,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))],
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))
+          ],
           onChanged: onSalaryChanged,
-          style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w700, color: colors.onSurface),
+          style: GoogleFonts.inter(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: colors.onSurface),
           decoration: InputDecoration(
             labelText: 'Salário Bruto Mensal (R\$)',
             labelStyle: TextStyle(fontSize: 13, color: colors.onSurfaceSoft),
             prefixText: 'R\$ ',
-            prefixStyle: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: colors.onSurfaceMuted),
+            prefixStyle: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: colors.onSurfaceMuted),
             filled: true,
             fillColor: colors.surfaceLow,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide.none),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           ),
         ),
         const SizedBox(height: 20),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text('Meses trabalhados', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
+          Text('Meses trabalhados',
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: colors.onSurface)),
           _Counter(
-            value: months, min: 1, max: 12,
+            value: months,
+            min: 1,
+            max: 12,
             label: '$months/${12}',
             onChanged: onMonthsChanged,
           ),
@@ -144,18 +180,30 @@ class _InputCard extends StatelessWidget {
           ),
           child: Slider(
             value: months.toDouble(),
-            min: 1, max: 12, divisions: 11,
+            min: 1,
+            max: 12,
+            divisions: 11,
             onChanged: (v) => onMonthsChanged(v.round()),
           ),
         ),
         const SizedBox(height: 12),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Dependentes', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-             Text('Redução IRRF: ${FinancialCalculatorService.formatBRL(AppConstants.dependentDeduction * dependents)}', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
-
+            Text('Dependentes',
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: colors.onSurface)),
+            Text(
+                'Redução IRRF: ${FinancialCalculatorService.formatBRL(AppConstants.dependentDeduction * dependents)}',
+                style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
           ]),
-          _Counter(value: dependents, min: 0, max: 10, label: '$dependents', onChanged: onDependentsChanged),
+          _Counter(
+              value: dependents,
+              min: 0,
+              max: 10,
+              label: '$dependents',
+              onChanged: onDependentsChanged),
         ]),
         const SizedBox(height: 20),
         SizedBox(
@@ -163,12 +211,16 @@ class _InputCard extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onCalculate,
             style: ElevatedButton.styleFrom(
-              backgroundColor: tokens.FarolColors.navy, foregroundColor: Colors.white,
+              backgroundColor: tokens.FarolColors.navy,
+              foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
               elevation: 0,
             ),
-            child: Text('Calcular', style: GoogleFonts.manrope(fontSize: 15, fontWeight: FontWeight.w700)),
+            child: Text('Calcular',
+                style: GoogleFonts.manrope(
+                    fontSize: 15, fontWeight: FontWeight.w700)),
           ),
         ),
       ]),
@@ -180,19 +232,32 @@ class _Counter extends StatelessWidget {
   final int value, min, max;
   final String label;
   final ValueChanged<int> onChanged;
-  const _Counter({required this.value, required this.min, required this.max, required this.label, required this.onChanged});
+  const _Counter(
+      {required this.value,
+      required this.min,
+      required this.max,
+      required this.label,
+      required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Row(children: [
-      _IconBtn(icon: Icons.remove, onTap: value > min ? () => onChanged(value - 1) : null),
+      _IconBtn(
+          icon: Icons.remove,
+          onTap: value > min ? () => onChanged(value - 1) : null),
       Container(
         width: 44,
         alignment: Alignment.center,
-        child: Text(label, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: colors.onSurface)),
+        child: Text(label,
+            style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: colors.onSurface)),
       ),
-      _IconBtn(icon: Icons.add, onTap: value < max ? () => onChanged(value + 1) : null),
+      _IconBtn(
+          icon: Icons.add,
+          onTap: value < max ? () => onChanged(value + 1) : null),
     ]);
   }
 }
@@ -207,9 +272,13 @@ class _IconBtn extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 32, height: 32,
-        decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: BorderRadius.circular(8)),
-        child: Icon(icon, size: 16, color: onTap != null ? colors.onSurface : colors.onSurfaceFaint),
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+            color: colors.surfaceLow, borderRadius: BorderRadius.circular(8)),
+        child: Icon(icon,
+            size: 16,
+            color: onTap != null ? colors.onSurface : colors.onSurfaceFaint),
       ),
     );
   }
@@ -233,31 +302,64 @@ class _SummaryCard extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [Color(0xFF244A72), tokens.FarolColors.navy],
         ),
-        boxShadow: [BoxShadow(color: tokens.FarolColors.navy.withValues(alpha: 0.25), blurRadius: 20, offset: const Offset(0, 10))],
+        boxShadow: [
+          BoxShadow(
+              color: tokens.FarolColors.navy.withValues(alpha: 0.25),
+              blurRadius: 20,
+              offset: const Offset(0, 10))
+        ],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20)),
-            child: Text('13º SALÁRIO', style: GoogleFonts.manrope(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 1.2)),
+            decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(20)),
+            child: Text('13º SALÁRIO',
+                style: GoogleFonts.manrope(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    letterSpacing: 1.2)),
           ),
         ]),
         const SizedBox(height: 16),
-        const Text('TOTAL LÍQUIDO', style: TextStyle(fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: Colors.white70)),
+        const Text('TOTAL LÍQUIDO',
+            style: TextStyle(
+                fontSize: 10,
+                letterSpacing: 1.5,
+                fontWeight: FontWeight.w700,
+                color: Colors.white70)),
         const SizedBox(height: 4),
         _BigBRL(value: calc.totalNet, size: 36, color: Colors.white),
         const SizedBox(height: 20),
         const Divider(color: Colors.white24, height: 1),
         const SizedBox(height: 16),
         Row(children: [
-          Expanded(child: _MiniStat(label: '13º BRUTO', value: calc.proportional13th, color: Colors.white)),
-          Expanded(child: _MiniStat(label: 'DESCUENTOS', value: calc.totalDeductions, color: const Color(0xFFFFB3B3))),
+          Expanded(
+              child: _MiniStat(
+                  label: '13º BRUTO',
+                  value: calc.proportional13th,
+                  color: Colors.white)),
+          Expanded(
+              child: _MiniStat(
+                  label: 'DESCUENTOS',
+                  value: calc.totalDeductions,
+                  color: const Color(0xFFFFB3B3))),
         ]),
         const SizedBox(height: 12),
         Row(children: [
-          Expanded(child: _MiniStat(label: '1ª PARCELA', value: calc.firstInstallment, color: Colors.white)),
-          Expanded(child: _MiniStat(label: '2ª PARCELA', value: calc.secondInstallment, color: Colors.white)),
+          Expanded(
+              child: _MiniStat(
+                  label: '1ª PARCELA',
+                  value: calc.firstInstallment,
+                  color: Colors.white)),
+          Expanded(
+              child: _MiniStat(
+                  label: '2ª PARCELA',
+                  value: calc.secondInstallment,
+                  color: Colors.white)),
         ]),
       ]),
     );
@@ -268,14 +370,25 @@ class _MiniStat extends StatelessWidget {
   final String label;
   final double value;
   final Color color;
-  const _MiniStat({required this.label, required this.value, required this.color});
+  const _MiniStat(
+      {required this.label, required this.value, required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label, style: TextStyle(fontSize: 9, letterSpacing: 1.2, fontWeight: FontWeight.w700, color: color.withValues(alpha: 0.7))),
+      Text(label,
+          style: TextStyle(
+              fontSize: 9,
+              letterSpacing: 1.2,
+              fontWeight: FontWeight.w700,
+              color: color.withValues(alpha: 0.7))),
       const SizedBox(height: 2),
-      Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: color, fontFeatures: const [FontFeature.tabularFigures()])),
+      Text(FinancialCalculatorService.formatBRL(value),
+          style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: color,
+              fontFeatures: const [FontFeature.tabularFigures()])),
     ]);
   }
 }
@@ -291,9 +404,15 @@ class _InstallmentsCard extends StatelessWidget {
     final colors = context.colors;
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+          color: colors.surfaceLowest, borderRadius: BorderRadius.circular(20)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('PARCELAS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1.6, color: colors.onSurfaceFaint)),
+        Text('PARCELAS',
+            style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.6,
+                color: colors.onSurfaceFaint)),
         const SizedBox(height: 16),
         _InstallmentRow(
           number: '1ª',
@@ -322,31 +441,66 @@ class _InstallmentRow extends StatelessWidget {
   final double value;
   final Color color;
   final bool isGross;
-  const _InstallmentRow({required this.number, required this.label, required this.sublabel, required this.value, required this.color, required this.isGross});
+  const _InstallmentRow(
+      {required this.number,
+      required this.label,
+      required this.sublabel,
+      required this.value,
+      required this.color,
+      required this.isGross});
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: BorderRadius.circular(14)),
+      decoration: BoxDecoration(
+          color: colors.surfaceLow, borderRadius: BorderRadius.circular(14)),
       child: Row(children: [
         Container(
-          width: 36, height: 36,
-          decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
-          child: Center(child: Text(number, style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w800, color: color))),
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10)),
+          child: Center(
+              child: Text(number,
+                  style: GoogleFonts.manrope(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: color))),
         ),
         const SizedBox(width: 12),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.onSurface)),
-          Text(sublabel, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
+        Expanded(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(label,
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: colors.onSurface)),
+          Text(sublabel,
+              style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
         ])),
         Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-          Text(FinancialCalculatorService.formatBRL(value), style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: colors.onSurface, fontFeatures: const [FontFeature.tabularFigures()])),
+          Text(FinancialCalculatorService.formatBRL(value),
+              style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface,
+                  fontFeatures: const [FontFeature.tabularFigures()])),
           if (isGross)
-            const Text('sem IR/INSS', style: TextStyle(fontSize: 10, color: tokens.FarolColors.tide, fontWeight: FontWeight.w600))
+            const Text('sem IR/INSS',
+                style: TextStyle(
+                    fontSize: 10,
+                    color: tokens.FarolColors.tide,
+                    fontWeight: FontWeight.w600))
           else
-            Text('líquido', style: TextStyle(fontSize: 10, color: colors.onSurfaceSoft, fontWeight: FontWeight.w600)),
+            Text('líquido',
+                style: TextStyle(
+                    fontSize: 10,
+                    color: colors.onSurfaceSoft,
+                    fontWeight: FontWeight.w600)),
         ]),
       ]),
     );
@@ -364,9 +518,15 @@ class _DeductionsCard extends StatelessWidget {
     final colors = context.colors;
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: colors.surfaceLowest, borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+          color: colors.surfaceLowest, borderRadius: BorderRadius.circular(20)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('DESCONTOS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1.6, color: colors.onSurfaceFaint)),
+        Text('DESCONTOS',
+            style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.6,
+                color: colors.onSurfaceFaint)),
         const SizedBox(height: 16),
 
         // INSS
@@ -392,12 +552,23 @@ class _DeductionsCard extends StatelessWidget {
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(
+                color: colors.surfaceLow,
+                borderRadius: BorderRadius.circular(12)),
             child: Row(children: [
-              Icon(Icons.family_restroom_outlined, size: 18, color: colors.onSurfaceSoft),
+              Icon(Icons.family_restroom_outlined,
+                  size: 18, color: colors.onSurfaceSoft),
               const SizedBox(width: 10),
-              Expanded(child: Text('Dedução dependentes', style: TextStyle(fontSize: 13, color: colors.onSurface))),
-              Text('−${FinancialCalculatorService.formatBRL(calc.dependentDeduction)}', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurfaceSoft, fontFeatures: const [FontFeature.tabularFigures()])),
+              Expanded(
+                  child: Text('Dedução dependentes',
+                      style: TextStyle(fontSize: 13, color: colors.onSurface))),
+              Text(
+                  '−${FinancialCalculatorService.formatBRL(calc.dependentDeduction)}',
+                  style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: colors.onSurfaceSoft,
+                      fontFeatures: const [FontFeature.tabularFigures()])),
             ]),
           ),
         ],
@@ -406,11 +577,24 @@ class _DeductionsCard extends StatelessWidget {
         Container(height: 1, color: colors.surfaceLow),
         const SizedBox(height: 12),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text('Total descontado', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: colors.onSurface)),
-          Text('−${FinancialCalculatorService.formatBRL(calc.totalDeductions)}', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: tokens.FarolColors.coral, fontFeatures: const [FontFeature.tabularFigures()])),
+          Text('Total descontado',
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface)),
+          Text('−${FinancialCalculatorService.formatBRL(calc.totalDeductions)}',
+              style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: tokens.FarolColors.coral,
+                  fontFeatures: const [FontFeature.tabularFigures()])),
         ]),
         const SizedBox(height: 4),
-        Align(alignment: Alignment.centerRight, child: Text('${calc.effectiveRate.toStringAsFixed(1)}% alíquota efetiva', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft))),
+        Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+                '${calc.effectiveRate.toStringAsFixed(1)}% alíquota efetiva',
+                style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft))),
       ]),
     );
   }
@@ -422,41 +606,72 @@ class _DeductionGroup extends StatelessWidget {
   final double total;
   final Color color;
   final List<_Row> rows;
-  const _DeductionGroup({required this.icon, required this.title, required this.total, required this.color, required this.rows});
+  const _DeductionGroup(
+      {required this.icon,
+      required this.title,
+      required this.total,
+      required this.color,
+      required this.rows});
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Container(
-      decoration: BoxDecoration(color: colors.surfaceLow, borderRadius: BorderRadius.circular(14)),
+      decoration: BoxDecoration(
+          color: colors.surfaceLow, borderRadius: BorderRadius.circular(14)),
       child: Column(children: [
         Padding(
           padding: const EdgeInsets.all(14),
           child: Row(children: [
             Container(
-              width: 32, height: 32,
-              decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(8)),
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8)),
               child: Icon(icon, size: 16, color: color),
             ),
             const SizedBox(width: 10),
-            Expanded(child: Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: colors.onSurface))),
-            Text(FinancialCalculatorService.formatBRL(total), style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: color, fontFeatures: const [FontFeature.tabularFigures()])),
+            Expanded(
+                child: Text(title,
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: colors.onSurface))),
+            Text(FinancialCalculatorService.formatBRL(total),
+                style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: color,
+                    fontFeatures: const [FontFeature.tabularFigures()])),
           ]),
         ),
         if (rows.isNotEmpty) ...[
           Divider(height: 1, color: colors.surfaceLowest),
           ...rows.map((r) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            child: Row(children: [
-              Container(
-                width: 6, height: 6,
-                margin: const EdgeInsets.only(right: 10),
-                decoration: BoxDecoration(color: color.withValues(alpha: 0.4), shape: BoxShape.circle),
-              ),
-              Expanded(child: Text(r.label, style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft))),
-              Text(r.value, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.onSurfaceMuted, fontFeatures: const [FontFeature.tabularFigures()])),
-            ]),
-          )),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                child: Row(children: [
+                  Container(
+                    width: 6,
+                    height: 6,
+                    margin: const EdgeInsets.only(right: 10),
+                    decoration: BoxDecoration(
+                        color: color.withValues(alpha: 0.4),
+                        shape: BoxShape.circle),
+                  ),
+                  Expanded(
+                      child: Text(r.label,
+                          style: TextStyle(
+                              fontSize: 11, color: colors.onSurfaceSoft))),
+                  Text(r.value,
+                      style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: colors.onSurfaceMuted,
+                          fontFeatures: const [FontFeature.tabularFigures()])),
+                ]),
+              )),
           const SizedBox(height: 4),
         ],
       ]),
@@ -482,9 +697,22 @@ class _BigBRL extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
       children: [
-        Text('R\$ ', style: GoogleFonts.manrope(fontSize: size * 0.44, fontWeight: FontWeight.w500, color: c.withValues(alpha: 0.8))),
-        Text(integer.replaceFirst('R\$ ', ''), style: GoogleFonts.manrope(fontSize: size, fontWeight: FontWeight.w800, color: c, letterSpacing: -size * 0.025)),
-        Text(',$cents', style: GoogleFonts.manrope(fontSize: size * 0.52, fontWeight: FontWeight.w700, color: c.withValues(alpha: 0.8))),
+        Text('R\$ ',
+            style: GoogleFonts.manrope(
+                fontSize: size * 0.44,
+                fontWeight: FontWeight.w500,
+                color: c.withValues(alpha: 0.8))),
+        Text(integer.replaceFirst('R\$ ', ''),
+            style: GoogleFonts.manrope(
+                fontSize: size,
+                fontWeight: FontWeight.w800,
+                color: c,
+                letterSpacing: -size * 0.025)),
+        Text(',$cents',
+            style: GoogleFonts.manrope(
+                fontSize: size * 0.52,
+                fontWeight: FontWeight.w700,
+                color: c.withValues(alpha: 0.8))),
       ],
     );
   }
@@ -519,11 +747,13 @@ class _Calc {
     required this.irrfRows,
   });
 
-  factory _Calc.compute({required double gross, required int months, required int dependents}) {
+  factory _Calc.compute(
+      {required double gross, required int months, required int dependents}) {
     final base = gross * months / 12;
 
     final inssResult = FinancialCalculatorService.calculateINSS(base);
-    final irrfResult = FinancialCalculatorService.calculateIRRF(base, dependents);
+    final irrfResult =
+        FinancialCalculatorService.calculateIRRF(base, dependents);
 
     final firstInstallment = base / 2;
     final secondInstallment = base / 2 - inssResult.total - irrfResult.total;
@@ -541,8 +771,12 @@ class _Calc {
       totalNet: totalNet,
       totalDeductions: totalDeductions,
       effectiveRate: effectiveRate,
-      inssRows: inssResult.rows.map((r) => _Row(label: r.label, value: r.value)).toList(),
-      irrfRows: irrfResult.rows.map((r) => _Row(label: r.label, value: r.value)).toList(),
+      inssRows: inssResult.rows
+          .map((r) => _Row(label: r.label, value: r.value))
+          .toList(),
+      irrfRows: irrfResult.rows
+          .map((r) => _Row(label: r.label, value: r.value))
+          .toList(),
     );
   }
 }

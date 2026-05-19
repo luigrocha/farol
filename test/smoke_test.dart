@@ -44,7 +44,8 @@ void main() {
     expect(incomes.first.amount, 10000.0);
 
     // 4. Test Calculator logic (Static methods)
-    final savingsRate = FinancialCalculatorService.calculateSavingsRate(10000, 2000);
+    final savingsRate =
+        FinancialCalculatorService.calculateSavingsRate(10000, 2000);
     expect(savingsRate, 80.0); // (10000 - 2000) / 10000 * 100
 
     final healthScore = FinancialCalculatorService.calculateHealthScore(

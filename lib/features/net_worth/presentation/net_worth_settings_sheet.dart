@@ -12,7 +12,8 @@ class NetWorthSettingsSheet extends ConsumerStatefulWidget {
   const NetWorthSettingsSheet({super.key});
 
   @override
-  ConsumerState<NetWorthSettingsSheet> createState() => _NetWorthSettingsSheetState();
+  ConsumerState<NetWorthSettingsSheet> createState() =>
+      _NetWorthSettingsSheetState();
 }
 
 class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
@@ -27,10 +28,14 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
     super.initState();
     final snap = ref.read(netWorthSnapshotProvider).value;
     if (snap != null) {
-      if (snap.patrimonyTotal > 0) _patrimonyCtrl.text = snap.patrimonyTotal.toStringAsFixed(2);
-      if (snap.fgtsBalance > 0) _fgtsCtrl.text = snap.fgtsBalance.toStringAsFixed(2);
-      if (snap.investmentsTotal > 0) _investmentsCtrl.text = snap.investmentsTotal.toStringAsFixed(2);
-      if (snap.emergencyFund > 0) _emergencyCtrl.text = snap.emergencyFund.toStringAsFixed(2);
+      if (snap.patrimonyTotal > 0)
+        _patrimonyCtrl.text = snap.patrimonyTotal.toStringAsFixed(2);
+      if (snap.fgtsBalance > 0)
+        _fgtsCtrl.text = snap.fgtsBalance.toStringAsFixed(2);
+      if (snap.investmentsTotal > 0)
+        _investmentsCtrl.text = snap.investmentsTotal.toStringAsFixed(2);
+      if (snap.emergencyFund > 0)
+        _emergencyCtrl.text = snap.emergencyFund.toStringAsFixed(2);
     }
   }
 
@@ -53,13 +58,13 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
       final month = ref.read(selectedMonthProvider);
       final year = ref.read(selectedYearProvider);
       await ref.read(netWorthNotifierProvider.notifier).save(
-        month: month,
-        year: year,
-        patrimonyTotal: _parse(_patrimonyCtrl),
-        fgtsBalance: _parse(_fgtsCtrl),
-        investmentsTotal: _parse(_investmentsCtrl),
-        emergencyFund: _parse(_emergencyCtrl),
-      );
+            month: month,
+            year: year,
+            patrimonyTotal: _parse(_patrimonyCtrl),
+            fgtsBalance: _parse(_fgtsCtrl),
+            investmentsTotal: _parse(_investmentsCtrl),
+            emergencyFund: _parse(_emergencyCtrl),
+          );
       if (mounted) {
         Navigator.of(context).pop();
         context.showSuccessSnackBar(l10n.netWorthSaved);
@@ -82,7 +87,8 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
     final pending = inst.fold(0.0, (s, i) => s + i.installmentAmount);
 
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
         decoration: BoxDecoration(
@@ -95,22 +101,36 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
           children: [
             Center(
               child: Container(
-                width: 36, height: 4,
-                decoration: BoxDecoration(color: colors.onSurfaceFaint, borderRadius: BorderRadius.circular(2)),
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                    color: colors.onSurfaceFaint,
+                    borderRadius: BorderRadius.circular(2)),
               ),
             ),
             const SizedBox(height: 20),
             Row(children: [
               Container(
-                width: 38, height: 38,
-                decoration: BoxDecoration(color: colors.iconTintBlue, borderRadius: BorderRadius.circular(10)),
-                child: const Icon(Icons.account_balance_outlined, size: 20, color: tokens.FarolColors.navy),
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                    color: colors.iconTintBlue,
+                    borderRadius: BorderRadius.circular(10)),
+                child: const Icon(Icons.account_balance_outlined,
+                    size: 20, color: tokens.FarolColors.navy),
               ),
               const SizedBox(width: 12),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(AppLocalizations.of(context).netWorthTitle, style: GoogleFonts.manrope(fontSize: 18, fontWeight: FontWeight.w700)),
-                Text('${_monthName(month)} $year', style: TextStyle(fontSize: 11, color: colors.onSurfaceSoft)),
-              ])),
+              Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                    Text(AppLocalizations.of(context).netWorthTitle,
+                        style: GoogleFonts.manrope(
+                            fontSize: 18, fontWeight: FontWeight.w700)),
+                    Text('${_monthName(month)} $year',
+                        style: TextStyle(
+                            fontSize: 11, color: colors.onSurfaceSoft)),
+                  ])),
             ]),
             const SizedBox(height: 16),
             // Live preview total
@@ -118,16 +138,27 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
               return GestureDetector(
                 onTap: () {},
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
                     color: tokens.FarolColors.navy.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(children: [
-                    Text('${AppLocalizations.of(context).estimatedTotal}: ', style: TextStyle(fontSize: 12, color: colors.onSurfaceSoft)),
+                    Text('${AppLocalizations.of(context).estimatedTotal}: ',
+                        style: TextStyle(
+                            fontSize: 12, color: colors.onSurfaceSoft)),
                     Text(
-                      FinancialCalculatorService.formatBRL(_parse(_patrimonyCtrl) + _parse(_fgtsCtrl) + _parse(_investmentsCtrl) + _parse(_emergencyCtrl) - pending),
-                      style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w700, color: tokens.FarolColors.navy),
+                      FinancialCalculatorService.formatBRL(
+                          _parse(_patrimonyCtrl) +
+                              _parse(_fgtsCtrl) +
+                              _parse(_investmentsCtrl) +
+                              _parse(_emergencyCtrl) -
+                              pending),
+                      style: GoogleFonts.manrope(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: tokens.FarolColors.navy),
                     ),
                   ]),
                 ),
@@ -137,19 +168,33 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
             Flexible(
               child: SingleChildScrollView(
                 child: Column(children: [
-                  _Field(label: AppLocalizations.of(context).patrimonyRealEstate, ctrl: _patrimonyCtrl, onChanged: () => setState(() {})),
-                  _Field(label: '🏦 FGTS', ctrl: _fgtsCtrl, onChanged: () => setState(() {})),
-                  _Field(label: '📈 ${AppLocalizations.of(context).investments}', ctrl: _investmentsCtrl, onChanged: () => setState(() {})),
-                  _Field(label: AppLocalizations.of(context).emergencyFund, ctrl: _emergencyCtrl, onChanged: () => setState(() {})),
+                  _Field(
+                      label: AppLocalizations.of(context).patrimonyRealEstate,
+                      ctrl: _patrimonyCtrl,
+                      onChanged: () => setState(() {})),
+                  _Field(
+                      label: '🏦 FGTS',
+                      ctrl: _fgtsCtrl,
+                      onChanged: () => setState(() {})),
+                  _Field(
+                      label: '📈 ${AppLocalizations.of(context).investments}',
+                      ctrl: _investmentsCtrl,
+                      onChanged: () => setState(() {})),
+                  _Field(
+                      label: AppLocalizations.of(context).emergencyFund,
+                      ctrl: _emergencyCtrl,
+                      onChanged: () => setState(() {})),
                   if (pending > 0)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Row(children: [
-                        const Icon(Icons.credit_card_outlined, size: 14, color: Colors.orange),
+                        const Icon(Icons.credit_card_outlined,
+                            size: 14, color: Colors.orange),
                         const SizedBox(width: 6),
                         Text(
                           '${AppLocalizations.of(context).debtsInstallments}: -${FinancialCalculatorService.formatBRL(pending)}',
-                          style: const TextStyle(fontSize: 11, color: Colors.orange),
+                          style: const TextStyle(
+                              fontSize: 11, color: Colors.orange),
                         ),
                       ]),
                     ),
@@ -165,12 +210,19 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
                   backgroundColor: tokens.FarolColors.navy,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
                   elevation: 0,
                 ),
                 child: _saving
-                    ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                    : Text(AppLocalizations.of(context).save, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                    ? const SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white))
+                    : Text(AppLocalizations.of(context).save,
+                        style: const TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w600)),
               ),
             ),
           ],
@@ -180,7 +232,20 @@ class _NetWorthSettingsSheetState extends ConsumerState<NetWorthSettingsSheet> {
   }
 
   String _monthName(int month) {
-    const names = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const names = [
+      'Jan',
+      'Fev',
+      'Mar',
+      'Abr',
+      'Mai',
+      'Jun',
+      'Jul',
+      'Ago',
+      'Set',
+      'Out',
+      'Nov',
+      'Dez'
+    ];
     return names[month - 1];
   }
 }
@@ -190,7 +255,8 @@ class _Field extends StatelessWidget {
   final TextEditingController ctrl;
   final VoidCallback onChanged;
 
-  const _Field({required this.label, required this.ctrl, required this.onChanged});
+  const _Field(
+      {required this.label, required this.ctrl, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +264,11 @@ class _Field extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: colors.onSurface)),
+        Text(label,
+            style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: colors.onSurface)),
         const SizedBox(height: 6),
         TextFormField(
           controller: ctrl,
@@ -209,7 +279,8 @@ class _Field extends StatelessWidget {
             prefixText: 'R\$ ',
             prefixStyle: TextStyle(color: colors.onSurfaceSoft),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             isDense: true,
           ),
         ),

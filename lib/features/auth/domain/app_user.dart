@@ -29,5 +29,6 @@ class AppUser {
   }
 
   @override
-  String toString() => 'AppUser(uid: $uid, email: $email, verified: $emailVerified)';
+  String toString() =>
+      'AppUser(uid: $uid, email: $email, verified: $emailVerified)';
 }

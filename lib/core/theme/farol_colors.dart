@@ -89,7 +89,8 @@ class FarolColors extends ThemeExtension<FarolColors> {
       onSurfaceMuted: Color.lerp(onSurfaceMuted, other.onSurfaceMuted, t)!,
       onSurfaceSoft: Color.lerp(onSurfaceSoft, other.onSurfaceSoft, t)!,
       onSurfaceFaint: Color.lerp(onSurfaceFaint, other.onSurfaceFaint, t)!,
-      secondaryContainer: Color.lerp(secondaryContainer, other.secondaryContainer, t)!,
+      secondaryContainer:
+          Color.lerp(secondaryContainer, other.secondaryContainer, t)!,
       iconTintBlue: Color.lerp(iconTintBlue, other.iconTintBlue, t)!,
       iconTintRed: Color.lerp(iconTintRed, other.iconTintRed, t)!,
     );

@@ -26,8 +26,8 @@ class CategoryRepository {
           .map((rows) => rows
               .map(Category.fromJson)
               .where((c) =>
-                  c.userId == null ||          // system category — always visible
-                  c.workspaceId == wsId)       // or belongs to active workspace
+                  c.userId == null || // system category — always visible
+                  c.workspaceId == wsId) // or belongs to active workspace
               .where((c) => !c.isArchived)
               .toList());
     }
@@ -71,19 +71,23 @@ class CategoryRepository {
     final userId = _userId;
     if (userId == null) throw Exception('Not authenticated');
 
-    final data = await _supabase.from('categories').insert({
-      'user_id': userId,
-      if (workspaceId != null) 'workspace_id': workspaceId,
-      'slug': category.slug,
-      'name': category.name,
-      'emoji': category.emoji,
-      'color_hex': category.colorHex,
-      'financial_type': category.financialType,
-      'is_swile': category.isSwile,
-      'is_system': false,
-      'is_fixed': category.isFixed,
-      'display_order': category.displayOrder,
-    }).select().single();
+    final data = await _supabase
+        .from('categories')
+        .insert({
+          'user_id': userId,
+          if (workspaceId != null) 'workspace_id': workspaceId,
+          'slug': category.slug,
+          'name': category.name,
+          'emoji': category.emoji,
+          'color_hex': category.colorHex,
+          'financial_type': category.financialType,
+          'is_swile': category.isSwile,
+          'is_system': false,
+          'is_fixed': category.isFixed,
+          'display_order': category.displayOrder,
+        })
+        .select()
+        .single();
 
     return Category.fromJson(data);
   }
@@ -102,7 +106,9 @@ class CategoryRepository {
   }
 
   Future<void> archive(String id) async {
-    await _supabase.from('categories').update({'is_archived': true}).eq('id', id);
+    await _supabase
+        .from('categories')
+        .update({'is_archived': true}).eq('id', id);
   }
 
   Future<void> reorder(List<Category> categories) async {

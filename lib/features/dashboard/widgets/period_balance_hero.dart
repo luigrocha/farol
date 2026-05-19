@@ -55,9 +55,8 @@ class _PeriodBalanceHeroState extends ConsumerState<PeriodBalanceHero>
         ? FarolBrand.heroGradientPositive
         : FarolBrand.heroGradientNegative;
 
-    final accentColor = isPositive
-        ? const Color(0xFF2EB06A)
-        : const Color(0xFFFF6B6B);
+    final accentColor =
+        isPositive ? const Color(0xFF2EB06A) : const Color(0xFFFF6B6B);
 
     return MouseRegion(
       onEnter: (_) {
@@ -73,7 +72,8 @@ class _PeriodBalanceHeroState extends ConsumerState<PeriodBalanceHero>
         onTap: () => Navigator.pushNamed(context, '/patrimonio'),
         child: AnimatedBuilder(
           animation: _scale,
-          builder: (_, child) => Transform.scale(scale: _scale.value, child: child),
+          builder: (_, child) =>
+              Transform.scale(scale: _scale.value, child: child),
           child: Container(
             padding: const EdgeInsets.all(DSSpacing.xxl),
             decoration: BoxDecoration(
@@ -87,8 +87,9 @@ class _PeriodBalanceHeroState extends ConsumerState<PeriodBalanceHero>
               boxShadow: [
                 BoxShadow(
                   color: (isPositive
-                      ? FarolBrand.heroShadowPositive
-                      : FarolBrand.heroShadowNegative).withValues(alpha: 0.30),
+                          ? FarolBrand.heroShadowPositive
+                          : FarolBrand.heroShadowNegative)
+                      .withValues(alpha: 0.30),
                   blurRadius: 28,
                   spreadRadius: -4,
                   offset: const Offset(0, 12),
@@ -265,7 +266,6 @@ class _PeriodBalanceHeroState extends ConsumerState<PeriodBalanceHero>
   }
 }
 
-
 class _HeroStat extends StatelessWidget {
   const _HeroStat({
     required this.label,
@@ -360,7 +360,8 @@ class MiniStat extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(label, style: const TextStyle(fontSize: 10, color: Colors.white38)),
+        Text(label,
+            style: const TextStyle(fontSize: 10, color: Colors.white38)),
         BrlSmall(value: value, size: 14, weight: FontWeight.w700, color: color),
       ],
     );

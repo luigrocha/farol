@@ -65,8 +65,7 @@ void main() {
           '/': (context) => const AppEntryPoint(),
           '/login': (context) => const LoginScreen(),
           '/signup': (context) => const SignUpScreen(),
-          '/dashboard': (context) =>
-              const Scaffold(body: Text('Dashboard')),
+          '/dashboard': (context) => const Scaffold(body: Text('Dashboard')),
         },
       ),
     );
@@ -270,7 +269,8 @@ void main() {
 
   // ── Scenario 5: Logout ───────────────────────────────────────────────────
   group('Logout flow', () {
-    testWidgets('signing out clears session and returns to unauthenticated state',
+    testWidgets(
+        'signing out clears session and returns to unauthenticated state',
         (tester) async {
       fakeRepo.seedUser('user@example.com', 'pass123');
 

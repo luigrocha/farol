@@ -61,11 +61,14 @@ class FarolBottomNav extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List.generate(_icons.length, (i) {
-                if (i == 2) return _FabItem(label: labels[i], onTap: () => onTap(i));
+                if (i == 2)
+                  return _FabItem(label: labels[i], onTap: () => onTap(i));
                 final (iconOff, iconOn) = _icons[i];
                 final selected = currentIndex == i;
                 final color = selected
-                    ? (isDark ? tokens.FarolColors.beam : tokens.FarolColors.navy)
+                    ? (isDark
+                        ? tokens.FarolColors.beam
+                        : tokens.FarolColors.navy)
                     : (isDark
                         ? tokens.FarolColors.dOnSurfaceFaint
                         : tokens.FarolColors.lOnSurfaceFaint);
@@ -159,7 +162,8 @@ class _FabItem extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
+              child:
+                  const Icon(Icons.add_rounded, color: Colors.white, size: 26),
             ),
             const SizedBox(height: 3),
             Text(

@@ -6,16 +6,19 @@ class UserPreferencesRepository {
 
   String? get _userId => _supabase.auth.currentUser?.id;
 
-  Future<({String? locale, String? themeMode, bool? privacyMode})> fetch() async {
+  Future<({String? locale, String? themeMode, bool? privacyMode})>
+      fetch() async {
     final userId = _userId;
-    if (userId == null) return (locale: null, themeMode: null, privacyMode: null);
+    if (userId == null)
+      return (locale: null, themeMode: null, privacyMode: null);
     try {
       final data = await _supabase
           .from('user_preferences')
           .select('locale, theme_mode, privacy_mode')
           .eq('user_id', userId)
           .maybeSingle();
-      if (data == null) return (locale: null, themeMode: null, privacyMode: null);
+      if (data == null)
+        return (locale: null, themeMode: null, privacyMode: null);
       return (
         locale: data['locale'] as String?,
         themeMode: data['theme_mode'] as String?,

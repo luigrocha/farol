@@ -78,7 +78,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-       backgroundColor: cs.surface,
+      backgroundColor: cs.surface,
       body: AuthActionHandler(
         successMessage: l10n.translate('account_created_check_email'),
         child: SafeArea(
@@ -93,7 +93,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          size: 20),
                       onPressed: () => Navigator.of(context).pop(),
                       style: IconButton.styleFrom(
                         foregroundColor: colors.onSurface,
@@ -164,8 +165,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       labelText: l10n.translate('email'),
                       prefixIcon: const Icon(Icons.mail_outline_rounded),
                     ),
-                    validator: (v) =>
-                        _emailRegex.hasMatch(v ?? '') ? null : l10n.translate('invalid_email'),
+                    validator: (v) => _emailRegex.hasMatch(v ?? '')
+                        ? null
+                        : l10n.translate('invalid_email'),
                   ),
                   const SizedBox(height: 12),
 
@@ -181,12 +183,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         icon: Icon(_obscurePassword
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined),
-                        onPressed: () =>
-                            setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword),
                       ),
                     ),
-                    validator: (v) =>
-                        (v?.length ?? 0) >= 6 ? null : l10n.translate('min_6_chars'),
+                    validator: (v) => (v?.length ?? 0) >= 6
+                        ? null
+                        : l10n.translate('min_6_chars'),
                   ),
                   const SizedBox(height: 8),
 
@@ -204,7 +207,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       hintText: '000.000.000-00',
                       prefixIcon: const Icon(Icons.badge_outlined),
                       suffixIcon: Tooltip(
-                        message: 'CPF é armazenado com segurança e não é compartilhado',
+                        message:
+                            'CPF é armazenado com segurança e não é compartilhado',
                         child: Icon(Icons.lock_outline_rounded,
                             size: 18, color: colors.onSurfaceSoft),
                       ),
@@ -261,8 +265,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     child: GestureDetector(
                       onTap: isLoading
                           ? null
-                          : () => Navigator.pushReplacementNamed(
-                              context, '/login'),
+                          : () =>
+                              Navigator.pushReplacementNamed(context, '/login'),
                       child: Text.rich(
                         TextSpan(children: [
                           TextSpan(
@@ -288,7 +292,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     builder: (context, snap) => Center(
                       child: Text(
                         snap.hasData ? 'v${snap.data!.version}' : '',
-                        style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.outline, letterSpacing: 0.3),
+                        style: TextStyle(
+                            fontSize: 11,
+                            color: Theme.of(context).colorScheme.outline,
+                            letterSpacing: 0.3),
                       ),
                     ),
                   ),
@@ -361,8 +368,7 @@ class _TermsCheckbox extends StatelessWidget {
             child: Text(
               l10n.translate('terms_required'),
               style: GoogleFonts.inter(
-                  fontSize: 11,
-                  color: Theme.of(context).colorScheme.error),
+                  fontSize: 11, color: Theme.of(context).colorScheme.error),
             ),
           ),
       ],
@@ -377,9 +383,7 @@ class _StrengthMeter extends StatelessWidget {
 
   Color _segmentColor(int index, bool isDark) {
     if (index >= strength) {
-      return isDark
-          ? const Color(0xFF2A2E3A)
-          : const Color(0xFFE8EBF0);
+      return isDark ? const Color(0xFF2A2E3A) : const Color(0xFFE8EBF0);
     }
     return switch (strength) {
       1 => const Color(0xFFE53935), // error red
@@ -404,16 +408,18 @@ class _StrengthMeter extends StatelessWidget {
 
     return Row(
       children: [
-        ...List.generate(4, (i) => Expanded(
-          child: Container(
-            height: 4,
-            margin: EdgeInsets.only(right: i < 3 ? 4 : 0),
-            decoration: BoxDecoration(
-              color: _segmentColor(i, isDark),
-              borderRadius: BorderRadius.circular(99),
-            ),
-          ),
-        )),
+        ...List.generate(
+            4,
+            (i) => Expanded(
+                  child: Container(
+                    height: 4,
+                    margin: EdgeInsets.only(right: i < 3 ? 4 : 0),
+                    decoration: BoxDecoration(
+                      color: _segmentColor(i, isDark),
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                  ),
+                )),
         if (strength > 0) ...[
           const SizedBox(width: 10),
           Text(

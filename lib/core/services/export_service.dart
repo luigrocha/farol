@@ -43,7 +43,19 @@ class ExportService {
   Future<void> exportExpensesToCsv(int month, int year) async {
     final expenses = await expenseRepo.getByRange(month, year, month, year);
     final rows = <List<String>>[
-      ['Date', 'Month', 'Year', 'Pay Type', 'Category', 'Subcategory', 'Amount', 'Method', 'Installments', 'Fixed', 'Description'],
+      [
+        'Date',
+        'Month',
+        'Year',
+        'Pay Type',
+        'Category',
+        'Subcategory',
+        'Amount',
+        'Method',
+        'Installments',
+        'Fixed',
+        'Description'
+      ],
       ...expenses.map((e) => [
             e.transactionDate.toIso8601String().substring(0, 10),
             e.month.toString(),
@@ -61,7 +73,8 @@ class ExportService {
 
     final csv = const ListToCsvConverter().convert(rows);
     final filename = 'expenses_${month}_$year.csv';
-    await _share(utf8.encode(csv), filename, 'text/csv', 'Expenses $month/$year');
+    await _share(
+        utf8.encode(csv), filename, 'text/csv', 'Expenses $month/$year');
   }
 
   Future<void> exportIncomesToCsv(int month, int year) async {
@@ -136,41 +149,49 @@ class ExportService {
     final backup = {
       'version': 2,
       'exported_at': DateTime.now().toIso8601String(),
-      'expenses': allExpenses.map((e) => {
-            'transaction_date': e.transactionDate.toIso8601String().substring(0, 10),
-            'month': e.month,
-            'year': e.year,
-            'payType': e.payType,
-            'category': e.category,
-            'subcategory': e.subcategory,
-            'amount': e.amount,
-            'paymentMethod': e.paymentMethod,
-            'installments': e.installments,
-            'isFixed': e.isFixed,
-            'storeDescription': e.storeDescription,
-          }).toList(),
-      'incomes': allIncomes.map((i) => {
-            'month': i.month,
-            'year': i.year,
-            'incomeType': i.incomeType,
-            'amount': i.amount,
-            'isNet': i.isNet,
-            'inssDeducted': i.inssDeducted,
-            'irrfDeducted': i.irrfDeducted,
-            'notes': i.notes,
-          }).toList(),
+      'expenses': allExpenses
+          .map((e) => {
+                'transaction_date':
+                    e.transactionDate.toIso8601String().substring(0, 10),
+                'month': e.month,
+                'year': e.year,
+                'payType': e.payType,
+                'category': e.category,
+                'subcategory': e.subcategory,
+                'amount': e.amount,
+                'paymentMethod': e.paymentMethod,
+                'installments': e.installments,
+                'isFixed': e.isFixed,
+                'storeDescription': e.storeDescription,
+              })
+          .toList(),
+      'incomes': allIncomes
+          .map((i) => {
+                'month': i.month,
+                'year': i.year,
+                'incomeType': i.incomeType,
+                'amount': i.amount,
+                'isNet': i.isNet,
+                'inssDeducted': i.inssDeducted,
+                'irrfDeducted': i.irrfDeducted,
+                'notes': i.notes,
+              })
+          .toList(),
     };
 
     final jsonStr = const JsonEncoder.withIndent('  ').convert(backup);
-    final filename = 'farol_backup_${DateTime.now().millisecondsSinceEpoch}.json';
-    await _share(utf8.encode(jsonStr), filename, 'application/json', 'Farol Backup');
+    final filename =
+        'farol_backup_${DateTime.now().millisecondsSinceEpoch}.json';
+    await _share(
+        utf8.encode(jsonStr), filename, 'application/json', 'Farol Backup');
   }
 
   // ═══════════════════════════════════════════
   // INTERNAL: platform-aware share/download
   // ═══════════════════════════════════════════
 
-  Future<void> _share(List<int> bytes, String filename, String mimeType, String subject) async {
+  Future<void> _share(
+      List<int> bytes, String filename, String mimeType, String subject) async {
     if (kIsWeb) {
       downloadOnWeb(bytes, filename, mimeType);
       return;

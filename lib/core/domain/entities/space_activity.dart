@@ -11,13 +11,13 @@
 
 /// A single entry in the space activity feed.
 class SpaceActivity {
-  final String  id;
-  final String  spaceId;
-  final String  userId;       // who performed the action
-  final String  action;
-  final String  entityType;   // 'space_transaction' | 'space_settlement'
+  final String id;
+  final String spaceId;
+  final String userId; // who performed the action
+  final String action;
+  final String entityType; // 'space_transaction' | 'space_settlement'
   final String? entityId;
-  final String? entityLabel;  // denormalized description
+  final String? entityLabel; // denormalized description
   final double? amount;
   final Map<String, dynamic> metadata;
   final DateTime createdAt;
@@ -36,34 +36,38 @@ class SpaceActivity {
   });
 
   factory SpaceActivity.fromJson(Map<String, dynamic> json) => SpaceActivity(
-    id:          json['id'] as String,
-    spaceId:     json['space_id'] as String,
-    userId:      json['user_id'] as String,
-    action:      json['action'] as String,
-    entityType:  json['entity_type'] as String,
-    entityId:    json['entity_id'] as String?,
-    entityLabel: json['entity_label'] as String?,
-    amount:      (json['amount'] as num?)?.toDouble(),
-    metadata:    (json['metadata'] as Map<String, dynamic>?) ?? {},
-    createdAt:   DateTime.parse(json['created_at'] as String),
-  );
+        id: json['id'] as String,
+        spaceId: json['space_id'] as String,
+        userId: json['user_id'] as String,
+        action: json['action'] as String,
+        entityType: json['entity_type'] as String,
+        entityId: json['entity_id'] as String?,
+        entityLabel: json['entity_label'] as String?,
+        amount: (json['amount'] as num?)?.toDouble(),
+        metadata: (json['metadata'] as Map<String, dynamic>?) ?? {},
+        createdAt: DateTime.parse(json['created_at'] as String),
+      );
 
   // ── Convenience getters ──────────────────────────────────────────────────
 
-  bool get isAddition    => action.startsWith('added_');
-  bool get isDeletion    => action.startsWith('deleted_');
-  bool get isSettlement  => action == 'recorded_settlement';
-  bool get isMemberJoin  => action == 'member_joined';
+  bool get isAddition => action.startsWith('added_');
+  bool get isDeletion => action.startsWith('deleted_');
+  bool get isSettlement => action == 'recorded_settlement';
+  bool get isMemberJoin => action == 'member_joined';
 
   /// Human-readable action verb for the feed tile.
   String actionLabel({required bool isSelf}) {
     final you = isSelf ? 'Você' : null;
     return switch (action) {
-      'added_transaction'   => you != null ? 'Você adicionou gasto'   : 'adicionou gasto',
-      'deleted_transaction' => you != null ? 'Você removeu gasto'     : 'removeu gasto',
-      'recorded_settlement' => you != null ? 'Você registrou acerto'  : 'registrou acerto',
-      'member_joined'       => you != null ? 'Você entrou no espaço'  : 'entrou no espaço',
-      _                     => action,
+      'added_transaction' =>
+        you != null ? 'Você adicionou gasto' : 'adicionou gasto',
+      'deleted_transaction' =>
+        you != null ? 'Você removeu gasto' : 'removeu gasto',
+      'recorded_settlement' =>
+        you != null ? 'Você registrou acerto' : 'registrou acerto',
+      'member_joined' =>
+        you != null ? 'Você entrou no espaço' : 'entrou no espaço',
+      _ => action,
     };
   }
 }
