@@ -23,7 +23,8 @@
       "Bash(flutter test *)",
       "Bash(grep -n 'late final.*syncQueue\\\\|get syncQueue\\\\|$SyncQueue' /Users/lgrocha/Documents/Claude/farol/lib/core/database/app_database.g.dart)",
       "Bash(kill %1)",
-      "Bash(gh auth *)"
+      "Bash(gh auth *)",
+      "Bash(python3 -c ' *)"
     ]
   },
   "autoCompactEnabled": false

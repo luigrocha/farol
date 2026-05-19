@@ -137,6 +137,15 @@ jobs:
         uses: actions/checkout@v4
 
       # ─────────────────────────────
+      # Java (required for AGP 8.x)
+      # ─────────────────────────────
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # ─────────────────────────────
       # Flutter
       # ─────────────────────────────
       - name: Setup Flutter
