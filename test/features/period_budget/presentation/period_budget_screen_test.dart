@@ -4,6 +4,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:farol/design/ds_tokens.dart' show DSProgressBar;
 import 'package:farol/core/models/budget_goal.dart';
 import 'package:farol/core/models/category.dart';
 import 'package:farol/core/models/financial_period.dart';
@@ -109,8 +110,8 @@ void main() {
         _makeEntry(spent: 750),
       ]);
 
-      // Linear progress indicator should exist
-      expect(find.byType(LinearProgressIndicator), findsOneWidget);
+      // Progress bar should exist
+      expect(find.byType(DSProgressBar), findsOneWidget);
     });
 
     testWidgets('shows multiple entry cards', (tester) async {

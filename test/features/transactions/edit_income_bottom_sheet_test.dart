@@ -98,7 +98,7 @@ void main() {
 
     testWidgets('shows save button', (tester) async {
       await pumpSheet(tester, _makeIncome());
-      expect(find.text('Save changes'), findsOneWidget);
+      expect(find.text('Save Changes'), findsOneWidget);
     });
 
     // ─── Edit & Save ───────────────────────────────────────────────────
@@ -120,7 +120,7 @@ void main() {
       await tester.enterText(amountField, '5500,00');
       await tester.pump();
 
-      await tester.tap(find.text('Save changes'));
+      await tester.tap(find.text('Save Changes'));
       await tester.pump();
 
       final all = await incomeRepo.getAll();
@@ -145,7 +145,7 @@ void main() {
       await tester.enterText(notesField, 'Updated salary');
       await tester.pump();
 
-      await tester.tap(find.text('Save changes'));
+      await tester.tap(find.text('Save Changes'));
       await tester.pump();
 
       final all = await incomeRepo.getAll();
@@ -192,7 +192,7 @@ void main() {
       await tester.enterText(amountField, '');
       await tester.pump();
 
-      await tester.tap(find.text('Save changes'));
+      await tester.tap(find.text('Save Changes'));
       await tester.pump();
 
       expect(find.byType(SnackBar), findsOneWidget);
@@ -211,7 +211,7 @@ void main() {
 
       await pumpSheet(tester, _makeIncome(id: iid, amount: 5000.0));
 
-      await tester.tap(find.text('Save changes'));
+      await tester.tap(find.text('Save Changes'));
       await tester.pump();
 
       expect(find.byType(SnackBar), findsOneWidget);

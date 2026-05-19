@@ -781,7 +781,7 @@ class AppLocalizations {
       'could_not_load_salary': 'Could not load salary settings',
       'welcome_back': 'Welcome back!',
       'error_loading': 'Error loading',
-      'save_changes': 'Save changes',
+      'save_changes': 'Save Changes',
       // Greeting system
       'good_morning': 'Good morning',
       'good_afternoon': 'Good afternoon',

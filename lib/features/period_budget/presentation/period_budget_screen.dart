@@ -317,15 +317,12 @@ class _EntryCardState extends ConsumerState<_EntryCard> {
             children: [
               Row(
                 children: [
-                  Text(cat?.emoji ?? '💰',
-                      style: const TextStyle(fontSize: 22)),
-                  const SizedBox(width: DSSpacing.sm + 2),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          cat?.name ?? widget.entry.category,
+                          '${cat?.emoji ?? '💰'} ${cat?.name ?? widget.entry.category}',
                           style: GoogleFonts.manrope(
                               fontSize: 14, fontWeight: FontWeight.w600),
                         ),
