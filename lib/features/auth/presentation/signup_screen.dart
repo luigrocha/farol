@@ -74,7 +74,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final cs = Theme.of(context).colorScheme;
-    final isLoading = ref.watch(authControllerProvider).isLoading;
+    final authState = ref.watch(authControllerProvider);
+    final isLoading = authState.isLoading;
+    final authError = authState.hasError ? '${authState.error!}' : null;
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
@@ -248,6 +250,19 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     }),
                   ),
                   const SizedBox(height: 20),
+
+                  // ── Auth error ───────────────────────────────────────
+                  if (authError != null) ...[
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(
+                        authError,
+                        style: GoogleFonts.inter(
+                            fontSize: 13, color: cs.error, height: 1.4),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
 
                   // ── CTA ──────────────────────────────────────────────
                   SizedBox(

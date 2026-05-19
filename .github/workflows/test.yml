@@ -26,14 +26,20 @@ jobs:
   unit_and_widget:
     name: Unit & Widget Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
 
     steps:
+      # ─────────────────────────────
+      # Checkout
+      # ─────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # ─────────────────────────────
+      # Flutter
+      # ─────────────────────────────
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -41,6 +47,9 @@ jobs:
           channel: stable
           cache: true
 
+      # ─────────────────────────────
+      # Cache
+      # ─────────────────────────────
       - name: Cache Pub dependencies
         uses: actions/cache@v4
         with:
@@ -50,22 +59,34 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pub-
 
+      # ─────────────────────────────
+      # Diagnostics
+      # ─────────────────────────────
       - name: Flutter Doctor
         run: flutter doctor -v
 
+      # ─────────────────────────────
+      # Dependencies
+      # ─────────────────────────────
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Dependency tree
-        run: flutter pub deps
-
+      # ─────────────────────────────
+      # Formatting
+      # ─────────────────────────────
       - name: Verify formatting
         run: dart format . --output=none --set-exit-if-changed
 
+      # ─────────────────────────────
+      # Static Analysis
+      # ─────────────────────────────
       - name: Analyze project
         run: flutter analyze
 
-      - name: Run Auth tests
+      # ─────────────────────────────
+      # Auth Tests
+      # ─────────────────────────────
+      - name: Run Auth data tests
         run: |
           flutter test test/features/auth/data/ \
             --reporter github \
@@ -77,6 +98,9 @@ jobs:
             --reporter github \
             --coverage
 
+      # ─────────────────────────────
+      # Remaining Tests
+      # ─────────────────────────────
       - name: Run remaining tests
         run: |
           flutter test test/ \
@@ -84,6 +108,9 @@ jobs:
             --reporter github \
             --coverage
 
+      # ─────────────────────────────
+      # Coverage
+      # ─────────────────────────────
       - name: Upload coverage report
         uses: codecov/codecov-action@v4
         if: success()
@@ -98,14 +125,20 @@ jobs:
   integration:
     name: Integration Tests (Android)
     runs-on: macos-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
 
     if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
 
     steps:
+      # ─────────────────────────────
+      # Checkout
+      # ─────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # ─────────────────────────────
+      # Flutter
+      # ─────────────────────────────
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -113,24 +146,54 @@ jobs:
           channel: stable
           cache: true
 
+      # ─────────────────────────────
+      # Dependencies
+      # ─────────────────────────────
       - name: Install dependencies
         run: flutter pub get
 
+      # ─────────────────────────────
+      # Restart ADB
+      # ─────────────────────────────
+      - name: Restart ADB
+        run: |
+          adb kill-server || true
+          adb start-server || true
+
+      # ─────────────────────────────
+      # Android Emulator
+      # ─────────────────────────────
       - name: Run integration tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 33
+          api-level: 34
+
+          # IMPORTANT FOR APPLE SILICON
           arch: arm64-v8a
-          profile: pixel_6
-          force-avd-creation: false
-          emulator-options: -no-snapshot -no-window -gpu host -noaudio -no-boot-anim
+
+          profile: pixel_7
+
+          force-avd-creation: true
+
+          emulator-options: >
+            -no-window
+            -no-audio
+            -no-boot-anim
+            -gpu swiftshader_indirect
+            -camera-back none
+            -camera-front none
+
           disable-animations: true
+
+          emulator-boot-timeout: 900
+
           script: |
-            adb wait-for-device
+            adb devices
 
             flutter devices
 
             flutter test integration_test/auth_flow_test.dart \
+              -d emulator-5554 \
               --reporter github
 
   # ─────────────────────────────────────────────────────────────
@@ -139,12 +202,18 @@ jobs:
   build_web:
     name: Web Build Smoke Test
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
+      # ─────────────────────────────
+      # Checkout
+      # ─────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # ─────────────────────────────
+      # Flutter
+      # ─────────────────────────────
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -152,6 +221,9 @@ jobs:
           channel: stable
           cache: true
 
+      # ─────────────────────────────
+      # Cache
+      # ─────────────────────────────
       - name: Cache Pub dependencies
         uses: actions/cache@v4
         with:
@@ -161,12 +233,21 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pub-
 
+      # ─────────────────────────────
+      # Dependencies
+      # ─────────────────────────────
       - name: Install dependencies
         run: flutter pub get
 
+      # ─────────────────────────────
+      # Enable Web
+      # ─────────────────────────────
       - name: Enable web
         run: flutter config --enable-web
 
+      # ─────────────────────────────
+      # Build Web
+      # ─────────────────────────────
       - name: Build web release
         run: |
           flutter build web \
@@ -175,5 +256,8 @@ jobs:
             --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL || 'https://placeholder.supabase.co' }} \
             --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY || 'placeholder-key' }}
 
+      # ─────────────────────────────
+      # Validate Build
+      # ─────────────────────────────
       - name: Verify build output
         run: test -f build/web/index.html

@@ -40,7 +40,12 @@ void main() {
     await tester.enterText(passwordField(), 'SecurePass1!');
     await tester.pump(); // trigger strength update
     await tester.enterText(confirmField(), 'SecurePass1!');
-    // Accept terms
+    // Accept terms — scroll into view first (form taller than 600px test viewport)
+    await tester.scrollUntilVisible(
+      termsCheckbox(),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.tap(termsCheckbox());
     await tester.pump();
   }
@@ -145,6 +150,11 @@ void main() {
       await tester.enterText(emailField(), 'existing@example.com');
       await tester.enterText(passwordField(), 'NewPass1!');
       await tester.enterText(confirmField(), 'NewPass1!');
+      await tester.scrollUntilVisible(
+        termsCheckbox(),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.tap(termsCheckbox());
       await tester.pump();
       await tapCreateBtn(tester);
