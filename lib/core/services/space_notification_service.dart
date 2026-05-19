@@ -17,7 +17,6 @@
 // The service is a singleton and is safe to call multiple times — subsequent
 // calls after the first are no-ops.
 
-
 import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
